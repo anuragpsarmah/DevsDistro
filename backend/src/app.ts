@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import serveIndex from "serve-index";
 import requestLogger from "./loggers/request-logger.middleware";
-import logAuthorization from "./middlewares/logs.middleware";
+import logAuthorization from "./middlewares/logAuth.middleware";
 import response from "./utils/response.util";
 
 const app = express();

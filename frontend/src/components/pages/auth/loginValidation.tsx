@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import BackgroundDots from "../ui/backgroundDots";
+import BackgroundDots from "../../ui/backgroundDots";
 
 export default function LoginValidation() {
   const [mounted, setMounted] = useState(false);

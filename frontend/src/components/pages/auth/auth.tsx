@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import BackgroundDots from "../ui/backgroundDots";
+import BackgroundDots from "../../ui/backgroundDots";
 import { GithubIcon } from "lucide-react";
 
 export default function Auth() {
@@ -11,7 +11,7 @@ export default function Auth() {
   }, []);
 
   const handleLogin = async () => {
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientID}&scope=read:user`;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientID}&scope=read:user,repo`;
   };
 
   return (

@@ -29,6 +29,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     );
 
     if (accessTokenResponse.data.error) {
+      console.log(accessTokenResponse.data.error);
       response(res, 401, "Unauthorized Access");
       return;
     }
@@ -48,11 +49,25 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
     const userDB = await User.findOne({ username: userGH.data.login });
 
+    let _id,
+      name,
+      username,
+      profile_image_url,
+      session_token,
+      refresh_token,
+      github_access_token;
+
     if (userDB) {
-      const session_token = jwt.sign(
+      _id = userDB._id;
+      name = userDB.name;
+      username = userDB.username;
+      profile_image_url = userDB.profile_image_url;
+      github_access_token = encrypted_access_token;
+
+      session_token = jwt.sign(
         {
-          _id: userDB._id,
-          username: userDB.username,
+          _id,
+          username,
         },
         process.env.JWT_SECRET as string,
         {
@@ -60,9 +75,9 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         }
       );
 
-      const refresh_token = jwt.sign(
+      refresh_token = jwt.sign(
         {
-          _id: userDB._id,
+          _id,
         },
         process.env.JWT_SECRET as string,
         {
@@ -71,45 +86,26 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       );
 
       userDB.jwt_refresh_token = refresh_token;
-      userDB.github_access_token = encrypted_access_token;
+      userDB.github_access_token = github_access_token;
       await userDB.save();
-
-      res
-        .status(200)
-        .cookie("session_token", session_token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        })
-        .cookie("refresh_token", refresh_token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        })
-        .json({
-          message: "User logged in successfully",
-          data: {
-            _id: userDB._id,
-            name: userDB?.name || "",
-            username: userDB.username,
-            profile_image_url: userDB.profile_image_url,
-          },
-          error: {},
-        });
     } else {
-      const userData = {
+      const newUserDB = await User.create({
         name: userGH.data.name || "",
         username: userGH.data.login,
         profile_image_url: userGH.data.avatar_url,
         github_access_token: encrypted_access_token,
-      };
+      });
 
-      const newUserDB = await User.create(userData);
+      _id = newUserDB._id;
+      name = userGH.data.name;
+      username = userGH.data.login;
+      profile_image_url = userGH.data.avatar_url;
+      github_access_token = encrypted_access_token;
 
-      const session_token = jwt.sign(
+      session_token = jwt.sign(
         {
-          _id: newUserDB._id,
-          username: newUserDB.username,
+          _id,
+          username,
         },
         process.env.JWT_SECRET as string,
         {
@@ -117,9 +113,9 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         }
       );
 
-      const refresh_token = jwt.sign(
+      refresh_token = jwt.sign(
         {
-          _id: newUserDB._id,
+          _id,
         },
         process.env.JWT_SECRET as string,
         {
@@ -129,30 +125,30 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
       newUserDB.jwt_refresh_token = refresh_token;
       await newUserDB.save();
-
-      res
-        .status(200)
-        .cookie("session_token", session_token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        })
-        .cookie("refresh_token", refresh_token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        })
-        .json({
-          message: "User logged in successfully",
-          data: {
-            _id: newUserDB._id,
-            name: newUserDB?.name || "",
-            username: newUserDB.username,
-            profile_image_url: newUserDB.profile_image_url,
-          },
-          error: {},
-        });
     }
+
+    res
+      .status(200)
+      .cookie("session_token", session_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
+      .cookie("refresh_token", refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
+      .json({
+        message: "User logged in successfully",
+        data: {
+          _id,
+          name,
+          username,
+          profile_image_url,
+        },
+        error: {},
+      });
   } catch (error) {
     throw new ApiError("Internal Server Error", 500);
   }
