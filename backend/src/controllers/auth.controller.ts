@@ -6,18 +6,48 @@ import response from "../utils/response.util";
 import ApiError from "../utils/ApiError.util";
 import jwt from "jsonwebtoken";
 import axios from "axios";
+import mongoose from "mongoose";
+import logger from "../loggers/winston.logger";
+
+const createSessionTokenRefreshToken = (
+  userid: mongoose.Types.ObjectId,
+  username: string
+) => {
+  const session_token = jwt.sign(
+    { _id: userid, username: username },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "15m" }
+  );
+
+  const refresh_token = jwt.sign(
+    { _id: userid },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "30d" }
+  );
+
+  return { session_token, refresh_token };
+};
 
 const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   const code = req.query.code;
-  const client_id = process.env.GITHUB_CLIENT_ID;
-  const client_secret = process.env.GITHUB_CLIENT_SECRET;
+  const {
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    ENCRYPTION_KEY_32,
+    ENCRYPTION_IV,
+  } = process.env;
+
+  if (!code) {
+    response(res, 400, "Code parameter missing");
+    return;
+  }
 
   try {
     const accessTokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
       {
-        client_id,
-        client_secret,
+        client_id: GITHUB_CLIENT_ID,
+        client_secret: GITHUB_CLIENT_SECRET,
         code,
       },
       {
@@ -28,130 +58,138 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       }
     );
 
-    if (accessTokenResponse.data.error) {
-      console.log(accessTokenResponse.data.error);
+    const { access_token, error } = accessTokenResponse.data;
+
+    if (error) {
+      console.error("GitHub OAuth Error:", error);
       response(res, 401, "Unauthorized Access");
       return;
     }
 
-    const access_token = accessTokenResponse.data.access_token;
-    const encrypted_access_token = encrypt(
+    const encryptedAccessToken = encrypt(
       access_token,
-      process.env.ENCRYPTION_KEY_32 as string,
-      process.env.ENCRYPTION_IV as string
+      ENCRYPTION_KEY_32 as string,
+      ENCRYPTION_IV as string
     );
 
     const userGH = await axios.get("https://api.github.com/user", {
-      headers: {
-        Authorization: "Bearer " + access_token,
-      },
+      headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    const userDB = await User.findOne({ username: userGH.data.login });
+    const { login: username, name, avatar_url: profileImageUrl } = userGH.data;
 
-    let _id,
-      name,
-      username,
-      profile_image_url,
-      session_token,
-      refresh_token,
-      github_access_token;
+    let user = await User.findOne({ username });
 
-    if (userDB) {
-      _id = userDB._id;
-      name = userDB.name;
-      username = userDB.username;
-      profile_image_url = userDB.profile_image_url;
-      github_access_token = encrypted_access_token;
+    if (user) {
+      const { session_token, refresh_token } = createSessionTokenRefreshToken(
+        user._id,
+        username
+      );
 
-      session_token = jwt.sign(
+      user.github_access_token = encryptedAccessToken;
+      user.jwt_refresh_token = refresh_token;
+      await user.save();
+
+      response(
+        res,
+        200,
+        "User login successful",
         {
-          _id,
+          _id: user._id,
           username,
-        },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "15m",
-        }
-      );
-
-      refresh_token = jwt.sign(
-        {
-          _id,
-        },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "30d",
-        }
-      );
-
-      userDB.jwt_refresh_token = refresh_token;
-      userDB.github_access_token = github_access_token;
-      await userDB.save();
-    } else {
-      const newUserDB = await User.create({
-        name: userGH.data.name || "",
-        username: userGH.data.login,
-        profile_image_url: userGH.data.avatar_url,
-        github_access_token: encrypted_access_token,
-      });
-
-      _id = newUserDB._id;
-      name = userGH.data.name;
-      username = userGH.data.login;
-      profile_image_url = userGH.data.avatar_url;
-      github_access_token = encrypted_access_token;
-
-      session_token = jwt.sign(
-        {
-          _id,
-          username,
-        },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "15m",
-        }
-      );
-
-      refresh_token = jwt.sign(
-        {
-          _id,
-        },
-        process.env.JWT_SECRET as string,
-        {
-          expiresIn: "30d",
-        }
-      );
-
-      newUserDB.jwt_refresh_token = refresh_token;
-      await newUserDB.save();
-    }
-
-    res
-      .status(200)
-      .cookie("session_token", session_token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      })
-      .cookie("refresh_token", refresh_token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-      })
-      .json({
-        message: "User logged in successfully",
-        data: {
-          _id,
           name,
-          username,
-          profile_image_url,
+          profileImageUrl,
         },
-        error: {},
+        {},
+        false,
+        session_token,
+        refresh_token
+      );
+    } else {
+      user = await User.create({
+        name: name || "",
+        username,
+        profile_image_url: profileImageUrl,
+        github_access_token: encryptedAccessToken,
       });
+
+      const { session_token, refresh_token } = createSessionTokenRefreshToken(
+        user._id,
+        username
+      );
+      user.jwt_refresh_token = refresh_token;
+      await user.save();
+
+      response(
+        res,
+        200,
+        "User login successful",
+        {
+          _id: user._id,
+          username,
+          name,
+          profileImageUrl,
+        },
+        {},
+        false,
+        session_token,
+        refresh_token
+      );
+    }
   } catch (error) {
+    logger.error("GitHub login error:", error);
     throw new ApiError("Internal Server Error", 500);
   }
 });
 
-export { githubLogin };
+const getNewSessionToken = asyncHandler(async (req: Request, res: Response) => {
+  const refresh_token = req.cookies.refresh_token;
+
+  if (!refresh_token) {
+    response(res, 401, "Unauthorized Access", {}, {}, true);
+    return;
+  }
+
+  try {
+    const decodedData: any = jwt.verify(
+      refresh_token,
+      process.env.JWT_SECRET as string
+    );
+
+    const user = await User.findOne({
+      _id: new mongoose.Types.ObjectId(decodedData?._id),
+    });
+
+    if (!user || user.jwt_refresh_token !== refresh_token) {
+      response(res, 401, "Unauthorized Access", {}, {}, true);
+      return;
+    }
+
+    const tokens = createSessionTokenRefreshToken(user._id, user.username);
+
+    user.jwt_refresh_token = tokens.refresh_token;
+    await user.save();
+
+    response(
+      res,
+      200,
+      "Session token refreshed",
+      {
+        _id: user._id,
+        name: user.name,
+        username: user.username,
+        profileImageUrl: user.profile_image_url,
+      },
+      {},
+      false,
+      tokens.session_token,
+      tokens.refresh_token
+    );
+  } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError)
+      response(res, 401, "Unauthorized Access", {}, {}, true);
+    else throw new ApiError("Internal Server Error", 500);
+  }
+});
+
+export { githubLogin, getNewSessionToken };

@@ -13,6 +13,7 @@ const user = new Schema(
     },
     name: {
       type: String,
+      default: "",
     },
     profile_image_url: {
       type: String,
