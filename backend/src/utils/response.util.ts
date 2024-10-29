@@ -7,8 +7,7 @@ const response = (
   data: any = {},
   error: any = {},
   clearCookieFlag: boolean = false,
-  session_token: string = "",
-  refresh_token: string = ""
+  session_token: string = ""
 ) => {
   const responseObject: { message: string; data: any; error: any } = {
     message,
@@ -26,14 +25,10 @@ const response = (
     return res
       .status(statusCode)
       .clearCookie("session_token", cookieOptions)
-      .clearCookie("refresh_token", cookieOptions)
       .json(responseObject);
   }
 
-  if (session_token && refresh_token) {
-    res.cookie("session_token", session_token, cookieOptions);
-    res.cookie("refresh_token", refresh_token, cookieOptions);
-  }
+  if (session_token) res.cookie("session_token", session_token, cookieOptions);
 
   return res.status(statusCode).json(responseObject);
 };

@@ -19,7 +19,6 @@ const user = new Schema(
       type: String,
       required: [true, "Profile image is required"],
     },
-    jwt_refresh_token: String,
   },
   { timestamps: true }
 );

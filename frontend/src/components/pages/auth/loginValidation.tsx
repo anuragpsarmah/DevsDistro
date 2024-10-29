@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import axios from "axios";
-import BackgroundDots from "@/components/ui/backgroundDots";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { user } from "@/utils/atom";
 import { useRecoilState } from "recoil";
+import LoadingPage from "@/components/pages/loading/loading";
 
 export default function LoginValidation() {
   const [, setActiveUser] = useRecoilState(user);
@@ -17,7 +17,8 @@ export default function LoginValidation() {
     const validateLogin = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/auth/githubLogin?code=${githubCode}`
+          `http://localhost:3000/api/auth/githubLogin?code=${githubCode}`,
+          { withCredentials: true }
         );
 
         setActiveUser(response.data.data);
@@ -34,9 +35,5 @@ export default function LoginValidation() {
     validateLogin();
   }, []);
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4 relative overflow-hidden">
-      <BackgroundDots />
-    </div>
-  );
+  return <LoadingPage />;
 }

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import dbConnect from "./db/db-connect";
 import app from "./app";
-import logger from "./loggers/winston.logger";
+import logger from "./logger/winston.logger";
 
 dotenv.config();
 

@@ -12,7 +12,7 @@ export const authMiddleware = asyncHandler(
       response(res, 401, "Unauthorized Access");
       return;
     }
-    
+
     jwt.verify(
       session_token,
       process.env.JWT_SECRET as string,

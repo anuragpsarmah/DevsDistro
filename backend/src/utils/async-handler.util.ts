@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import response from "./response.util";
-import logger from "../loggers/winston.logger";
+import logger from "../logger/winston.logger";
 
 const asyncHandler = (
   requestHandler: (

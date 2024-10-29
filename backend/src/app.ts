@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import serveIndex from "serve-index";
-import requestLogger from "./loggers/request-logger.middleware";
+import requestLogger from "./middlewares/requestLogger.middleware";
 import logAuthorization from "./middlewares/logAuth.middleware";
 import response from "./utils/response.util";
 
@@ -18,6 +18,7 @@ app.use(
 app.use(
   cors({
     origin: [process.env.FRONTEND_URI as string, "http://localhost:5173"],
+    credentials: true,
   })
 );
 app.use(requestLogger);
