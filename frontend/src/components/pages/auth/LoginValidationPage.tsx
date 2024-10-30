@@ -6,7 +6,7 @@ import { user } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import LoadingPage from "@/components/pages/loading/loading";
 
-export default function LoginValidation() {
+export default function LoginValidationPage() {
   const [, setActiveUser] = useRecoilState(user);
   const { toast } = useToast();
   const navigate = useNavigate();

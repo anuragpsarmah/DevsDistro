@@ -3,7 +3,7 @@ import { user } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { useAuthValidationQuery, useLogoutQuery } from "@/hooks/ApiQueries";
-import LoadingPage from "@/components/pages/loading/loading";
+import BackgroundDots from "../ui/backgroundDots";
 
 interface AuthValidatorProps {
   children: ReactNode;
@@ -16,7 +16,9 @@ const emptyUserObject = {
   profileImageUrl: "",
 };
 
-export default function ProtectedRoute({ children }: AuthValidatorProps) {
+export default function ProtectedRouteWrapper({
+  children,
+}: AuthValidatorProps) {
   const [, setActiveUser] = useRecoilState(user);
   const navigate = useNavigate();
   const { data, isLoading, isError } = useAuthValidationQuery();
@@ -37,7 +39,11 @@ export default function ProtectedRoute({ children }: AuthValidatorProps) {
   }, [isError, isLoading, data, logout, navigate, setActiveUser]);
 
   if (isLoading) {
-    return <LoadingPage />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
+        <BackgroundDots />
+      </div>
+    );
   }
 
   return <>{children}</>;

@@ -124,6 +124,17 @@ export default function Footer() {
           <p className="text-gray-400">
             © 2024 DevExchange. All rights reserved.
           </p>
+          <p className="text-gray-400 mt-2">
+            Developed by{" "}
+            <span className="text-white">
+              <a
+                target="_blank"
+                href="https://www.linkedin.com/in/anuragpsarmah/"
+              >
+                Anurag
+              </a>
+            </span>
+          </p>
         </div>
       </div>
     </footer>

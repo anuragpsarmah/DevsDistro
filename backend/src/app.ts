@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import serveIndex from "serve-index";
-import requestLogger from "./middlewares/requestLogger.middleware";
+import loggerMiddleware from "./middlewares/logger.middleware";
 import logAuthorization from "./middlewares/logAuth.middleware";
 import response from "./utils/response.util";
 
@@ -21,7 +21,7 @@ app.use(
     credentials: true,
   })
 );
-app.use(requestLogger);
+app.use(loggerMiddleware);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -33,7 +33,9 @@ app.get("/health", (req: Request, res: Response) => {
 
 /* routes */
 import { authRouter } from "./routes/auth.routes";
+import { profileRouter } from "./routes/profile.routes";
 
 app.use("/api/auth", authRouter);
+app.use("/api/profile", profileRouter);
 
 export default app;

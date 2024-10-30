@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import logger from "../logger/winston.logger";
 
-const requestLogger = (req: Request, res: Response, next: NextFunction) => {
+const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const startTime = performance.now();
   const method = req.method;
   const url = req.url;
@@ -18,4 +18,4 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default requestLogger;
+export default loggerMiddleware;

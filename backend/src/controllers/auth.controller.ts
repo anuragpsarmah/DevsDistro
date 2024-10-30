@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../models/user.model";
 import { encrypt } from "../utils/encryption.util";
-import asyncHandler from "../utils/async-handler.util";
+import asyncHandler from "../utils/asyncHandler.util";
 import response from "../utils/response.util";
 import ApiError from "../utils/ApiError.util";
 import jwt from "jsonwebtoken";

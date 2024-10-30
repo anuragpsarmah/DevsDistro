@@ -1,7 +1,7 @@
 import BackgroundDots from "@/components/ui/backgroundDots";
 import { GithubIcon } from "lucide-react";
 
-export default function Auth() {
+export default function AuthPage() {
   const clientID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 
   const handleLogin = async () => {

@@ -1,10 +1,10 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import asyncHandler from "../utils/async-handler.util";
+import asyncHandler from "../utils/asyncHandler.util";
 import { NextFunction, Request, Response } from "express";
 import response from "../utils/response.util";
 import ApiError from "../utils/ApiError.util";
 
-export const authMiddleware = asyncHandler(
+export const sessionValidation = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const session_token = req.cookies.session_token;
 

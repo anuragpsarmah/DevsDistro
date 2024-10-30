@@ -1,12 +1,13 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Auth from "@/components/pages/auth/auth";
-import LoginValidation from "@/components/pages/auth/loginValidation";
-import { Toaster } from "@/components/ui/toaster";
-import ProfileSelection from "@/components/pages/profileSelection/profileSelection";
-import ProtectedRoute from "@/components/pages/protectedRouteWrapper/protectedRouteWrapper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import ErrorPage from "@/components/pages/error/error";
-import LandingPage from "@/components/pages/landing/landing";
+import { Toaster } from "@/components/ui/toaster";
+import AuthPage from "@/components/pages/auth/AuthPage";
+import LoginValidationPage from "@/components/pages/auth/LoginValidationPage";
+import ProfileSelectionPage from "@/components/pages/profileSelection/ProfileSelectionPage";
+import ErrorPage from "@/components/pages/error/ErrorPage";
+import LandingPage from "@/components/pages/landing/LandingPage";
+import ProtectedRouteWrapper from "@/components/wrappers/protectedRouteWrapper";
+import SellerDashboardPage from "./components/pages/sellerDashboard/SellerDashboardPage";
 
 function App() {
   const queryClient = new QueryClient({
@@ -28,18 +29,26 @@ function App() {
     },
     {
       path: "/authentication",
-      element: <Auth />,
+      element: <AuthPage />,
     },
     {
       path: "/loginValidation",
-      element: <LoginValidation />,
+      element: <LoginValidationPage />,
     },
     {
       path: "/profile-selection",
       element: (
-        <ProtectedRoute>
-          <ProfileSelection />
-        </ProtectedRoute>
+        <ProtectedRouteWrapper>
+          <ProfileSelectionPage />
+        </ProtectedRouteWrapper>
+      ),
+    },
+    {
+      path: "/seller-dashboard",
+      element: (
+        <ProtectedRouteWrapper>
+          <SellerDashboardPage />
+        </ProtectedRouteWrapper>
       ),
     },
   ]);

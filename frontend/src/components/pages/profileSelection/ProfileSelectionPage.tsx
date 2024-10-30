@@ -2,13 +2,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { UserIcon, StoreIcon } from "lucide-react";
 import BackgroundDots from "@/components/ui/backgroundDots";
+import { useNavigate } from "react-router-dom";
 
-export default function ProfileSelection() {
+export default function ProfileSelectionPage() {
   const [hoveredProfile, setHoveredProfile] = useState<string | null>(null);
-
-  const handleProfileSelect = (profile: "buyer" | "seller") => {
-    console.log(`Selected profile: ${profile}`);
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4 relative overflow-hidden">
@@ -31,7 +29,9 @@ export default function ProfileSelection() {
             title="Buyer"
             description="Browse and purchase innovative GitHub projects"
             icon={<UserIcon className="w-12 h-12 mb-4" />}
-            onClick={() => handleProfileSelect("buyer")}
+            onClick={() => {
+              navigate("/buyer-dashboard");
+            }}
             isHovered={hoveredProfile === "buyer"}
             setHovered={() => setHoveredProfile("buyer")}
             setNotHovered={() => setHoveredProfile(null)}
@@ -40,7 +40,9 @@ export default function ProfileSelection() {
             title="Seller"
             description="Showcase and sell your GitHub projects"
             icon={<StoreIcon className="w-12 h-12 mb-4" />}
-            onClick={() => handleProfileSelect("seller")}
+            onClick={() => {
+              navigate("/seller-dashboard");
+            }}
             isHovered={hoveredProfile === "seller"}
             setHovered={() => setHoveredProfile("seller")}
             setNotHovered={() => setHoveredProfile(null)}

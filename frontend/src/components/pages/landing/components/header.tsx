@@ -30,7 +30,7 @@ export default function Header({
         </div>
         <div className="hidden md:block">
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors shadow-lg shadow-blue-500/30"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors"
             onClick={handleAuthNavigate}
           >
             Get Started

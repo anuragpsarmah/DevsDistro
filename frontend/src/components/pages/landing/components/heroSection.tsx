@@ -17,7 +17,7 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              Your Marketplace for
+              Marketplace For
               <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
                 Innovative GitHub Projects
               </span>

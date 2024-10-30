@@ -1,10 +1,10 @@
 import { model, Schema } from "mongoose";
 
-const user = new Schema(
+const userSchema = new Schema(
   {
     github_access_token: {
       type: String,
-      required: true,
+      required: [true, "GitHub access token is required"],
     },
     username: {
       type: String,
@@ -19,8 +19,20 @@ const user = new Schema(
       type: String,
       required: [true, "Profile image is required"],
     },
+    job_role: {
+      type: String,
+      default: "",
+    },
+    review_description: {
+      type: String,
+      default: "",
+    },
+    review_stars: {
+      type: Number,
+      default: -1,
+    },
   },
   { timestamps: true }
 );
 
-export const User = model("User", user);
+export const User = model("User", userSchema);
