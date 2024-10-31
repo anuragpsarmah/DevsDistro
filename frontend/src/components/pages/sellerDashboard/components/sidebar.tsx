@@ -13,6 +13,7 @@ import { Menu, X } from "lucide-react";
 interface SidebarContentProps {
   activeTab: string;
   setActiveTab: (tabName: string) => void;
+  logout: () => Promise<void>;
 }
 
 interface SidebarProps {
@@ -20,6 +21,7 @@ interface SidebarProps {
   setIsSidebarOpen: (val: boolean) => void;
   activeTab: string;
   setActiveTab: (tabName: string) => void;
+  logout: () => Promise<void>;
 }
 
 const sidebarItems = [
@@ -35,11 +37,16 @@ export default function Sidebar({
   setActiveTab,
   isSidebarOpen,
   setIsSidebarOpen,
+  logout,
 }: SidebarProps) {
   return (
     <>
       <aside className="hidden lg:flex flex-col w-64 bg-gray-800 border-r border-gray-700 relative z-10">
-        <SidebarContent activeTab={activeTab} setActiveTab={setActiveTab} />
+        <SidebarContent
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          logout={logout}
+        />
       </aside>
       <div className="lg:hidden">
         <button
@@ -78,6 +85,7 @@ export default function Sidebar({
                 <SidebarContent
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
+                  logout={logout}
                 />
               </motion.aside>
             </>
@@ -88,7 +96,11 @@ export default function Sidebar({
   );
 }
 
-function SidebarContent({ activeTab, setActiveTab }: SidebarContentProps) {
+function SidebarContent({
+  activeTab,
+  setActiveTab,
+  logout,
+}: SidebarContentProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="p-6">
@@ -110,7 +122,10 @@ function SidebarContent({ activeTab, setActiveTab }: SidebarContentProps) {
         </ul>
       </nav>
       <div className="p-4 border-t border-gray-700">
-        <button className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-md transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+        <button
+          className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium rounded-md transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
+          onClick={logout}
+        >
           Log Out
         </button>
       </div>

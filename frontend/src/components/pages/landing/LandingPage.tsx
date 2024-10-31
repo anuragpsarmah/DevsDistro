@@ -40,14 +40,18 @@ export default function LandingPage() {
         setIsMenuOpen={setIsMenuOpen}
       />
 
-      <MobileMenu isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <MobileMenu
+        handleAuthNavigate={handleAuthNavigate}
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+      />
 
       <main className="relative z-10">
         <HeroSection handleAuthNavigate={handleAuthNavigate} />
         <FeatureSection />
         <ShowcaseSection />
         <ReviewSection />
-        <CallForAction />
+        <CallForAction handleAuthNavigate={handleAuthNavigate} />
       </main>
 
       <Footer />

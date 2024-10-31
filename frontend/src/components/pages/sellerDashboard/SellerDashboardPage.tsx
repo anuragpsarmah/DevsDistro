@@ -3,7 +3,13 @@ import BackgroundDots from "@/components/ui/backgroundDots";
 import Sidebar from "./components/sidebar";
 import GeneralStatistics from "./components/dashboardOverview";
 
-export default function SellerDashboardPage() {
+interface ProfileSelectionPageProps {
+  logout: () => Promise<void>;
+}
+
+export default function SellerDashboardPage({
+  logout,
+}: ProfileSelectionPageProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("Dashboard Overview");
 
@@ -16,6 +22,7 @@ export default function SellerDashboardPage() {
         setIsSidebarOpen={setIsSidebarOpen}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        logout={logout}
       />
 
       <main className="flex-1 p-8 overflow-auto relative z-10">

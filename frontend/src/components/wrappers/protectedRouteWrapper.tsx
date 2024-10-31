@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, cloneElement, isValidElement } from "react";
 import { user } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +24,12 @@ export default function ProtectedRouteWrapper({
   const { data, isLoading, isError } = useAuthValidationQuery();
   const { refetch: logout } = useLogoutQuery();
 
+  const handleLogout = async () => {
+    await logout();
+    setActiveUser(emptyUserObject);
+    navigate("/");
+  };
+
   useEffect(() => {
     const handleAuthValidation = async () => {
       if (isError) {
@@ -46,5 +52,9 @@ export default function ProtectedRouteWrapper({
     );
   }
 
-  return <>{children}</>;
+  return isValidElement(children)
+    ? cloneElement(children, { logout: handleLogout } as {
+        logout: () => Promise<void>;
+      })
+    : children;
 }

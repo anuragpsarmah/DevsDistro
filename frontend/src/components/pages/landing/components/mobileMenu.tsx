@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 
 interface MobileMenuProps {
+  handleAuthNavigate: () => void;
   isMenuOpen: boolean;
   setIsMenuOpen: (isOpen: boolean) => void;
 }
 
 export default function MobileMenu({
+  handleAuthNavigate,
   isMenuOpen,
   setIsMenuOpen,
 }: MobileMenuProps) {
@@ -31,7 +33,7 @@ export default function MobileMenu({
             ))}
             <button
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-colors text-xl"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={handleAuthNavigate}
             >
               Get Started
             </button>
