@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Camera, Briefcase, Mail, MapPin } from "lucide-react";
+import { Star, Briefcase, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,15 +29,42 @@ const jobRoles = [
   "Other",
 ];
 
-export default function AccountSettings() {
+const cities = [
+  "New York",
+  "Los Angeles",
+  "Chicago",
+  "Houston",
+  "Phoenix",
+  "Philadelphia",
+  "San Antonio",
+  "San Diego",
+  "Dallas",
+  "San Jose",
+  "New Delhi",
+  "Mumbai",
+  "Bangalore",
+  "London",
+  "Paris",
+  "Tokyo",
+  "Shanghai",
+  "Sydney",
+];
+
+export default function AccountSettingsTab() {
   const [review, setReview] = useState("");
   const [rating, setRating] = useState(0);
+  const [cityInput, setCityInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length <= 200) {
       setReview(e.target.value);
     }
   };
+
+  const filteredCities = cities.filter((city) =>
+    city.toLowerCase().includes(cityInput.toLowerCase())
+  );
 
   return (
     <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
@@ -55,19 +82,12 @@ export default function AccountSettings() {
                 className="w-full h-full object-cover"
               />
             </div>
-            <button className="absolute bottom-0 right-0 bg-purple-500 p-2 rounded-full text-white hover:bg-purple-600 transition-colors duration-300">
-              <Camera className="w-5 h-5" />
-            </button>
           </div>
           <div className="text-center md:text-left">
             <h2 className="text-3xl font-bold text-gray-100 mb-2">John Doe</h2>
             <p className="text-gray-400 flex items-center justify-center md:justify-start mb-2">
               <Briefcase className="w-4 h-4 mr-2" />
               Software Engineer
-            </p>
-            <p className="text-gray-400 flex items-center justify-center md:justify-start mb-2">
-              <Mail className="w-4 h-4 mr-2" />
-              john.doe@example.com
             </p>
             <p className="text-gray-400 flex items-center justify-center md:justify-start">
               <MapPin className="w-4 h-4 mr-2" />
@@ -91,7 +111,7 @@ export default function AccountSettings() {
                 id="github-username"
                 value="johndoe"
                 readOnly
-                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-purple-500 focus:border-purple-500"
+                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
               />
             </div>
 
@@ -103,7 +123,7 @@ export default function AccountSettings() {
                 id="name"
                 value="John Doe"
                 readOnly
-                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-purple-500 focus:border-purple-500"
+                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
               />
             </div>
 
@@ -112,7 +132,7 @@ export default function AccountSettings() {
                 Job Role
               </Label>
               <Select>
-                <SelectTrigger className="w-full bg-gray-700 text-gray-300 border-gray-600 focus:ring-purple-500 focus:border-purple-500">
+                <SelectTrigger className="w-full bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors">
                   <SelectValue placeholder="Select a job role" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-700 text-gray-300 border-gray-600">
@@ -123,6 +143,48 @@ export default function AccountSettings() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="relative">
+              <Label htmlFor="city" className="text-gray-300 mb-2 block">
+                City
+              </Label>
+              <Input
+                id="city"
+                value={cityInput}
+                onChange={(e) => {
+                  setCityInput(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
+                placeholder="Enter your city"
+                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+              />
+              {showSuggestions && cityInput && (
+                <div className="absolute w-full z-10 mt-1 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto">
+                  {filteredCities.length === 0 ? (
+                    <div className="px-4 py-2 text-sm text-gray-400">
+                      No cities found
+                    </div>
+                  ) : (
+                    filteredCities.map((city) => (
+                      <div
+                        key={city}
+                        className="px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 cursor-pointer"
+                        onClick={() => {
+                          setCityInput(city);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        {city}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -136,7 +198,7 @@ export default function AccountSettings() {
                 placeholder="Write your review here..."
                 value={review}
                 onChange={handleReviewChange}
-                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-purple-500 focus:border-purple-500 h-32 resize-none"
+                className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors h-32 resize-none"
               />
               <p className="text-sm text-gray-400 mt-1">
                 {review.length}/200 characters
@@ -145,15 +207,16 @@ export default function AccountSettings() {
 
             <div>
               <Label className="text-gray-300 mb-2 block">Rating</Label>
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    className={`w-8 h-8 cursor-pointer transition-all duration-200 ${
+                    className={`w-8 h-8 cursor-pointer transition-colors duration-200 ${
                       star <= rating
-                        ? "text-yellow-400 fill-yellow-400 scale-110"
-                        : "text-gray-400 hover:text-yellow-200"
+                        ? "text-purple-500 fill-purple-500"
+                        : "text-gray-600 hover:text-gray-400"
                     }`}
+                    strokeWidth={1.5}
                     onClick={() => setRating(star)}
                   />
                 ))}
@@ -165,17 +228,6 @@ export default function AccountSettings() {
         <Separator className="my-8 bg-gray-700" />
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-200">
-                Email Notifications
-              </h3>
-              <p className="text-sm text-gray-400">
-                Receive email updates about your account
-              </p>
-            </div>
-            <Switch />
-          </div>
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-200">

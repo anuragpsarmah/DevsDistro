@@ -1,8 +1,8 @@
 import { useState } from "react";
 import BackgroundDots from "@/components/ui/backgroundDots";
 import Sidebar from "./components/sidebar";
-import GeneralStatistics from "./components/dashboardOverview";
-import AccountSettings from "./components/accountSettings";
+import AccountSettingsTab from "./components/accountSettingsTab";
+import DashboardOverviewTab from "./components/dashboardOverviewTab";
 
 interface SellerDashboardPageProps {
   logout?: () => Promise<void>;
@@ -27,8 +27,8 @@ export default function SellerDashboardPage({
       />
 
       <main className="flex-1 p-8 overflow-auto relative z-10">
-        {activeTab === "Dashboard Overview" && <GeneralStatistics />}
-        {activeTab === "Account Settings" && <AccountSettings />}
+        {activeTab === "Dashboard Overview" && <DashboardOverviewTab />}
+        {activeTab === "Account Settings" && <AccountSettingsTab />}
         {activeTab === "Manage Projects" && <></>}
         {activeTab === "Order History" && <></>}
         {activeTab === "Billing & Payments" && <></>}

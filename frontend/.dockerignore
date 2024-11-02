@@ -1,0 +1,17 @@
+# Ignore node modules and other dependencies
+node_modules
+*.log
+
+# Ignore local environment files
+.env
+.env.sample
+
+# Ignore build output (if any exists locally)
+dist
+
+# Ignore any other potentially sensitive or unnecessary files
+.vscode
+.idea
+.DS_Store
+*.cache
+*.tmp

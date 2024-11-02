@@ -31,6 +31,10 @@ const userSchema = new Schema(
       type: Number,
       default: -1,
     },
+    profile_visibility: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
