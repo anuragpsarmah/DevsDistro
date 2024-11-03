@@ -1,14 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { successToast, errorToast } from "@/components/ui/customToast";
-
-type ProfileUpdateData = {
-  job_role: string;
-  location: string;
-  review_description: string;
-  review_stars: number;
-  profile_visibility: boolean;
-};
+import { ProfileUpdateData } from "@/types/types";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
