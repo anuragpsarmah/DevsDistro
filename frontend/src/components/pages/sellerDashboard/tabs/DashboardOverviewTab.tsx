@@ -4,7 +4,7 @@ import {
   useCommonSalesInformationQuery,
   useYearlySalesInformationQuery,
 } from "@/hooks/apiQueries";
-import Chart from "../components/chart";
+import Chart from "../components/Chart";
 import { YearSelector } from "../components/YearSelector";
 import { SalesMetrics } from "../components/SalesMetrics";
 import { useChartDimensions } from "../hooks/useChartDimensions";
@@ -68,7 +68,7 @@ export const DashboardOverviewTab: React.FC = () => {
         Dashboard Overview
       </h1>
 
-      <SalesMetrics salesInfo={salesInfo} />
+      <SalesMetrics salesInfo={salesInfo} isLoading={commonInfoLoading} />
 
       <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
         <div className="flex justify-between items-center mb-10">
@@ -79,11 +79,12 @@ export const DashboardOverviewTab: React.FC = () => {
             selectedYear={selectedYear}
             years={years}
             onYearChange={setSelectedYear}
+            isLoading={yearlyLoading}
           />
         </div>
         <div className="w-full" style={{ height: `${chartHeight}px` }}>
           <div ref={chartContainerRef}>
-            <Chart chartData={chartData} />
+            <Chart chartData={chartData} isLoading={yearlyLoading} />
           </div>
         </div>
       </div>

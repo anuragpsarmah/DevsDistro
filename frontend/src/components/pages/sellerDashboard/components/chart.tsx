@@ -5,6 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { ChartSkeleton } from "./Skeletons";
 
 interface chartDataObject {
   month: string;
@@ -13,6 +14,7 @@ interface chartDataObject {
 
 interface ChartProps {
   chartData: Array<chartDataObject>;
+  isLoading?: boolean;
 }
 
 const chartConfig = {
@@ -22,7 +24,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function Chart({ chartData }: ChartProps) {
+export default function Chart({ chartData, isLoading = false }: ChartProps) {
+  if (isLoading) {
+    return <ChartSkeleton />;
+  }
+
   return (
     <ChartContainer config={chartConfig}>
       <BarChart data={chartData} margin={{ right: 60, left: 30 }}>
