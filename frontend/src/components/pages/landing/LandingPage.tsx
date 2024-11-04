@@ -7,6 +7,7 @@ import HeroSection from "./components/heroSection";
 import FeatureSection from "./components/featureSection";
 import ShowcaseSection from "./components/showcaseSection";
 import ReviewSection from "./components/reviewSection";
+import FAQSection from "./components/faqSection";
 import CallForAction from "./components/callForAction";
 import Footer from "./components/footer";
 
@@ -51,6 +52,7 @@ export default function LandingPage() {
         <FeatureSection />
         <ShowcaseSection />
         <ReviewSection />
+        <FAQSection />
         <CallForAction handleAuthNavigate={handleAuthNavigate} />
       </main>
 

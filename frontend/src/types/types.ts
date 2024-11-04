@@ -5,10 +5,10 @@ export interface User {
   profileImageUrl: string;
 }
 
-export type ProfileUpdateData = {
+export interface ProfileUpdateData {
   job_role: string;
   location: string;
   review_description: string;
   review_stars: number;
   profile_visibility: boolean;
-};
+}

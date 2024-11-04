@@ -1,15 +1,7 @@
 import { useFeaturedReviewQuery } from "@/hooks/apiQueries";
 import { motion } from "framer-motion";
-import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface featuredReviewsType {
-  username: string;
-  profile_image_url: string;
-  job_role: string;
-  review_description: string;
-  review_stars: number;
-}
+import { featuredReviewType } from "../utils/types";
 
 export default function ReviewSection() {
   const {
@@ -17,10 +9,6 @@ export default function ReviewSection() {
     isLoading,
     isError,
   } = useFeaturedReviewQuery();
-
-  useEffect(() => {
-    console.log(featuredReviews);
-  }, [featuredReviews, isLoading, isError]);
 
   const reviews = featuredReviews?.data || [];
 
@@ -46,7 +34,7 @@ export default function ReviewSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reviews.map((review: featuredReviewsType, index: number) => (
+            {reviews.map((review: featuredReviewType, index: number) => (
               <motion.div
                 key={index}
                 className="bg-gray-800 bg-opacity-50 rounded-xl p-6 text-center shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"

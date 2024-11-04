@@ -18,7 +18,7 @@ export default function Header({
           DevExchange
         </div>
         <div className="hidden md:flex space-x-8">
-          {["Features", "Showcase", "Reviews"].map((item) => (
+          {["Features", "Showcase", "Reviews", "FAQs"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
