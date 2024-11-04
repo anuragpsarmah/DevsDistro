@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import serveIndex from "serve-index";
 import loggerMiddleware from "./middlewares/logger.middleware";
 import response from "./utils/response.util";
 
