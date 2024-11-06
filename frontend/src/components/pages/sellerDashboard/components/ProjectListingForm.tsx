@@ -91,31 +91,31 @@ export default function ProjectListingForm() {
       <div className="bg-gray-800 rounded-xl p-6 shadow-lg space-y-4">
         <div>
           <Label htmlFor="title" className="text-gray-300 mb-2 block">
-            Project Title
+            Project Title<span className="text-red-400 ml-1">*</span>
           </Label>
           <Input
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
-            placeholder="Enter project title"
+            placeholder="e.g., E-commerce Dashboard, AI Content Generator"
             required
           />
         </div>
 
         <div>
           <Label htmlFor="description" className="text-gray-300 mb-2 block">
-            Project Description
+            Project Description<span className="text-red-400 ml-1">*</span>
           </Label>
           <Textarea
             id="description"
-            placeholder="Describe your project..."
+            placeholder="Provide a clear overview of your project. Include key features, technologies used, and what problems it solves. Be specific about your role and contributions."
             value={description}
             onChange={handleDescriptionChange}
             className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors h-32 resize-none"
           />
           <p
-            className={`text-sm mt-1 ${MAX_DESCRIPTION_LENGTH - description.length <= 10 ? "text-red-400" : "text-gray-400"}`}
+            className={`text-sm mt-1 ${MAX_DESCRIPTION_LENGTH - description.length <= 50 ? "text-red-400" : "text-gray-400"}`}
           >
             {description.length}/{MAX_DESCRIPTION_LENGTH} characters
           </p>
@@ -123,16 +123,16 @@ export default function ProjectListingForm() {
 
         <div>
           <Label htmlFor="projectType" className="text-gray-300 mb-2 block">
-            Project Type
+            Project Type<span className="text-red-400 ml-1">*</span>
           </Label>
           <Select
             value={projectType}
             onValueChange={(value: ProjectType) => setProjectType(value)}
           >
             <SelectTrigger className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors">
-              <SelectValue placeholder="Select project type" />
+              <SelectValue placeholder="Choose the category that best fits your project" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-gray-700 text-gray-300 border-gray-600">
               {PROJECT_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
@@ -144,7 +144,7 @@ export default function ProjectListingForm() {
 
         <div>
           <Label htmlFor="techStack" className="text-gray-300 mb-2 block">
-            Tech Stack
+            Tech Stack<span className="text-red-400 ml-1">*</span>
           </Label>
           <Input
             id="techStack"
@@ -152,8 +152,11 @@ export default function ProjectListingForm() {
             onChange={handleTechInputChange}
             onKeyDown={handleTechInputKeyDown}
             className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
-            placeholder="Enter tech stack (press Enter to add)"
+            placeholder="e.g., React, Node.js, MongoDB (Press Enter to add)"
           />
+          <p className="text-sm text-gray-400 mt-1">
+            Add all major technologies and frameworks used in your project
+          </p>
           <div className="flex flex-wrap gap-2 mt-2">
             {techStack.map((tech, index) => (
               <div
@@ -175,8 +178,12 @@ export default function ProjectListingForm() {
         </div>
 
         <div>
-          <Label htmlFor="liveLink" className="text-gray-300 mb-2 block">
+          <Label
+            htmlFor="liveLink"
+            className="text-gray-300 mb-2 block flex items-center"
+          >
             Live Link
+            <span className="text-sm text-gray-400 ml-2">(Optional)</span>
           </Label>
           <Input
             id="liveLink"
@@ -184,14 +191,23 @@ export default function ProjectListingForm() {
             value={liveLink}
             onChange={(e) => setLiveLink(e.target.value)}
             className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
-            placeholder="https://your-project-url.com"
+            placeholder="https://project-demo.com or https://username.github.io/project"
           />
+          <p className="text-sm text-gray-400 mt-1">
+            Add a link to your live project or repository
+          </p>
         </div>
 
         <div>
-          <Label className="text-gray-300 mb-2 block">
-            Project Images (Max 5)
+          <Label className="text-gray-300 mb-2 block flex items-center">
+            Project Images
+            <span className="text-sm text-gray-400 ml-2">
+              (Up to {MAX_IMAGES} images)
+            </span>
           </Label>
+          <p className="text-sm text-gray-400 mb-2">
+            Add screenshots or mockups showcasing key features
+          </p>
           <div className="flex flex-wrap gap-4 mt-2">
             {images.map((image, index) => (
               <div key={index} className="relative">
@@ -226,9 +242,13 @@ export default function ProjectListingForm() {
         </div>
 
         <div>
-          <Label className="text-gray-300 mb-2 block">
-            Project Video (Optional)
+          <Label className="text-gray-300 mb-2 block flex items-center">
+            Project Demo Video
+            <span className="text-sm text-gray-400 ml-2">(Optional)</span>
           </Label>
+          <p className="text-sm text-gray-400 mb-2">
+            Add a short demo video showcasing your project in action
+          </p>
           {video ? (
             <div className="relative mt-2">
               <video
@@ -255,7 +275,9 @@ export default function ProjectListingForm() {
               />
               <div className="flex flex-col items-center">
                 <Upload className="w-8 h-8 text-gray-400" />
-                <span className="mt-2 text-sm text-gray-400">Upload video</span>
+                <span className="mt-2 text-sm text-gray-400">
+                  Upload demo video (max 50MB)
+                </span>
               </div>
             </label>
           )}
@@ -263,10 +285,10 @@ export default function ProjectListingForm() {
 
         <Button
           type="button"
-          className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+          className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
           onClick={handleSubmit}
         >
-          List Project
+          Submit Project
         </Button>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { User } from "../models/user.model";
 import response from "../utils/response.util";
 import { SiteReview } from "../models/siteReview.model";
 import mongoose from "mongoose";
+import { profileInformationSchema } from "../validation/zodValidationSchemas";
 
 const getProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -51,6 +52,25 @@ const updateProfileInformation = asyncHandler(
         location,
         profile_visibility,
       } = req.body;
+
+      const result = profileInformationSchema.safeParse({
+        job_role,
+        review_description,
+        review_stars,
+        location,
+        profile_visibility,
+      });
+
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Payload failed validation",
+          {},
+          result.error.errors[0].message
+        );
+        return;
+      }
 
       const userId = new mongoose.Types.ObjectId(req.user._id);
 

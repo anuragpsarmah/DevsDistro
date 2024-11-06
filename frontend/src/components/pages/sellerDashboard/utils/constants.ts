@@ -80,4 +80,4 @@ export const PROJECT_TYPES = [
   "Enterprise Software",
   "Productivity Tool",
   "Other",
-];
+] as const;

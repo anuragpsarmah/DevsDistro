@@ -21,7 +21,8 @@
     "express-rate-limit": "^7.4.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.2",
-    "winston": "^3.15.0"
+    "winston": "^3.15.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",
