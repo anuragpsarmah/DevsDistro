@@ -43,7 +43,7 @@ export const JOB_ROLES = [
 
 export const MAX_REVIEW_LENGTH = 200;
 export const CITY_SEARCH_DELAY = 500;
-export const MAX_DESCRIPTION_LENGTH = 200;
+export const MAX_DESCRIPTION_LENGTH = 1000;
 export const MAX_IMAGES = 5;
 
 export const INITIAL_PROFILE_INFORMATION_DATA: ProfileInformation = {

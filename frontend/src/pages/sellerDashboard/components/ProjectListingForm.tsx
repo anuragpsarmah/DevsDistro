@@ -10,24 +10,44 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Upload, X, Plus } from "lucide-react";
+import { Upload, X, Plus, Import } from "lucide-react";
 import {
   MAX_DESCRIPTION_LENGTH,
   MAX_IMAGES,
   PROJECT_TYPES,
 } from "../utils/constants";
-import { ProjectType } from "../utils/types";
+import { PrivateRepoData, ProjectType } from "../utils/types";
 
-export default function ProjectListingForm() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+interface ProjectListingFormProps {
+  formProps: PrivateRepoData;
+  setFormProps: (curr: PrivateRepoData) => void;
+  setIsImportState: (curr: boolean) => void;
+}
+
+export default function ProjectListingForm({
+  formProps,
+  setFormProps,
+  setIsImportState,
+}: ProjectListingFormProps) {
+  const [title, setTitle] = useState(formProps.name);
+  const [description, setDescription] = useState(formProps.description);
   const [projectType, setProjectType] =
     useState<ProjectType>("Web Application");
-  const [techStack, setTechStack] = useState<string[]>([]);
+  const [techStack, setTechStack] = useState<string[]>([formProps.language]);
   const [techInput, setTechInput] = useState("");
   const [liveLink, setLiveLink] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [video, setVideo] = useState<File | null>(null);
+
+  const handleDifferentProjectImport = () => {
+    setIsImportState(true);
+    setFormProps({
+      name: "",
+      description: "",
+      language: "",
+      updated_at: "",
+    });
+  };
 
   const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length <= MAX_DESCRIPTION_LENGTH) {
@@ -89,6 +109,17 @@ export default function ProjectListingForm() {
   return (
     <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
       <div className="bg-gray-800 rounded-xl p-6 shadow-lg space-y-4">
+        <div className="flex justify-end mb-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+            onClick={handleDifferentProjectImport}
+          >
+            <Import className="w-4 h-4" />
+            Import Different Project
+          </Button>
+        </div>
         <div>
           <Label htmlFor="title" className="text-gray-300 mb-2 block">
             Project Title<span className="text-red-400 ml-1">*</span>
