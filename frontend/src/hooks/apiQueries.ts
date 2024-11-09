@@ -1,7 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useHandleError } from "./useHandleErrors";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
+
+interface queryParameter {
+  logout?: () => Promise<void>;
+}
 
 const useAuthValidationQuery = () => {
   return useQuery({
@@ -28,47 +33,70 @@ const useLogoutQuery = () => {
   });
 };
 
-const useCommonSalesInformationQuery = () => {
+const useCommonSalesInformationQuery = ({ logout }: queryParameter) => {
+  const { handleError } = useHandleError({ logout });
+
   return useQuery({
     queryKey: ["commonSalesInformationQuery"],
     queryFn: async () => {
-      const response = await axios.get(
-        `${backend_uri}/sales/getCommonSalesInformation`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data;
+      try {
+        const response = await axios.get(
+          `${backend_uri}/sales/getCommonSalesInformation`,
+          {
+            withCredentials: true,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        await handleError(error);
+        throw error;
+      }
     },
   });
 };
 
-const useYearlySalesInformationQuery = (year: number) => {
+const useYearlySalesInformationQuery = (
+  year: number,
+  { logout }: queryParameter
+) => {
+  const { handleError } = useHandleError({ logout });
+
   return useQuery({
     queryKey: ["yearlySalesInformationQuery", year],
     queryFn: async ({ queryKey }) => {
       const [, year] = queryKey;
-      const response = await axios.get(
-        `${backend_uri}/sales/getYearlySalesInformation?year=${year}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data;
+      try {
+        const response = await axios.get(
+          `${backend_uri}/sales/getYearlySalesInformation?year=${year}`,
+          {
+            withCredentials: true,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
     },
   });
 };
 
-const useProfileInformationQuery = () => {
+const useProfileInformationQuery = ({ logout }: queryParameter) => {
+  const { handleError } = useHandleError({ logout });
   return useQuery({
     queryKey: ["useProfileInformationQuery"],
     queryFn: async () => {
-      const response = await axios.get(
-        `${backend_uri}/profile/getProfileInformation`,
-        { withCredentials: true }
-      );
+      try {
+        const response = await axios.get(
+          `${backend_uri}/profile/getProfileInformation`,
+          { withCredentials: true }
+        );
 
-      return response.data;
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
     },
   });
 };

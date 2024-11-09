@@ -39,3 +39,25 @@ export interface PrivateRepoData {
 }
 
 export type ProjectType = (typeof PROJECT_TYPES)[number];
+
+export interface AccountInformationProps {
+  isLoading: boolean;
+  profileInformationData: ProfileInformation;
+  selectedJobRole: string;
+  setSelectedJobRole: (curr: string) => void;
+  cityInput: string;
+  setCityInput: (curr: string) => void;
+  cities: string[];
+  isLoadingCities: boolean;
+  cityError: string | null;
+  handleCitySelect: (selectedCity: string) => void;
+  showSuggestions: boolean;
+  setShowSuggestions: (curr: boolean) => void;
+  review: string;
+  rating: number;
+  handleReviewChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  setRating: (curr: number) => void;
+  setProfileInformationData: React.Dispatch<
+    React.SetStateAction<ProfileInformation>
+  >;
+}

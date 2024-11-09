@@ -3,6 +3,14 @@ import { PROJECT_TYPE_ENUM } from "../types/constants";
 
 const projectSchema = new Schema(
   {
+    price: {
+      type: Number,
+      required: [true, "Project price is required"],
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     title: {
       type: String,
       required: [true, "Project title is required"],

@@ -19,15 +19,18 @@ export const profileInformationSchema = z.object({
     .min(0, "Review stars must be between 0 and 5")
     .max(5, "Review stars must be between 0 and 5")
     .optional(),
-  profile_visibility: z
-    .boolean()
-    .refine((value) => typeof value === "boolean", {
-      message: "Profile visibility must be a boolean value",
-    })
-    .optional(),
+  profile_visibility: z.boolean().optional(),
 });
 
 export const projectTypeSchema = z.object({
+  price: z
+    .number({
+      required_error: "Price is required",
+    })
+    .min(0, "Price should be greater than or equal to 0."),
+  isActive: z.boolean({
+    required_error: "IsActive flag is required",
+  }),
   title: z
     .string({
       required_error: "Title is required",

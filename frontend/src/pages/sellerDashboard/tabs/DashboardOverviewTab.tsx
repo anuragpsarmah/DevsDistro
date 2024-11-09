@@ -11,9 +11,14 @@ import { useChartDimensions } from "../hooks/useChartDimensions";
 import { useYearOptions } from "../hooks/useYearOptions";
 import { INITIAL_CHART_DATA, INITIAL_SALES_INFO } from "../utils/constants";
 import type { ChartDataObject, CommonSalesInformation } from "../utils/types";
-import { errorToast } from "@/components/ui/customToast";
 
-export const DashboardOverviewTab: React.FC = () => {
+interface DashboardOverviewTabProps {
+  logout?: () => Promise<void>;
+}
+
+export default function DashboardOverviewTab({
+  logout,
+}: DashboardOverviewTabProps) {
   const [chartData, setChartData] =
     useState<ChartDataObject[]>(INITIAL_CHART_DATA);
   const [salesInfo, setSalesInfo] =
@@ -30,19 +35,19 @@ export const DashboardOverviewTab: React.FC = () => {
     data: commonInfoData,
     isLoading: commonInfoLoading,
     isError: commonInfoError,
-  } = useCommonSalesInformationQuery();
+  } = useCommonSalesInformationQuery({ logout });
 
   const {
     data: yearlyData,
     isLoading: yearlyLoading,
     isError: yearlyError,
-  } = useYearlySalesInformationQuery(parseInt(selectedYear));
+  } = useYearlySalesInformationQuery(parseInt(selectedYear), { logout });
 
   useEffect(() => {
     if (!commonInfoLoading && !commonInfoError && commonInfoData?.data) {
       setSalesInfo(commonInfoData.data);
     } else if (!commonInfoLoading && commonInfoError) {
-      errorToast("Error fetching data. Try again Later.");
+      console.log("Something went wrong");
     }
   }, [commonInfoData, commonInfoLoading, commonInfoError, toast]);
 
@@ -58,7 +63,7 @@ export const DashboardOverviewTab: React.FC = () => {
         }))
       );
     } else if (!yearlyLoading && yearlyError) {
-      errorToast("Error fetching data. Try again Later.");
+      console.log("Something went wrong");
     }
   }, [yearlyData, yearlyLoading, yearlyError, toast]);
 
@@ -90,6 +95,4 @@ export const DashboardOverviewTab: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default DashboardOverviewTab;
+}

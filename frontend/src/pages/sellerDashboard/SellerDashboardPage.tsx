@@ -31,8 +31,12 @@ export default function SellerDashboardPage({
       />
 
       <main className="flex-1 p-8 overflow-auto relative z-10">
-        {activeTab === "Dashboard Overview" && <DashboardOverviewTab />}
-        {activeTab === "Account Settings" && <AccountSettingsTab />}
+        {activeTab === "Dashboard Overview" && (
+          <DashboardOverviewTab logout={logout} />
+        )}
+        {activeTab === "Account Settings" && (
+          <AccountSettingsTab logout={logout} />
+        )}
         {activeTab === "List New Project" && <ListNewProjectTab />}
         {activeTab === "Order History" && <></>}
         {activeTab === "Billing & Payments" && <></>}
