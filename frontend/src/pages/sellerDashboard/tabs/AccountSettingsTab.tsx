@@ -11,7 +11,7 @@ import {
   INITIAL_PROFILE_INFORMATION_DATA,
 } from "../utils/constants";
 import type { ProfileInformation } from "../utils/types";
-import AccountInformation from "../components/accountInformation";
+import AccountInformation from "../components/AccountInformation";
 
 interface AccountSettingsTabProps {
   logout?: () => Promise<void>;
