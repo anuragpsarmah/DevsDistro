@@ -12,7 +12,7 @@ import {
 } from "../utils/constants";
 import type { ProfileInformation } from "../utils/types";
 import AccountInformation from "../components/AccountInformation";
-import AnimatedLoadWrapper from "../components/AnimatedLoadWrapper";
+import AnimatedLoadWrapper from "@/pages/sellerDashboard/components/AnimatedLoadWrapper";
 
 interface AccountSettingsTabProps {
   logout?: () => Promise<void>;

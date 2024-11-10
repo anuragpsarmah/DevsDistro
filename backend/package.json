@@ -12,6 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.688.0",
+    "@aws-sdk/s3-request-presigner": "^3.688.0",
     "axios": "^1.7.7",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -19,6 +21,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "express-rate-limit": "^7.4.1",
+    "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.2",
     "winston": "^3.15.0",

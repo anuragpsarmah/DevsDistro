@@ -11,7 +11,7 @@ import { useChartDimensions } from "../hooks/useChartDimensions";
 import { useYearOptions } from "../hooks/useYearOptions";
 import { INITIAL_CHART_DATA, INITIAL_SALES_INFO } from "../utils/constants";
 import type { ChartDataObject, CommonSalesInformation } from "../utils/types";
-import AnimatedLoadWrapper from "../components/AnimatedLoadWrapper";
+import AnimatedLoadWrapper from "@/pages/sellerDashboard/components/AnimatedLoadWrapper";
 
 interface DashboardOverviewTabProps {
   logout?: () => Promise<void>;

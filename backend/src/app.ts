@@ -3,8 +3,11 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import loggerMiddleware from "./middlewares/logger.middleware";
 import response from "./utils/response.util";
+import { healthMemoryCheckLimiter } from "./utils/rateLimitConfig";
+import S3Service from "./utils/S3Service";
 
-const app = express();
+export const app = express();
+export const s3Service = new S3Service();
 
 /* global middlewares */
 app.use(
@@ -18,13 +21,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 /* server health */
-app.get("/health", (req: Request, res: Response) => {
+app.get("/health", healthMemoryCheckLimiter, (req: Request, res: Response) => {
   response(res, 200, "OK");
   return;
 });
 
 /* server memory */
-app.get("/memory", (req, res) => {
+app.get("/memory", healthMemoryCheckLimiter, (req, res) => {
   const used = process.memoryUsage();
   response(res, 200, "", {
     heapTotal: `${Math.round((used.heapTotal / 1024 / 1024) * 100) / 100} MB`,
@@ -47,5 +50,3 @@ app.use("/api/sales", salesRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/cities", citiesRouter);
-
-export default app;

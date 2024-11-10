@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../utils/asyncHandler.util";
-import { cityTrie } from "../initializations/trie-initialization";
+import { cityTrie } from "..";
 
 const searchCities = asyncHandler(async (req: Request, res: Response) => {
   const searchTerm = (req.query.q as string) || "";
