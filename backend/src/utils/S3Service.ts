@@ -15,7 +15,8 @@ export default class S3Service {
   private MAX_FILE_SIZE: { [key: string]: number };
   private s3Client: S3Client;
   private UPLOAD_EXPIRY: number = 300;
-  private REDIS_KEY_PREFIX = "s3upload:";
+  private REDIS_UPLOAD_KEY_PREFIX = "s3upload:";
+  private REDIS_VALIDATION_KEY_PREFIX = "s3validation:";
 
   constructor() {
     this.s3Client = new S3Client({
@@ -39,8 +40,12 @@ export default class S3Service {
     };
   }
 
-  private getRedisKey(s3Key: string): string {
-    return `${this.REDIS_KEY_PREFIX}${s3Key}`;
+  private getRedisUploadKey(s3Key: string): string {
+    return `${this.REDIS_UPLOAD_KEY_PREFIX}${s3Key}`;
+  }
+
+  private getRedisValidationKey(s3Key: string): string {
+    return `${this.REDIS_VALIDATION_KEY_PREFIX}${s3Key}`;
   }
 
   async createPreSignedUploadUrl(
@@ -80,19 +85,22 @@ export default class S3Service {
       expectedSize: fileSize,
     };
 
-    const redisKey = this.getRedisKey(key);
+    const redisUploadKey = this.getRedisUploadKey(key);
+    const redisValidationKey = this.getRedisValidationKey(key);
     await redisClient.setex(
-      redisKey,
+      redisUploadKey,
       this.UPLOAD_EXPIRY,
       JSON.stringify(metadata)
     );
+    await redisClient.set(redisValidationKey, "notValidated");
 
     return { uploadSignedUrl, key };
   }
 
   async validateAndCreatePreSignedDownloadUrl(key: string) {
-    const redisKey = this.getRedisKey(key);
-    const metadataStr = await redisClient.get(redisKey);
+    const redisUploadKey = this.getRedisUploadKey(key);
+    const redisValidationKey = this.getRedisValidationKey(key);
+    const metadataStr = await redisClient.get(redisUploadKey);
 
     if (!metadataStr) {
       throw new Error("Invalid Key or Upload Expired");
@@ -126,11 +134,12 @@ export default class S3Service {
 
       const downloadSignedUrl = await getSignedUrl(this.s3Client, getCommand);
 
-      await redisClient.del(redisKey);
+      await redisClient.del(redisUploadKey);
+      await redisClient.del(redisValidationKey);
 
       return downloadSignedUrl;
     } catch (error) {
-      await redisClient.del(redisKey);
+      await redisClient.del(redisUploadKey);
       throw error;
     }
   }
@@ -143,7 +152,9 @@ export default class S3Service {
 
     await this.s3Client.send(deleteCommand);
 
-    const redisKey = this.getRedisKey(key);
-    await redisClient.del(redisKey);
+    const redisUploadKey = this.getRedisUploadKey(key);
+    const redisValidationKey = this.getRedisValidationKey(key);
+    await redisClient.del(redisUploadKey);
+    await redisClient.del(redisValidationKey);
   }
 }
