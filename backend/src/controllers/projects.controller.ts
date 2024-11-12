@@ -7,7 +7,7 @@ import { User } from "../models/user.model";
 import { decrypt } from "../utils/encryption.util";
 import axios from "axios";
 import { FileMetaData } from "../types/types";
-import { s3Service } from "..";
+import { redisClient, s3Service } from "..";
 
 const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
   const { ENCRYPTION_KEY_32, ENCRYPTION_IV } = process.env;
@@ -123,7 +123,17 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
         return url.key;
       });
 
-      // schedule a cleanup after 300 seconds.
+      setTimeout((keys: [string]) => {
+        keys.forEach(async (key: string) => {
+          const validationKey = "s3validation:" + key;
+          const keyValidationStatus = await redisClient.get(validationKey);
+
+          if (keyValidationStatus === "notValidated") {
+            await s3Service.deleteObject(key);
+            await redisClient.del(validationKey);
+          }
+        });
+      }, 360);
 
       response(
         res,
