@@ -113,7 +113,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
     }
 
     try {
-      const preSignedUrlPromises = metadata.map(async (file: FileMetaData) => {
+      const preSignedUrlPromises = metadata.map((file: FileMetaData) => {
         return s3Service.createPreSignedUploadUrl(file);
       });
 
@@ -123,14 +123,13 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
         return url.key;
       });
 
-      setTimeout((keys: [string]) => {
+      setTimeout(() => {
         keys.forEach(async (key: string) => {
-          const validationKey = "s3validation:" + key;
-          const keyValidationStatus = await redisClient.get(validationKey);
+          const uploadKey = "s3upload:" + key;
+          const keyStatus = await redisClient.get(uploadKey);
 
-          if (keyValidationStatus === "notValidated") {
+          if (keyStatus) {
             await s3Service.deleteObject(key);
-            await redisClient.del(validationKey);
           }
         });
       }, 360);

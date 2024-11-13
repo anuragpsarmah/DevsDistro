@@ -16,7 +16,6 @@ export default class S3Service {
   private s3Client: S3Client;
   private UPLOAD_EXPIRY: number = 300;
   private REDIS_UPLOAD_KEY_PREFIX = "s3upload:";
-  private REDIS_VALIDATION_KEY_PREFIX = "s3validation:";
 
   constructor() {
     this.s3Client = new S3Client({
@@ -42,10 +41,6 @@ export default class S3Service {
 
   private getRedisUploadKey(s3Key: string): string {
     return `${this.REDIS_UPLOAD_KEY_PREFIX}${s3Key}`;
-  }
-
-  private getRedisValidationKey(s3Key: string): string {
-    return `${this.REDIS_VALIDATION_KEY_PREFIX}${s3Key}`;
   }
 
   async createPreSignedUploadUrl(
@@ -86,20 +81,13 @@ export default class S3Service {
     };
 
     const redisUploadKey = this.getRedisUploadKey(key);
-    const redisValidationKey = this.getRedisValidationKey(key);
-    await redisClient.setex(
-      redisUploadKey,
-      this.UPLOAD_EXPIRY,
-      JSON.stringify(metadata)
-    );
-    await redisClient.set(redisValidationKey, "notValidated");
+    await redisClient.set(redisUploadKey, JSON.stringify(metadata));
 
     return { uploadSignedUrl, key };
   }
 
   async validateAndCreatePreSignedDownloadUrl(key: string) {
     const redisUploadKey = this.getRedisUploadKey(key);
-    const redisValidationKey = this.getRedisValidationKey(key);
     const metadataStr = await redisClient.get(redisUploadKey);
 
     if (!metadataStr) {
@@ -107,6 +95,9 @@ export default class S3Service {
     }
 
     const metadata: UploadMetadata = JSON.parse(metadataStr);
+
+    if (Date.now() - metadata.timestamp > this.UPLOAD_EXPIRY * 1000)
+      throw new Error("Upload expired");
 
     try {
       const validateCommand = new HeadObjectCommand({
@@ -135,7 +126,6 @@ export default class S3Service {
       const downloadSignedUrl = await getSignedUrl(this.s3Client, getCommand);
 
       await redisClient.del(redisUploadKey);
-      await redisClient.del(redisValidationKey);
 
       return downloadSignedUrl;
     } catch (error) {
@@ -153,8 +143,6 @@ export default class S3Service {
     await this.s3Client.send(deleteCommand);
 
     const redisUploadKey = this.getRedisUploadKey(key);
-    const redisValidationKey = this.getRedisValidationKey(key);
     await redisClient.del(redisUploadKey);
-    await redisClient.del(redisValidationKey);
   }
 }
