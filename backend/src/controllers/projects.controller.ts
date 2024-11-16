@@ -8,6 +8,26 @@ import { decrypt } from "../utils/encryption.util";
 import axios from "axios";
 import { FileMetaData } from "../types/types";
 import { redisClient, s3Service } from "..";
+import logger from "../logger/winston.logger";
+
+const cleanupOperation = async (keys: string[]) => {
+  try {
+    for (const key of keys) {
+      const uploadKey = "s3upload_" + key;
+      const keyStatus = await redisClient.get(uploadKey);
+
+      if (keyStatus) {
+        try {
+          await s3Service.deleteObject(key);
+        } catch (deleteError) {
+          logger.error(`Failed to delete object ${key}:`, deleteError);
+        }
+      }
+    }
+  } catch (cleanupError) {
+    logger.error("Error during cleanup operation:", cleanupError);
+  }
+};
 
 const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
   const { ENCRYPTION_KEY_32, ENCRYPTION_IV } = process.env;
@@ -99,11 +119,11 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
     metadata.forEach((file: FileMetaData) => {
       if (file.fileType === "image/png" || file.fileType === "image/jpeg")
         metadataFileCheck.image++;
-      else metadata.video++;
+      else metadataFileCheck.video++;
     });
 
     if (metadataFileCheck.image === 0) {
-      response(res, 400, "Atlease one image is required");
+      response(res, 400, "At least one image is required");
       return;
     }
 
@@ -123,23 +143,18 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
         return url.key;
       });
 
-      setTimeout(() => {
-        keys.forEach(async (key: string) => {
-          const uploadKey = "s3upload:" + key;
-          const keyStatus = await redisClient.get(uploadKey);
-
-          if (keyStatus) {
-            await s3Service.deleteObject(key);
-          }
-        });
-      }, 360);
-
       response(
         res,
         200,
         `${preSignedUrls.length} Pre-signed upload urls generated`,
         preSignedUrls
       );
+
+      setTimeout(() => {
+        cleanupOperation(keys).catch((error) => {
+          logger.error("Failed to initiate cleanup operation:", error);
+        });
+      }, 360 * 1000);
     } catch (error) {
       if (error instanceof Error) throw new ApiError(error.message, 400);
       else throw new ApiError("Something went wrong", 500);
