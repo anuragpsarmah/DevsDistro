@@ -15,7 +15,7 @@ export default class S3Service {
   private MAX_FILE_SIZE: { [key: string]: number };
   private s3Client: S3Client;
   private UPLOAD_EXPIRY: number = 300;
-  private REDIS_UPLOAD_KEY_PREFIX = "s3upload:";
+  private REDIS_UPLOAD_KEY_PREFIX: string = "s3upload_";
 
   constructor() {
     this.s3Client = new S3Client({
@@ -43,9 +43,7 @@ export default class S3Service {
     return `${this.REDIS_UPLOAD_KEY_PREFIX}${s3Key}`;
   }
 
-  async createPreSignedUploadUrl(
-    fileMetaData: FileMetaData
-  ): Promise<{ [key: string]: string }> {
+  async createPreSignedUploadUrl(fileMetaData: FileMetaData) {
     const { originalName, fileType, fileSize } = fileMetaData;
 
     if (!this.ALLOWED_TYPES[fileType]) {
@@ -70,9 +68,14 @@ export default class S3Service {
       ContentType: fileType,
     });
 
-    const uploadSignedUrl = await getSignedUrl(this.s3Client, putCommand, {
-      expiresIn: this.UPLOAD_EXPIRY,
-    });
+    let uploadSignedUrl;
+    try {
+      uploadSignedUrl = await getSignedUrl(this.s3Client, putCommand, {
+        expiresIn: this.UPLOAD_EXPIRY,
+      });
+    } catch (error) {
+      throw error;
+    }
 
     const metadata: UploadMetadata = {
       timestamp: Date.now(),
@@ -81,23 +84,33 @@ export default class S3Service {
     };
 
     const redisUploadKey = this.getRedisUploadKey(key);
-    await redisClient.set(redisUploadKey, JSON.stringify(metadata));
+    try {
+      await redisClient.set(redisUploadKey, JSON.stringify(metadata));
+    } catch (error) {
+      throw error;
+    }
 
     return { uploadSignedUrl, key };
   }
 
   async validateAndCreatePreSignedDownloadUrl(key: string) {
     const redisUploadKey = this.getRedisUploadKey(key);
-    const metadataStr = await redisClient.get(redisUploadKey);
+
+    let metadataStr;
+    try {
+      metadataStr = await redisClient.get(redisUploadKey);
+    } catch (error) {
+      throw error;
+    }
 
     if (!metadataStr) {
-      throw new Error("Invalid Key or Upload Expired");
+      throw new Error("Invalid Key");
     }
 
     const metadata: UploadMetadata = JSON.parse(metadataStr);
 
     if (Date.now() - metadata.timestamp > this.UPLOAD_EXPIRY * 1000)
-      throw new Error("Upload expired");
+      throw new Error("Expired key");
 
     try {
       const validateCommand = new HeadObjectCommand({
@@ -129,20 +142,23 @@ export default class S3Service {
 
       return downloadSignedUrl;
     } catch (error) {
-      await redisClient.del(redisUploadKey);
       throw error;
     }
   }
 
   async deleteObject(key: string) {
-    const deleteCommand = new DeleteObjectCommand({
-      Bucket: process.env.S3_BUCKET as string,
-      Key: key,
-    });
+    try {
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET as string,
+        Key: key,
+      });
 
-    await this.s3Client.send(deleteCommand);
+      await this.s3Client.send(deleteCommand);
 
-    const redisUploadKey = this.getRedisUploadKey(key);
-    await redisClient.del(redisUploadKey);
+      const redisUploadKey = this.getRedisUploadKey(key);
+      await redisClient.del(redisUploadKey);
+    } catch (error) {
+      throw new Error("Failed to delete invalid object");
+    }
   }
 }
