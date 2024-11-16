@@ -1,4 +1,4 @@
-import { Trie } from "../utils/CityApiTrieClass.util";
+import { Trie } from "../utils/CityApiTrie.util";
 import fs from "fs";
 import * as csv from "csv-parse";
 import logger from "../logger/winston.logger";

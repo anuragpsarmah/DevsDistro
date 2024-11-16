@@ -9,7 +9,7 @@ import axios from "axios";
 import { FileMetaData } from "../types/types";
 import { redisClient, s3Service } from "..";
 import logger from "../logger/winston.logger";
-import { privateRepoPrefix } from "../cache/redisPrefix";
+import { privateRepoPrefix } from "../utils/redisPrefixGenerator.util";
 
 const cleanupOperation = async (keys: string[]) => {
   try {
@@ -35,25 +35,8 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
 
   if (req.user) {
     const redisKey = privateRepoPrefix(req.user._id);
-
-    if (req.query.refreshStatus === "false") {
-      try {
-        const cached_private_repositories = await redisClient.get(redisKey);
-        if (cached_private_repositories) {
-          response(
-            res,
-            200,
-            "Repos fetched from cache successfully",
-            JSON.parse(cached_private_repositories)
-          );
-          return;
-        }
-      } catch (error) {
-        logger.error("Redis error:", error);
-      }
-    }
-
     const userId = new mongoose.Types.ObjectId(req.user._id);
+
     try {
       const userData = await User.findById(userId);
 

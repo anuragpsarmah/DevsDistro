@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import loggerMiddleware from "./middlewares/logger.middleware";
 import response from "./utils/response.util";
-import { healthMemoryCheckLimiter } from "./utils/rateLimitConfig";
+import { healthMemoryCheckLimiter } from "./utils/rateLimitConfig.util";
 
 export const app = express();
 

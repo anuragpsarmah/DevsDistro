@@ -5,8 +5,8 @@ import logger from "./logger/winston.logger";
 import { trieInitialization } from "./initializations/trie-initialization";
 import { redisInitialization } from "./initializations/redis-initialization";
 import { Redis } from "ioredis";
-import S3Service from "./utils/S3Service";
-import { Trie } from "./utils/CityApiTrieClass.util";
+import S3Service from "./utils/S3Service.util";
+import { Trie } from "./utils/CityApiTrie.util";
 
 dotenv.config();
 
