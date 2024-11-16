@@ -6,19 +6,14 @@ import logger from "../logger/winston.logger";
 const cityTrie = new Trie();
 
 const loadCitiesData = () => {
-  return new Promise((resolve, reject) => {
-    const results: { city: string; iso2: string }[] = [];
+  return new Promise<void>((resolve, reject) => {
     fs.createReadStream("./data/world_city_data.csv")
       .pipe(csv.parse({ columns: true, trim: true }))
       .on("data", (data) => {
-        results.push({
-          city: data.city,
-          iso2: data.iso2,
-        });
         cityTrie.insert(data.city, data.iso2);
       })
       .on("end", () => {
-        resolve(results);
+        resolve();
       })
       .on("error", reject);
   });
