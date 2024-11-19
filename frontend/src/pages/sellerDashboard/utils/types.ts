@@ -114,6 +114,7 @@ export interface RepoImportProps {
 export interface ProjectListingFormProps {
   formProps: PrivateRepoData;
   setFormProps: (curr: PrivateRepoData) => void;
+  handleGetPreSignedUrls: (metadata: Array<ProjectMediaMetadata>) => unknown;
 }
 
 export interface ReviewSectionProps {
@@ -182,4 +183,10 @@ export interface projectListingFormData {
   price: number;
   images: File[];
   video: File | null;
+}
+
+export interface ProjectMediaMetadata {
+  originalName: string;
+  fileType: string;
+  fileSize: number;
 }

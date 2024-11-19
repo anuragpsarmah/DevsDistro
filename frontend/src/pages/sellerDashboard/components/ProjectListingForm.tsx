@@ -23,6 +23,7 @@ import { errorToast } from "@/components/ui/customToast";
 export default function ProjectListingForm({
   formProps,
   setFormProps,
+  handleGetPreSignedUrls,
 }: ProjectListingFormProps) {
   const [title, setTitle] = useState(formProps.name);
   const [description, setDescription] = useState(formProps.description);
@@ -93,7 +94,7 @@ export default function ProjectListingForm({
     setPrice(parseInt(e.target.value));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const formData = {
       title,
       description,
@@ -111,6 +112,26 @@ export default function ProjectListingForm({
       errorToast(validationResult);
       return;
     }
+
+    const metadata = [
+      ...images.map((file) => ({
+        originalName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+      })),
+      ...(video
+        ? [
+            {
+              originalName: video.name,
+              fileType: video.type,
+              fileSize: video.size,
+            },
+          ]
+        : []),
+    ];
+
+    const response = await handleGetPreSignedUrls(metadata);
+    console.log(response);
   };
 
   return (

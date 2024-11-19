@@ -117,18 +117,27 @@ const useFeaturedReviewQuery = () => {
   });
 };
 
-const usePrivateReposQuery = (refreshStatus: string) => {
+const usePrivateReposQuery = (
+  refreshStatus: string,
+  { logout }: queryParameter
+) => {
+  const { handleError } = useHandleError({ logout });
   return useQuery({
     queryKey: ["privateRepoQuery", refreshStatus],
     queryFn: async ({ queryKey }) => {
-      const [, refreshStatus] = queryKey;
-      const response = await axios.get(
-        `${backend_uri}/projects/getPrivateRepos?refreshStatus=${refreshStatus}`,
-        {
-          withCredentials: true,
-        }
-      );
-      return response.data;
+      try {
+        const [, refreshStatus] = queryKey;
+        const response = await axios.get(
+          `${backend_uri}/projects/getPrivateRepos?refreshStatus=${refreshStatus}`,
+          {
+            withCredentials: true,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
     },
     refetchOnWindowFocus: false,
   });

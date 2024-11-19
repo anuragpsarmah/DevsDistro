@@ -12,3 +12,9 @@ export interface ProfileUpdateData {
   review_stars: number;
   profile_visibility: boolean;
 }
+
+export interface ProjectMediaMetadata {
+  originalName: string;
+  fileType: string;
+  fileSize: number;
+}
