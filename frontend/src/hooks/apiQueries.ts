@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useHandleError } from "./useHandleErrors";
+import { errorToast } from "@/components/ui/customToast";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
@@ -24,10 +25,14 @@ const useLogoutQuery = () => {
   return useQuery({
     queryKey: ["logoutQuery"],
     queryFn: async () => {
-      const response = await axios.get(`${backend_uri}/auth/githubLogout`, {
-        withCredentials: true,
-      });
-      return response.data;
+      try {
+        const response = await axios.get(`${backend_uri}/auth/githubLogout`, {
+          withCredentials: true,
+        });
+        return response.data;
+      } catch {
+        errorToast("Something went wrong. You are still logged in.");
+      }
     },
     enabled: false,
   });
