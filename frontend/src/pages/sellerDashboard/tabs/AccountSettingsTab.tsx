@@ -45,10 +45,10 @@ export default function AccountSettingsTab({
     isError: profileInformationQueryError,
   } = useProfileInformationQuery({ logout });
 
-  const { mutate } = useProfileUpdateMutation({ logout });
+  const { mutateAsync } = useProfileUpdateMutation({ logout });
 
-  const handleProfileUpdate = () => {
-    mutate({
+  const handleProfileUpdate = async () => {
+    await mutateAsync({
       job_role: selectedJobRole,
       location: cityInput,
       review_description: review,

@@ -35,6 +35,8 @@ export default function ProjectListingForm({
   const [images, setImages] = useState<File[]>([]);
   const [video, setVideo] = useState<File | null>(null);
   const [price, setPrice] = useState(299);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleDifferentProjectImport = () => {
     setFormProps({
@@ -95,6 +97,9 @@ export default function ProjectListingForm({
   };
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setUploadProgress(0);
+
     const formData = {
       title,
       description,
@@ -110,6 +115,7 @@ export default function ProjectListingForm({
 
     if (validationResult) {
       errorToast(validationResult);
+      setIsSubmitting(false);
       return;
     }
 
@@ -130,271 +136,333 @@ export default function ProjectListingForm({
         : []),
     ];
 
-    const response = await handleGetPreSignedUrls(metadata);
-    console.log(response);
+    const response = (await handleGetPreSignedUrls(metadata)) as {
+      data: { uploadSignedUrl: string; key: string }[];
+    };
+    if (!response) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const allFiles = [...images, ...(video ? [video] : [])];
+      const totalFiles = allFiles.length;
+
+      const keys = await Promise.all(
+        response.data.map(async (urlData, index) => {
+          const file = allFiles[index];
+
+          const uploadResponse = await fetch(urlData.uploadSignedUrl, {
+            method: "PUT",
+            body: file,
+            headers: {
+              "Content-Type": file.type,
+            },
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error(`Failed to upload ${file.name}`);
+          }
+
+          setUploadProgress(((index + 1) / totalFiles) * 100);
+
+          return urlData.key;
+        })
+      );
+
+      console.log("All done");
+      console.log(keys);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      errorToast("Failed to upload files. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      setUploadProgress(0);
+    }
   };
 
   return (
-    <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
-      <div className="bg-gray-800 rounded-xl p-6 shadow-lg space-y-4">
-        <div className="flex lg:justify-end md:justify-end justify-center mb-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
-            onClick={handleDifferentProjectImport}
-          >
-            <Import className="w-4 h-4" />
-            Import Different Project
-          </Button>
-        </div>
-        <div>
-          <Label htmlFor="title" className="text-gray-300 mb-2 block">
-            Project Title<span className="text-red-400 ml-1">*</span>
-          </Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
-            placeholder="e.g., E-commerce Dashboard, AI Content Generator"
-            required
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="description" className="text-gray-300 mb-2 block">
-            Project Description<span className="text-red-400 ml-1">*</span>
-          </Label>
-          <Textarea
-            id="description"
-            placeholder="Provide a clear overview of your project. Include key features, technologies used, and what problems it solves. Be specific about your role and contributions."
-            value={description}
-            onChange={handleDescriptionChange}
-            className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors h-32 resize-none"
-          />
-          <p
-            className={`text-sm mt-1 ${MAX_DESCRIPTION_LENGTH - description.length <= 50 ? "text-red-400" : "text-gray-400"}`}
-          >
-            {description.length}/{MAX_DESCRIPTION_LENGTH} characters
-          </p>
-        </div>
-
-        <div>
-          <Label htmlFor="projectType" className="text-gray-300 mb-2 block">
-            Project Type<span className="text-red-400 ml-1">*</span>
-          </Label>
-          <Select
-            value={projectType}
-            onValueChange={(value: ProjectType) => setProjectType(value)}
-          >
-            <SelectTrigger className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors">
-              <SelectValue placeholder="Choose the category that best fits your project" />
-            </SelectTrigger>
-            <SelectContent className="bg-gray-700 text-gray-300 border-gray-600">
-              {PROJECT_TYPES.map((type) => (
-                <SelectItem key={type} value={type}>
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="techStack" className="text-gray-300 mb-2 block">
-            Tech Stack<span className="text-red-400 ml-1">*</span>
-          </Label>
-          <Input
-            id="techStack"
-            value={techInput}
-            onChange={handleTechInputChange}
-            onKeyDown={handleTechInputKeyDown}
-            className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
-            placeholder="e.g., React, Node.js, MongoDB (Press Enter to add)"
-          />
-          <p className="text-sm text-gray-400 mt-1">
-            Add all major technologies and frameworks used in your project
-          </p>
-          <div className="flex flex-wrap gap-2 mt-2">
-            {techStack.map((tech, index) => (
+    <div>
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center lg:ml-[255.33px]">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl w-80">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Uploading Project...
+            </h3>
+            <div className="w-full bg-gray-700 rounded-full h-4 mb-2">
               <div
-                key={index}
-                className="flex items-center bg-gray-700 text-gray-300 px-4 pt-1 pb-2 text-sm rounded-full"
-              >
-                <span>{tech}</span>
-                <button
-                  type="button"
-                  onClick={() => removeTech(tech)}
-                  className="ml-2 text-gray-400 hover:text-gray-200 pt-1"
-                  aria-label={`Remove ${tech}`}
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
+                className="bg-gradient-to-r from-blue-400 to-purple-500 h-4 rounded-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+            <p className="text-gray-300 text-sm text-center">
+              {uploadProgress.toFixed(0)}% Complete
+            </p>
           </div>
         </div>
+      )}
 
-        <div>
-          <Label
-            htmlFor="liveLink"
-            className="text-gray-300 mb-2 block flex items-center"
-          >
-            Live Link
-            <span className="text-sm text-gray-400 ml-2">(Optional)</span>
-          </Label>
-          <Input
-            id="liveLink"
-            type="url"
-            value={liveLink}
-            onChange={(e) => setLiveLink(e.target.value)}
-            className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
-            placeholder="https://project-demo.com or https://username.github.io/project"
-          />
-          <p className="text-sm text-gray-400 mt-1">
-            Add a link to your live project
-          </p>
-        </div>
+      <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
+        <div className="bg-gray-800 rounded-xl p-6 shadow-lg space-y-4">
+          <div className="flex lg:justify-end md:justify-end justify-center mb-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+              onClick={handleDifferentProjectImport}
+            >
+              <Import className="w-4 h-4" />
+              Import Different Project
+            </Button>
+          </div>
+          <div>
+            <Label htmlFor="title" className="text-gray-300 mb-2 block">
+              Project Title<span className="text-red-400 ml-1">*</span>
+            </Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+              placeholder="e.g., E-commerce Dashboard, AI Content Generator"
+              required
+            />
+          </div>
 
-        <div>
-          <Label className="text-gray-300 mb-2 block flex items-center">
-            Project Images
-            <span className="text-sm text-gray-400 ml-2">
-              (Up to {MAX_IMAGES} images)
-            </span>
-          </Label>
-          <p className="text-sm text-gray-400 mb-2">
-            Add screenshots or mockups showcasing key features
-          </p>
-          <div className="flex flex-wrap gap-4 mt-2">
-            {images.map((image, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt={`Project image ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded-md"
+          <div>
+            <Label htmlFor="description" className="text-gray-300 mb-2 block">
+              Project Description<span className="text-red-400 ml-1">*</span>
+            </Label>
+            <Textarea
+              id="description"
+              placeholder="Provide a clear overview of your project. Include key features, technologies used, and what problems it solves. Be specific about your role and contributions."
+              value={description}
+              onChange={handleDescriptionChange}
+              className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors h-32 resize-none"
+            />
+            <p
+              className={`text-sm mt-1 ${MAX_DESCRIPTION_LENGTH - description.length <= 50 ? "text-red-400" : "text-gray-400"}`}
+            >
+              {description.length}/{MAX_DESCRIPTION_LENGTH} characters
+            </p>
+          </div>
+
+          <div>
+            <Label htmlFor="projectType" className="text-gray-300 mb-2 block">
+              Project Type<span className="text-red-400 ml-1">*</span>
+            </Label>
+            <Select
+              value={projectType}
+              onValueChange={(value: ProjectType) => setProjectType(value)}
+            >
+              <SelectTrigger className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors">
+                <SelectValue placeholder="Choose the category that best fits your project" />
+              </SelectTrigger>
+              <SelectContent className="bg-gray-700 text-gray-300 border-gray-600">
+                {PROJECT_TYPES.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="techStack" className="text-gray-300 mb-2 block">
+              Tech Stack<span className="text-red-400 ml-1">*</span>
+            </Label>
+            <Input
+              id="techStack"
+              value={techInput}
+              onChange={handleTechInputChange}
+              onKeyDown={handleTechInputKeyDown}
+              className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+              placeholder="e.g., React, Node.js, MongoDB (Press Enter to add)"
+            />
+            <p className="text-sm text-gray-400 mt-1">
+              Add all major technologies and frameworks used in your project
+            </p>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {techStack.map((tech, index) => (
+                <div
+                  key={index}
+                  className="flex items-center bg-gray-700 text-gray-300 px-4 pt-1 pb-2 text-sm rounded-full"
+                >
+                  <span>{tech}</span>
+                  <button
+                    type="button"
+                    onClick={() => removeTech(tech)}
+                    className="ml-2 text-gray-400 hover:text-gray-200 pt-1"
+                    aria-label={`Remove ${tech}`}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label
+              htmlFor="liveLink"
+              className="text-gray-300 mb-2 block flex items-center"
+            >
+              Live Link
+              <span className="text-sm text-gray-400 ml-2">(Optional)</span>
+            </Label>
+            <Input
+              id="liveLink"
+              type="url"
+              value={liveLink}
+              onChange={(e) => setLiveLink(e.target.value)}
+              className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+              placeholder="https://project-demo.com or https://username.github.io/project"
+            />
+            <p className="text-sm text-gray-400 mt-1">
+              Add a link to your live project
+            </p>
+          </div>
+
+          <div>
+            <Label className="text-gray-300 mb-2 block flex items-center">
+              Project Images
+              <span className="text-sm text-gray-400 ml-2">
+                (Up to {MAX_IMAGES} images)
+              </span>
+            </Label>
+            <p className="text-sm text-gray-400 mb-2">
+              Add screenshots or mockups showcasing key features
+            </p>
+            <div className="flex flex-wrap gap-4 mt-2">
+              {images.map((image, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt={`Project image ${index + 1}`}
+                    className="w-20 h-20 object-cover rounded-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute -bottom-2 -right-2 bg-red-500 rounded-full p-1"
+                    aria-label={`Remove image ${index + 1}`}
+                  >
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              ))}
+              {images.length < MAX_IMAGES && (
+                <label className="w-20 h-20 flex items-center justify-center bg-gray-700 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:bg-gray-600 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="sr-only"
+                    multiple
+                  />
+                  <Plus className="w-6 h-6 text-gray-400" />
+                </label>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-gray-300 mb-2 block flex items-center">
+              Project Demo Video
+              <span className="text-sm text-gray-400 ml-2">(Optional)</span>
+            </Label>
+            <p className="text-sm text-gray-400 mb-2">
+              Add a short demo video showcasing your project in action
+            </p>
+            {video ? (
+              <div className="relative mt-2">
+                <video
+                  src={URL.createObjectURL(video)}
+                  className="w-full rounded-md"
+                  controls
                 />
                 <button
                   type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute -bottom-2 -right-2 bg-red-500 rounded-full p-1"
-                  aria-label={`Remove image ${index + 1}`}
+                  onClick={removeVideo}
+                  className="absolute top-2 right-2 bg-red-500 rounded-full p-1"
+                  aria-label="Remove video"
                 >
                   <X className="w-4 h-4 text-white" />
                 </button>
               </div>
-            ))}
-            {images.length < MAX_IMAGES && (
-              <label className="w-20 h-20 flex items-center justify-center bg-gray-700 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:bg-gray-600 transition-colors">
+            ) : (
+              <label className="flex items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:bg-gray-700 transition-colors">
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
+                  accept="video/*"
+                  onChange={handleVideoUpload}
                   className="sr-only"
-                  multiple
                 />
-                <Plus className="w-6 h-6 text-gray-400" />
+                <div className="flex flex-col items-center">
+                  <Upload className="w-8 h-8 text-gray-400" />
+                  <span className="mt-2 text-sm text-gray-400">
+                    Upload demo video (max 50MB)
+                  </span>
+                </div>
               </label>
             )}
           </div>
-        </div>
 
-        <div>
-          <Label className="text-gray-300 mb-2 block flex items-center">
-            Project Demo Video
-            <span className="text-sm text-gray-400 ml-2">(Optional)</span>
-          </Label>
-          <p className="text-sm text-gray-400 mb-2">
-            Add a short demo video showcasing your project in action
-          </p>
-          {video ? (
-            <div className="relative mt-2">
-              <video
-                src={URL.createObjectURL(video)}
-                className="w-full rounded-md"
-                controls
-              />
-              <button
-                type="button"
-                onClick={removeVideo}
-                className="absolute top-2 right-2 bg-red-500 rounded-full p-1"
-                aria-label="Remove video"
-              >
-                <X className="w-4 h-4 text-white" />
-              </button>
-            </div>
-          ) : (
-            <label className="flex items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:bg-gray-700 transition-colors">
-              <input
-                type="file"
-                accept="video/*"
-                onChange={handleVideoUpload}
-                className="sr-only"
-              />
-              <div className="flex flex-col items-center">
-                <Upload className="w-8 h-8 text-gray-400" />
-                <span className="mt-2 text-sm text-gray-400">
-                  Upload demo video (max 50MB)
+          <div className="border-t border-gray-600 pt-4">
+            <Label htmlFor="price" className="text-gray-300 mb-3 block">
+              Project Price (INR)
+            </Label>
+            <div className="relative flex justify-center">
+              <div className="lg:w-1/3 md:w-1/3 w-1/2 relative">
+                <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-3xl font-bold text-blue-400">
+                  ₹
                 </span>
-              </div>
-            </label>
-          )}
-        </div>
-
-        <div className="border-t border-gray-600 pt-4">
-          <Label htmlFor="price" className="text-gray-300 mb-3 block">
-            Project Price (INR)
-          </Label>
-          <div className="relative flex justify-center">
-            <div className="lg:w-1/3 md:w-1/3 w-1/2 relative">
-              <span className="absolute top-1/2 left-3 transform -translate-y-1/2 text-3xl font-bold text-blue-400">
-                ₹
-              </span>
-              <Input
-                id="price"
-                type="number"
-                value={price}
-                onChange={handlePriceChange}
-                className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-center appearance-none pl-10 pr-12"
-                placeholder="e.g., 10000"
-                required
-              />
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col space-y-1">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handlePriceChange({
-                      target: { value: (price + 1).toString() },
-                    } as ChangeEvent<HTMLInputElement>)
-                  }
-                  className="text-gray-300 hover:text-blue-400 transition-colors text-[0.6rem] leading-tight"
-                >
-                  ▲
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handlePriceChange({
-                      target: { value: (price - 1).toString() },
-                    } as ChangeEvent<HTMLInputElement>)
-                  }
-                  className="text-gray-300 hover:text-blue-400 transition-colors text-[0.6rem] leading-tight"
-                >
-                  ▼
-                </button>
+                <Input
+                  id="price"
+                  type="number"
+                  value={price}
+                  onChange={handlePriceChange}
+                  className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 text-center appearance-none pl-10 pr-12"
+                  placeholder="e.g., 10000"
+                  required
+                />
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col space-y-1">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handlePriceChange({
+                        target: { value: (price + 1).toString() },
+                      } as ChangeEvent<HTMLInputElement>)
+                    }
+                    className="text-gray-300 hover:text-blue-400 transition-colors text-[0.6rem] leading-tight"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handlePriceChange({
+                        target: { value: (price - 1).toString() },
+                      } as ChangeEvent<HTMLInputElement>)
+                    }
+                    className="text-gray-300 hover:text-blue-400 transition-colors text-[0.6rem] leading-tight"
+                  >
+                    ▼
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <Button
-          type="button"
-          className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-          onClick={handleSubmit}
-        >
-          Submit Project
-        </Button>
+          <Button
+            type="button"
+            className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+            onClick={handleSubmit}
+          >
+            Submit Project
+          </Button>
+        </div>
       </div>
     </div>
   );

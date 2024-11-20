@@ -3,6 +3,7 @@ import { sessionValidation } from "../middlewares/sessionValidation.middlewares"
 import {
   getPrivateRepos,
   getPreSignedUrlForProjectMediaUpload,
+  validateMediaUploadAndStoreProject,
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
 
@@ -14,3 +15,6 @@ projectRouter
 projectRouter
   .route("/getPreSignedUrlForProjectMediaUpload")
   .post(sessionValidation, getPreSignedUrlForProjectMediaUpload);
+projectRouter
+  .route("/validateMediaUploadAndStoreProject")
+  .put(sessionValidation, validateMediaUploadAndStoreProject);

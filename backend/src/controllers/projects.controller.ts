@@ -10,7 +10,11 @@ import { FileMetaData } from "../types/types";
 import { redisClient, s3Service } from "..";
 import logger from "../logger/winston.logger";
 import { privateRepoPrefix } from "../utils/redisPrefixGenerator.util";
-import { fileMetadataSchema } from "../validation/projects.validation";
+import {
+  fileMetadataSchema,
+  projectFormDataSchema,
+} from "../validation/projects.validation";
+import { Project } from "../models/project.model";
 
 const cleanupOperation = async (keys: string[]) => {
   try {
@@ -124,70 +128,145 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
 
 const getPreSignedUrlForProjectMediaUpload = asyncHandler(
   async (req: Request, res: Response) => {
-    const { metadata } = req.body;
+    if (req.user) {
+      const { metadata } = req.body;
 
-    const result = fileMetadataSchema.safeParse(metadata);
+      const result = fileMetadataSchema.safeParse(metadata);
 
-    if (!result.success) {
-      response(
-        res,
-        400,
-        "Payload failed validation",
-        {},
-        result.error.errors[0].message
-      );
-      return;
-    }
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Payload failed validation",
+          {},
+          result.error.errors[0].message
+        );
+        return;
+      }
 
-    const metadataFileCheck = {
-      image: 0,
-      video: 0,
-    };
+      const metadataFileCheck = {
+        image: 0,
+        video: 0,
+      };
 
-    metadata.forEach((file: FileMetaData) => {
-      if (file.fileType === "image/png" || file.fileType === "image/jpeg")
-        metadataFileCheck.image++;
-      else metadataFileCheck.video++;
-    });
-
-    if (metadataFileCheck.image === 0) {
-      response(res, 400, "At least one image is required");
-      return;
-    }
-
-    if (metadataFileCheck.image > 5 || metadataFileCheck.video > 1) {
-      response(res, 400, "Sent more files than allowed");
-      return;
-    }
-
-    try {
-      const preSignedUrlPromises = metadata.map((file: FileMetaData) => {
-        return s3Service.createPreSignedUploadUrl(file);
+      metadata.forEach((file: FileMetaData) => {
+        if (file.fileType === "image/png" || file.fileType === "image/jpeg")
+          metadataFileCheck.image++;
+        else metadataFileCheck.video++;
       });
 
-      const preSignedUrls = await Promise.all(preSignedUrlPromises);
+      if (metadataFileCheck.image === 0) {
+        response(res, 400, "At least one image is required");
+        return;
+      }
 
-      const keys = preSignedUrls.map((url: { [key: string]: string }) => {
-        return url.key;
-      });
+      if (metadataFileCheck.image > 5 || metadataFileCheck.video > 1) {
+        response(res, 400, "Sent more files than allowed");
+        return;
+      }
 
-      response(
-        res,
-        200,
-        `${preSignedUrls.length} Pre-signed upload urls generated`,
-        preSignedUrls
-      );
-
-      setTimeout(() => {
-        cleanupOperation(keys).catch((error) => {
-          logger.error("Failed to initiate cleanup operation:", error);
+      try {
+        const preSignedUrlPromises = metadata.map((file: FileMetaData) => {
+          return s3Service.createPreSignedUploadUrl(file);
         });
-      }, 360 * 1000);
-    } catch (error) {
-      if (error instanceof Error) throw new ApiError(error.message, 400);
-      else throw new ApiError("Something went wrong", 500);
+
+        const preSignedUrls = await Promise.all(preSignedUrlPromises);
+
+        const keys = preSignedUrls.map((url: { [key: string]: string }) => {
+          return url.key;
+        });
+
+        response(
+          res,
+          200,
+          `${preSignedUrls.length} Pre-signed upload urls generated`,
+          preSignedUrls
+        );
+
+        setTimeout(() => {
+          cleanupOperation(keys).catch((error) => {
+            logger.error("Failed to initiate cleanup operation:", error);
+          });
+        }, 360 * 1000);
+      } catch (error) {
+        if (error instanceof Error) throw new ApiError(error.message, 400);
+        else throw new ApiError("Something went wrong", 500);
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
     }
   }
 );
 
-export { getPrivateRepos, getPreSignedUrlForProjectMediaUpload };
+const validateMediaUploadAndStoreProject = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (req.user) {
+      const projectFormData = req.body;
+
+      const result = projectFormDataSchema.safeParse(projectFormData);
+
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Payload failed validation",
+          {},
+          result.error.errors[0].message
+        );
+        return;
+      }
+
+      try {
+        const project = await Project.findOne({ title: projectFormData.title });
+        if (project) {
+          response(res, 400, "Project already exists");
+          return;
+        }
+      } catch (error) {
+        throw new ApiError("Something went wrong", 500);
+      }
+
+      const toBeValidatedKeys = [
+        ...projectFormData.project_images,
+        ...(projectFormData.project_video
+          ? [projectFormData.project_video]
+          : []),
+      ];
+
+      const preSignedImageGetUrls = [];
+      let preSignedVideoGetUrl;
+      for (let i = 0; i < toBeValidatedKeys.length; i++) {
+        try {
+          const url = await s3Service.validateAndCreatePreSignedDownloadUrl(
+            toBeValidatedKeys[i]
+          );
+          if (i != toBeValidatedKeys.length - 1)
+            preSignedImageGetUrls.push(url);
+          else preSignedVideoGetUrl = url;
+        } catch (error) {
+          if (error instanceof Error) response(res, 400, error.message);
+          else throw new ApiError("Couldn't verify uploads. Try again.", 500);
+          return;
+        }
+      }
+
+      projectFormData.project_images = preSignedImageGetUrls;
+      projectFormData.project_video = preSignedVideoGetUrl;
+
+      try {
+        await Project.create(projectFormData);
+        response(res, 200, "Project listed successfully");
+      } catch (error) {
+        throw new ApiError("Something went wrong", 500);
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
+    }
+  }
+);
+
+export {
+  getPrivateRepos,
+  getPreSignedUrlForProjectMediaUpload,
+  validateMediaUploadAndStoreProject,
+};

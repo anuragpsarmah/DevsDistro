@@ -1,15 +1,17 @@
 import z from "zod";
 import { FILE_TYPE_ENUM, PROJECT_TYPE_ENUM } from "../types/constants";
 
-export const projectTypeSchema = z.object({
+export const projectFormDataSchema = z.object({
   price: z
     .number({
       required_error: "Price is required",
     })
     .min(0, "Price should be greater than or equal to 0."),
-  isActive: z.boolean({
-    required_error: "IsActive flag is required",
-  }),
+  isActive: z
+    .boolean({
+      required_error: "IsActive flag is required",
+    })
+    .optional(),
   title: z
     .string({
       required_error: "Title is required",
@@ -28,11 +30,15 @@ export const projectTypeSchema = z.object({
   tech_stack: z
     .array(z.string())
     .min(1, "At least one tech stack value required"),
-  live_link: z.string().url("Invalid URL format").optional(),
-  project_images: z
-    .array(z.string().url("Invalid URL format"))
-    .min(1, "At least one image URL required"),
-  project_video: z.string().url("Invalid URL format").optional(),
+  live_link: z
+    .string()
+    .transform((val) => (val === "" ? undefined : val))
+    .pipe(z.string().url("Invalid live link URL format").optional()),
+  project_images: z.array(z.string()).min(1, "At least one image URL required"),
+  project_video: z
+    .string()
+    .transform((val) => (val === "" ? undefined : val))
+    .pipe(z.string().optional()),
 });
 
 export const fileMetadataSchema = z.array(

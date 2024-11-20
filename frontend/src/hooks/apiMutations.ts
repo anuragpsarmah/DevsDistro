@@ -15,18 +15,17 @@ const useProfileUpdateMutation = ({ logout }: mutationParameter) => {
 
   return useMutation({
     mutationFn: async (data: ProfileUpdateData) => {
-      const response = await axios.put(
-        `${backend_uri}/profile/updateProfileInformation`,
-        data,
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onSuccess: () => {
-      successToast("Profile updated successfully");
-    },
-    onError: (error) => {
-      handleError(error);
+      try {
+        const response = await axios.put(
+          `${backend_uri}/profile/updateProfileInformation`,
+          data,
+          { withCredentials: true }
+        );
+        successToast("Profile updated successfully");
+        return response.data;
+      } catch (error) {
+        handleError(error);
+      }
     },
   });
 };
@@ -38,15 +37,16 @@ const usePreSignedUrlForProjectMediaUploadMutation = ({
 
   return useMutation({
     mutationFn: async (data: Array<ProjectMediaMetadata>) => {
-      const response = await axios.post(
-        `${backend_uri}/projects/getPreSignedUrlForProjectMediaUpload`,
-        { metadata: data },
-        { withCredentials: true }
-      );
-      return response.data;
-    },
-    onError: (error) => {
-      handleError(error);
+      try {
+        const response = await axios.post(
+          `${backend_uri}/projects/getPreSignedUrlForProjectMediaUpload`,
+          { metadata: data },
+          { withCredentials: true }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+      }
     },
   });
 };
