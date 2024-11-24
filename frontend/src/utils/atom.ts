@@ -1,5 +1,5 @@
 import { atom, RecoilState } from "recoil";
-import { User } from "@/types/types";
+import { User } from "@/utils/types";
 
 const user: RecoilState<User> = atom({
   key: "user",

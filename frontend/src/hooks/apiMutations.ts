@@ -5,7 +5,7 @@ import {
   ProfileUpdateData,
   projectListingValidatedFormData,
   ProjectMediaMetadata,
-} from "@/types/types";
+} from "@/utils/types";
 import { useHandleError } from "./useHandleErrors";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;

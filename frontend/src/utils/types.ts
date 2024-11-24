@@ -29,3 +29,11 @@ export interface projectListingValidatedFormData {
   project_images: string[];
   project_video: string;
 }
+
+export interface UseProjectSubmissionProps {
+  handleGetPreSignedUrls: (metadata: Array<ProjectMediaMetadata>) => unknown;
+  handleValidateUploadAndStoreProject: (
+    data: projectListingValidatedFormData
+  ) => unknown;
+  setActiveTab: (curr: string) => void;
+}

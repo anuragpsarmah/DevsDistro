@@ -205,3 +205,14 @@ export interface projectListingValidatedFormData {
   project_images: string[];
   project_video: string;
 }
+
+export interface UploadOverlayProps {
+  uploadProgress: number;
+}
+
+export interface ProjectMediaUploaderProps {
+  images: File[];
+  setImages: React.Dispatch<React.SetStateAction<File[]>>;
+  video: File | null;
+  setVideo: React.Dispatch<React.SetStateAction<File | null>>;
+}
