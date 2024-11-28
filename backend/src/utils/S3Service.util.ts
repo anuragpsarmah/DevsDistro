@@ -60,7 +60,7 @@ export default class S3Service {
     }
 
     const uniqueId = crypto.randomBytes(16).toString("hex");
-    const key = `upload/${uniqueId}-${originalName}`;
+    let key = `projectMedia/${uniqueId}-${originalName}`.replace(/\s+/g, "");
 
     const putCommand = new PutObjectCommand({
       Bucket: process.env.S3_BUCKET as string,
@@ -131,16 +131,11 @@ export default class S3Service {
         throw new Error("Invalid upload. File deleted.");
       }
 
-      const getCommand = new GetObjectCommand({
-        Bucket: process.env.S3_BUCKET as string,
-        Key: key,
-      });
-
-      const downloadSignedUrl = await getSignedUrl(this.s3Client, getCommand);
+      const cloudFrontUrl = `${process.env.S3_CLOUDFRONT_DISTRIBUTION as string}/${key}`;
 
       await redisClient.del(redisUploadKey);
 
-      return downloadSignedUrl;
+      return cloudFrontUrl;
     } catch (error) {
       throw error;
     }
