@@ -3,7 +3,7 @@ import BackgroundDots from "@/components/ui/backgroundDots";
 
 export default function LoadingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4 relative overflow-hidden">
       <BackgroundDots />
 
       <div className="z-10 text-center">

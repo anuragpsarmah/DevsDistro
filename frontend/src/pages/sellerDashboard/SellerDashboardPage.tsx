@@ -19,7 +19,7 @@ export default function SellerDashboardPage({
   const navigate = useNavigate();
 
   return (
-    <div className="flex h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
+    <div className="flex h-screen bg-gray-900 text-white relative overflow-hidden">
       <BackgroundDots />
 
       <Sidebar

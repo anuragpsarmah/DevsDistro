@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 export default function ErrorPage() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white relative overflow-hidden">
       <BackgroundDots />
 
       <div className="z-10 text-center px-4 max-w-md">
