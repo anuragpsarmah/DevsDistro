@@ -76,8 +76,33 @@ const useValidateMediaUploadAndStoreProjectMutation = ({
   });
 };
 
+const useToggleProjectListingMutation = ({ logout }: mutationParameter) => {
+  const { handleError } = useHandleError({ logout });
+
+  return useMutation({
+    mutationFn: async (title: string) => {
+      try {
+        const response = await axios.patch(
+          `${backend_uri}/projects/toggleProjectListing`,
+          { title },
+          { withCredentials: true }
+        );
+        successToast(
+          response.data?.data?.status
+            ? "Project was re-listed"
+            : "Project was unlisted"
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+      }
+    },
+  });
+};
+
 export {
   useProfileUpdateMutation,
   usePreSignedUrlForProjectMediaUploadMutation,
   useValidateMediaUploadAndStoreProjectMutation,
+  useToggleProjectListingMutation,
 };

@@ -200,7 +200,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
           cleanupOperation(keys).catch((error) => {
             logger.error("Failed to initiate cleanup operation:", error);
           });
-        }, 360 * 1000);
+        }, 320 * 1000);
       } catch (error) {
         if (error instanceof Error) throw new ApiError(error.message, 400);
         else throw new ApiError("Something went wrong", 500);
@@ -357,10 +357,42 @@ const getInitialProjectData = asyncHandler(
   }
 );
 
+const toggleProjectListing = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (req.user) {
+      const userid = new mongoose.Types.ObjectId(req.user._id);
+
+      try {
+        const projectData = await Project.findOne({
+          userid,
+          title: req.body.title,
+        });
+
+        if (!projectData) {
+          response(res, 404, "Invalid project title. No such records found.");
+          return;
+        }
+
+        projectData.isActive = !projectData?.isActive;
+        await projectData.save();
+
+        response(res, 200, "Project listing status toggled successfully", {
+          status: projectData.isActive,
+        });
+      } catch (error) {
+        response(res, 500, "Failed to fetch project data. Try again later.");
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
+    }
+  }
+);
+
 export {
   getPrivateRepos,
   getPreSignedUrlForProjectMediaUpload,
   validateMediaUploadAndStoreProject,
   getTotalListedProjects,
   getInitialProjectData,
+  toggleProjectListing,
 };

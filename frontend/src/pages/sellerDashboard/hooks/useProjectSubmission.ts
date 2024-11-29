@@ -50,14 +50,15 @@ export const useProjectSubmission = ({
       return;
     }
 
-    try {
-      const allFiles = [
-        ...formData.images,
-        ...(formData.video ? [formData.video] : []),
-      ];
-      const totalFiles = allFiles.length;
+    const allFiles = [
+      ...formData.images,
+      ...(formData.video ? [formData.video] : []),
+    ];
+    const totalFiles = allFiles.length;
 
-      const keys = await Promise.all(
+    let keys;
+    try {
+      keys = await Promise.all(
         urlResponse.data.map(async (urlData, index) => {
           const file = allFiles[index];
 
@@ -72,43 +73,44 @@ export const useProjectSubmission = ({
           return urlData.key;
         })
       );
-
-      const validatedProjectData = {
-        title: formData.title,
-        description: formData.description,
-        project_type: formData.projectType,
-        tech_stack: formData.techStack,
-        live_link: formData.liveLink,
-        price: formData.price,
-        project_images: [] as string[],
-        project_video: "",
-      };
-
-      if (!formData.video) {
-        validatedProjectData.project_images = [...keys];
-      } else {
-        validatedProjectData.project_images = keys.slice(
-          0,
-          formData.images.length
-        );
-        validatedProjectData.project_video = keys[formData.images.length];
-      }
-
-      const finalResponse = (await handleValidateUploadAndStoreProject(
-        validatedProjectData
-      )) as { message: string };
-
-      if (finalResponse) {
-        successToast(finalResponse?.message);
-      }
-      setActiveTab("Manage Projects");
-    } catch (error) {
-      console.error("Upload failed:", error);
-      errorToast("Failed to upload files. Please try again.");
-    } finally {
+    } catch {
+      errorToast("File upload failed. Try again.");
       setIsSubmitting(false);
       setUploadProgress(0);
+      return;
     }
+
+    const validatedProjectData = {
+      title: formData.title,
+      description: formData.description,
+      project_type: formData.projectType,
+      tech_stack: formData.techStack,
+      live_link: formData.liveLink,
+      price: formData.price,
+      project_images: [] as string[],
+      project_video: "",
+    };
+
+    if (!formData.video) {
+      validatedProjectData.project_images = [...keys];
+    } else {
+      validatedProjectData.project_images = keys.slice(
+        0,
+        formData.images.length
+      );
+      validatedProjectData.project_video = keys[formData.images.length];
+    }
+
+    const finalResponse = (await handleValidateUploadAndStoreProject(
+      validatedProjectData
+    )) as { message: string };
+
+    if (finalResponse) {
+      successToast(finalResponse?.message);
+      setActiveTab("Manage Projects");
+    }
+    setIsSubmitting(false);
+    setUploadProgress(0);
   };
 
   return {

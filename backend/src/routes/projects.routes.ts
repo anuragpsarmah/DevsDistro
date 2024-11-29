@@ -6,6 +6,7 @@ import {
   validateMediaUploadAndStoreProject,
   getTotalListedProjects,
   getInitialProjectData,
+  toggleProjectListing,
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
 
@@ -26,3 +27,6 @@ projectRouter
 projectRouter
   .route("/getInitialProjectData")
   .get(sessionValidation, getInitialProjectData);
+projectRouter
+  .route("/toggleProjectListing")
+  .patch(sessionValidation, toggleProjectListing);

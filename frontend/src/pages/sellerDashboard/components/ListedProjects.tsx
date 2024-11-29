@@ -11,15 +11,21 @@ import {
 import { Eye, EyeOff, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ListedProjects = ({ initialProjectData }: ListedProjectsProps) => {
+const ListedProjects = ({
+  initialProjectData,
+  handleToggleProjectListing,
+}: ListedProjectsProps) => {
   const [projectStatuses, setProjectStatuses] = useState(
     initialProjectData.map((data) => data.isActive)
   );
 
-  const handleProjectToggle = (index: number) => {
+  const handleProjectToggle = async (index: number) => {
     const updatedStatuses = [...projectStatuses];
     updatedStatuses[index] = !updatedStatuses[index];
-    setProjectStatuses(updatedStatuses);
+    const response = await handleToggleProjectListing(
+      initialProjectData[index].title
+    );
+    if (response) setProjectStatuses(updatedStatuses);
   };
 
   const truncateText = (text: string, maxLength: number) => {

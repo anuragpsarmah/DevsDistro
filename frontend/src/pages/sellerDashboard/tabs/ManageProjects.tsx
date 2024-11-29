@@ -3,6 +3,7 @@ import { TransitionWrapper } from "../components/TransitionWrapper";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import { useInitialProjectDataQuery } from "@/hooks/apiQueries";
 import ListedProjects from "../components/ListedProjects";
+import { useToggleProjectListingMutation } from "@/hooks/apiMutations";
 
 interface ManageProjectsTabProps {
   logout?: () => Promise<void>;
@@ -17,6 +18,15 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
     isLoading: initialDataLoading,
     isError: initialDataError,
   } = useInitialProjectDataQuery({ logout });
+
+  const { mutateAsync: toggleListingMutate } = useToggleProjectListingMutation({
+    logout,
+  });
+
+  const handleToggleProjectListing = async (title: string) => {
+    const response = await toggleListingMutate(title);
+    return response;
+  };
 
   return (
     <AnimatedLoadWrapper>
@@ -34,7 +44,10 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
             initialData &&
             !initialDataLoading &&
             !initialDataError ? (
-              <ListedProjects initialProjectData={initialData.data} />
+              <ListedProjects
+                initialProjectData={initialData.data}
+                handleToggleProjectListing={handleToggleProjectListing}
+              />
             ) : (
               <>asdasd</>
             )}

@@ -108,7 +108,7 @@ export interface RepoImportProps {
   privateRepoData: Array<PrivateRepoData>;
   repoDataLoading: boolean;
   setFormProps: (curr: PrivateRepoData) => void;
-  handleRefresh?: () => void;
+  handleRefresh?: () => Promise<unknown>;
   totalListedProjectsDataLoading: boolean;
   totalListedProjectsData:
     | { data: { totalListedProjects: number } }
@@ -118,10 +118,12 @@ export interface RepoImportProps {
 export interface ProjectListingFormProps {
   formProps: PrivateRepoData;
   setFormProps: (curr: PrivateRepoData) => void;
-  handleGetPreSignedUrls: (metadata: Array<ProjectMediaMetadata>) => unknown;
+  handleGetPreSignedUrls: (
+    metadata: Array<ProjectMediaMetadata>
+  ) => Promise<unknown>;
   handleValidateUploadAndStoreProject: (
     data: projectListingValidatedFormData
-  ) => unknown;
+  ) => Promise<unknown>;
   setActiveTab: (curr: string) => void;
 }
 
@@ -217,4 +219,5 @@ export interface InitialProjectData {
 
 export interface ListedProjectsProps {
   initialProjectData: Array<InitialProjectData>;
+  handleToggleProjectListing: (title: string) => Promise<unknown>;
 }
