@@ -357,6 +357,32 @@ const getInitialProjectData = asyncHandler(
   }
 );
 
+const getSpecificProjectData = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (req.user) {
+      const userid = new mongoose.Types.ObjectId(req.user._id);
+
+      try {
+        const projectData = await Project.findOne({
+          userid,
+          title: req.query.title,
+        }).select("-_id -__v -createdAt -updatedAt -userid");
+
+        if (!projectData) {
+          response(res, 404, "Invalid project title. No such records found.");
+          return;
+        }
+
+        response(res, 200, "Project data fetched successfully", projectData);
+      } catch (error) {
+        response(res, 500, "Failed to fetch project data. Try again later.");
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
+    }
+  }
+);
+
 const toggleProjectListing = asyncHandler(
   async (req: Request, res: Response) => {
     if (req.user) {
@@ -394,5 +420,6 @@ export {
   validateMediaUploadAndStoreProject,
   getTotalListedProjects,
   getInitialProjectData,
+  getSpecificProjectData,
   toggleProjectListing,
 };

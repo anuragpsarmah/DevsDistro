@@ -11,9 +11,16 @@ export const useHandleError = ({ logout }: useHandleErrorParameter) => {
 
   const handleError = async (error: unknown) => {
     if (error instanceof AxiosError) {
-      if (error?.response?.status === 401 && logout) {
-        await logout();
-        navigate("/");
+      if (error?.response?.status === 429) {
+        errorToast("Too many requests");
+      } else if (error?.response?.status === 401) {
+        if (logout) {
+          await logout();
+          navigate("/");
+        } else {
+          navigate("/");
+          errorToast("Something went wrong. You might still be logged in.");
+        }
       } else {
         errorToast(error?.response?.data?.message || "Something went wrong");
       }

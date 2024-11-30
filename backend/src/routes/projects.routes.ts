@@ -7,8 +7,10 @@ import {
   getTotalListedProjects,
   getInitialProjectData,
   toggleProjectListing,
+  getSpecificProjectData,
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
+import { toggleProjectListingLimiter } from "../utils/rateLimitConfig.util";
 
 export const projectRouter = Router();
 
@@ -28,5 +30,8 @@ projectRouter
   .route("/getInitialProjectData")
   .get(sessionValidation, getInitialProjectData);
 projectRouter
+  .route("/getSpecificProjectData")
+  .get(sessionValidation, getSpecificProjectData);
+projectRouter
   .route("/toggleProjectListing")
-  .patch(sessionValidation, toggleProjectListing);
+  .patch(toggleProjectListingLimiter, sessionValidation, toggleProjectListing);

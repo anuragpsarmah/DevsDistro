@@ -1,4 +1,5 @@
 import { features } from "./animatedFeatureIcons";
+import { MagicCard } from "@/components/ui/magic-card";
 
 export default function FeatureSection() {
   return (
@@ -9,22 +10,27 @@ export default function FeatureSection() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <div
+            <MagicCard
               key={index}
-              className="rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl bg-gray-800 flex flex-col"
+              className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden transition-all duration-300"
+              gradientSize={300}
+              gradientColor="#3B82F6"
+              gradientOpacity={0.2}
             >
               <div className={`bg-gradient-to-br ${feature.gradient} p-6`}>
                 <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-white bg-opacity-20">
                   {feature.animatedIcon}
                 </div>
               </div>
-              <div className="p-6 bg-gray-800 flex-grow flex flex-col">
-                <h3 className="text-xl font-semibold mb-2 text-white min-h-[3rem]">
+              <div className="p-6 flex-grow flex flex-col">
+                <h3 className="text-xl font-semibold mb-3 text-white min-h-[3rem]">
                   {feature.title}
                 </h3>
-                <p className="text-gray-300 text-sm">{feature.description}</p>
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
-            </div>
+            </MagicCard>
           ))}
         </div>
       </div>
