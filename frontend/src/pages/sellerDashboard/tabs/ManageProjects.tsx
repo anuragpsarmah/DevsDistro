@@ -1,17 +1,37 @@
 import { useState } from "react";
 import { TransitionWrapper } from "../components/TransitionWrapper";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
-import { useInitialProjectDataQuery } from "@/hooks/apiQueries";
+import {
+  useInitialProjectDataQuery,
+  useSpecificProjectDataQuery,
+} from "@/hooks/apiQueries";
 import ListedProjects from "../components/ListedProjects";
-import { useToggleProjectListingMutation } from "@/hooks/apiMutations";
+import {
+  useDeleteProjectListingMutation,
+  useToggleProjectListingMutation,
+} from "@/hooks/apiMutations";
+import ProjectModificationForm from "../components/ProjectModificationForm";
+import { formPropsType } from "../utils/types";
 
 interface ManageProjectsTabProps {
   logout?: () => Promise<void>;
 }
 
 export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
-  const [isProjectState, setIsImportState] = useState<boolean>(true);
+  const [componentIdentifier, setComponenetIdentifier] =
+    useState<boolean>(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [formProps, setFormProps] = useState<formPropsType>({
+    isActive: false,
+    title: "",
+    description: "",
+    tech_stack: [],
+    live_link: "",
+    price: 0,
+    project_images: [],
+    project_type: "",
+    project_video: "",
+  });
 
   const {
     data: initialData,
@@ -19,13 +39,42 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
     isError: initialDataError,
   } = useInitialProjectDataQuery({ logout });
 
+  const getData = useSpecificProjectDataQuery({ logout });
+
   const { mutateAsync: toggleListingMutate } = useToggleProjectListingMutation({
+    logout,
+  });
+
+  const { mutateAsync: deleteProjectMutate } = useDeleteProjectListingMutation({
     logout,
   });
 
   const handleToggleProjectListing = async (title: string) => {
     const response = await toggleListingMutate(title);
     return response;
+  };
+
+  const handleDeleteProjectListing = async (title: string) => {
+    const response = await deleteProjectMutate(title);
+    return response;
+  };
+
+  const handleStateChange = async (identifier: string, title: string) => {
+    setIsTransitioning(true);
+    if (identifier == "projects") setComponenetIdentifier(true);
+    else setComponenetIdentifier(false);
+
+    try {
+      const data = await getData(title || "");
+      setFormProps((prev) => {
+        return { ...prev, ...data?.data };
+      });
+      setIsTransitioning(false);
+    } catch {
+      setIsTransitioning(false);
+      if (identifier == "projects") setComponenetIdentifier(false);
+      else setComponenetIdentifier(true);
+    }
   };
 
   return (
@@ -38,18 +87,20 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
 
           <TransitionWrapper
             isTransitioning={isTransitioning}
-            identifier={isProjectState ? "projects" : "form"}
+            identifier={componentIdentifier ? "projects" : "form"}
           >
-            {isProjectState &&
-            initialData &&
-            !initialDataLoading &&
-            !initialDataError ? (
+            {componentIdentifier ? (
               <ListedProjects
-                initialProjectData={initialData.data}
+                initialProjectData={initialData?.data}
+                isLoading={initialDataLoading}
+                isError={initialDataError}
                 handleToggleProjectListing={handleToggleProjectListing}
+                handleDeleteProjectListing={handleDeleteProjectListing}
+                handleStateChange={handleStateChange}
+                setFormProps={setFormProps}
               />
             ) : (
-              <>asdasd</>
+              <ProjectModificationForm formProps={formProps} />
             )}
           </TransitionWrapper>
         </div>

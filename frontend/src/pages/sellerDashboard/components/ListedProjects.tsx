@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { ListedProjectsProps } from "../utils/types";
 import { Toggle } from "@/components/ui/toggle";
@@ -8,16 +8,37 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Eye, EyeOff, Edit } from "lucide-react";
+import { Eye, EyeOff, Edit, AlertTriangle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ListedProjects = ({
   initialProjectData,
+  isLoading,
+  isError,
   handleToggleProjectListing,
+  handleDeleteProjectListing,
+  handleStateChange,
+  setFormProps,
 }: ListedProjectsProps) => {
-  const [projectStatuses, setProjectStatuses] = useState(
-    initialProjectData.map((data) => data.isActive)
-  );
+  const [projectStatuses, setProjectStatuses] = useState<Array<boolean>>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (initialProjectData && !isLoading && !isError) {
+      setProjectStatuses(initialProjectData.map((data) => data.isActive));
+    }
+  }, [initialProjectData, isLoading, isError]);
 
   const handleProjectToggle = async (index: number) => {
     const updatedStatuses = [...projectStatuses];
@@ -28,9 +49,34 @@ const ListedProjects = ({
     if (response) setProjectStatuses(updatedStatuses);
   };
 
+  const handleDeleteClick = (index: number) => {
+    setProjectToDelete(index);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (projectToDelete !== null) {
+      const response = await handleDeleteProjectListing(
+        initialProjectData[projectToDelete].title
+      );
+      if (response) initialProjectData.splice(projectToDelete, 1);
+    }
+    setDeleteDialogOpen(false);
+    setProjectToDelete(null);
+  };
+
   const truncateText = (text: string, maxLength: number) => {
     if (!text) return "";
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  };
+
+  const handleEditProject = (idx: number) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { project_images: _, ...other_props } = initialProjectData[idx];
+    setFormProps((prev) => {
+      return { ...prev, ...other_props };
+    });
+    handleStateChange("form", other_props.title);
   };
 
   const renderTechStack = (techStack: string[], maxVisible: number = 3) => {
@@ -63,7 +109,7 @@ const ListedProjects = ({
     );
   };
 
-  return (
+  return initialProjectData && !isLoading && !isError ? (
     <TooltipProvider>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6 p-6">
         {initialProjectData.map((project, idx) => (
@@ -104,7 +150,7 @@ const ListedProjects = ({
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => {}}
+                      onClick={() => handleEditProject(idx)}
                       className="bg-gray-700 hover:bg-gray-600 rounded-full p-1"
                     >
                       <Edit className="h-5 w-5 text-gray-300" />
@@ -115,6 +161,25 @@ const ListedProjects = ({
                     className="bg-gray-700 text-gray-200 border-gray-600"
                   >
                     Modify Project
+                  </TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteClick(idx)}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-full p-1"
+                    >
+                      <Trash2 className="h-5 w-5 text-red-400" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="bg-gray-700 text-gray-200 border-gray-600"
+                  >
+                    Delete Project
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -152,6 +217,64 @@ const ListedProjects = ({
             </div>
           </MagicCard>
         ))}
+
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent className="bg-gray-800 border border-gray-700">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-gray-200">
+                Confirm Project Deletion
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-gray-400">
+                Are you sure you want to delete this project? This action cannot
+                be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="bg-gray-700 text-gray-200 hover:bg-gray-600">
+                No, Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 text-white hover:bg-red-700"
+                onClick={handleDeleteConfirm}
+              >
+                Yes, Delete Project
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </TooltipProvider>
+  ) : (
+    <ErrorScreen />
+  );
+};
+
+const ErrorScreen: React.FC = () => {
+  return (
+    <TooltipProvider>
+      <div>
+        <MagicCard
+          className="bg-gray-800 border border-gray-700 rounded-2xl p-6 transition-all duration-300 ease-in-out flex flex-col items-center justify-center"
+          gradientSize={300}
+          gradientColor="#EF4444"
+          gradientOpacity={0.2}
+        >
+          <div className="text-center">
+            <div className="mb-6 flex justify-center">
+              <AlertTriangle
+                className="h-16 w-16 text-red-500"
+                strokeWidth={1.5}
+              />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-200 mb-4">
+              Failed to Load Projects
+            </h2>
+            <p className="text-gray-400 mb-4 max-w-xs">
+              We encountered an issue retrieving your project information.
+              Please check your connection or try again later.
+            </p>
+          </div>
+        </MagicCard>
       </div>
     </TooltipProvider>
   );

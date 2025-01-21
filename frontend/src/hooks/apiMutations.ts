@@ -100,9 +100,30 @@ const useToggleProjectListingMutation = ({ logout }: mutationParameter) => {
   });
 };
 
+const useDeleteProjectListingMutation = ({ logout }: mutationParameter) => {
+  const { handleError } = useHandleError({ logout });
+
+  return useMutation({
+    mutationFn: async (title: string) => {
+      try {
+        await axios.delete(
+          `${backend_uri}/projects/deleteProjectListing?title=${title}`,
+          { withCredentials: true }
+        );
+        successToast("Project was unlisted permanantly");
+        return true;
+      } catch (error) {
+        handleError(error);
+        return false;
+      }
+    },
+  });
+};
+
 export {
   useProfileUpdateMutation,
   usePreSignedUrlForProjectMediaUploadMutation,
   useValidateMediaUploadAndStoreProjectMutation,
   useToggleProjectListingMutation,
+  useDeleteProjectListingMutation,
 };

@@ -127,6 +127,19 @@ export interface ProjectListingFormProps {
   setActiveTab: (curr: string) => void;
 }
 
+export interface ProjectModificationFormProps {
+  formProps: formPropsType | undefined;
+  setFormProps: (curr: PrivateRepoData) => void;
+  handleGetPreSignedUrls: (
+    metadata: Array<ProjectMediaMetadata>
+  ) => Promise<unknown>;
+  handleValidateUploadAndStoreProject: (
+    data: projectListingValidatedFormData
+  ) => Promise<unknown>;
+  setActiveTab: (curr: string) => void;
+  logout?: () => Promise<void>;
+}
+
 export interface ReviewSectionProps {
   review: string;
   rating: number;
@@ -220,4 +233,21 @@ export interface InitialProjectData {
 export interface ListedProjectsProps {
   initialProjectData: Array<InitialProjectData>;
   handleToggleProjectListing: (title: string) => Promise<unknown>;
+  handleDeleteProjectListing: (title: string) => Promise<unknown>;
+  handleStateChange: (identifier: string, title: string) => void;
+  isLoading: boolean;
+  isError: boolean;
+  setFormProps: React.Dispatch<React.SetStateAction<formPropsType>>;
+}
+
+export interface formPropsType {
+  isActive: boolean;
+  title: string;
+  description: string;
+  tech_stack: Array<string>;
+  live_link: string;
+  price: number;
+  project_images: Array<string>;
+  project_type: string;
+  project_video: string;
 }

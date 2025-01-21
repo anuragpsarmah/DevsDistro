@@ -8,6 +8,7 @@ import {
   getInitialProjectData,
   toggleProjectListing,
   getSpecificProjectData,
+  deleteProjectListing,
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
 import { toggleProjectListingLimiter } from "../utils/rateLimitConfig.util";
@@ -35,3 +36,6 @@ projectRouter
 projectRouter
   .route("/toggleProjectListing")
   .patch(toggleProjectListingLimiter, sessionValidation, toggleProjectListing);
+projectRouter
+  .route("/deleteProjectListing")
+  .delete(sessionValidation, deleteProjectListing);

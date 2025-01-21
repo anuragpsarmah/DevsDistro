@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import asyncHandler from "../utils/asyncHandler.util";
 import ApiError from "../utils/ApiError.util";
 import response from "../utils/response.util";
@@ -366,7 +366,9 @@ const getSpecificProjectData = asyncHandler(
         const projectData = await Project.findOne({
           userid,
           title: req.query.title,
-        }).select("-_id -__v -createdAt -updatedAt -userid");
+        }).select(
+          "-_id -__v -createdAt -updatedAt -userid -title -description -isActive -tech_stack"
+        );
 
         if (!projectData) {
           response(res, 404, "Invalid project title. No such records found.");
@@ -414,6 +416,30 @@ const toggleProjectListing = asyncHandler(
   }
 );
 
+const deleteProjectListing = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (req.user) {
+      const userid = new mongoose.Types.ObjectId(req.user._id);
+
+      try {
+        const deleteResponse = await Project.deleteOne({
+          userid,
+          title: req.query.title,
+        });
+
+        if (deleteResponse.deletedCount == 0)
+          response(res, 404, "No such project was listed. Invalid Request.");
+        else response(res, 200, "Project was deleted successfully");
+        return;
+      } catch (error) {
+        response(res, 500, "Failed to delete listed project. Try again later.");
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
+    }
+  }
+);
+
 export {
   getPrivateRepos,
   getPreSignedUrlForProjectMediaUpload,
@@ -422,4 +448,5 @@ export {
   getInitialProjectData,
   getSpecificProjectData,
   toggleProjectListing,
+  deleteProjectListing,
 };

@@ -194,24 +194,22 @@ const useInitialProjectDataQuery = ({ logout }: queryParameter) => {
 
 const useSpecificProjectDataQuery = ({ logout }: queryParameter) => {
   const { handleError } = useHandleError({ logout });
-  return useQuery({
-    queryKey: ["specificProjectDataQuery"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${backend_uri}/projects/getSpecificProjectData`,
-          {
-            withCredentials: true,
-          }
-        );
-        return response.data;
-      } catch (error) {
-        handleError(error);
-        throw error;
-      }
-    },
-    refetchOnWindowFocus: false,
-  });
+  const getData = async (title: string) => {
+    try {
+      const response = await axios.get(
+        `${backend_uri}/projects/getSpecificProjectData?title=${title}`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      handleError(error);
+      throw error;
+    }
+  };
+
+  return getData;
 };
 
 export {
