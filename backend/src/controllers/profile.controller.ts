@@ -6,8 +6,6 @@ import response from "../utils/response.util";
 import { SiteReview } from "../models/siteReview.model";
 import mongoose from "mongoose";
 import { profileInformationSchema } from "../validation/profile.validation";
-import { redisClient } from "..";
-import logger from "../logger/winston.logger";
 
 const getProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -86,25 +84,23 @@ const updateProfileInformation = asyncHandler(
         user.profile_visibility = profile_visibility;
         await user.save();
 
-        if (review_stars >= 4 && review_description.length > 120) {
-          const featuredUserReview = await SiteReview.findOne({
-            username: req.user.username,
-          });
+        const siteUserReview = await SiteReview.findOne({
+          username: req.user.username,
+        });
 
-          if (featuredUserReview) {
-            featuredUserReview.job_role = job_role;
-            featuredUserReview.review_description = review_description;
-            featuredUserReview.review_stars = review_stars;
-            await featuredUserReview.save();
-          } else {
-            await SiteReview.create({
-              username: req.user.username,
-              profile_image_url: req.user.profileImageUrl,
-              job_role,
-              review_description,
-              review_stars,
-            });
-          }
+        if (siteUserReview) {
+          siteUserReview.job_role = job_role;
+          siteUserReview.review_description = review_description;
+          siteUserReview.review_stars = review_stars;
+          await siteUserReview.save();
+        } else {
+          await SiteReview.create({
+            username: req.user.username,
+            profile_image_url: req.user.profileImageUrl,
+            job_role,
+            review_description,
+            review_stars,
+          });
         }
 
         response(res, 200, "User profile information updated successfully");
