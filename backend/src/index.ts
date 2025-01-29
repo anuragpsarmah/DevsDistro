@@ -2,11 +2,9 @@ import dotenv from "dotenv";
 import dbConnect from "./initializations/db-connect";
 import { app } from "./app";
 import logger from "./logger/winston.logger";
-import { trieInitialization } from "./initializations/trie-initialization";
 import { redisInitialization } from "./initializations/redis-initialization";
 import { Redis } from "ioredis";
 import S3Service from "./utils/S3Service.util";
-import { Trie } from "./utils/CityApiTrie.util";
 
 dotenv.config();
 
@@ -14,16 +12,9 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 const DBretiers = process.env.RETRIES ? Number(process.env.RETRIES) : 3;
 
 export let redisClient: Redis;
-export let cityTrie: Trie;
 export let s3Service: S3Service;
 
 (async () => {
-  try {
-    cityTrie = await trieInitialization();
-  } catch (error) {
-    process.exit(1);
-  }
-
   try {
     redisClient = await redisInitialization();
   } catch (error) {

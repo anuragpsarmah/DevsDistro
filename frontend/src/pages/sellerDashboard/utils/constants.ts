@@ -59,7 +59,7 @@ export const JOB_ROLES = [
 ] as const;
 
 export const MAX_REVIEW_LENGTH = 200;
-export const CITY_SEARCH_DELAY = 500;
+export const CITY_SEARCH_DELAY = 300;
 export const MAX_DESCRIPTION_LENGTH = 1000;
 export const MAX_IMAGES = 5;
 

@@ -32,11 +32,11 @@ export default function AccountSettingsTab({
   const [selectedJobRole, setSelectedJobRole] = useState("");
   const [activeUser] = useRecoilState(user);
 
-  const backend_uri = import.meta.env.VITE_BACKEND_URI;
+  const cities_api_uri = import.meta.env.VITE_CITIES_API_URI;
 
   const { cities, isLoadingCities, cityError } = useCitySearch({
     cityInput,
-    backend_uri,
+    cities_api_uri,
   });
 
   const {

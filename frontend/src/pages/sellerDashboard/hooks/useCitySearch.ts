@@ -4,12 +4,12 @@ import { CITY_SEARCH_DELAY } from "../utils/constants";
 
 interface UseCitySearchProps {
   cityInput: string;
-  backend_uri: string;
+  cities_api_uri: string;
 }
 
 export const useCitySearch = ({
   cityInput,
-  backend_uri,
+  cities_api_uri,
 }: UseCitySearchProps) => {
   const [cities, setCities] = useState<string[]>([]);
   const [isLoadingCities, setIsLoadingCities] = useState(false);
@@ -27,7 +27,7 @@ export const useCitySearch = ({
 
       try {
         const response = await axios.get(
-          `${backend_uri}/cities/searchCities?q=${cityInput}`
+          `${cities_api_uri}/searchCities?q=${cityInput}`
         );
         setCities(response.data.filteredResults || []);
       } catch (error) {
@@ -41,7 +41,7 @@ export const useCitySearch = ({
 
     const timeoutInstance = setTimeout(fetchCities, CITY_SEARCH_DELAY);
     return () => clearTimeout(timeoutInstance);
-  }, [cityInput, backend_uri]);
+  }, [cityInput, cities_api_uri]);
 
   return { cities, isLoadingCities, cityError };
 };

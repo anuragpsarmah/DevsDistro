@@ -38,7 +38,6 @@ app.get("/memory", healthMemoryCheckLimiter, (req, res) => {
 import { authRouter } from "./routes/auth.routes";
 import { profileRouter } from "./routes/profile.routes";
 import { salesRouter } from "./routes/sales.routes";
-import { citiesRouter } from "./routes/cities.routes";
 import { reviewRouter } from "./routes/reviews.routes";
 import { projectRouter } from "./routes/projects.routes";
 
@@ -47,4 +46,3 @@ app.use("/api/profile", profileRouter);
 app.use("/api/sales", salesRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/projects", projectRouter);
-app.use("/api/cities", citiesRouter);

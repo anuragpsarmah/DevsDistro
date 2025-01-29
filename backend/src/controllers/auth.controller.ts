@@ -8,8 +8,6 @@ import jwt from "jsonwebtoken";
 import axios from "axios";
 import mongoose from "mongoose";
 import logger from "../logger/winston.logger";
-import { profileInformationPrefix } from "../utils/redisPrefixGenerator.util";
-import { redisClient } from "..";
 
 const createSessionToken = (
   userid: mongoose.Types.ObjectId,

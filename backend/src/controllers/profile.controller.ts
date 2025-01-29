@@ -7,7 +7,6 @@ import { SiteReview } from "../models/siteReview.model";
 import mongoose from "mongoose";
 import { profileInformationSchema } from "../validation/profile.validation";
 import { redisClient } from "..";
-import { profileInformationPrefix } from "../utils/redisPrefixGenerator.util";
 import logger from "../logger/winston.logger";
 
 const getProfileInformation = asyncHandler(
@@ -29,18 +28,6 @@ const getProfileInformation = asyncHandler(
           reviewStar: user.review_stars,
           profileVisibility: user.profile_visibility,
         };
-
-        try {
-          const redisKey = profileInformationPrefix(req.user._id);
-          const CACHE_DURATION = 60 * 60 * 24;
-          await redisClient.setex(
-            redisKey,
-            CACHE_DURATION,
-            JSON.stringify(responseObj)
-          );
-        } catch (error) {
-          logger.error("Redis caching error:", error);
-        }
 
         response(res, 200, "User info fetched successfully", responseObj);
       } catch (error) {
@@ -118,29 +105,6 @@ const updateProfileInformation = asyncHandler(
               review_stars,
             });
           }
-        }
-
-        try {
-          const redisKey = profileInformationPrefix(String(user._id));
-          const CACHE_DURATION = 60 * 60 * 24;
-
-          const existingCache = await redisClient.get(redisKey);
-          if (existingCache) {
-            const existingCacheObj = JSON.parse(existingCache);
-            existingCacheObj.jobRole = job_role;
-            existingCacheObj.reviewDescription = review_description;
-            existingCacheObj.reviewStar = review_stars;
-            existingCacheObj.location = location;
-            existingCacheObj.profileVisibility = profile_visibility;
-
-            await redisClient.setex(
-              redisKey,
-              CACHE_DURATION,
-              JSON.stringify(existingCacheObj)
-            );
-          }
-        } catch (error) {
-          logger.error("Redis caching error:", error);
         }
 
         response(res, 200, "User profile information updated successfully");
