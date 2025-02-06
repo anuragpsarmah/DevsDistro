@@ -109,7 +109,19 @@ const ListedProjects = ({
     );
   };
 
-  return initialProjectData && !isLoading && !isError ? (
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid"></div>
+      </div>
+    );
+  }
+
+  if (isError) return <ErrorScreen />;
+
+  if (initialProjectData.length === 0) return <NoProjectsScreen />;
+
+  return (
     <TooltipProvider>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6 p-6">
         {initialProjectData.map((project, idx) => (
@@ -244,8 +256,34 @@ const ListedProjects = ({
         </AlertDialog>
       </div>
     </TooltipProvider>
-  ) : (
-    <ErrorScreen />
+  );
+};
+
+const NoProjectsScreen: React.FC = () => {
+  return (
+    <TooltipProvider>
+      <div>
+        <MagicCard
+          className="bg-gray-800 border border-gray-700 rounded-2xl p-6 transition-all duration-300 ease-in-out flex flex-col items-center justify-center"
+          gradientSize={300}
+          gradientColor="#3B82F6"
+          gradientOpacity={0.2}
+        >
+          <div className="text-center">
+            <div className="mb-6 flex justify-center">
+              <Edit className="h-16 w-16 text-blue-500" strokeWidth={1.5} />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-200 mb-4">
+              No Projects Listed
+            </h2>
+            <p className="text-gray-400 mb-4 max-w-xs">
+              Your project listing portfolio is empty. Start by listing your
+              first project.
+            </p>
+          </div>
+        </MagicCard>
+      </div>
+    </TooltipProvider>
   );
 };
 

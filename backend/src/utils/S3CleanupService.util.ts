@@ -26,14 +26,14 @@ export default class S3CleanupService {
       logger.error("Error processing expired job:", error);
     }
     if (cleanupCount) {
-      logger.worker("Cleanup completed for " + cleanupCount + " objects");
+      logger.worker("Cleanup completed for " + cleanupCount + " items");
     }
   }
 
   static async startWorker() {
     while (true) {
       await this.processExpiredJobs();
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
 }
