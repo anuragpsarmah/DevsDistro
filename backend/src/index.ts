@@ -5,6 +5,7 @@ import logger from "./logger/winston.logger";
 import { redisInitialization } from "./initializations/redis-initialization";
 import { Redis } from "ioredis";
 import S3Service from "./utils/S3Service.util";
+import S3CleanupService from "./utils/S3CleanupService.util";
 
 dotenv.config();
 
@@ -34,6 +35,12 @@ export let s3Service: S3Service;
   }
 
   s3Service = new S3Service();
+
+  S3CleanupService.startWorker().catch((err) => {
+    logger.error("Failed to start cleanup worker:", err);
+    process.exit(1);
+  });
+  logger.info("⚒️  Cleanup Worker is running...");
 
   app.listen(PORT, () => logger.info(`⚙️  Server is running on PORT: ${PORT}`));
 })();

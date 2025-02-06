@@ -1,11 +1,26 @@
 import winston from "winston";
 
-const levels = {
+interface CustomLevels extends winston.config.AbstractConfigSetLevels {
+  error: number;
+  warn: number;
+  info: number;
+  http: number;
+  worker: number;
+  debug: number;
+  [key: string]: number;
+}
+
+interface CustomLogger extends winston.Logger {
+  worker: winston.LeveledLogMethod;
+}
+
+const levels: CustomLevels = {
   error: 0,
   warn: 1,
   info: 2,
   http: 3,
-  debug: 4,
+  worker: 4,
+  debug: 5,
 };
 
 const level = () => {
@@ -18,6 +33,7 @@ const colors = {
   warn: "yellow",
   info: "blue",
   http: "magenta",
+  worker: "green",
   debug: "white",
 };
 
@@ -39,6 +55,6 @@ const logger = winston.createLogger({
   levels,
   format,
   transports,
-});
+}) as CustomLogger;
 
 export default logger;

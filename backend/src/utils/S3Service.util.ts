@@ -1,6 +1,5 @@
 import {
   S3Client,
-  GetObjectCommand,
   PutObjectCommand,
   HeadObjectCommand,
   DeleteObjectCommand,
@@ -9,6 +8,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import { FileMetaData, UploadMetadata } from "../types/types";
 import { redisClient } from "..";
+import logger from "../logger/winston.logger";
 
 export default class S3Service {
   private ALLOWED_TYPES: { [key: string]: string[] };
@@ -83,10 +83,26 @@ export default class S3Service {
       expectedSize: fileSize,
     };
 
+    const expiryTimestamp = Date.now() + 320 * 1000;
+
     const redisUploadKey = this.getRedisUploadKey(key);
     try {
       await redisClient.setex(redisUploadKey, 420, JSON.stringify(metadata));
+      await redisClient.zadd(
+        "media-cleanup-schedule",
+        expiryTimestamp,
+        redisUploadKey
+      );
     } catch (error) {
+      try {
+        await redisClient.del(redisUploadKey);
+        await redisClient.zrem("media-cleanup-schedule", redisUploadKey);
+      } catch (cleanupError) {
+        logger.error(
+          "Failed to cleanup after error during pre-signed url generation:",
+          cleanupError
+        );
+      }
       throw error;
     }
 
@@ -104,7 +120,7 @@ export default class S3Service {
     }
 
     if (!metadataStr) {
-      throw new Error("Invalid Key");
+      throw new Error("Invalid key or key expired");
     }
 
     const metadata: UploadMetadata = JSON.parse(metadataStr);
@@ -127,13 +143,13 @@ export default class S3Service {
         responseFileSize > metadata.expectedSize ||
         responseFileSize > this.MAX_FILE_SIZE[responseContentType]
       ) {
-        await this.deleteObject(key);
         throw new Error("Invalid upload. File deleted.");
       }
 
       const cloudFrontUrl = `${process.env.S3_CLOUDFRONT_DISTRIBUTION as string}/${key}`;
 
       await redisClient.del(redisUploadKey);
+      await redisClient.zrem("media-cleanup-schedule", redisUploadKey);
 
       return cloudFrontUrl;
     } catch (error) {

@@ -16,25 +16,6 @@ import {
 } from "../validation/projects.validation";
 import { Project } from "../models/project.model";
 
-const cleanupOperation = async (keys: string[]) => {
-  try {
-    for (const key of keys) {
-      const uploadKey = "s3upload_" + key;
-      const keyStatus = await redisClient.get(uploadKey);
-
-      if (keyStatus) {
-        try {
-          await s3Service.deleteObject(key);
-        } catch (deleteError) {
-          logger.error(`Failed to delete object ${key}:`, deleteError);
-        }
-      }
-    }
-  } catch (cleanupError) {
-    logger.error("Error during cleanup operation:", cleanupError);
-  }
-};
-
 const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
   const { ENCRYPTION_KEY_32, ENCRYPTION_IV } = process.env;
 
@@ -195,12 +176,6 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
           `${preSignedUrls.length} Pre-signed upload urls generated`,
           preSignedUrls
         );
-
-        setTimeout(() => {
-          cleanupOperation(keys).catch((error) => {
-            logger.error("Failed to initiate cleanup operation:", error);
-          });
-        }, 320 * 1000);
       } catch (error) {
         if (error instanceof Error) throw new ApiError(error.message, 400);
         else throw new ApiError("Something went wrong", 500);
@@ -278,7 +253,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
 
       projectFormData.project_images = preSignedImageGetUrls;
       projectFormData.project_video = preSignedVideoGetUrl;
-      projectFormData.userid = req.user._id;
+      projectFormData.userid = new mongoose.Types.ObjectId(req.user._id);
 
       try {
         await Project.create(projectFormData);
@@ -422,10 +397,37 @@ const deleteProjectListing = asyncHandler(
       const userid = new mongoose.Types.ObjectId(req.user._id);
 
       try {
+        const projectData = await Project.findOne({
+          userid,
+          title: req.query.title,
+        }).select("project_images project_video -_id");
+
         const deleteResponse = await Project.deleteOne({
           userid,
           title: req.query.title,
         });
+
+        const toBeDeletedKeys = [
+          ...(projectData?.project_images ? projectData.project_images : []),
+          ...(projectData?.project_video ? [projectData.project_video] : []),
+        ];
+
+        for (const key of toBeDeletedKeys) {
+          try {
+            const S3Uploadkey = key.replace(
+              `${process.env.S3_CLOUDFRONT_DISTRIBUTION as string}/`,
+              ""
+            );
+
+            await redisClient.zadd(
+              "media-cleanup-schedule",
+              Date.now(),
+              S3Uploadkey
+            );
+          } catch (error) {
+            logger.error("Failed to delete object:", error);
+          }
+        }
 
         if (deleteResponse.deletedCount == 0)
           response(res, 404, "No such project was listed. Invalid Request.");
