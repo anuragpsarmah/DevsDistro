@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import logger from "../logger/winston.logger";
+import logger from "../logger/logger";
 
 const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const startTime = performance.now();

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import dbConnect from "./initializations/db-connect";
 import { app } from "./app";
-import logger from "./logger/winston.logger";
+import logger from "./logger/logger";
 import { redisInitialization } from "./initializations/redis-initialization";
 import { Redis } from "ioredis";
 import S3Service from "./utils/S3Service.util";

@@ -8,7 +8,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import crypto from "crypto";
 import { FileMetaData, UploadMetadata } from "../types/types";
 import { redisClient } from "..";
-import logger from "../logger/winston.logger";
+import logger from "../logger/logger";
 
 export default class S3Service {
   private ALLOWED_TYPES: { [key: string]: string[] };

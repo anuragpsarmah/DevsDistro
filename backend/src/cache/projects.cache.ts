@@ -3,7 +3,7 @@ import asyncHandler from "../utils/asyncHandler.util";
 import { privateRepoPrefix } from "../utils/redisPrefixGenerator.util";
 import { redisClient } from "..";
 import response from "../utils/response.util";
-import logger from "../logger/winston.logger";
+import logger from "../logger/logger";
 import ApiError from "../utils/ApiError.util";
 
 const getPrivateReposFromCache = asyncHandler(

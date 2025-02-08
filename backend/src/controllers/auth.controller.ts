@@ -7,7 +7,7 @@ import ApiError from "../utils/ApiError.util";
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import mongoose from "mongoose";
-import logger from "../logger/winston.logger";
+import logger from "../logger/logger";
 
 const createSessionToken = (
   userid: mongoose.Types.ObjectId,

@@ -8,7 +8,7 @@ import { decrypt } from "../utils/encryption.util";
 import axios from "axios";
 import { FileMetaData } from "../types/types";
 import { redisClient, s3Service } from "..";
-import logger from "../logger/winston.logger";
+import logger from "../logger/logger";
 import { privateRepoPrefix } from "../utils/redisPrefixGenerator.util";
 import {
   fileMetadataSchema,

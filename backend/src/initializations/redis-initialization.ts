@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-import logger from "../logger/winston.logger";
+import logger from "../logger/logger";
 
 export const redisInitialization = async () => {
   const client = new Redis({
