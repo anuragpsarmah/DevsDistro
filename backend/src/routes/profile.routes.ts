@@ -9,10 +9,7 @@ export const profileRouter = Router();
 
 profileRouter
   .route("/getProfileInformation")
-  .get(
-    sessionValidation,
-    getProfileInformation
-  );
+  .get(sessionValidation, getProfileInformation);
 profileRouter
   .route("/updateProfileInformation")
   .put(sessionValidation, updateProfileInformation);
