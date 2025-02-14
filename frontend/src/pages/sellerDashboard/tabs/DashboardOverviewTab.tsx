@@ -4,14 +4,14 @@ import {
   useCommonSalesInformationQuery,
   useYearlySalesInformationQuery,
 } from "@/hooks/apiQueries";
-import Chart from "../components/Chart";
-import { YearSelector } from "../components/YearSelector";
-import { SalesMetrics } from "../components/SalesMetrics";
+import Chart from "../main-components/Chart";
+import { YearSelector } from "../main-components/YearSelector";
 import { useChartDimensions } from "../hooks/useChartDimensions";
 import { useYearOptions } from "../hooks/useYearOptions";
 import { INITIAL_CHART_DATA, INITIAL_SALES_INFO } from "../utils/constants";
 import type { ChartDataObject } from "../utils/types";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
+import { SalesMetrics } from "../main-components/SalesMetrics";
 
 interface DashboardOverviewTabProps {
   logout?: () => Promise<void>;

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useProfileInformationQuery } from "@/hooks/apiQueries";
 import { useProfileUpdateMutation } from "@/hooks/apiMutations";
-import { ProfileHeader } from "../components/ProfileHeader";
-import { ProfileHeaderSkeleton } from "../components/Skeletons";
+import { ProfileHeader } from "../main-components/ProfileHeader";
+import { ProfileHeaderSkeleton } from "../sub-components/Skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCitySearch } from "../hooks/useCitySearch";
 import {
@@ -11,7 +11,7 @@ import {
   INITIAL_PROFILE_INFORMATION_DATA,
 } from "../utils/constants";
 import type { ProfileInformation } from "../utils/types";
-import AccountInformation from "../components/AccountInformation";
+import AccountInformation from "../main-components/AccountInformation";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import { useRecoilState } from "recoil";
 import { user } from "@/utils/atom";

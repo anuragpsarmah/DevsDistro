@@ -1,6 +1,6 @@
 import { useState } from "react";
 import BackgroundDots from "@/components/ui/backgroundDots";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./sub-components/Sidebar";
 import AccountSettingsTab from "./tabs/AccountSettingsTab";
 import DashboardOverviewTab from "./tabs/DashboardOverviewTab";
 import { useNavigate } from "react-router-dom";

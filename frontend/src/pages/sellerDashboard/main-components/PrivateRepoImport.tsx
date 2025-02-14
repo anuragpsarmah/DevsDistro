@@ -4,9 +4,9 @@ import { Search, Lock, Github, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RepoImportSkeleton } from "./Skeletons";
+import { RepoImportSkeleton } from "../sub-components/Skeletons";
 
-export default function RepoImport({
+export default function PrivateRepoImport({
   userData,
   privateRepoData,
   repoDataLoading,

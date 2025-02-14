@@ -10,9 +10,9 @@ import {
   projectListingValidatedFormData,
   ProjectMediaMetadata,
 } from "../utils/types";
-import RepoImport from "../components/PrivateRepoImport";
-import ProjectListingForm from "../components/ProjectListingForm";
-import { TransitionWrapper } from "../components/TransitionWrapper";
+import PrivateRepoImport from "../main-components/PrivateRepoImport";
+import ProjectListingForm from "../main-components/ProjectListingForm";
+import { TransitionWrapper } from "../sub-components/TransitionWrapper";
 import {
   usePreSignedUrlForProjectMediaUploadMutation,
   useValidateMediaUploadAndStoreProjectMutation,
@@ -120,7 +120,7 @@ export default function ListNewProjectTab({
             identifier={isImportState ? "import" : "form"}
           >
             {isImportState ? (
-              <RepoImport
+              <PrivateRepoImport
                 userData={userData}
                 privateRepoData={
                   !repoDataLoading && !repoDataError && repoData

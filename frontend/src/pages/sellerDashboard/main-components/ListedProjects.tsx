@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/tooltip";
 import { Eye, EyeOff, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ErrorScreen } from "./ErrorScreen";
-import { NoProjectsScreen } from "./NoProjectsScreen";
-import { RenderTechStack } from "./RenderTechStack";
-import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { ErrorScreen } from "../sub-components/ErrorScreen";
+import { NoProjectsScreen } from "../sub-components/NoProjectsScreen";
+import { RenderTechStack } from "../sub-components/RenderTechStack";
+import { DeleteConfirmationModal } from "../sub-components/DeleteConfirmationModal";
 
 const ListedProjects = ({
   initialProjectData,

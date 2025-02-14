@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { TransitionWrapper } from "../components/TransitionWrapper";
+import { TransitionWrapper } from "../sub-components/TransitionWrapper";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import {
   useInitialProjectDataQuery,
   useSpecificProjectDataQuery,
 } from "@/hooks/apiQueries";
-import ListedProjects from "../components/ListedProjects";
+import ListedProjects from "../main-components/ListedProjects";
 import {
   useDeleteProjectListingMutation,
   usePreSignedUrlForProjectMediaUploadMutation,
   useToggleProjectListingMutation,
   useValidateMediaUploadAndStoreProjectMutation,
 } from "@/hooks/apiMutations";
-import ProjectModificationForm from "../components/ProjectModificationForm";
+import ProjectModificationForm from "../main-components/ProjectModificationForm";
 import { formPropsType } from "../utils/types";
 import {
   projectListingValidatedFormData,

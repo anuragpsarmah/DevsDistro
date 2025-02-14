@@ -1,46 +1,66 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Import } from "lucide-react";
-import { ProjectListingFormProps, ProjectType } from "../utils/types";
-import UploadOverlay from "./UploadOverlay";
-import ProjectMediaUploader from "./ProjectMediaUploader";
-import ProjectGeneralInfo from "./ProjectGeneralInfo";
-import ProjectPriceSelection from "./ProjectPriceSelection";
+import { Undo2 } from "lucide-react";
+import { ProjectModificationFormProps, ProjectType } from "../utils/types";
 import { useProjectSubmission } from "../hooks/useProjectSubmission";
+import { useQueryClient } from "@tanstack/react-query";
+import UploadOverlay from "../sub-components/UploadOverlay";
+import ProjectGeneralInfo from "../sub-components/ProjectGeneralInfo";
+import ProjectMediaUploader from "../sub-components/ProjectMediaUploader";
+import ProjectPriceSelection from "../sub-components/ProjectPriceSelection";
 
-export default function ProjectListingForm({
+export default function ProjectModificationForm({
   formProps,
   setFormProps,
+  handleStateChange,
   handleGetPreSignedUrls,
   handleValidateUploadAndStoreProject,
   setActiveTab,
-}: ProjectListingFormProps) {
+}: ProjectModificationFormProps) {
   const title = useRef<HTMLInputElement | null>(null);
   const [description, setDescription] = useState(formProps.description || "");
   const [projectType, setProjectType] =
     useState<ProjectType>("Web Application");
-  const [techStack, setTechStack] = useState<string[]>([formProps.language]);
+  const [techStack, setTechStack] = useState<string[]>(formProps.tech_stack);
   const [techInput, setTechInput] = useState("");
-  const [liveLink, setLiveLink] = useState("");
+  const [liveLink, setLiveLink] = useState(formProps.live_link || "");
   const [images, setImages] = useState<File[]>([]);
   const [video, setVideo] = useState<File | null>(null);
-  const [price, setPrice] = useState(299);
+  const [price, setPrice] = useState(formProps.price || 299);
+  const [existingImages, setExistingImages] = useState<string[]>(
+    formProps.project_images
+  );
+  const [existingVideo, setExistingVideo] = useState<string | null>(
+    formProps.project_video || null
+  );
+
+  const queryClient = useQueryClient();
+
+  const handleReturnToAllListings = () => {
+    queryClient.invalidateQueries({ queryKey: ["initialProjectDataQuery"] });
+
+    setFormProps({
+      isActive: false,
+      title: "",
+      description: "",
+      tech_stack: [],
+      live_link: "",
+      price: 0,
+      project_images: [],
+      project_type: "",
+      project_video: "",
+    });
+
+    handleStateChange("projects");
+  };
 
   const { handleSubmit, isSubmitting, uploadProgress } = useProjectSubmission({
     handleGetPreSignedUrls,
     handleValidateUploadAndStoreProject,
-    modificationType: "new",
+    modificationType: "existing",
     setActiveTab,
+    handleReturnToAllListings,
   });
-
-  const handleDifferentProjectImport = () => {
-    setFormProps({
-      name: "",
-      description: "",
-      language: "",
-      updated_at: "",
-    });
-  };
 
   const onSubmit = () => {
     handleSubmit({
@@ -52,6 +72,8 @@ export default function ProjectListingForm({
       images,
       video,
       price,
+      existingImages,
+      existingVideo,
     });
   };
 
@@ -66,10 +88,10 @@ export default function ProjectListingForm({
               type="button"
               variant="outline"
               className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
-              onClick={handleDifferentProjectImport}
+              onClick={handleReturnToAllListings}
             >
-              <Import className="w-4 h-4" />
-              Import Different Project
+              <Undo2 className="w-4 h-4" />
+              Undo Changes
             </Button>
           </div>
 
@@ -79,7 +101,7 @@ export default function ProjectListingForm({
             setTechStack={setTechStack}
             setProjectType={setProjectType}
             setLiveLink={setLiveLink}
-            defaultTitle={formProps.name}
+            defaultTitle={formProps.title}
             description={description}
             techInput={techInput}
             techStack={techStack}
@@ -93,6 +115,10 @@ export default function ProjectListingForm({
             setImages={setImages}
             video={video}
             setVideo={setVideo}
+            existingImages={existingImages}
+            setExistingImages={setExistingImages}
+            existingVideo={existingVideo}
+            setExistingVideo={setExistingVideo}
           />
 
           <ProjectPriceSelection price={price} setPrice={setPrice} />

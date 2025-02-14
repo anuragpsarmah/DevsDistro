@@ -5,7 +5,7 @@ import ApiError from "../utils/ApiError.util";
 import response from "../utils/response.util";
 import { User } from "../models/user.model";
 import { decrypt } from "../utils/encryption.util";
-import axios, { all } from "axios";
+import axios from "axios";
 import { FileMetaData } from "../types/types";
 import { redisClient, s3Service } from "..";
 import logger from "../logger/logger";

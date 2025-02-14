@@ -1,4 +1,3 @@
-import { FormFieldSkeleton } from "./Skeletons";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,14 +7,17 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { CitySearchInput } from "./CitySearchInput";
-import { ReviewSectionSkeleton } from "./Skeletons";
-import { ReviewSection } from "./ReviewSection";
 import { JOB_ROLES } from "../utils/constants";
 import { AccountInformationProps } from "../utils/types";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
+import {
+  FormFieldSkeleton,
+  ReviewSectionSkeleton,
+} from "../sub-components/Skeletons";
+import { CitySearchInput } from "../sub-components/CitySearchInput";
+import { ReviewSection } from "../sub-components/ReviewSection";
 
 export default function AccountInformation({
   isLoading,

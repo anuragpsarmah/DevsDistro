@@ -1,5 +1,5 @@
-import { DashboardCard } from "./DashboardCard";
-import { SalesMetricsSkeleton } from "./Skeletons";
+import { DashboardCard } from "../sub-components/DashboardCard";
+import { SalesMetricsSkeleton } from "../sub-components/Skeletons";
 import { SalesMetricsProps } from "../utils/types";
 
 export const SalesMetrics: React.FC<SalesMetricsProps> = ({
