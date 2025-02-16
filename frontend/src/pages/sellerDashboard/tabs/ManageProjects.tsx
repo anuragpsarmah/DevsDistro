@@ -17,7 +17,7 @@ import { formPropsType } from "../utils/types";
 import {
   projectListingValidatedFormData,
   ProjectMediaMetadata,
-} from "@/utils/types";
+} from "../utils/types";
 
 interface ManageProjectsTabProps {
   logout?: () => Promise<void>;

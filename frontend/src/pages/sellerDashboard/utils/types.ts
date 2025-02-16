@@ -266,3 +266,19 @@ export interface formPropsType {
   project_type: string;
   project_video: string;
 }
+
+export interface UseProjectSubmissionProps {
+  handleGetPreSignedUrls: (
+    metadata: Array<ProjectMediaMetadata>,
+    existingImageCount: number,
+    existingVideoCount: number,
+    modificationType: string
+  ) => Promise<unknown>;
+  handleValidateUploadAndStoreProject: (
+    data: projectListingValidatedFormData,
+    modificationType: string
+  ) => unknown;
+  modificationType: string;
+  setActiveTab?: (curr: string) => void;
+  handleReturnToAllListings?: () => void;
+}

@@ -6,6 +6,7 @@ import response from "../utils/response.util";
 import { SiteReview } from "../models/siteReview.model";
 import mongoose from "mongoose";
 import { profileInformationSchema } from "../validations/profile.validation";
+import logger from "../logger/logger";
 
 const getProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -29,6 +30,7 @@ const getProfileInformation = asyncHandler(
 
         response(res, 200, "User info fetched successfully", responseObj);
       } catch (error) {
+        logger.error("Error fetching user profile information", error);
         throw new ApiError("Internal Server Error", 500, {}, error);
       }
     } else {
@@ -40,6 +42,7 @@ const getProfileInformation = asyncHandler(
 const updateProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
     if (req.user) {
+      const userId = new mongoose.Types.ObjectId(req.user._id);
       const {
         job_role,
         review_description,
@@ -66,8 +69,6 @@ const updateProfileInformation = asyncHandler(
         );
         return;
       }
-
-      const userId = new mongoose.Types.ObjectId(req.user._id);
 
       try {
         const user = await User.findById(userId);
@@ -105,6 +106,7 @@ const updateProfileInformation = asyncHandler(
 
         response(res, 200, "User profile information updated successfully");
       } catch (error) {
+        logger.error("Error updating user profile information", error);
         throw new ApiError("Internal Server Error", 500, {}, error);
       }
     } else {

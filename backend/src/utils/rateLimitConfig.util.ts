@@ -9,3 +9,8 @@ export const toggleProjectListingLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 10,
 });
+
+export const getPrivateReposLimiter = rateLimit({
+  windowMs: 1000,
+  limit: 2,
+});

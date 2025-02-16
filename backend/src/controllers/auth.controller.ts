@@ -57,7 +57,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     const { access_token, error } = accessTokenResponse.data;
 
     if (error) {
-      console.error("GitHub OAuth Error:", error);
+      logger.error("GitHub OAuth Error:", error);
       response(res, 401, "Unauthorized Access");
       return;
     }
@@ -146,7 +146,7 @@ const authValidation = asyncHandler(async (req: Request, res: Response) => {
       profileImageUrl: req.user.profileImageUrl,
     });
   } else {
-    throw new ApiError("Error during validation", 500);
+    throw new ApiError("Error during validation", 401);
   }
 });
 

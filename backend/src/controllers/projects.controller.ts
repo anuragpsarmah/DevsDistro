@@ -101,6 +101,7 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
         response(res, 200, "Repos fetched successfully", private_repositories);
       }
     } catch (error) {
+      logger.error("Error fetching private repos:", error);
       throw new ApiError("Something went wrong", 500);
     }
   } else {
@@ -127,6 +128,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
             return;
           }
         } catch (error) {
+          logger.error("Failed to fetch total listed projects:", error);
           response(res, 500, "Failed to fetch total listed projects");
           return;
         }
@@ -186,6 +188,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
           preSignedUrls
         );
       } catch (error) {
+        logger.error("Error generating pre-signed urls:", error);
         if (error instanceof Error) throw new ApiError(error.message, 400);
         else throw new ApiError("Something went wrong", 500);
       }
@@ -209,6 +212,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
             return;
           }
         } catch (error) {
+          logger.error("Failed to fetch total listed projects:", error);
           response(res, 500, "Failed to fetch total listed projects");
           return;
         }
@@ -256,6 +260,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
           return;
         }
       } catch (error) {
+        logger.error("Error fetching project:", error);
         throw new ApiError("Something went wrong", 500);
       }
 
@@ -272,11 +277,9 @@ const validateMediaUploadAndStoreProject = asyncHandler(
           )
         );
       } catch (error) {
-        if (error instanceof Error) {
-          response(res, 400, error.message);
-        } else {
-          throw new ApiError("Couldn't verify uploads. Try again.", 500);
-        }
+        logger.error("Error verifying uploads:", error);
+        if (error instanceof Error) throw new ApiError(error.message, 400);
+        else throw new ApiError("Couldn't verify uploads. Try again.", 500);
         return;
       }
 
@@ -333,6 +336,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
         }
         response(res, 200, "Project listed/modified successfully");
       } catch (error) {
+        logger.error("Error storing project data:", error);
         throw new ApiError("Something went wrong", 500);
       }
     } else {
@@ -352,6 +356,7 @@ const getTotalListedProjects = asyncHandler(
           totalListedProjects: projectCount,
         });
       } catch (error) {
+        logger.error("Failed to fetch total listed projects:", error);
         response(res, 200, "Failed to fetch total listed projects", {
           totalListedProjects: -1,
         });
@@ -397,6 +402,7 @@ const getInitialProjectData = asyncHandler(
           projectData
         );
       } catch (error) {
+        logger.error("Failed to fetch project data:", error);
         response(res, 500, "Failed to fetch project data. Try again later.");
       }
     } else {
@@ -425,6 +431,7 @@ const getSpecificProjectData = asyncHandler(
 
         response(res, 200, "Project data fetched successfully", projectData);
       } catch (error) {
+        logger.error("Failed to fetch project data:", error);
         response(res, 500, "Failed to fetch project data. Try again later.");
       }
     } else {
@@ -456,6 +463,7 @@ const toggleProjectListing = asyncHandler(
           status: projectData.isActive,
         });
       } catch (error) {
+        logger.error("Failed to fetch project data:", error);
         response(res, 500, "Failed to fetch project data. Try again later.");
       }
     } else {
@@ -509,6 +517,7 @@ const deleteProjectListing = asyncHandler(
 
         response(res, 200, "Project was deleted successfully");
       } catch (error) {
+        logger.error("Failed to delete project:", error);
         response(res, 500, "Failed to delete listed project. Try again later.");
       }
     } else {

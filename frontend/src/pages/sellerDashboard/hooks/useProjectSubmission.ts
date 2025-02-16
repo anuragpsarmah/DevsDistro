@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { projectListingFormDataValidation } from "../utils/projectListingFormValidation";
 import { errorToast, successToast } from "@/components/ui/customToast";
-import { UseProjectSubmissionProps } from "@/utils/types";
+import { UseProjectSubmissionProps } from "../utils/types";
 import { projectListingFormData } from "../utils/types";
 
 export const useProjectSubmission = ({

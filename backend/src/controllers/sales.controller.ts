@@ -4,6 +4,7 @@ import ApiError from "../utils/ApiError.util";
 import mongoose from "mongoose";
 import { Sales } from "../models/sales.model";
 import response from "../utils/response.util";
+import logger from "../logger/logger";
 
 const getCommonSalesInformation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -27,6 +28,7 @@ const getCommonSalesInformation = asyncHandler(
 
         response(res, 200, "Data fetched sucessfully", salesData);
       } catch (error) {
+        logger.error("Error fetching sales data", error);
         throw new ApiError("Error fetching data", 500);
       }
     } else {
@@ -81,6 +83,7 @@ const getYearlySalesInformation = asyncHandler(
           );
         }
       } catch (error) {
+        logger.error("Error fetching yearly sales data", error);
         throw new ApiError("Error fetching data", 500);
       }
     } else {
