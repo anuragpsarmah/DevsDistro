@@ -8,8 +8,15 @@ import ErrorPage from "@/pages/error/ErrorPage";
 import LandingPage from "@/pages/landing/LandingPage";
 import ProtectedRouteWrapper from "@/components/wrappers/protectedRouteWrapper";
 import SellerDashboardPage from "@/pages/sellerDashboard/SellerDashboardPage";
+import { SolanaWalletProvider } from "./components/providers/SolanaWalletProvider";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
 function App() {
+  const network =
+    import.meta.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet"
+      ? WalletAdapterNetwork.Mainnet
+      : WalletAdapterNetwork.Devnet;
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -54,10 +61,12 @@ function App() {
   ]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster />
-    </QueryClientProvider>
+    <SolanaWalletProvider network={network}>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+        <Toaster />
+      </QueryClientProvider>
+    </SolanaWalletProvider>
   );
 }
 

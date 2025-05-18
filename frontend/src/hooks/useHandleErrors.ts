@@ -10,6 +10,7 @@ export const useHandleError = ({ logout }: useHandleErrorParameter) => {
   const navigate = useNavigate();
 
   const handleError = async (error: unknown) => {
+    console.log("Error:", error);
     if (error instanceof AxiosError) {
       if (error?.response?.status === 429) {
         errorToast("Too many requests");

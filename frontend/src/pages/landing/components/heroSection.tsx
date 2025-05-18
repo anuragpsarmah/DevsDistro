@@ -80,17 +80,18 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             <button
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/25 min-w-[180px]"
+              className="w-[200px] bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-500/25"
               onClick={handleAuthNavigate}
             >
-              Buy Code
+              <span className="whitespace-nowrap">Buy Code</span>
               <ChevronRightIcon className="inline-block ml-2 h-4 w-4" />
             </button>
+
             <button
-              className="bg-transparent hover:bg-gray-800/50 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg border-2 border-purple-500 hover:border-purple-400 flex items-center justify-center backdrop-blur-sm min-w-[180px]"
+              className="w-[200px] bg-transparent hover:bg-gray-800/50 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg border-2 border-purple-500 hover:border-purple-400 flex items-center justify-center backdrop-blur-sm"
               onClick={handleAuthNavigate}
             >
-              List Repository
+              <span className="whitespace-nowrap">List Repository</span>
               <ChevronRightIcon className="ml-2 h-4 w-4 text-purple-400" />
             </button>
           </motion.div>

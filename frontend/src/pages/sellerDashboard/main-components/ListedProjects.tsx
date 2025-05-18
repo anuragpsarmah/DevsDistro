@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Eye, EyeOff, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ErrorScreen } from "../sub-components/ErrorScreen";
+import { ErrorScreenListedProjects } from "../sub-components/ErrorScreens";
 import { NoProjectsScreen } from "../sub-components/NoProjectsScreen";
 import { RenderTechStack } from "../sub-components/RenderTechStack";
 import { DeleteConfirmationModal } from "../sub-components/DeleteConfirmationModal";
@@ -81,7 +81,7 @@ const ListedProjects = ({
     );
   }
 
-  if (isError) return <ErrorScreen />;
+  if (isError) return <ErrorScreenListedProjects />;
 
   if (initialProjectData.length === 0) return <NoProjectsScreen />;
 

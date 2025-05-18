@@ -115,4 +115,76 @@ const updateProfileInformation = asyncHandler(
   }
 );
 
-export { getProfileInformation, updateProfileInformation };
+const getWalletAddress = asyncHandler(async (req: Request, res: Response) => {
+  if (req.user) {
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        response(res, 401, "User not found. Log out the user");
+        return;
+      }
+
+      const responseObj = {
+        wallet_address: user.wallet_address,
+      };
+
+      response(res, 200, "Wallet address fetched successfully", responseObj);
+    } catch (error) {
+      logger.error("Error fetching wallet address", error);
+      throw new ApiError("Internal Server Error", 500, {}, error);
+    }
+  } else {
+    throw new ApiError("Error during validation", 401);
+  }
+});
+
+const updateWalletAddress = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (req.user) {
+      const userId = new mongoose.Types.ObjectId(req.user._id);
+      const { wallet_address } = req.body;
+
+      if (
+        wallet_address != "" &&
+        (wallet_address.length < 32 || wallet_address.length > 44)
+      ) {
+        response(res, 400, "Invalid wallet address");
+        return;
+      }
+
+      try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+          response(res, 401, "User not found. Log out the user");
+          return;
+        }
+
+        user.wallet_address = wallet_address;
+        await user.save();
+
+        response(
+          res,
+          200,
+          wallet_address
+            ? "Wallet address updated successfully"
+            : "Wallet address removed successfully"
+        );
+      } catch (error) {
+        logger.error("Error updating wallet address", error);
+        throw new ApiError("Internal Server Error", 500, {}, error);
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
+    }
+  }
+);
+
+export {
+  getProfileInformation,
+  updateProfileInformation,
+  getWalletAddress,
+  updateWalletAddress,
+};

@@ -122,40 +122,38 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
 
   return (
     <AnimatedLoadWrapper>
-      <>
-        <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
-          <h1 className="text-4xl text-center md:text-left lg:text-left font-bold mb-6 pb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
-            Manage Projects
-          </h1>
+      <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
+        <h1 className="text-4xl text-center md:text-left lg:text-left font-bold mb-6 pb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
+          Manage Projects
+        </h1>
 
-          <TransitionWrapper
-            isTransitioning={isTransitioning}
-            identifier={componentIdentifier ? "projects" : "form"}
-          >
-            {componentIdentifier ? (
-              <ListedProjects
-                initialProjectData={initialData?.data}
-                isLoading={initialDataLoading}
-                isError={initialDataError}
-                handleToggleProjectListing={handleToggleProjectListing}
-                handleDeleteProjectListing={handleDeleteProjectListing}
-                handleStateChange={handleStateChange}
-                setFormProps={setFormProps}
-              />
-            ) : (
-              <ProjectModificationForm
-                formProps={formProps}
-                setFormProps={setFormProps}
-                handleStateChange={handleStateChange}
-                handleGetPreSignedUrls={handleGetPreSignedUrls}
-                handleValidateUploadAndStoreProject={
-                  handleValidateUploadAndStoreProject
-                }
-              />
-            )}
-          </TransitionWrapper>
-        </div>
-      </>
+        <TransitionWrapper
+          isTransitioning={isTransitioning}
+          identifier={componentIdentifier ? "projects" : "form"}
+        >
+          {componentIdentifier ? (
+            <ListedProjects
+              initialProjectData={initialData?.data}
+              isLoading={initialDataLoading}
+              isError={initialDataError}
+              handleToggleProjectListing={handleToggleProjectListing}
+              handleDeleteProjectListing={handleDeleteProjectListing}
+              handleStateChange={handleStateChange}
+              setFormProps={setFormProps}
+            />
+          ) : (
+            <ProjectModificationForm
+              formProps={formProps}
+              setFormProps={setFormProps}
+              handleStateChange={handleStateChange}
+              handleGetPreSignedUrls={handleGetPreSignedUrls}
+              handleValidateUploadAndStoreProject={
+                handleValidateUploadAndStoreProject
+              }
+            />
+          )}
+        </TransitionWrapper>
+      </div>
     </AnimatedLoadWrapper>
   );
 }

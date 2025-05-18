@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BackgroundDots from "@/components/ui/backgroundDots";
 import Sidebar from "./sub-components/Sidebar";
 import AccountSettingsTab from "./tabs/AccountSettingsTab";
 import DashboardOverviewTab from "./tabs/DashboardOverviewTab";
-import { useNavigate } from "react-router-dom";
 import ListNewProjectTab from "./tabs/ListNewProjectTab";
 import ManageProjectsTab from "./tabs/ManageProjects";
+import BillingAndPaymentsTab from "./tabs/BillingAndPayments";
 
 interface SellerDashboardPageProps {
   logout?: () => Promise<void>;
@@ -45,7 +46,9 @@ export default function SellerDashboardPage({
           <ManageProjectsTab logout={logout} />
         )}
         {activeTab === "Order History" && <></>}
-        {activeTab === "Billing & Payments" && <></>}
+        {activeTab === "Billing & Payments" && (
+          <BillingAndPaymentsTab logout={logout} />
+        )}
       </main>
     </div>
   );

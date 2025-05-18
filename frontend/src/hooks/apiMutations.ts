@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { successToast } from "@/components/ui/customToast";
 import {
@@ -141,10 +141,85 @@ const useDeleteProjectListingMutation = ({ logout }: mutationParameter) => {
   });
 };
 
+const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
+  const { handleError } = useHandleError({ logout });
+  const queryClient = useQueryClient();
+
+  let operationInProgress = false;
+
+  return useMutation({
+    mutationFn: async (wallet_address: string) => {
+      if (operationInProgress) {
+        throw new Error("Operation already in progress");
+      }
+
+      try {
+        operationInProgress = true;
+
+        const response = await axios.put(
+          `${backend_uri}/profile/updateWalletAddress`,
+          { wallet_address },
+          { withCredentials: true }
+        );
+
+        successToast(
+          response.data.message || "Wallet address updated successfully"
+        );
+
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        throw error;
+      } finally {
+        setTimeout(() => {
+          operationInProgress = false;
+
+          queryClient.invalidateQueries({
+            queryKey: ["getWalletAddressQuery"],
+          });
+        }, 300);
+      }
+    },
+
+    onMutate: async (wallet_address) => {
+      await queryClient.cancelQueries({ queryKey: ["getWalletAddressQuery"] });
+
+      const previousData = queryClient.getQueryData(["getWalletAddressQuery"]);
+
+      queryClient.setQueryData(
+        ["getWalletAddressQuery"],
+        (old: { data?: { wallet_address?: string } } | undefined) => {
+          return old
+            ? {
+                ...old,
+                data: {
+                  ...old.data,
+                  wallet_address,
+                },
+              }
+            : old;
+        }
+      );
+
+      return { previousData };
+    },
+
+    onError: (_, __, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(
+          ["getWalletAddressQuery"],
+          context.previousData
+        );
+      }
+    },
+  });
+};
+
 export {
   useProfileUpdateMutation,
   usePreSignedUrlForProjectMediaUploadMutation,
   useValidateMediaUploadAndStoreProjectMutation,
   useToggleProjectListingMutation,
   useDeleteProjectListingMutation,
+  useUpdateWalletAddressMutation,
 };

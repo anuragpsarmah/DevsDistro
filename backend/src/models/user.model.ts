@@ -39,6 +39,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    wallet_address: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

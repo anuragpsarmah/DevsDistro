@@ -212,6 +212,38 @@ const useSpecificProjectDataQuery = ({ logout }: queryParameter) => {
   return getData;
 };
 
+const useGetWalletAddress = ({ logout }: queryParameter) => {
+  const { handleError } = useHandleError({ logout });
+
+  return useQuery({
+    queryKey: ["getWalletAddressQuery"],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${backend_uri}/profile/getWalletAddress`,
+          {
+            withCredentials: true,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        handleError(error);
+        throw error;
+      }
+    },
+    staleTime: 30000,
+    retry: (failureCount, error) => {
+      if (
+        (error as import("axios").AxiosError)?.response?.status === 401 ||
+        (error as import("axios").AxiosError)?.response?.status === 403
+      ) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+  });
+};
+
 export {
   useAuthValidationQuery,
   useLogoutQuery,
@@ -223,4 +255,5 @@ export {
   usePrivateReposQuery,
   useInitialProjectDataQuery,
   useSpecificProjectDataQuery,
+  useGetWalletAddress,
 };
