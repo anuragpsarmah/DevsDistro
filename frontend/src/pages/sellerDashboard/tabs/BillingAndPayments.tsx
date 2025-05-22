@@ -1,8 +1,10 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useEffect } from "react";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import ConnectToWallet from "../main-components/ConnectToWallet";
 import { useUpdateWalletAddressMutation } from "@/hooks/apiMutations";
 import { useGetWalletAddress } from "@/hooks/apiQueries";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { errorToast } from "@/components/ui/customToast";
 
 interface BillingAndPaymentsTabProps {
   logout?: () => Promise<void>;
@@ -12,6 +14,10 @@ export default function BillingAndPaymentsTab({
   logout,
 }: BillingAndPaymentsTabProps) {
   const pendingOperation = useRef(false);
+  const isInitializing = useRef(true);
+  const hasInitialized = useRef(false);
+
+  const { publicKey, connected, disconnect } = useWallet();
 
   const {
     data: walletData,
@@ -26,9 +32,55 @@ export default function BillingAndPaymentsTab({
 
   const existingAddress = walletData?.data?.wallet_address || null;
 
+  useEffect(() => {
+    if (!existingAddressLoading && walletData && !hasInitialized.current) {
+      hasInitialized.current = true;
+      isInitializing.current = true;
+
+      let disconnectFlag = false;
+
+      const cleanupSilentConnection = async () => {
+        if (!existingAddress && connected && publicKey) {
+          try {
+            await disconnect();
+            disconnectFlag = true;
+          } catch (error) {
+            console.error(
+              "Error disconnecting silently connected wallet:",
+              error
+            );
+            errorToast(
+              "Error disconnecting silently connected wallet. Refresh the page."
+            );
+          }
+        } else {
+          disconnectFlag = true;
+        }
+      };
+
+      cleanupSilentConnection();
+
+      const timer = setTimeout(() => {
+        if (disconnectFlag) isInitializing.current = false;
+      }, 500);
+
+      return () => {
+        clearTimeout(timer);
+        isInitializing.current = false;
+      };
+    }
+  }, [
+    existingAddressLoading,
+    walletData,
+    disconnect,
+    connected,
+    publicKey,
+    existingAddress,
+  ]);
+
   const handleWalletConnect = useCallback(
     async (address: string) => {
-      if (pendingOperation.current) return;
+      if (isInitializing.current || pendingOperation.current) return;
       if (existingAddressLoading || isUpdating) return;
       if (address === existingAddress) return;
 
@@ -50,7 +102,7 @@ export default function BillingAndPaymentsTab({
   );
 
   const handleWalletDisconnect = useCallback(async () => {
-    if (pendingOperation.current) return;
+    if (isInitializing.current || pendingOperation.current) return;
     if (existingAddressLoading || isUpdating) return;
     if (!existingAddress) return;
 

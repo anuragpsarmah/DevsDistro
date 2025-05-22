@@ -14,6 +14,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import { ErrorScreenConnectToWallet } from "../sub-components/ErrorScreens";
+import { errorToast } from "@/components/ui/customToast";
 
 interface ConnectToWalletProps {
   walletAddress: string | null;
@@ -41,16 +42,12 @@ const ConnectToWallet = ({
   );
   const [localProcessing, setLocalProcessing] = useState(false);
 
-  // Single source of truth for wallet address - prefer publicKey when available
   const displayAddress = walletAddress || publicKey?.toString();
 
-  // Track component mount state
   const isMounted = useRef(true);
 
-  // Track intentional wallet operations to prevent loops
   const intentionalOperation = useRef(false);
 
-  // NEW: Detect wallet mismatch
   const hasWalletMismatch = Boolean(
     walletAddress &&
       publicKey &&
@@ -58,7 +55,6 @@ const ConnectToWallet = ({
       publicKey.toString() !== walletAddress
   );
 
-  // NEW: Check if stored address exists but no wallet connected (cases 1)
   const hasStoredButNotConnected = Boolean(walletAddress && !connected);
 
   useEffect(() => {
@@ -86,11 +82,8 @@ const ConnectToWallet = ({
       setLocalProcessing(true);
       intentionalOperation.current = true;
 
-      // First perform wallet disconnect
-      await disconnect();
-
-      // Then notify parent component
       if (isMounted.current) {
+        await disconnect();
         await onWalletDisconnect();
       }
     } catch (error) {
@@ -98,7 +91,6 @@ const ConnectToWallet = ({
     } finally {
       if (isMounted.current) {
         setLocalProcessing(false);
-        // Reset flag with a slight delay to prevent immediate reaction to state changes
         setTimeout(() => {
           intentionalOperation.current = false;
         }, 500);
@@ -106,7 +98,6 @@ const ConnectToWallet = ({
     }
   }, [disconnect, isLoading, onWalletDisconnect, localProcessing]);
 
-  // This effect handles only the case where a wallet is connected but not stored in backend
   useEffect(() => {
     const syncWalletToBackend = async () => {
       if (
@@ -117,7 +108,6 @@ const ConnectToWallet = ({
       )
         return;
 
-      // Case: Wallet connected but not yet saved in backend
       if (publicKey && !walletAddress && connected) {
         try {
           setLocalProcessing(true);
@@ -148,7 +138,9 @@ const ConnectToWallet = ({
 
   const handleCopyAddress = () => {
     if (displayAddress) {
-      navigator.clipboard.writeText(displayAddress);
+      navigator.clipboard.writeText(displayAddress).catch(() => {
+        errorToast("Failed to copy address. Please try again.");
+      });
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -203,11 +195,10 @@ const ConnectToWallet = ({
     return walletLinks[walletName] || "#";
   };
 
-  // Determine the loading state
   const isProcessing = isLoading || localProcessing;
 
-  // Helper function to render wallet mismatch warning
   const renderWalletMismatchWarning = () => {
+    if (intentionalOperation.current) return null;
     if (!hasWalletMismatch && !hasStoredButNotConnected) return null;
 
     return (
@@ -263,7 +254,6 @@ const ConnectToWallet = ({
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : !walletAddress ? (
-          // Show connection interface when no address is stored
           <div className="flex flex-col md:flex-row">
             <div className="flex flex-col flex-1 space-y-6 md:pr-6">
               <div className="flex items-center space-x-3">

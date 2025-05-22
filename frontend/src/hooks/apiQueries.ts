@@ -231,16 +231,6 @@ const useGetWalletAddress = ({ logout }: queryParameter) => {
         throw error;
       }
     },
-    staleTime: 30000,
-    retry: (failureCount, error) => {
-      if (
-        (error as import("axios").AxiosError)?.response?.status === 401 ||
-        (error as import("axios").AxiosError)?.response?.status === 403
-      ) {
-        return false;
-      }
-      return failureCount < 2;
-    },
   });
 };
 

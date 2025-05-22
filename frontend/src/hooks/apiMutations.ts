@@ -169,7 +169,6 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
         return response.data;
       } catch (error) {
         handleError(error);
-        throw error;
       } finally {
         setTimeout(() => {
           operationInProgress = false;
@@ -178,38 +177,6 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
             queryKey: ["getWalletAddressQuery"],
           });
         }, 300);
-      }
-    },
-
-    onMutate: async (wallet_address) => {
-      await queryClient.cancelQueries({ queryKey: ["getWalletAddressQuery"] });
-
-      const previousData = queryClient.getQueryData(["getWalletAddressQuery"]);
-
-      queryClient.setQueryData(
-        ["getWalletAddressQuery"],
-        (old: { data?: { wallet_address?: string } } | undefined) => {
-          return old
-            ? {
-                ...old,
-                data: {
-                  ...old.data,
-                  wallet_address,
-                },
-              }
-            : old;
-        }
-      );
-
-      return { previousData };
-    },
-
-    onError: (_, __, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(
-          ["getWalletAddressQuery"],
-          context.previousData
-        );
       }
     },
   });
