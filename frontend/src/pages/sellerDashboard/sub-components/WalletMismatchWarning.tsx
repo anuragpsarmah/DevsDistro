@@ -1,13 +1,5 @@
 import { AlertTriangle } from "lucide-react";
-import { PublicKey } from "@solana/web3.js";
-
-interface WalletMismatchWarningProps {
-  hasWalletMismatch: boolean;
-  hasStoredButNotConnected: boolean;
-  walletAddress: string | null;
-  publicKey: PublicKey | null;
-  intentionalOperation: boolean;
-}
+import { WalletMismatchWarningProps } from "../utils/types";
 
 export const WalletMismatchWarning = ({
   hasWalletMismatch,
@@ -27,11 +19,14 @@ export const WalletMismatchWarning = ({
   return (
     <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4 mb-4">
       <div className="flex items-start space-x-3">
-        <AlertTriangle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
         <div className="space-y-2">
-          <h4 className="text-amber-300 font-medium">
-            Wallet Address Mismatch
-          </h4>
+          <div className="flex flex-row justify-center items-center space-x-2">
+            <AlertTriangle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
+
+            <h4 className="text-amber-300 font-medium">
+              Wallet Address Mismatch
+            </h4>
+          </div>
           {hasStoredButNotConnected ? (
             <p className="text-amber-200/80 text-sm">
               You have a wallet address stored, but no wallet is currently

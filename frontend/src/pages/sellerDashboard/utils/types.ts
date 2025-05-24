@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { PROJECT_TYPES } from "./constants";
+import { PublicKey } from "@solana/web3.js";
 
 export interface ChartDataObject {
   month: string;
@@ -281,4 +282,46 @@ export interface UseProjectSubmissionProps {
   modificationType: string;
   setActiveTab?: (curr: string) => void;
   handleReturnToAllListings?: () => void;
+}
+
+export interface ConnectToWalletProps {
+  walletAddress: string | null;
+  isLoading: boolean;
+  isError: boolean;
+  onWalletConnect: (address: string) => Promise<void>;
+  onWalletDisconnect: () => Promise<void>;
+}
+
+interface WalletAdapter {
+  adapter: {
+    name: string;
+    icon?: string;
+  };
+  readyState: string;
+  icon?: string;
+}
+
+export interface WalletConnectProps {
+  detectedWallets: WalletAdapter[];
+  otherWallets: WalletAdapter[];
+  isProcessing: boolean;
+  onSelectWallet: (wallet: WalletAdapter) => void;
+  onWalletRedirect: (url: string) => void;
+}
+
+export interface WalletDisconnectProps {
+  displayAddress: string;
+  hasWalletMismatch: boolean;
+  isProcessing: boolean;
+  onDisconnect: () => void;
+  onCopyAddress: () => void;
+  onViewOnExplorer: () => void;
+}
+
+export interface WalletMismatchWarningProps {
+  hasWalletMismatch: boolean;
+  hasStoredButNotConnected: boolean;
+  walletAddress: string | null;
+  publicKey: PublicKey | null;
+  intentionalOperation: boolean;
 }

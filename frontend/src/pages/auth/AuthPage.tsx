@@ -1,10 +1,23 @@
+import { useEffect } from "react";
 import BackgroundDots from "@/components/ui/backgroundDots";
 import { GithubIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuthValidationQuery } from "@/hooks/apiQueries";
 
 export default function AuthPage() {
   const clientID = import.meta.env.VITE_GITHUB_CLIENT_ID;
   const navigate = useNavigate();
+  const { data, isLoading, isError } = useAuthValidationQuery();
+
+  useEffect(() => {
+    const handleAuthValidation = async () => {
+      if (!isLoading && !isError && data) {
+        navigate("/profile-selection");
+      }
+    };
+
+    handleAuthValidation();
+  }, [isError, isLoading, data, navigate]);
 
   const handleLogin = async () => {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientID}&scope=read:user,repo`;

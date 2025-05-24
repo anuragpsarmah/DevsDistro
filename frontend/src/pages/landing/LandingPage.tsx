@@ -10,10 +10,22 @@ import ReviewSection from "./components/reviewSection";
 import FAQSection from "./components/faqSection";
 import CallForAction from "./components/callForAction";
 import Footer from "./components/footer";
+import { useAuthValidationQuery } from "@/hooks/apiQueries";
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { data, isLoading, isError } = useAuthValidationQuery();
+
+  useEffect(() => {
+    const handleAuthValidation = async () => {
+      if (!isLoading && !isError && data) {
+        navigate("/profile-selection");
+      }
+    };
+
+    handleAuthValidation();
+  }, [isError, isLoading, data, navigate]);
 
   const handleAuthNavigate = () => {
     navigate("/authentication");

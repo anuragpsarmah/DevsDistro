@@ -6,14 +6,7 @@ import { WalletConnect } from "../sub-components/WalletConnect";
 import { WalletMismatchWarning } from "../sub-components/WalletMismatchWarning";
 import { WalletDisconnect } from "../sub-components/WalletDisconnect";
 import { useWalletManager } from "../hooks/useWalletManager";
-
-interface ConnectToWalletProps {
-  walletAddress: string | null;
-  isLoading: boolean;
-  isError: boolean;
-  onWalletConnect: (address: string) => Promise<void>;
-  onWalletDisconnect: () => Promise<void>;
-}
+import { ConnectToWalletProps } from "../utils/types";
 
 const ConnectToWallet = ({
   walletAddress,

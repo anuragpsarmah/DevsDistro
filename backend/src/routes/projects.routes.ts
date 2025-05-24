@@ -12,7 +12,7 @@ import {
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
 import {
-  getPrivateReposLimiter,
+  getPrivateReposRefreshLimiter,
   toggleProjectListingLimiter,
 } from "../utils/rateLimitConfig.util";
 
@@ -21,8 +21,8 @@ export const projectRouter = Router();
 projectRouter
   .route("/getPrivateRepos")
   .get(
-    getPrivateReposLimiter,
     sessionValidation,
+    getPrivateReposRefreshLimiter,
     getPrivateReposFromCache,
     getPrivateRepos
   );

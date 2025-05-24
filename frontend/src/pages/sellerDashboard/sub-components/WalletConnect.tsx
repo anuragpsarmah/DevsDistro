@@ -1,22 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Wallet, CreditCard, ChevronRight, ExternalLink } from "lucide-react";
-
-interface WalletAdapter {
-  adapter: {
-    name: string;
-    icon?: string;
-  };
-  readyState: string;
-  icon?: string;
-}
-
-interface WalletConnectProps {
-  detectedWallets: WalletAdapter[];
-  otherWallets: WalletAdapter[];
-  isProcessing: boolean;
-  onSelectWallet: (wallet: WalletAdapter) => void;
-  onWalletRedirect: (url: string) => void;
-}
+import { WalletConnectProps } from "../utils/types";
 
 export const WalletConnect = ({
   detectedWallets,
@@ -103,7 +87,7 @@ export const WalletConnect = ({
                     )}
                     <span>{walletAdapter.adapter.name}</span>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-blue-300/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-blue-300/20" />
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               ))}

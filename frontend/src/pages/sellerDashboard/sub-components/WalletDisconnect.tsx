@@ -1,15 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Wallet, CheckCircle, Copy, ExternalLink } from "lucide-react";
 import { useState } from "react";
-
-interface WalletDisconnectProps {
-  displayAddress: string;
-  hasWalletMismatch: boolean;
-  isProcessing: boolean;
-  onDisconnect: () => void;
-  onCopyAddress: () => void;
-  onViewOnExplorer: () => void;
-}
+import { WalletDisconnectProps } from "../utils/types";
 
 export const WalletDisconnect = ({
   displayAddress,
@@ -90,7 +82,7 @@ export const WalletDisconnect = ({
         <Button
           type="button"
           variant="outline"
-          className="border-gray-600 bg-gray-700 text-gray-200 hover:bg-gray-600 hover:text-white transition duration-300 w-full"
+          className="w-full justify-center item-center inline-flex h-10 rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] animate-shimmer px-4 text-sm text-slate-400 transition-colors focus:outline-none focus:ring-0 focus:border-transparent overflow-hidden hover:text-white hover:cursor-pointer relative z-10 brightness-[1.4] hover:brightness-[1.75]"
           onClick={onDisconnect}
           disabled={isProcessing}
         >
@@ -102,6 +94,7 @@ export const WalletDisconnect = ({
           ) : (
             "Disconnect Wallet"
           )}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-blue-300/20" />
         </Button>
       </div>
     </div>
