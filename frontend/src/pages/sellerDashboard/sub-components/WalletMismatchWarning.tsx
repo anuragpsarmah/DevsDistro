@@ -19,7 +19,7 @@ export const WalletMismatchWarning = ({
   return (
     <div className="bg-amber-900/20 border border-amber-700/30 rounded-lg p-4 mb-4">
       <div className="flex items-start space-x-3">
-        <div className="space-y-2">
+        <div className="space-y-2 w-full">
           <div className="flex flex-row justify-center items-center space-x-2">
             <AlertTriangle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
 

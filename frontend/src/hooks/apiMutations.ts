@@ -18,9 +18,17 @@ const useProfileUpdateMutation = ({ logout }: mutationParameter) => {
   const queryClient = useQueryClient();
   const { handleError } = useHandleError({ logout });
 
+  let operationInProgress = false;
+
   return useMutation({
     mutationFn: async (data: ProfileUpdateData) => {
+      if (operationInProgress) {
+        throw new Error("Operation already in progress");
+      }
+
       try {
+        operationInProgress = true;
+
         const response = await axios.put(
           `${backend_uri}/profile/updateProfileInformation`,
           data,
@@ -32,6 +40,7 @@ const useProfileUpdateMutation = ({ logout }: mutationParameter) => {
         handleError(error);
       } finally {
         setTimeout(() => {
+          operationInProgress = false;
           queryClient.invalidateQueries({
             queryKey: ["useProfileInformationQuery"],
           });
@@ -46,6 +55,8 @@ const usePreSignedUrlForProjectMediaUploadMutation = ({
 }: mutationParameter) => {
   const { handleError } = useHandleError({ logout });
 
+  let operationInProgress = false;
+
   return useMutation({
     mutationFn: async ({
       metadata,
@@ -58,7 +69,13 @@ const usePreSignedUrlForProjectMediaUploadMutation = ({
       existingVideoCount: number;
       modificationType: string;
     }) => {
+      if (operationInProgress) {
+        throw new Error("Operation already in progress");
+      }
+
       try {
+        operationInProgress = true;
+
         const response = await axios.post(
           `${backend_uri}/projects/getPreSignedUrlForProjectMediaUpload`,
           {
@@ -72,6 +89,8 @@ const usePreSignedUrlForProjectMediaUploadMutation = ({
         return response.data;
       } catch (error) {
         handleError(error);
+      } finally {
+        operationInProgress = false;
       }
     },
   });
@@ -82,6 +101,8 @@ const useValidateMediaUploadAndStoreProjectMutation = ({
 }: mutationParameter) => {
   const { handleError } = useHandleError({ logout });
 
+  let operationInProgress = false;
+
   return useMutation({
     mutationFn: async ({
       projectData,
@@ -90,7 +111,13 @@ const useValidateMediaUploadAndStoreProjectMutation = ({
       projectData: projectListingValidatedFormData;
       modificationType: string;
     }) => {
+      if (operationInProgress) {
+        throw new Error("Operation already in progress");
+      }
+
       try {
+        operationInProgress = true;
+
         const response = await axios.put(
           `${backend_uri}/projects/validateMediaUploadAndStoreProject`,
           { projectData, modificationType },
@@ -99,6 +126,8 @@ const useValidateMediaUploadAndStoreProjectMutation = ({
         return response.data;
       } catch (error) {
         handleError(error);
+      } finally {
+        operationInProgress = false;
       }
     },
   });
@@ -107,9 +136,17 @@ const useValidateMediaUploadAndStoreProjectMutation = ({
 const useToggleProjectListingMutation = ({ logout }: mutationParameter) => {
   const { handleError } = useHandleError({ logout });
 
+  let operationInProgress = false;
+
   return useMutation({
     mutationFn: async (github_repo_id: string) => {
+      if (operationInProgress) {
+        throw new Error("Operation already in progress");
+      }
+
       try {
+        operationInProgress = true;
+
         const response = await axios.patch(
           `${backend_uri}/projects/toggleProjectListing`,
           { github_repo_id },
@@ -123,6 +160,8 @@ const useToggleProjectListingMutation = ({ logout }: mutationParameter) => {
         return response.data;
       } catch (error) {
         handleError(error);
+      } finally {
+        operationInProgress = false;
       }
     },
   });
@@ -131,9 +170,17 @@ const useToggleProjectListingMutation = ({ logout }: mutationParameter) => {
 const useDeleteProjectListingMutation = ({ logout }: mutationParameter) => {
   const { handleError } = useHandleError({ logout });
 
+  let operationInProgress = false;
+
   return useMutation({
     mutationFn: async (github_repo_id: string) => {
+      if (operationInProgress) {
+        throw new Error("Operation already in progress");
+      }
+
       try {
+        operationInProgress = true;
+
         await axios.delete(
           `${backend_uri}/projects/deleteProjectListing?github_repo_id=${github_repo_id}`,
           { withCredentials: true }
@@ -143,6 +190,8 @@ const useDeleteProjectListingMutation = ({ logout }: mutationParameter) => {
       } catch (error) {
         handleError(error);
         return false;
+      } finally {
+        operationInProgress = false;
       }
     },
   });

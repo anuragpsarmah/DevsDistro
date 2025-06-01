@@ -18,15 +18,16 @@ const emptyUserObject = {
 
 const preFetchImage = (imageUrl: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    if (!imageUrl || imageUrl in window.sessionStorage) {
+    if (!imageUrl) {
       resolve();
       return;
     }
 
     const img = new Image();
 
+    img.crossOrigin = "anonymous";
+
     img.onload = () => {
-      window.sessionStorage.setItem(imageUrl, "cached");
       resolve();
     };
 
@@ -35,6 +36,15 @@ const preFetchImage = (imageUrl: string): Promise<void> => {
     };
 
     img.src = imageUrl;
+
+    const existingLink = document.querySelector(`link[href="${imageUrl}"]`);
+    if (!existingLink) {
+      const link = document.createElement("link");
+      link.rel = "prefetch";
+      link.as = "image";
+      link.href = imageUrl;
+      document.head.appendChild(link);
+    }
   });
 };
 
@@ -60,7 +70,6 @@ export default function ProtectedRouteWrapper({
         navigate("/");
       } else if (!isLoading && data) {
         setActiveUser(data.data);
-
         if (data.data.profileImageUrl) {
           try {
             await preFetchImage(data.data.profileImageUrl);
@@ -70,7 +79,6 @@ export default function ProtectedRouteWrapper({
         }
       }
     };
-
     handleAuthValidation();
   }, [isError, isLoading, data, logout, navigate, setActiveUser]);
 
