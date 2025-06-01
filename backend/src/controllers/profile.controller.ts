@@ -5,7 +5,10 @@ import { User } from "../models/user.model";
 import response from "../utils/response.util";
 import { SiteReview } from "../models/siteReview.model";
 import mongoose from "mongoose";
-import { profileInformationSchema } from "../validations/profile.validation";
+import {
+  profileInformationSchema,
+  walletAddressSchema,
+} from "../validations/profile.validation";
 import logger from "../logger/logger";
 
 const getProfileInformation = asyncHandler(
@@ -146,11 +149,15 @@ const updateWalletAddress = asyncHandler(
       const userId = new mongoose.Types.ObjectId(req.user._id);
       const { wallet_address } = req.body;
 
-      if (
-        wallet_address != "" &&
-        (wallet_address.length < 32 || wallet_address.length > 44)
-      ) {
-        response(res, 400, "Invalid wallet address");
+      const result = walletAddressSchema.safeParse(req.body);
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Payload failed validation",
+          {},
+          result.error.errors[0].message
+        );
         return;
       }
 

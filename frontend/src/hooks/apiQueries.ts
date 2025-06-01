@@ -235,6 +235,7 @@ const useGetWalletAddress = ({ logout }: queryParameter) => {
         throw error;
       }
     },
+    refetchOnWindowFocus: false,
   });
 };
 

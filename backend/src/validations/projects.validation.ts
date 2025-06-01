@@ -65,3 +65,7 @@ export const fileMetadataSchema = z.array(
       .max(5000000, "File size cannot exceed 5MB"),
   })
 );
+
+export const githubRepoIdSchema = z.object({
+  github_repo_id: z.string().min(1, "GitHub repository ID is required"),
+});

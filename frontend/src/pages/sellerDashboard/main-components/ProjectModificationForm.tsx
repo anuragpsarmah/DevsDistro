@@ -8,6 +8,7 @@ import UploadOverlay from "../sub-components/UploadOverlay";
 import ProjectGeneralInfo from "../sub-components/ProjectGeneralInfo";
 import ProjectMediaUploader from "../sub-components/ProjectMediaUploader";
 import ProjectPriceSelection from "../sub-components/ProjectPriceSelection";
+import { MagicCard } from "@/components/ui/magic-card";
 
 export default function ProjectModificationForm({
   formProps,
@@ -84,55 +85,62 @@ export default function ProjectModificationForm({
       {isSubmitting && <UploadOverlay uploadProgress={uploadProgress} />}
 
       <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
-        <div className="bg-gray-800 rounded-xl p-6 shadow-lg space-y-4">
-          <div className="flex lg:justify-end md:justify-end justify-center mb-4">
+        <MagicCard
+          className="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg transition-all duration-300 ease-in-out"
+          gradientSize={300}
+          gradientColor="#3B82F6"
+          gradientOpacity={0.2}
+        >
+          <div className="bg-transparent rounded-xl space-y-4">
+            <div className="flex lg:justify-end md:justify-end justify-center mb-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+                onClick={handleReturnToAllListings}
+              >
+                <Undo2 className="w-4 h-4" />
+                Undo Changes
+              </Button>
+            </div>
+
+            <ProjectGeneralInfo
+              setDescription={setDescription}
+              setTechInput={setTechInput}
+              setTechStack={setTechStack}
+              setProjectType={setProjectType}
+              setLiveLink={setLiveLink}
+              defaultTitle={formProps.title}
+              description={description}
+              techInput={techInput}
+              techStack={techStack}
+              projectType={projectType}
+              liveLink={liveLink}
+              title={title}
+            />
+
+            <ProjectMediaUploader
+              images={images}
+              setImages={setImages}
+              video={video}
+              setVideo={setVideo}
+              existingImages={existingImages}
+              setExistingImages={setExistingImages}
+              existingVideo={existingVideo}
+              setExistingVideo={setExistingVideo}
+            />
+
+            <ProjectPriceSelection price={price} setPrice={setPrice} />
+
             <Button
               type="button"
-              variant="outline"
-              className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
-              onClick={handleReturnToAllListings}
+              className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              onClick={onSubmit}
             >
-              <Undo2 className="w-4 h-4" />
-              Undo Changes
+              Submit Project
             </Button>
           </div>
-
-          <ProjectGeneralInfo
-            setDescription={setDescription}
-            setTechInput={setTechInput}
-            setTechStack={setTechStack}
-            setProjectType={setProjectType}
-            setLiveLink={setLiveLink}
-            defaultTitle={formProps.title}
-            description={description}
-            techInput={techInput}
-            techStack={techStack}
-            projectType={projectType}
-            liveLink={liveLink}
-            title={title}
-          />
-
-          <ProjectMediaUploader
-            images={images}
-            setImages={setImages}
-            video={video}
-            setVideo={setVideo}
-            existingImages={existingImages}
-            setExistingImages={setExistingImages}
-            existingVideo={existingVideo}
-            setExistingVideo={setExistingVideo}
-          />
-
-          <ProjectPriceSelection price={price} setPrice={setPrice} />
-
-          <Button
-            type="button"
-            className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-            onClick={onSubmit}
-          >
-            Submit Project
-          </Button>
-        </div>
+        </MagicCard>
       </div>
     </div>
   );

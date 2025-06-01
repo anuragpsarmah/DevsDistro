@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RepoImportSkeleton } from "../sub-components/Skeletons";
+import { MagicCard } from "@/components/ui/magic-card";
 
 export default function PrivateRepoImport({
   userData,
@@ -28,7 +29,12 @@ export default function PrivateRepoImport({
 
   return (
     <div>
-      <div className="bg-gray-800 rounded-xl p-6 shadow-lg">
+      <MagicCard
+        className="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg transition-all duration-300 ease-in-out"
+        gradientSize={300}
+        gradientColor="#3B82F6"
+        gradientOpacity={0.2}
+      >
         <h2 className="flex flex-row justify-between items-center text-2xl font-semibold text-gray-100 mb-6 text-center lg:text-left md:text-left">
           <span className="text-left md:text-left">Import Git Repository</span>
           <span className="w-full text-right flex flex-col justify-center md:w-auto md:text-left md:block">
@@ -132,7 +138,7 @@ export default function PrivateRepoImport({
             </div>
           </ScrollArea>
         </div>
-      </div>
+      </MagicCard>
     </div>
   );
 }

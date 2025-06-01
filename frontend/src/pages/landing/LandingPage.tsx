@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import BackgroundDots from "@/components/ui/backgroundDotsLanding";
+import BackgroundDots from "@/components/ui/backgroundDots";
 import { useNavigate } from "react-router-dom";
 import Header from "./components/header";
 import MobileMenu from "./components/mobileMenu";

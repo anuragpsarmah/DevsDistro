@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import axios from "axios";
 import mongoose from "mongoose";
 import logger from "../logger/logger";
+import { githubCodeSchema } from "../validations/auth.validation";
 
 const createSessionToken = (
   userid: mongoose.Types.ObjectId,
@@ -25,18 +26,26 @@ const createSessionToken = (
 };
 
 const githubLogin = asyncHandler(async (req: Request, res: Response) => {
-  const code = req.query.code;
+  const result = githubCodeSchema.safeParse(req.query);
+  if (!result.success) {
+    response(
+      res,
+      400,
+      "Query validation failed",
+      {},
+      result.error.errors[0].message
+    );
+    return;
+  }
+
+  const { code } = result.data;
+
   const {
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
     ENCRYPTION_KEY_32,
     ENCRYPTION_IV,
   } = process.env;
-
-  if (!code) {
-    response(res, 400, "Code parameter missing");
-    return;
-  }
 
   try {
     const accessTokenResponse = await axios.post(

@@ -12,7 +12,7 @@ export const ErrorScreenListedProjects: React.FC = () => {
           gradientColor="#EF4444"
           gradientOpacity={0.2}
         >
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center justify-center">
             <div className="mb-6 flex justify-center">
               <AlertTriangle
                 className="h-16 w-16 text-red-500"

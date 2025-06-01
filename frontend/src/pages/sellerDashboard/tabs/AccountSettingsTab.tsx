@@ -15,6 +15,7 @@ import AccountInformation from "../main-components/AccountInformation";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import { useRecoilState } from "recoil";
 import { user } from "@/utils/atom";
+import { MagicCard } from "@/components/ui/magic-card";
 
 interface AccountSettingsTabProps {
   logout?: () => Promise<void>;
@@ -43,9 +44,10 @@ export default function AccountSettingsTab({
     data: profileInformationQueryData,
     isLoading: profileInformationQueryLoading,
     isError: profileInformationQueryError,
+    isFetching: profileInformationQueryFetching,
   } = useProfileInformationQuery({ logout });
 
-  const { mutateAsync } = useProfileUpdateMutation({ logout });
+  const { mutateAsync, isPending } = useProfileUpdateMutation({ logout });
 
   const handleProfileUpdate = async () => {
     await mutateAsync({
@@ -70,8 +72,8 @@ export default function AccountSettingsTab({
 
   useEffect(() => {
     if (
-      !profileInformationQueryLoading &&
       !profileInformationQueryError &&
+      !profileInformationQueryFetching &&
       profileInformationQueryData?.data
     ) {
       setProfileInformationData(profileInformationQueryData.data);
@@ -82,22 +84,27 @@ export default function AccountSettingsTab({
     }
   }, [
     profileInformationQueryData,
-    profileInformationQueryLoading,
     profileInformationQueryError,
+    profileInformationQueryFetching,
   ]);
 
-  const isLoading = profileInformationQueryLoading;
+  const isInitialLoading = profileInformationQueryLoading;
 
   return (
     <AnimatedLoadWrapper>
-      <>
-        <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
+      <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
+        <MagicCard
+          className="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg transition-all duration-300 ease-in-out"
+          gradientSize={300}
+          gradientColor="#3B82F6"
+          gradientOpacity={0.2}
+        >
           <h1 className="text-4xl text-center md:text-left lg:text-left font-bold mb-6 pb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
             Account Settings
           </h1>
 
-          <div className="bg-gray-800 rounded-xl p-8 shadow-lg">
-            {isLoading ? (
+          <div className="bg-transparent rounded-xl">
+            {isInitialLoading ? (
               <ProfileHeaderSkeleton />
             ) : (
               <ProfileHeader
@@ -107,7 +114,7 @@ export default function AccountSettingsTab({
             )}
 
             <AccountInformation
-              isLoading={isLoading}
+              isInitialLoading={isInitialLoading}
               activeUserData={activeUser}
               profileInformationData={profileInformationData}
               setProfileInformationData={setProfileInformationData}
@@ -128,20 +135,21 @@ export default function AccountSettingsTab({
             />
 
             <div className="mt-8 flex justify-end">
-              {isLoading ? (
+              {isInitialLoading ? (
                 <Skeleton className="w-32 h-10 rounded-md bg-gray-700" />
               ) : (
                 <Button
                   className="bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
                   onClick={handleProfileUpdate}
+                  disabled={isPending}
                 >
                   Save Changes
                 </Button>
               )}
             </div>
           </div>
-        </div>
-      </>
+        </MagicCard>
+      </div>
     </AnimatedLoadWrapper>
   );
 }

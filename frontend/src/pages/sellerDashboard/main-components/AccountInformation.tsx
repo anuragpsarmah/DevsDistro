@@ -20,7 +20,7 @@ import { CitySearchInput } from "../sub-components/CitySearchInput";
 import { ReviewSection } from "../sub-components/ReviewSection";
 
 export default function AccountInformation({
-  isLoading,
+  isInitialLoading,
   activeUserData,
   profileInformationData,
   setProfileInformationData,
@@ -44,7 +44,7 @@ export default function AccountInformation({
       <Separator className="my-8 bg-gray-700" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
-          {isLoading ? (
+          {isInitialLoading ? (
             <>
               <FormFieldSkeleton />
               <FormFieldSkeleton />
@@ -117,7 +117,7 @@ export default function AccountInformation({
             </>
           )}
         </div>
-        {isLoading ? (
+        {isInitialLoading ? (
           <ReviewSectionSkeleton />
         ) : (
           <ReviewSection
@@ -140,7 +140,7 @@ export default function AccountInformation({
               Allow others to see your profile
             </p>
           </div>
-          {isLoading ? (
+          {isInitialLoading ? (
             <div className="w-10 h-6">
               <Skeleton className="w-full h-full rounded-full bg-gray-700" />
             </div>

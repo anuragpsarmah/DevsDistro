@@ -51,7 +51,7 @@ export interface User {
 }
 
 export interface AccountInformationProps {
-  isLoading: boolean;
+  isInitialLoading: boolean;
   activeUserData: User;
   profileInformationData: ProfileInformation;
   selectedJobRole: string;

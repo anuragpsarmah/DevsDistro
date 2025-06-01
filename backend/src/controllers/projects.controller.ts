@@ -13,6 +13,7 @@ import { privateRepoPrefix } from "../utils/redisPrefixGenerator.util";
 import {
   fileMetadataSchema,
   projectFormDataSchema,
+  githubRepoIdSchema,
 } from "../validations/projects.validation";
 import { Project } from "../models/project.model";
 import { MAX_ALLOWED_IMAGES } from "../types/constants";
@@ -239,6 +240,52 @@ const validateMediaUploadAndStoreProject = asyncHandler(
         return;
       }
 
+      const { ENCRYPTION_KEY_32, ENCRYPTION_IV } = process.env;
+      try {
+        const userData = await User.findById(userid);
+        if (!userData?.github_access_token) {
+          response(res, 401, "GitHub access token not found");
+          return;
+        }
+
+        const github_access_token = decrypt(
+          userData.github_access_token,
+          ENCRYPTION_KEY_32 as string,
+          ENCRYPTION_IV as string
+        );
+
+        try {
+          await axios.get(
+            `https://api.github.com/repositories/${projectData.github_repo_id}`,
+            {
+              headers: {
+                Authorization: `Bearer ${github_access_token}`,
+              },
+            }
+          );
+        } catch (githubError: any) {
+          if (githubError.response?.status === 404) {
+            response(
+              res,
+              404,
+              "Repository not found or you don't have access to it"
+            );
+            return;
+          } else if (githubError.response?.status === 403) {
+            response(res, 403, "Access denied to the repository");
+            return;
+          } else {
+            logger.error("GitHub API error:", githubError);
+            response(res, 500, "Failed to verify repository access");
+            return;
+          }
+        }
+      } catch (error) {
+        logger.error("Error during GitHub repository verification:", error);
+        response(res, 500, "Failed to verify repository");
+        return;
+      }
+
       const { existingImages, project_images, project_video, existingVideo } =
         projectData;
       const allowedImagesCount = 5 - existingImages.length;
@@ -428,6 +475,18 @@ const getSpecificProjectData = asyncHandler(
     if (req.user) {
       const userid = new mongoose.Types.ObjectId(req.user._id);
 
+      const result = githubRepoIdSchema.safeParse(req.query);
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Query validation failed",
+          {},
+          result.error.errors[0].message
+        );
+        return;
+      }
+
       try {
         const projectData = await Project.findOne({
           userid,
@@ -456,6 +515,18 @@ const toggleProjectListing = asyncHandler(
   async (req: Request, res: Response) => {
     if (req.user) {
       const userid = new mongoose.Types.ObjectId(req.user._id);
+
+      const result = githubRepoIdSchema.safeParse(req.body);
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Payload validation failed",
+          {},
+          result.error.errors[0].message
+        );
+        return;
+      }
 
       try {
         const projectData = await Project.findOne({
@@ -488,6 +559,18 @@ const deleteProjectListing = asyncHandler(
   async (req: Request, res: Response) => {
     if (req.user) {
       const userid = new mongoose.Types.ObjectId(req.user._id);
+
+      const result = githubRepoIdSchema.safeParse(req.query);
+      if (!result.success) {
+        response(
+          res,
+          400,
+          "Query validation failed",
+          {},
+          result.error.errors[0].message
+        );
+        return;
+      }
 
       try {
         const projectData = await Project.findOne({

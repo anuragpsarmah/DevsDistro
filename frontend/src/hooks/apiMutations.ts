@@ -15,6 +15,7 @@ interface mutationParameter {
 }
 
 const useProfileUpdateMutation = ({ logout }: mutationParameter) => {
+  const queryClient = useQueryClient();
   const { handleError } = useHandleError({ logout });
 
   return useMutation({
@@ -29,6 +30,12 @@ const useProfileUpdateMutation = ({ logout }: mutationParameter) => {
         return response.data;
       } catch (error) {
         handleError(error);
+      } finally {
+        setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: ["useProfileInformationQuery"],
+          });
+        }, 300);
       }
     },
   });
