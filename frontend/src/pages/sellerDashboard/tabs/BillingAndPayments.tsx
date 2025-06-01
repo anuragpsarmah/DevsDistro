@@ -125,20 +125,18 @@ export default function BillingAndPaymentsTab({
 
   return (
     <AnimatedLoadWrapper>
-      <>
-        <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
-          <h1 className="text-4xl text-center md:text-left lg:text-left font-bold mb-6 pb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
-            Billing & Payments
-          </h1>
-          <ConnectToWallet
-            walletAddress={existingAddress}
-            isLoading={isLoading}
-            isError={existingAddressError}
-            onWalletConnect={handleWalletConnect}
-            onWalletDisconnect={handleWalletDisconnect}
-          />
-        </div>
-      </>
+      <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
+        <h1 className="text-4xl text-center md:text-left lg:text-left font-bold mb-6 pb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
+          Wallet Connection
+        </h1>
+        <ConnectToWallet
+          walletAddress={existingAddress}
+          isLoading={isLoading}
+          isError={existingAddressError}
+          onWalletConnect={handleWalletConnect}
+          onWalletDisconnect={handleWalletDisconnect}
+        />
+      </div>
     </AnimatedLoadWrapper>
   );
 }

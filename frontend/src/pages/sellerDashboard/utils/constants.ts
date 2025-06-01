@@ -3,9 +3,9 @@ import {
   User,
   PlusSquare,
   ShoppingCart,
-  CreditCard,
   Layers,
 } from "lucide-react";
+import { SolanaLogo } from "@/components/ui/solanaLogo";
 import {
   ChartDataObject,
   CommonSalesInformation,
@@ -18,7 +18,7 @@ export const sidebarItems = [
   { icon: PlusSquare, label: "List New Project" },
   { icon: Layers, label: "Manage Projects" },
   { icon: ShoppingCart, label: "Order History" },
-  { icon: CreditCard, label: "Billing & Payments" },
+  { icon: SolanaLogo, label: "Wallet Connection" },
 ] as const;
 
 export const INITIAL_CHART_DATA: ChartDataObject[] = [

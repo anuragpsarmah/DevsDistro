@@ -29,7 +29,7 @@ export const TransitionWrapper = ({
         initial="initial"
         animate="animate"
         exit="exit"
-        transition={{ duration: 1 }}
+        transition={{ duration: 0.1 }}
       >
         {children}
       </motion.div>

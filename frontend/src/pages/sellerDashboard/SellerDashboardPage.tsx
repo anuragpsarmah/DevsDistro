@@ -46,7 +46,7 @@ export default function SellerDashboardPage({
           <ManageProjectsTab logout={logout} />
         )}
         {activeTab === "Order History" && <></>}
-        {activeTab === "Billing & Payments" && (
+        {activeTab === "Wallet Connection" && (
           <BillingAndPaymentsTab logout={logout} />
         )}
       </main>

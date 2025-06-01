@@ -426,6 +426,31 @@ const getTotalListedProjects = asyncHandler(
   }
 );
 
+const getTotalActiveProjects = asyncHandler(
+  async (req: Request, res: Response) => {
+    if (req.user) {
+      try {
+        const userid = new mongoose.Types.ObjectId(req.user._id);
+        const projectCount = await Project.countDocuments({
+          userid,
+          isActive: true,
+        });
+
+        response(res, 200, "Total active projects fetched successfully", {
+          totalListedProjects: projectCount,
+        });
+      } catch (error) {
+        logger.error("Failed to fetch total active projects:", error);
+        response(res, 200, "Failed to fetch total active projects", {
+          totalListedProjects: -1,
+        });
+      }
+    } else {
+      throw new ApiError("Error during validation", 401);
+    }
+  }
+);
+
 const getInitialProjectData = asyncHandler(
   async (req: Request, res: Response) => {
     if (req.user) {
@@ -626,6 +651,7 @@ export {
   getPreSignedUrlForProjectMediaUpload,
   validateMediaUploadAndStoreProject,
   getTotalListedProjects,
+  getTotalActiveProjects,
   getInitialProjectData,
   getSpecificProjectData,
   toggleProjectListing,

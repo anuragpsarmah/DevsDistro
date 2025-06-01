@@ -9,6 +9,7 @@ import {
   toggleProjectListing,
   getSpecificProjectData,
   deleteProjectListing,
+  getTotalActiveProjects,
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
 import {
@@ -35,6 +36,9 @@ projectRouter
 projectRouter
   .route("/getTotalListedProjects")
   .get(sessionValidation, getTotalListedProjects);
+projectRouter
+  .route("/getTotalActiveProjects")
+  .get(sessionValidation, getTotalActiveProjects);
 projectRouter
   .route("/getInitialProjectData")
   .get(sessionValidation, getInitialProjectData);

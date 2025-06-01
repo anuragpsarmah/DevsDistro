@@ -321,6 +321,10 @@ export interface WalletDisconnectProps {
   onDisconnect: () => void;
   onCopyAddress: () => void;
   onViewOnExplorer: () => void;
+  hasStoredButNotConnected: boolean;
+  walletAddress: string | null;
+  publicKey: PublicKey | null;
+  intentionalOperation: boolean;
 }
 
 export interface WalletMismatchWarningProps {

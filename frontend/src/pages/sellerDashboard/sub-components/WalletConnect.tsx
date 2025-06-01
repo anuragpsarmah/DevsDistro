@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Wallet, CreditCard, ChevronRight, ExternalLink } from "lucide-react";
+import { Wallet, ChevronRight, ExternalLink } from "lucide-react";
 import { WalletConnectProps } from "../utils/types";
+import { SolanaLogo } from "@/components/ui/solanaLogo";
 
 export const WalletConnect = ({
   detectedWallets,
@@ -35,14 +36,14 @@ export const WalletConnect = ({
       <div className="flex flex-col flex-1 space-y-6 md:pr-6">
         <div className="flex items-center space-x-3">
           <Wallet className="h-6 w-6 text-blue-400" />
-          <h2 className="text-2xl font-bold text-white">Wallet Connection</h2>
+          <h2 className="text-2xl font-bold text-white">Solana Wallet</h2>
         </div>
 
         <div className="border-t border-gray-700 my-2"></div>
 
         <div className="flex flex-col items-center space-y-6 py-8">
           <div className="bg-gray-700/50 p-6 rounded-full">
-            <CreditCard className="h-12 w-12 text-blue-400" />
+            <SolanaLogo className="h-12 w-12 text-blue-400" />
           </div>
           <div className="text-center space-y-2">
             <h3 className="text-xl font-semibold text-white">

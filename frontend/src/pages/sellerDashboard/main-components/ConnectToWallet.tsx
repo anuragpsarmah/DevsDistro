@@ -1,9 +1,7 @@
 import { MagicCard } from "@/components/ui/magic-card";
-import { Loader2 } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ErrorScreenConnectToWallet } from "../sub-components/ErrorScreens";
 import { WalletConnect } from "../sub-components/WalletConnect";
-import { WalletMismatchWarning } from "../sub-components/WalletMismatchWarning";
 import { WalletDisconnect } from "../sub-components/WalletDisconnect";
 import { useWalletManager } from "../hooks/useWalletManager";
 import { ConnectToWalletProps } from "../utils/types";
@@ -46,11 +44,7 @@ const ConnectToWallet = ({
         gradientColor="#3B82F6"
         gradientOpacity={0.2}
       >
-        {isProcessing ? (
-          <div className="flex justify-center items-center min-h-[400px]">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          </div>
-        ) : !walletAddress ? (
+        {!walletAddress ? (
           <WalletConnect
             detectedWallets={detectedWallets}
             otherWallets={otherWallets}
@@ -60,13 +54,6 @@ const ConnectToWallet = ({
           />
         ) : (
           <div className="space-y-4">
-            <WalletMismatchWarning
-              hasWalletMismatch={hasWalletMismatch}
-              hasStoredButNotConnected={hasStoredButNotConnected}
-              walletAddress={walletAddress}
-              publicKey={publicKey}
-              intentionalOperation={intentionalOperation}
-            />
             <WalletDisconnect
               displayAddress={displayAddress || ""}
               hasWalletMismatch={hasWalletMismatch}
@@ -74,6 +61,10 @@ const ConnectToWallet = ({
               onDisconnect={handleDisconnect}
               onCopyAddress={handleCopyAddress}
               onViewOnExplorer={viewOnExplorer}
+              hasStoredButNotConnected={hasStoredButNotConnected}
+              walletAddress={walletAddress}
+              publicKey={publicKey}
+              intentionalOperation={intentionalOperation}
             />
           </div>
         )}

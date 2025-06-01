@@ -21,7 +21,7 @@ export const DeleteConfirmationModal: React.FC<
 > = ({ deleteDialogOpen, setDeleteDialogOpen, handleDeleteConfirm }) => {
   return (
     <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-      <AlertDialogContent className="bg-gray-800 border border-gray-700">
+      <AlertDialogContent className="bg-gray-800 border border-gray-700 w-[90vw] max-w-md mx-auto">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-gray-200">
             Confirm Project Deletion
@@ -31,12 +31,12 @@ export const DeleteConfirmationModal: React.FC<
             undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="bg-gray-700 text-gray-200 hover:bg-gray-600">
+        <AlertDialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
+          <AlertDialogCancel className="bg-gray-700 text-gray-200 hover:bg-gray-600 w-full sm:w-auto">
             No, Cancel
           </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-red-600 text-white hover:bg-red-700"
+            className="bg-red-600 text-white hover:bg-red-700 w-full sm:w-auto"
             onClick={handleDeleteConfirm}
           >
             Yes, Delete Project

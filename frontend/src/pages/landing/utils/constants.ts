@@ -19,12 +19,12 @@ export const faqs: FAQItem[] = [
   {
     question: "What are the pricing guidelines?",
     answer:
-      "You have full control over your project pricing. We recommend pricing based on project complexity, market demand, and maintenance requirements. Also, you keep the entire profit, except Razorpay's cut!",
+      "You have full control over your project pricing. We recommend pricing based on project complexity, market demand, and maintenance requirements. You keep 100% of your earnings—there are no platform fees!",
   },
   {
     question: "How do payments work?",
     answer:
-      "We use secure payment processing using Razorpay. Sellers receive payments directly to their linked accounts, and buyers get immediate access to purchased projects with full support.",
+      "DevExchange uses Solana-based payments. Buyers complete transactions using their Solana wallets, and funds are transferred directly to the seller's wallet. Once the payment is confirmed on-chain, buyers get immediate access to the purchased project.",
   },
   {
     question: "How do you securely store GitHub access tokens?",
