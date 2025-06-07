@@ -19,7 +19,7 @@ export const faqs: FAQItem[] = [
   {
     question: "What are the pricing guidelines?",
     answer:
-      "You have full control over your project pricing. We recommend pricing based on project complexity, market demand, and maintenance requirements. You keep 100% of your earnings—there are no platform fees!",
+      "You have full control over your project pricing. We recommend pricing based on project complexity, market demand, and maintenance requirements. You keep 99% of your earnings—a 1% platform fee applies.",
   },
   {
     question: "How do payments work?",

@@ -44,7 +44,7 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
                   Securely
                 </span>
 
-                <div className="h-6 relative mt-1">
+                <div className="h-6 relative mt-3">
                   <motion.div
                     className="absolute left-0 right-0 h-2 bg-gradient-to-r from-blue-500/40 via-purple-500/40 to-pink-500/40 rounded-full"
                     initial={{ scaleX: 0, opacity: 0 }}

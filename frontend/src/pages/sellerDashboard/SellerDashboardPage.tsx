@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackgroundDots from "@/components/ui/backgroundDots";
-import Sidebar from "./sub-components/Sidebar";
+import Sidebar from "./main-components/Sidebar";
 import AccountSettingsTab from "./tabs/AccountSettingsTab";
 import DashboardOverviewTab from "./tabs/DashboardOverviewTab";
 import ListNewProjectTab from "./tabs/ListNewProjectTab";
 import ManageProjectsTab from "./tabs/ManageProjects";
 import BillingAndPaymentsTab from "./tabs/BillingAndPayments";
+import { SellerDashboardTabTypes } from "./utils/types";
 
 interface SellerDashboardPageProps {
   logout?: () => Promise<void>;
@@ -16,7 +17,8 @@ export default function SellerDashboardPage({
   logout,
 }: SellerDashboardPageProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("Dashboard Overview");
+  const [activeTab, setActiveTab] =
+    useState<SellerDashboardTabTypes>("Dashboard Overview");
   const navigate = useNavigate();
 
   return (
@@ -29,7 +31,7 @@ export default function SellerDashboardPage({
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         logout={logout}
-        onSwitchToBuyer={() => navigate("/buyer-dashboard")}
+        onSwitchToBuyer={() => navigate("/buyer-marketplace")}
       />
 
       <main className="flex-1 p-8 overflow-auto relative z-10">

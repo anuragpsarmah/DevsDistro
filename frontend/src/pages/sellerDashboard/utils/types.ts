@@ -2,6 +2,13 @@ import { ReactNode } from "react";
 import { PROJECT_TYPES } from "./constants";
 import { PublicKey } from "@solana/web3.js";
 
+export type SellerDashboardTabTypes =
+  | "Dashboard Overview"
+  | "Account Settings"
+  | "List New Project"
+  | "Manage Projects"
+  | "Order History"
+  | "Wallet Connection";
 export interface ChartDataObject {
   month: string;
   sales: number;
@@ -130,7 +137,7 @@ export interface ProjectListingFormProps {
     data: projectListingValidatedFormData,
     modificationType: string
   ) => Promise<unknown>;
-  setActiveTab: (curr: string) => void;
+  setActiveTab: (curr: SellerDashboardTabTypes) => void;
 }
 
 export interface ProjectModificationFormProps {
@@ -165,7 +172,7 @@ export interface SalesMetricsProps {
 
 export interface SidebarContentProps {
   activeTab: string;
-  setActiveTab: (tabName: string) => void;
+  setActiveTab: (tabName: SellerDashboardTabTypes) => void;
   logout?: () => Promise<void>;
   isSidebarOpen?: boolean;
   setIsSidebarOpen?: (openStatus: boolean) => void;
@@ -176,7 +183,7 @@ export interface SidebarProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: (val: boolean) => void;
   activeTab: string;
-  setActiveTab: (tabName: string) => void;
+  setActiveTab: (tabName: SellerDashboardTabTypes) => void;
   logout?: () => Promise<void>;
   onSwitchToBuyer?: () => void;
 }
@@ -185,6 +192,16 @@ export interface TransitionWrapperProps {
   isTransitioning: boolean;
   children: ReactNode;
   identifier: string | number;
+}
+
+export interface MonthlySalesProps {
+  selectedYear: string;
+  years: number[];
+  onYearChange: (value: string) => void;
+  isLoading?: boolean;
+  chartData: Array<chartDataObject>;
+  chartContainerRef: React.RefObject<HTMLDivElement>;
+  chartHeight: number;
 }
 
 export interface YearSelectorProps {
@@ -284,7 +301,7 @@ export interface UseProjectSubmissionProps {
     modificationType: string
   ) => unknown;
   modificationType: string;
-  setActiveTab?: (curr: string) => void;
+  setActiveTab?: (curr: SellerDashboardTabTypes) => void;
   handleReturnToAllListings?: () => void;
   github_repo_id: string;
 }

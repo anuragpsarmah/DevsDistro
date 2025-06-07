@@ -9,6 +9,7 @@ import {
   PrivateRepoData,
   projectListingValidatedFormData,
   ProjectMediaMetadata,
+  SellerDashboardTabTypes,
 } from "../utils/types";
 import PrivateRepoImport from "../main-components/PrivateRepoImport";
 import ProjectListingForm from "../main-components/ProjectListingForm";
@@ -21,7 +22,7 @@ import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 
 interface ListNewProjectTabProps {
   logout?: () => Promise<void>;
-  setActiveTab: (curr: string) => void;
+  setActiveTab: (curr: SellerDashboardTabTypes) => void;
 }
 
 export default function ListNewProjectTab({

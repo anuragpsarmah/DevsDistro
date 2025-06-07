@@ -6,7 +6,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { ChartProps } from "../utils/types";
-import { ChartSkeleton } from "../sub-components/Skeletons";
+import { ChartSkeleton } from "./Skeletons";
 
 const chartConfig = {
   sales: {

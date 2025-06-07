@@ -4,8 +4,6 @@ import {
   useCommonSalesInformationQuery,
   useYearlySalesInformationQuery,
 } from "@/hooks/apiQueries";
-import Chart from "../main-components/Chart";
-import { YearSelector } from "../main-components/YearSelector";
 import { useChartDimensions } from "../hooks/useChartDimensions";
 import { useYearOptions } from "../hooks/useYearOptions";
 import { INITIAL_CHART_DATA, INITIAL_SALES_INFO } from "../utils/constants";
@@ -13,6 +11,7 @@ import type { ChartDataObject } from "../utils/types";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import { SalesMetrics } from "../main-components/SalesMetrics";
 import { MagicCard } from "@/components/ui/magic-card";
+import MonthlySales from "../main-components/MonthlySales";
 
 interface DashboardOverviewTabProps {
   logout?: () => Promise<void>;
@@ -79,22 +78,15 @@ export default function DashboardOverviewTab({
           gradientColor="#3B82F6"
           gradientOpacity={0.2}
         >
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="text-2xl font-semibold text-gray-300">
-              Monthly Sales
-            </h2>
-            <YearSelector
-              selectedYear={selectedYear}
-              years={years}
-              onYearChange={setSelectedYear}
-              isLoading={yearlyLoading}
-            />
-          </div>
-          <div className="w-full" style={{ height: `${chartHeight}px` }}>
-            <div ref={chartContainerRef}>
-              <Chart chartData={chartData} isLoading={yearlyLoading} />
-            </div>
-          </div>
+          <MonthlySales
+            selectedYear={selectedYear}
+            years={years}
+            onYearChange={setSelectedYear}
+            isLoading={yearlyLoading}
+            chartData={chartData}
+            chartContainerRef={chartContainerRef}
+            chartHeight={chartHeight}
+          />
         </MagicCard>
       </div>
     </AnimatedLoadWrapper>
