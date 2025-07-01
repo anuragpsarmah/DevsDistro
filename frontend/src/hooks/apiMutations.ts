@@ -7,6 +7,7 @@ import {
   ProjectMediaMetadata,
 } from "@/utils/types";
 import { useHandleError } from "./useHandleErrors";
+import { tryCatch } from "@/utils/tryCatch.util";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
@@ -209,30 +210,29 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
         throw new Error("Operation already in progress");
       }
 
-      try {
-        operationInProgress = true;
+      operationInProgress = true;
 
-        const response = await axios.put(
+      const [response, error] = await tryCatch(
+        axios.put(
           `${backend_uri}/profile/updateWalletAddress`,
           { wallet_address },
           { withCredentials: true }
-        );
+        )
+      );
 
-        successToast(
-          response.data.message || "Wallet address updated successfully"
-        );
+      if (response) successToast("Wallet address updated successfully");
 
-        return response.data;
-      } catch (error) {
+      setTimeout(() => {
+        operationInProgress = false;
+
+        queryClient.invalidateQueries({
+          queryKey: ["getWalletAddressQuery"],
+        });
+      }, 300);
+
+      if (error) {
         handleError(error);
-      } finally {
-        setTimeout(() => {
-          operationInProgress = false;
-
-          queryClient.invalidateQueries({
-            queryKey: ["getWalletAddressQuery"],
-          });
-        }, 300);
+        throw error;
       }
     },
   });

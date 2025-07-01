@@ -2,13 +2,18 @@ import { rateLimit } from "express-rate-limit";
 import { RequestHandler } from "express";
 
 export const healthMemoryCheckLimiter = rateLimit({
-  windowMs: 1000,
-  limit: 1,
+  windowMs: 60 * 1000,
+  limit: 6,
 });
 
 export const toggleProjectListingLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 10,
+  limit: 6,
+});
+
+export const toggleWalletConnectionLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 6,
 });
 
 export const getPrivateReposRefreshLimiter: RequestHandler = (() => {

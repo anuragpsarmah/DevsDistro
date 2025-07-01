@@ -58,14 +58,11 @@ export const MAX_DESCRIPTION_LENGTH = 1000;
 export const MAX_IMAGES = 5;
 
 export const INITIAL_PROFILE_INFORMATION_DATA: ProfileInformation = {
-  username: "",
-  name: "",
-  profileImageUrl: "",
-  jobRole: "",
+  job_role: "",
   location: "",
-  reviewDescription: "",
-  reviewStar: 0,
-  profileVisibility: true,
+  review_description: "",
+  review_stars: 0,
+  profile_visibility: true,
 } as const;
 
 export const PROJECT_TYPES = [

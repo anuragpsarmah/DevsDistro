@@ -1,6 +1,8 @@
 import { redisClient } from "..";
 import { s3Service } from "..";
 import logger from "../logger/logger";
+import * as cron from "node-cron";
+import { tryCatch } from "../utils/tryCatch.util";
 
 export default class S3CleanupService {
   private static async processExpiredJobs() {
@@ -33,9 +35,17 @@ export default class S3CleanupService {
   }
 
   static async startWorker() {
-    while (true) {
-      await this.processExpiredJobs();
-      await new Promise((resolve) => setTimeout(resolve, 12 * 60 * 60 * 1000));
-    }
+    const cronExpression =
+      process.env.WORKER_CRON_EXPRESSION || "0 0 */12 * * *";
+
+    cron.schedule(cronExpression, async () => {
+      const [, error] = await tryCatch(this.processExpiredJobs());
+
+      if (error) logger.error("Error in S3 cleanup worker:", error);
+    });
+
+    logger.info(
+      `⚒️  Cleanup worker started with cron expression: ${cronExpression}`
+    );
   }
 }

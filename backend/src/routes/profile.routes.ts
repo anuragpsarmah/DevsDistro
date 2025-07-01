@@ -6,6 +6,7 @@ import {
   updateProfileInformation,
   updateWalletAddress,
 } from "../controllers/profile.controller";
+import { toggleWalletConnectionLimiter } from "../utils/rateLimitConfig.util";
 
 export const profileRouter = Router();
 
@@ -20,4 +21,4 @@ profileRouter
   .get(sessionValidation, getWalletAddress);
 profileRouter
   .route("/updateWalletAddress")
-  .put(sessionValidation, updateWalletAddress);
+  .put(toggleWalletConnectionLimiter, sessionValidation, updateWalletAddress);

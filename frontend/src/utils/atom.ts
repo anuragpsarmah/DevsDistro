@@ -7,7 +7,7 @@ const user: RecoilState<User> = atom({
     _id: "",
     username: "",
     name: "",
-    profileImageUrl: "",
+    profile_image_url: "",
   },
 });
 

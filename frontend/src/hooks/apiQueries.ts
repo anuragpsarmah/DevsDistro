@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useHandleError } from "./useHandleErrors";
 import { errorToast, successToast } from "@/components/ui/customToast";
+import { User, ProfileUpdateData, walletAddressData } from "@/utils/types";
+import { tryCatch } from "@/utils/tryCatch.util";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
@@ -13,9 +15,12 @@ const useAuthValidationQuery = () => {
   return useQuery({
     queryKey: ["authValidation"],
     queryFn: async () => {
-      const response = await axios.get(`${backend_uri}/auth/authValidation`, {
-        withCredentials: true,
-      });
+      const response = await axios.get<{ data: User }>(
+        `${backend_uri}/auth/authValidation`,
+        {
+          withCredentials: true,
+        }
+      );
       return response.data;
     },
   });
@@ -25,14 +30,13 @@ const useLogoutQuery = () => {
   return useQuery({
     queryKey: ["logoutQuery"],
     queryFn: async () => {
-      try {
-        const response = await axios.get(`${backend_uri}/auth/githubLogout`, {
+      const [, error] = await tryCatch(
+        axios.get(`${backend_uri}/auth/githubLogout`, {
           withCredentials: true,
-        });
-        return response.data;
-      } catch {
-        errorToast("Something went wrong. You are still logged in.");
-      }
+        })
+      );
+
+      if (error) errorToast("Something went wrong. You are still logged in.");
     },
     enabled: false,
   });
@@ -59,18 +63,17 @@ const useCommonSalesInformationQuery = ({ logout }: queryParameter) => {
   return useQuery({
     queryKey: ["commonSalesInformationQuery"],
     queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${backend_uri}/sales/getCommonSalesInformation`,
-          {
-            withCredentials: true,
-          }
-        );
-        return response.data;
-      } catch (error) {
+      const [response, error] = await tryCatch(
+        axios.get(`${backend_uri}/sales/getCommonSalesInformation`, {
+          withCredentials: true,
+        })
+      );
+
+      if (error) {
         await handleError(error);
         throw error;
       }
+      return response.data;
     },
     refetchOnWindowFocus: false,
   });
@@ -86,18 +89,21 @@ const useYearlySalesInformationQuery = (
     queryKey: ["yearlySalesInformationQuery", year],
     queryFn: async ({ queryKey }) => {
       const [, year] = queryKey;
-      try {
-        const response = await axios.get(
+
+      const [response, error] = await tryCatch(
+        axios.get(
           `${backend_uri}/sales/getYearlySalesInformation?year=${year}`,
           {
             withCredentials: true,
           }
-        );
-        return response.data;
-      } catch (error) {
-        handleError(error);
+        )
+      );
+
+      if (error) {
+        await handleError(error);
         throw error;
       }
+      return response.data;
     },
     refetchOnWindowFocus: false,
   });
@@ -108,17 +114,20 @@ const useProfileInformationQuery = ({ logout }: queryParameter) => {
   return useQuery({
     queryKey: ["useProfileInformationQuery"],
     queryFn: async () => {
-      try {
-        const response = await axios.get(
+      const [response, error] = await tryCatch(
+        axios.get<{ data: ProfileUpdateData }>(
           `${backend_uri}/profile/getProfileInformation`,
-          { withCredentials: true }
-        );
+          {
+            withCredentials: true,
+          }
+        )
+      );
 
-        return response.data;
-      } catch (error) {
-        handleError(error);
+      if (error) {
+        await handleError(error);
         throw error;
       }
+      return response.data;
     },
     refetchOnWindowFocus: false,
   });
@@ -237,18 +246,20 @@ const useGetWalletAddress = ({ logout }: queryParameter) => {
   return useQuery({
     queryKey: ["getWalletAddressQuery"],
     queryFn: async () => {
-      try {
-        const response = await axios.get(
+      const [response, error] = await tryCatch(
+        axios.get<{ data: walletAddressData }>(
           `${backend_uri}/profile/getWalletAddress`,
           {
             withCredentials: true,
           }
-        );
-        return response.data;
-      } catch (error) {
+        )
+      );
+
+      if (error) {
         handleError(error);
         throw error;
       }
+      return response.data;
     },
     refetchOnWindowFocus: false,
   });

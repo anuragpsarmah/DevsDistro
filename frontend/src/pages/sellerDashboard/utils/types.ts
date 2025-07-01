@@ -22,14 +22,11 @@ export interface CommonSalesInformation {
 }
 
 export interface ProfileInformation {
-  username: string;
-  name: string;
-  profileImageUrl: string;
-  jobRole: string;
+  job_role: string;
   location: string;
-  reviewDescription: string;
-  reviewStar: number;
-  profileVisibility: boolean;
+  review_description: string;
+  review_stars: number;
+  profile_visibility: boolean;
 }
 
 export interface ProfileUpdatePayload {
@@ -54,7 +51,7 @@ export interface User {
   _id: string;
   username: string;
   name: string;
-  profileImageUrl: string;
+  profile_image_url: string;
 }
 
 export interface AccountInformationProps {

@@ -146,11 +146,11 @@ export default function AccountInformation({
             </div>
           ) : (
             <Switch
-              checked={profileInformationData.profileVisibility}
+              checked={profileInformationData.profile_visibility}
               onCheckedChange={(checked: boolean) => {
                 setProfileInformationData((prev) => ({
                   ...prev,
-                  profileVisibility: checked,
+                  profile_visibility: checked,
                 }));
               }}
             />

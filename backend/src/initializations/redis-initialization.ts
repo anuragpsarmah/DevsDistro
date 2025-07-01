@@ -1,5 +1,6 @@
 import { Redis } from "ioredis";
 import logger from "../logger/logger";
+import { tryCatch } from "../utils/tryCatch.util";
 
 export const redisInitialization = async () => {
   const client = new Redis({
@@ -11,12 +12,13 @@ export const redisInitialization = async () => {
     },
   });
 
-  try {
-    await client.ping();
-    logger.info("✅ Redis connection established");
-    return client;
-  } catch (error) {
+  const [, error] = await tryCatch(client.ping());
+
+  if (error) {
     logger.error("❌ Redis connection failed:", error);
     throw error;
   }
+
+  logger.info("✅ Redis connection established");
+  return client;
 };

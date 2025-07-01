@@ -20,7 +20,7 @@ const siteReviewSchema = new Schema(
     },
     review_stars: {
       type: Number,
-      required: [true, "Review start rating is required"],
+      required: [true, "Review star rating is required"],
     },
   },
   { timestamps: true }

@@ -17,7 +17,7 @@ const emptyUserObject = {
   _id: "",
   username: "",
   name: "",
-  profileImageUrl: "",
+  profile_image_url: "",
 };
 
 const preFetchImage = (imageUrl: string): Promise<void> => {
@@ -84,9 +84,9 @@ export default function ProtectedRouteWrapper({
         navigate("/");
       } else if (!isUserDataLoading && userData) {
         setActiveUser(userData.data);
-        if (userData.data.profileImageUrl) {
+        if (userData.data.profile_image_url) {
           try {
-            await preFetchImage(userData.data.profileImageUrl);
+            await preFetchImage(userData.data.profile_image_url);
           } catch (error) {
             console.warn("Failed to prefetch profile image:", error);
           }

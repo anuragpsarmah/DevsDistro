@@ -40,7 +40,6 @@ export let s3Service: S3Service;
     logger.error("Failed to start cleanup worker:", err);
     process.exit(1);
   });
-  logger.info("⚒️  Cleanup Worker is running");
 
   app.listen(PORT, () => logger.info(`⚙️  Server is running on PORT: ${PORT}`));
 })();

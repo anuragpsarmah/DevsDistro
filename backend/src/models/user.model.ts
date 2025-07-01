@@ -43,6 +43,12 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+    github_id: {
+      type: String,
+      required: [true, "GitHub ID is required"],
+      unique: true,
+      index: true,
+    },
   },
   { timestamps: true }
 );

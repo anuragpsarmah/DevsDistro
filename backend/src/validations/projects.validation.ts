@@ -69,3 +69,31 @@ export const fileMetadataSchema = z.array(
 export const githubRepoIdSchema = z.object({
   github_repo_id: z.string().min(1, "GitHub repository ID is required"),
 });
+
+export const searchProjectSchema = z.object({
+  searchTerm: z.string().max(50).optional().default(""),
+  projectTypes: z
+    .array(z.enum([...PROJECT_TYPE_ENUM] as [string, ...string[]]))
+    .optional()
+    .default([])
+    .refine((types) => types.length <= 10, {
+      message: "Maximum 10 project types allowed",
+    }),
+  sortBy: z
+    .enum(["newest", "price_low", "price_high", "rating_high", "rating_low"])
+    .optional()
+    .default("newest"),
+  limit: z
+    .number()
+    .int()
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .optional()
+    .default(10),
+  offset: z
+    .number()
+    .int()
+    .min(0, "Offset must be non-negative")
+    .optional()
+    .default(0),
+});

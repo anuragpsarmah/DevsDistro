@@ -55,7 +55,7 @@ export default function AccountSettingsTab({
       location: cityInput,
       review_description: review,
       review_stars: rating,
-      profile_visibility: profileInformationData.profileVisibility,
+      profile_visibility: profileInformationData.profile_visibility,
     });
   };
 
@@ -77,9 +77,9 @@ export default function AccountSettingsTab({
       profileInformationQueryData?.data
     ) {
       setProfileInformationData(profileInformationQueryData.data);
-      setSelectedJobRole(profileInformationQueryData.data.jobRole);
-      setRating(profileInformationQueryData.data.reviewStar);
-      setReview(profileInformationQueryData.data.reviewDescription);
+      setSelectedJobRole(profileInformationQueryData.data.job_role);
+      setRating(profileInformationQueryData.data.review_stars);
+      setReview(profileInformationQueryData.data.review_description);
       setCityInput(profileInformationQueryData.data.location);
     }
   }, [
