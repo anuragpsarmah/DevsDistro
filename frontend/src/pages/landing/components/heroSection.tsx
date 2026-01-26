@@ -155,7 +155,7 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
                 transition={{ duration: 0.5, delay: 0.7 }}
                 className="absolute -right-8 top-4 bg-gray-900/90 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hidden sm:block"
               >
-                <div className="text-sm font-semibold text-blue-400">98%</div>
+                <div className="text-sm font-semibold text-blue-400">99%</div>
                 <div className="text-xs text-gray-400">Keep Earnings</div>
               </motion.div>
             </div>
@@ -179,7 +179,7 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
             </div>
             <div className="text-center lg:text-left">
               <div className="text-white font-medium mb-1">Fair Pricing</div>
-              <div className="text-sm text-gray-500">Keep up to 98% of sales</div>
+              <div className="text-sm text-gray-500">Keep up to 99% of sales</div>
             </div>
           </div>
         </motion.div>

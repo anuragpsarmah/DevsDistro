@@ -27,7 +27,7 @@ export const features = [
     icon: <DollarSignIcon className="w-8 h-8 text-white" />,
     animatedIcon: <DollarAnimatedIcon />,
     title: "Fair Pricing Model",
-    description: "Set your own prices and keep up to 98% of your earnings.",
+    description: "Set your own prices and keep up to 99% of your earnings.",
     gradient: "from-green-500 to-green-700",
   },
   {

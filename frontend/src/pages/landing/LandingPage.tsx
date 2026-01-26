@@ -18,6 +18,10 @@ export default function LandingPage() {
   const { data, isLoading, isError } = useAuthValidationQuery();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const handleAuthValidation = async () => {
       if (!isLoading && !isError && data) {
         navigate("/profile-selection");

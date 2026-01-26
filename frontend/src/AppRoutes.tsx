@@ -7,6 +7,8 @@ import LandingPage from "@/pages/landing/LandingPage";
 import ProtectedRouteWrapper from "@/components/wrappers/protectedRouteWrapper";
 import SellerDashboardPage from "@/pages/sellerDashboard/SellerDashboardPage";
 import BuyerDashboardPage from "./pages/buyerDashboard/BuyerDashboardPage";
+import TermsOfService from "@/pages/legal/TermsOfService";
+import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 
 export const router = createBrowserRouter([
   {
@@ -45,5 +47,13 @@ export const router = createBrowserRouter([
         <BuyerDashboardPage />
       </ProtectedRouteWrapper>
     ),
+  },
+  {
+    path: "/terms",
+    element: <TermsOfService />,
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy />,
   },
 ]);

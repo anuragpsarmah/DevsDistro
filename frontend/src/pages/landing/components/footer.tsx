@@ -1,30 +1,32 @@
-import { Github, Twitter, Linkedin } from "lucide-react";
+import { Github } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
-  const footerLinks = {
-    Product: ["Features", "Pricing", "FAQ"],
-    Company: ["About", "Blog", "Careers"],
-    Resources: ["Documentation", "API Reference", "Support"],
-    Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
-  };
-
   const socialLinks = [
     { icon: <Github size={20} />, href: "https://github.com/anuragpsarmah/DevExchange", label: "GitHub" },
-    { icon: <Twitter size={20} />, href: "#", label: "Twitter" },
-    { icon: <Linkedin size={20} />, href: "#", label: "LinkedIn" },
+  ];
+
+  const legalLinks = [
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms of Service", href: "/terms" },
   ];
 
   return (
-    <footer className="py-16 relative z-10 border-t border-white/5">
+    <footer className="py-12 relative z-10 border-t border-white/5">
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
-          <div className="col-span-2 md:col-span-1">
-            <div className="text-xl font-bold mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">DevExchange</span>
-            </div>
-            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-8">
+          <div>
+            <Link to="/" className="block text-xl font-bold mb-2 hover:opacity-80 transition-opacity">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+                DevExchange
+              </span>
+            </Link>
+            <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
               The open source marketplace for developers to buy and sell source code.
             </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-center">
             <div className="flex gap-4">
               {socialLinks.map((social, index) => (
                 <a
@@ -39,27 +41,19 @@ export default function Footer() {
                 </a>
               ))}
             </div>
-          </div>
-
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">
-                {category}
-              </h3>
-              <ul className="space-y-3">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            
+            <div className="flex gap-6">
+              {legalLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
