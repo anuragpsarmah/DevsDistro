@@ -12,6 +12,7 @@ import {
   useToggleProjectListingMutation,
   useValidateMediaUploadAndStoreProjectMutation,
 } from "@/hooks/apiMutations";
+import { tryCatch } from "@/utils/tryCatch.util";
 import ProjectModificationForm from "../main-components/ProjectModificationForm";
 import { formPropsType } from "../utils/types";
 import {
@@ -86,13 +87,14 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
       setComponenetIdentifier(true);
     } else setComponenetIdentifier(false);
     if (identifier == "form") {
-      try {
-        const data = await getData(repo_id || "");
+      const [data, error] = await tryCatch(() => getData(repo_id || ""));
+
+      if (error) {
+        setComponenetIdentifier(true);
+      } else {
         setFormProps((prev) => {
           return { ...prev, ...data?.data };
         });
-      } catch {
-        setComponenetIdentifier(true);
       }
     }
     setIsTransitioning(false);

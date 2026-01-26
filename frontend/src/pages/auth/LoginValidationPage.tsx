@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import { tryCatch } from "@/utils/tryCatch.util";
 import { useNavigate } from "react-router-dom";
 import { user } from "@/utils/atom";
 import { useRecoilState } from "recoil";
@@ -14,18 +15,20 @@ export default function LoginValidationPage() {
 
   useEffect(() => {
     const validateLogin = async () => {
-      try {
-        const response = await axios.get(
+      const [response, error] = await tryCatch<AxiosResponse>(() =>
+        axios.get(
           `http://localhost:3000/api/auth/githubLogin?code=${githubCode}`,
           { withCredentials: true }
-        );
+        )
+      );
 
-        setActiveUser(response.data.data);
-        navigate("/profile-selection");
-      } catch (error) {
+      if (error || !response) {
         console.log(error);
         errorToast("Error validating login");
         navigate("/authentication");
+      } else {
+        setActiveUser(response.data.data);
+        navigate("/profile-selection");
       }
     };
 

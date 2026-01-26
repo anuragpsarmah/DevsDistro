@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import { tryCatch } from "@/utils/tryCatch.util";
 import { CITY_SEARCH_DELAY } from "../utils/constants";
 
 interface UseCitySearchProps {
@@ -25,18 +26,19 @@ export const useCitySearch = ({
       setIsLoadingCities(true);
       setCityError(null);
 
-      try {
-        const response = await axios.get(
-          `${cities_api_uri}/searchCities?q=${cityInput}`
-        );
-        setCities(response.data.filteredResults || []);
-      } catch (error) {
+      const [response, error] = await tryCatch<AxiosResponse>(() =>
+        axios.get(`${cities_api_uri}/searchCities?q=${cityInput}`)
+      );
+
+      if (error) {
         console.error("Error fetching cities:", error);
         setCityError("Failed to fetch cities");
         setCities([]);
-      } finally {
-        setIsLoadingCities(false);
+      } else if (response) {
+        setCities(response.data.filteredResults || []);
       }
+
+      setIsLoadingCities(false);
     };
 
     const timeoutInstance = setTimeout(fetchCities, CITY_SEARCH_DELAY);

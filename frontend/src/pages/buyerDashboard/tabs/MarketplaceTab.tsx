@@ -4,7 +4,7 @@ interface MarketplaceTabProps {
   logout?: () => Promise<void>;
 }
 
-export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
+export default function MarketplaceTab({}: MarketplaceTabProps) {
   return (
     <>
       <SearchBar />

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletName } from "@solana/wallet-adapter-base";
 import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { tryCatch } from "@/utils/tryCatch.util";
 import { errorToast } from "@/components/ui/customToast";
 
 interface UseWalletManagerProps {
@@ -41,9 +42,9 @@ export const useWalletManager = ({
 
   const hasWalletMismatch = Boolean(
     walletAddress &&
-      publicKey &&
-      connected &&
-      publicKey.toString() !== walletAddress
+    publicKey &&
+    connected &&
+    publicKey.toString() !== walletAddress
   );
   const hasStoredButNotConnected = Boolean(walletAddress && !connected);
 
@@ -67,23 +68,25 @@ export const useWalletManager = ({
   const handleDisconnect = useCallback(async () => {
     if (isLoading || localProcessing) return;
 
-    try {
-      setLocalProcessing(true);
-      intentionalOperation.current = true;
+    setLocalProcessing(true);
+    intentionalOperation.current = true;
 
-      if (isMounted.current) {
+    if (isMounted.current) {
+      const [, error] = await tryCatch(async () => {
         await disconnect();
         await onWalletDisconnect();
+      });
+
+      if (error) {
+        console.error("Failed to disconnect wallet:", error);
       }
-    } catch (error) {
-      console.error("Failed to disconnect wallet:", error);
-    } finally {
-      if (isMounted.current) {
-        setLocalProcessing(false);
-        setTimeout(() => {
-          intentionalOperation.current = false;
-        }, 500);
-      }
+    }
+
+    if (isMounted.current) {
+      setLocalProcessing(false);
+      setTimeout(() => {
+        intentionalOperation.current = false;
+      }, 500);
     }
   }, [disconnect, isLoading, onWalletDisconnect, localProcessing]);
 
@@ -98,19 +101,21 @@ export const useWalletManager = ({
         return;
 
       if (publicKey && !walletAddress && connected) {
-        try {
-          setLocalProcessing(true);
-          intentionalOperation.current = true;
-          await onWalletConnect(publicKey.toString());
-        } catch (error) {
+        setLocalProcessing(true);
+        intentionalOperation.current = true;
+        const [, error] = await tryCatch(() =>
+          onWalletConnect(publicKey.toString())
+        );
+
+        if (error) {
           console.error("Failed to sync wallet to backend:", error);
-        } finally {
-          if (isMounted.current) {
-            setLocalProcessing(false);
-            setTimeout(() => {
-              intentionalOperation.current = false;
-            }, 500);
-          }
+        }
+
+        if (isMounted.current) {
+          setLocalProcessing(false);
+          setTimeout(() => {
+            intentionalOperation.current = false;
+          }, 500);
         }
       }
     };

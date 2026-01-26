@@ -17,7 +17,8 @@ import {
 } from "react";
 import { useRecoilValue } from "recoil";
 import { userCurrency } from "@/utils/atom";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import { tryCatch } from "@/utils/tryCatch.util";
 
 interface ProjectPriceSelectionProps {
   price: number;
@@ -86,25 +87,25 @@ export default function ProjectPriceSelection({
     }
 
     debounceRef.current = setTimeout(async () => {
-      try {
-        const { data } = await axios.get(
-          `https://api.coingecko.com/api/v3/simple/price`,
-          {
-            params: {
-              ids: "solana",
-              vs_currencies: currency.toLowerCase(),
-            },
-          }
-        );
+      const [response, error] = await tryCatch<AxiosResponse>(() =>
+        axios.get(`https://api.coingecko.com/api/v3/simple/price`, {
+          params: {
+            ids: "solana",
+            vs_currencies: currency.toLowerCase(),
+          },
+        })
+      );
 
-        const value = data?.solana?.[currency.toLowerCase()];
-        if (value) {
-          const total = (value * price).toFixed(2);
-          setConvertedValue(`${total} ${currency}`);
-        } else {
-          setConvertedValue(null);
-        }
-      } catch {
+      if (error || !response) {
+        setConvertedValue(null);
+        return;
+      }
+
+      const value = response.data?.solana?.[currency.toLowerCase()];
+      if (value) {
+        const total = (value * price).toFixed(2);
+        setConvertedValue(`${total} ${currency}`);
+      } else {
         setConvertedValue(null);
       }
     }, 600);

@@ -5,6 +5,7 @@ import { useUpdateWalletAddressMutation } from "@/hooks/apiMutations";
 import { useGetWalletAddress } from "@/hooks/apiQueries";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { errorToast } from "@/components/ui/customToast";
+import { tryCatch } from "@/utils/tryCatch.util";
 
 interface BillingAndPaymentsTabProps {
   logout?: () => Promise<void>;
@@ -41,10 +42,8 @@ export default function BillingAndPaymentsTab({
 
       const cleanupSilentConnection = async () => {
         if (!existingAddress && connected && publicKey) {
-          try {
-            await disconnect();
-            disconnectFlag = true;
-          } catch (error) {
+          const [, error] = await tryCatch(() => disconnect());
+          if (error) {
             console.error(
               "Error disconnecting silently connected wallet:",
               error
@@ -52,6 +51,8 @@ export default function BillingAndPaymentsTab({
             errorToast(
               "Error disconnecting silently connected wallet. Refresh the page."
             );
+          } else {
+            disconnectFlag = true;
           }
         } else {
           disconnectFlag = true;
@@ -84,14 +85,14 @@ export default function BillingAndPaymentsTab({
       if (existingAddressLoading || isUpdating) return;
       if (address === existingAddress) return;
 
-      try {
-        pendingOperation.current = true;
-        await updateWalletAddressMutate(address);
-      } finally {
-        setTimeout(() => {
-          pendingOperation.current = false;
-        }, 500);
-      }
+      pendingOperation.current = true;
+      const [, error] = await tryCatch(() => updateWalletAddressMutate(address));
+
+      setTimeout(() => {
+        pendingOperation.current = false;
+      }, 500);
+
+      if (error) throw error;
     },
     [
       existingAddressLoading,
@@ -106,14 +107,14 @@ export default function BillingAndPaymentsTab({
     if (existingAddressLoading || isUpdating) return;
     if (!existingAddress) return;
 
-    try {
-      pendingOperation.current = true;
-      await updateWalletAddressMutate("");
-    } finally {
-      setTimeout(() => {
-        pendingOperation.current = false;
-      }, 500);
-    }
+    pendingOperation.current = true;
+    const [, error] = await tryCatch(() => updateWalletAddressMutate(""));
+
+    setTimeout(() => {
+      pendingOperation.current = false;
+    }, 500);
+
+    if (error) throw error;
   }, [
     existingAddressLoading,
     isUpdating,

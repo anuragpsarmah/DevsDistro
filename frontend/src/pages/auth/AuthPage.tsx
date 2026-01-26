@@ -24,7 +24,19 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center text-white p-4 relative overflow-hidden bg-[#030712]">
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse 100% 80% at 50% 0%, rgba(88, 28, 135, 0.15) 0%, transparent 60%),
+            radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+            radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
+            #030712
+          `,
+        }}
+      />
+      
       <BackgroundDots />
 
       <div className="w-full max-w-md z-10 px-4 sm:px-0">

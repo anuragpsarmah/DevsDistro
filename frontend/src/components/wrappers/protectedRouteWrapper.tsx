@@ -7,6 +7,7 @@ import {
   useLogoutQuery,
   useUserCurrencyQuery,
 } from "@/hooks/apiQueries";
+import { tryCatch } from "@/utils/tryCatch.util";
 import BackgroundDots from "../ui/backgroundDots";
 
 interface AuthValidatorProps {
@@ -85,9 +86,10 @@ export default function ProtectedRouteWrapper({
       } else if (!isUserDataLoading && userData) {
         setActiveUser(userData.data);
         if (userData.data.profile_image_url) {
-          try {
-            await preFetchImage(userData.data.profile_image_url);
-          } catch (error) {
+          const [, error] = await tryCatch(() =>
+            preFetchImage(userData.data.profile_image_url)
+          );
+          if (error) {
             console.warn("Failed to prefetch profile image:", error);
           }
         }

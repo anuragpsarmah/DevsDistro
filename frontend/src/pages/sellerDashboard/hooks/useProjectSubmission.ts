@@ -3,6 +3,7 @@ import axios from "axios";
 import { projectListingFormDataValidation } from "../utils/projectListingFormValidation";
 import { errorToast, successToast } from "@/components/ui/customToast";
 import { UseProjectSubmissionProps } from "../utils/types";
+import { tryCatch } from "@/utils/tryCatch.util";
 import { projectListingFormData } from "../utils/types";
 
 export const useProjectSubmission = ({
@@ -36,12 +37,12 @@ export const useProjectSubmission = ({
       })),
       ...(formData.video
         ? [
-            {
-              originalName: formData.video.name,
-              fileType: formData.video.type,
-              fileSize: formData.video.size,
-            },
-          ]
+          {
+            originalName: formData.video.name,
+            fileType: formData.video.type,
+            fileSize: formData.video.size,
+          },
+        ]
         : []),
     ];
 
@@ -64,9 +65,8 @@ export const useProjectSubmission = ({
     ];
     const totalFiles = allFiles.length;
 
-    let keys;
-    try {
-      keys = await Promise.all(
+    const [keys, error] = await tryCatch<string[]>(() =>
+      Promise.all(
         urlResponse.data.map(async (urlData, index) => {
           const file = allFiles[index];
 
@@ -80,8 +80,10 @@ export const useProjectSubmission = ({
 
           return urlData.key;
         })
-      );
-    } catch {
+      )
+    );
+
+    if (error || !keys) {
       errorToast("File upload failed. Try again.");
       setIsSubmitting(false);
       setUploadProgress(0);
