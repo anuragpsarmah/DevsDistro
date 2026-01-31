@@ -197,8 +197,6 @@ export interface MonthlySalesProps {
   onYearChange: (value: string) => void;
   isLoading?: boolean;
   chartData: Array<chartDataObject>;
-  chartContainerRef: React.RefObject<HTMLDivElement>;
-  chartHeight: number;
 }
 
 export interface YearSelectorProps {

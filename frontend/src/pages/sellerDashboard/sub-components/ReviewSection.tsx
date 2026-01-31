@@ -20,7 +20,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
         placeholder="Write your review here..."
         value={review}
         onChange={onReviewChange}
-        className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors h-32 resize-none"
+        className="bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-colors duration-200 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 h-32 resize-none"
       />
       <p
         className={`text-sm mt-1 ${MAX_REVIEW_LENGTH - review.length <= 10 ? "text-red-400" : "text-gray-400"}`}

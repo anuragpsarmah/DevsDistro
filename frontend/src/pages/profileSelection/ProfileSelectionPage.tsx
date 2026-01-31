@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingBag, Store, ArrowRight, Code2 } from "lucide-react";
+import { ShoppingBag, Store, Code2 } from "lucide-react";
 import BackgroundDots from "@/components/ui/backgroundDots";
 import { useNavigate } from "react-router-dom";
+import { ProfileCard } from "./main-components/ProfileCard";
 
 export default function ProfileSelectionPage() {
   const [hoveredProfile, setHoveredProfile] = useState<string | null>(null);
@@ -91,81 +92,3 @@ export default function ProfileSelectionPage() {
   );
 }
 
-interface ProfileCardProps {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  features: string[];
-  onClick: () => void;
-  isHovered: boolean;
-  setHovered: () => void;
-  setNotHovered: () => void;
-  gradient: string;
-  delay: number;
-}
-
-function ProfileCard({
-  title,
-  description,
-  icon,
-  features,
-  onClick,
-  isHovered,
-  setHovered,
-  setNotHovered,
-  gradient,
-  delay,
-}: ProfileCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      className="relative group"
-      onMouseEnter={setHovered}
-      onMouseLeave={setNotHovered}
-    >
-      <div className={`absolute inset-0 bg-gradient-to-r ${gradient} opacity-0 group-hover:opacity-20 blur-xl rounded-2xl transition-opacity duration-500`} />
-      
-      <motion.div
-        className="relative bg-gray-900/60 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl cursor-pointer h-full"
-        onClick={onClick}
-        whileHover={{ scale: 1.02, y: -5 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl pointer-events-none" />
-        
-        <div className="relative z-10">
-          <div className={`w-14 h-14 rounded-xl bg-gradient-to-r ${gradient} flex items-center justify-center mb-6`}>
-            {icon}
-          </div>
-          
-          <h2 className="text-2xl font-bold text-white mb-3">{title}</h2>
-          <p className="text-gray-400 text-sm mb-6 leading-relaxed">{description}</p>
-          
-          <ul className="space-y-3 mb-8">
-            {features.map((feature, index) => (
-              <li key={index} className="flex items-center gap-3 text-sm text-gray-300">
-                <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${gradient}`} />
-                {feature}
-              </li>
-            ))}
-          </ul>
-          
-          <div className={`flex items-center gap-2 text-sm font-medium bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-            <span>Continue as {title}</span>
-            <ArrowRight size={16} className={`transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`} style={{ color: title === 'Buyer' ? '#06b6d4' : '#ec4899' }} />
-          </div>
-        </div>
-        
-        <motion.div
-          className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${gradient} rounded-b-2xl`}
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          style={{ transformOrigin: 'left' }}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}

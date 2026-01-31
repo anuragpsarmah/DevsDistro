@@ -42,7 +42,7 @@ export default function AccountInformation({
   return (
     <>
       <Separator className="my-8 bg-gray-700" />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         <div className="space-y-6">
           {isInitialLoading ? (
             <>
@@ -64,7 +64,7 @@ export default function AccountInformation({
                   id="github-username"
                   value={activeUserData.username}
                   readOnly
-                  className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+                  className="bg-white/5 border-white/10 text-white focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200"
                 />
               </div>
 
@@ -79,7 +79,7 @@ export default function AccountInformation({
                     "Name not available. Update your GitHub profile."
                   }
                   readOnly
-                  className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+                  className="bg-white/5 border-white/10 text-white focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200"
                 />
               </div>
 
@@ -91,12 +91,16 @@ export default function AccountInformation({
                   value={selectedJobRole}
                   onValueChange={setSelectedJobRole}
                 >
-                  <SelectTrigger className="w-full bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors">
+                  <SelectTrigger className="w-full bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-colors duration-200 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50">
                     <SelectValue placeholder="Select a job role" />
                   </SelectTrigger>
-                  <SelectContent className="bg-gray-700 text-gray-300 border-gray-600">
+                  <SelectContent className="bg-[#14152b]/90 border-white/10 text-white backdrop-blur-xl">
                     {JOB_ROLES.map((role) => (
-                      <SelectItem key={role} value={role}>
+                      <SelectItem 
+                        key={role} 
+                        value={role}
+                        className="focus:bg-white/10 hover:bg-white/10 cursor-pointer text-gray-300 focus:text-white"
+                      >
                         {role}
                       </SelectItem>
                     ))}
@@ -137,7 +141,7 @@ export default function AccountInformation({
               Profile Visibility
             </h3>
             <p className="text-sm text-gray-400">
-              Allow others to see your profile
+              Allow others to see your profile details and listings
             </p>
           </div>
           {isInitialLoading ? (
@@ -153,6 +157,7 @@ export default function AccountInformation({
                   profile_visibility: checked,
                 }));
               }}
+              className="data-[state=checked]:bg-blue-950 data-[state=unchecked]:bg-white/20 border-white/10 hover:border-white/20"
             />
           )}
         </div>

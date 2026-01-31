@@ -22,7 +22,7 @@ export default function SellerDashboardPage({
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex text-white relative overflow-hidden bg-[#030712]">
+    <div className="h-screen flex text-white relative overflow-hidden bg-[#030712]">
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
@@ -45,7 +45,7 @@ export default function SellerDashboardPage({
         onSwitchToBuyer={() => navigate("/buyer-marketplace")}
       />
 
-      <main className="flex-1 p-8 overflow-auto relative z-10">
+      <main className="flex-1 p-4 lg:p-6 lg:pb-8 overflow-y-auto lg:overflow-hidden relative z-10 max-h-screen">
         {activeTab === "Overview" && (
           <DashboardOverviewTab logout={logout} />
         )}

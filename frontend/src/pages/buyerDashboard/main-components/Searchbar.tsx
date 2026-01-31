@@ -162,7 +162,7 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 md:p-6">
+    <div className="w-full">
       {/* Main Search Bar */}
       <div className="relative overflow-visible rounded-3xl">
         {/* Glassmorphism Background */}

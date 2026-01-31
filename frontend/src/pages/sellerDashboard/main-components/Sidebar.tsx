@@ -107,7 +107,7 @@ function SidebarContent({
       </nav>
       <div className="p-4 space-y-3 border-t border-white/10">
         <button
-          className="w-full py-2 px-4 text-gray-300 hover:text-white font-medium rounded-md transition-all duration-300 ease-in-out bg-white/5 border border-white/10 flex items-center justify-center gap-2 hover:bg-white/10"
+          className="w-full py-2 px-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 text-blue-100 border border-blue-500/20 hover:border-blue-500/40 font-medium rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
           onClick={onSwitchToBuyer}
         >
           <Repeat className="h-4 w-4 flex-shrink-0" />

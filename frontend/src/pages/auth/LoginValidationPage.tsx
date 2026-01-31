@@ -13,12 +13,13 @@ export default function LoginValidationPage() {
   const navigate = useNavigate();
   const url = new URL(window.location.href);
   const githubCode = url.searchParams.get("code");
+  const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
   useEffect(() => {
     const validateLogin = async () => {
       const [response, error] = await tryCatch<AxiosResponse>(() =>
         axios.get(
-          `http://localhost:3000/api/auth/githubLogin?code=${githubCode}`,
+          `${backend_uri}/auth/githubLogin?code=${githubCode}`,
           { withCredentials: true }
         )
       );

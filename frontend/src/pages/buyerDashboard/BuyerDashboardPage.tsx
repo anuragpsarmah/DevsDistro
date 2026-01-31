@@ -18,7 +18,7 @@ export default function BuyerDashboardPage({
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex text-white relative overflow-hidden bg-[#030712]">
+    <div className="h-screen flex text-white relative overflow-hidden bg-[#030712]">
       <div
         className="fixed inset-0 pointer-events-none"
         style={{

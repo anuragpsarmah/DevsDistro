@@ -8,15 +8,15 @@ interface AnimatedLoadWrapperProps {
 
 export default function AnimatedLoadWrapper({
   children,
-  duration = 1,
+  duration = 0.4,
 }: AnimatedLoadWrapperProps) {
   return (
-    <motion.h1
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration }}
+    <motion.div
+      initial={{ opacity: 0, y: 0 }}
+      animate={{ opacity: 0.9, y: 0 }}
+      transition={{ duration, ease: "easeInOut" }}
     >
       {children}
-    </motion.h1>
+    </motion.div>
   );
 }
