@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, cloneElement, isValidElement } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { user, userCurrency } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
@@ -69,10 +70,12 @@ export default function ProtectedRouteWrapper({
     isLoading: isRegionDataLoading,
     isError: isRegionDataError,
   } = useUserCurrencyQuery();
+  const queryClient = useQueryClient();
   const { refetch: logout } = useLogoutQuery();
 
   const handleLogout = async () => {
     await logout();
+    queryClient.removeQueries({ queryKey: ["authValidation"] });
     setActiveUser(emptyUserObject);
     navigate("/");
   };

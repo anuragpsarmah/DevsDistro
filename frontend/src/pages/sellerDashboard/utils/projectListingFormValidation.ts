@@ -93,7 +93,7 @@ export const projectListingFormDataValidation = (
     }
 
     if (data.video.size > MAX_VIDEO_FILE_SIZE) {
-      return "Video file size should not exceed 2MB";
+      return "Video file size should not exceed 50MB";
     }
 
     if (!ALLOWED_VIDEO_TYPES[data.video.type].includes(extension)) {

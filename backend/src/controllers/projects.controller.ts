@@ -26,7 +26,6 @@ import { MAX_ALLOWED_IMAGES } from "../types/constants";
 import { tryCatch } from "../utils/tryCatch.util";
 import { enrichContext } from "../utils/asyncContext";
 
-// Builds dynamic query and sort based on filters
 const searchAndFilterProjects = async (
   searchTerm: string = "",
   projectTypes: string[] = [],
@@ -46,7 +45,6 @@ const searchAndFilterProjects = async (
     query.$text = { $search: searchTerm.trim() };
   }
 
-  // Text search needs score-based sorting first
   if (hasSearchTerm) {
     sort.score = { $meta: "textScore" };
 
@@ -197,13 +195,11 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
 
   const currentDate = new Date();
 
-  // Transform GitHub API response to our format with relative time
   private_repositories = private_repositories.data
     .map((repo: any) => {
       const updatedDate = new Date(repo?.updated_at);
       const differenceInMs = currentDate.getTime() - updatedDate.getTime();
 
-      // Convert ms to human-readable (d/h/m)
       let updatedAtDisplay;
       if (differenceInMs >= 86400000) {
         updatedAtDisplay = `${Math.floor(differenceInMs / 86400000)}d`;
@@ -236,7 +232,6 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
       })
     );
 
-  // Cache for 24h to reduce GitHub API calls
   const CACHE_DURATION = 60 * 60 * 24;
   const [, cacheError] = await tryCatch(
     redisClient.setex(
@@ -287,7 +282,6 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
         return;
       }
 
-      // Enforce max 2 projects for new listings
       if (projectCount >= 2) {
         enrichContext({ outcome: "validation_failed", reason: "max_projects_reached" });
         response(res, 400, "Only two projects can be listed at a time");
@@ -296,7 +290,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
     }
 
     if (isNaN(existingImageCount) || isNaN(existingVideoCount)) {
-      enrichContext({ outcome: "validation_failed", reason: "invalid_counts" });
+      enrichContext({ outcome: "validation_failed", reason: "invalid_counts", requested_counts: { existingImageCount, existingVideoCount } });
       response(res, 400, "Invalid count values provided");
       return;
     }
@@ -314,14 +308,12 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
       return;
     }
 
-    // Media limits: Calculate allowed new images based on existing ones.
     const allowedImagesCount = MAX_ALLOWED_IMAGES - existingImageCount;
     const metadataFileCheck = {
       image: 0,
       video: 0,
     };
 
-    // Count exact file types from new metadata to enforce limits.
     metadata.forEach((file: FileMetaData) => {
       if (file.fileType === "image/png" || file.fileType === "image/jpeg")
         metadataFileCheck.image++;
@@ -337,7 +329,18 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
       metadataFileCheck.image > allowedImagesCount ||
       (metadataFileCheck.video && existingVideoCount)
     ) {
-      enrichContext({ outcome: "validation_failed", reason: "too_many_files" });
+      enrichContext({
+        outcome: "validation_failed",
+        reason: "too_many_files",
+        files_stats: {
+          requested_images: metadataFileCheck.image,
+          allowed_images: allowedImagesCount,
+          max_images: MAX_ALLOWED_IMAGES,
+          existing_images: existingImageCount,
+          requested_video: metadataFileCheck.video > 0,
+          existing_video: existingVideoCount > 0
+        }
+      });
       response(res, 400, "Sent more files than allowed");
       return;
     }
@@ -504,6 +507,10 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       throw new ApiError("Something went wrong", 500);
     }
 
+    if (project) {
+      enrichContext({ entity: { type: "project", id: project._id.toString(), github_repo_id: project.github_repo_id } });
+    }
+
     if (project && modificationType === "new") {
       enrichContext({ outcome: "validation_failed", reason: "project_exists" });
       response(res, 400, "Project already exists");
@@ -529,11 +536,13 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       }
 
       if (validatedExistingImages.length !== existingImages.length) {
+        enrichContext({ security_warning: "unowned_images_attempt", unowned_count: existingImages.length - validatedExistingImages.length });
         logger.warn(
           `Security: User ${userid} sent ${existingImages.length - validatedExistingImages.length} unowned image URL(s)`
         );
       }
       if (existingVideo && !validatedExistingVideo) {
+        enrichContext({ security_warning: "unowned_video_attempt" });
         logger.warn(`Security: User ${userid} sent unowned video URL`);
       }
     }
@@ -858,7 +867,7 @@ const toggleProjectListing = asyncHandler(
       return;
     }
 
-    enrichContext({ outcome: "success", new_status: updatedProject.isActive });
+    enrichContext({ outcome: "success", new_status: updatedProject.isActive, entity: { type: "project", id: updatedProject._id.toString(), github_repo_id: updatedProject.github_repo_id } });
     response(res, 200, "Project listing status toggled successfully", {
       status: updatedProject.isActive,
     });
@@ -895,7 +904,7 @@ const deleteProjectListing = asyncHandler(
       Project.findOne({
         userid,
         github_repo_id: req.query.github_repo_id,
-      }).select("project_images project_video -_id")
+      }).select("project_images project_video _id")
     );
 
     if (projectError) {
@@ -903,6 +912,10 @@ const deleteProjectListing = asyncHandler(
       logger.error("Failed to fetch project for deletion", projectError);
       response(res, 500, "Failed to delete listed project. Try again later.");
       return;
+    }
+
+    if (projectData) {
+      enrichContext({ entity: { type: "project", id: projectData._id.toString(), github_repo_id: req.query.github_repo_id as string } });
     }
 
     const [deleteResponse, deleteError] = await tryCatch(

@@ -60,7 +60,6 @@ export default class S3Service {
       throw new Error(`${originalName} has invalid file extension`);
     }
 
-    // Generate unique key to prevent collisions
     const uniqueId = crypto.randomBytes(16).toString("hex");
     let key = `projectMedia/${uniqueId}-${originalName}`.replace(/\s+/g, "");
 
@@ -85,7 +84,6 @@ export default class S3Service {
       expectedSize: fileSize,
     };
 
-    // Store metadata in Redis to validate the upload later
     const expiryTimestamp = Date.now() + 320 * 1000;
 
     const redisUploadKey = this.getRedisUploadKey(key);
@@ -149,7 +147,6 @@ export default class S3Service {
         throw new Error("Invalid upload. File deleted.");
       }
 
-      // Return CloudFront URL for fast content delivery
       const cloudFrontUrl = `${process.env.S3_CLOUDFRONT_DISTRIBUTION as string}/${key}`;
 
       await redisClient.del(redisUploadKey);

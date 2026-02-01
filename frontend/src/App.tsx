@@ -7,7 +7,7 @@ import { router } from "./AppRoutes";
 
 function App() {
   const network =
-    import.meta.env.NEXT_PUBLIC_SOLANA_NETWORK === "mainnet"
+    import.meta.env.VITE_SOLANA_NETWORK === "mainnet"
       ? WalletAdapterNetwork.Mainnet
       : WalletAdapterNetwork.Devnet;
 

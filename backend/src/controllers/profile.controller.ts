@@ -140,7 +140,6 @@ const updateProfileInformation = asyncHandler(
       return;
     }
 
-    // Sync profile updates to SiteReview if it exists
     enrichContext({ has_review: true });
 
     const [siteUserReview, findReviewError] = await tryCatch(

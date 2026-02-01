@@ -15,6 +15,7 @@ import { getPrivateReposFromCache } from "../cache/projects.cache";
 import {
   getPrivateReposRefreshLimiter,
   toggleProjectListingLimiter,
+  projectMediaUploadLimiter,
 } from "../utils/rateLimitConfig.util";
 
 export const projectRouter = Router();
@@ -29,7 +30,11 @@ projectRouter
   );
 projectRouter
   .route("/getPreSignedUrlForProjectMediaUpload")
-  .post(sessionValidation, getPreSignedUrlForProjectMediaUpload);
+  .post(
+    projectMediaUploadLimiter,
+    sessionValidation,
+    getPreSignedUrlForProjectMediaUpload
+  );
 projectRouter
   .route("/validateMediaUploadAndStoreProject")
   .put(sessionValidation, validateMediaUploadAndStoreProject);

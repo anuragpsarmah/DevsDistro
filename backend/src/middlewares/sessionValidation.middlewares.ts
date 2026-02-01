@@ -41,8 +41,8 @@ export const sessionValidation = asyncHandler(
               username: decoded.username,
             },
           });
-          next();
         }
+        next();
       }
     );
   }

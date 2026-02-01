@@ -12,17 +12,21 @@ import { githubCodeSchema } from "../validations/auth.validation";
 import { tryCatch } from "../utils/tryCatch.util";
 import { enrichContext } from "../utils/asyncContext";
 
-// Creates a 3-day JWT with user profile embedded
 const createSessionToken = (
   userid: mongoose.Types.ObjectId,
   username: string,
   name: string,
   profile_image_url: string
 ) => {
+  const expiresIn = "3d";
+  enrichContext({
+    auth_session_created: true,
+    auth_session_expires_in: expiresIn
+  });
   const session_token = jwt.sign(
     { _id: userid, username, name, profile_image_url },
     process.env.JWT_SECRET as string,
-    { expiresIn: "3d" }
+    { expiresIn }
   );
 
   return session_token;
@@ -51,7 +55,6 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     ENCRYPTION_IV,
   } = process.env;
 
-  // Exchange OAuth code for access token
   const tokenStartTime = performance.now();
   const [accessTokenResponse, tokenError] = await tryCatch(
     axios.post(
@@ -72,18 +75,35 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ external_api_latency_ms: Math.round(performance.now() - tokenStartTime) });
 
   if (tokenError) {
+    const isClientError = axios.isAxiosError(tokenError) && tokenError.response?.status && tokenError.response.status < 500;
+
     enrichContext({
-      outcome: "error",
+      outcome: isClientError ? "unauthorized" : "error",
       error: {
         name: "GitHubTokenError",
-        message: tokenError instanceof Error ? tokenError.message : "Failed to get access token"
+        message: tokenError instanceof Error ? tokenError.message : "Failed to get access token",
+        code: axios.isAxiosError(tokenError) ? tokenError.code : undefined
       }
     });
+
+    if (isClientError) {
+      logger.warn("GitHub OAuth token exchange rejected (client error)", { status: tokenError.response?.status });
+      response(res, 401, "Authentication failed");
+      return;
+    }
+
     logger.error("GitHub OAuth token exchange failed", tokenError);
     throw new ApiError("Internal Server Error", 500);
   }
 
-  const { access_token, error } = accessTokenResponse.data;
+  const { access_token, error, scope } = accessTokenResponse.data;
+
+  enrichContext({
+    github_scopes: scope,
+    github_rate_limit_remaining: accessTokenResponse.headers["x-ratelimit-remaining"],
+    github_rate_limit_reset: accessTokenResponse.headers["x-ratelimit-reset"]
+  });
+
   if (error) {
     enrichContext({
       outcome: "unauthorized",
@@ -94,7 +114,6 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Store token encrypted - never save plaintext
   const [encryptedAccessToken, encryptError] = await tryCatch(() =>
     encrypt(access_token, ENCRYPTION_KEY_32 as string, ENCRYPTION_IV as string)
   );
@@ -115,10 +134,19 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   );
 
   if (userGHError) {
+    const isClientError = axios.isAxiosError(userGHError) && userGHError.response?.status && userGHError.response.status < 500;
+
     enrichContext({
-      outcome: "error",
+      outcome: isClientError ? "unauthorized" : "error",
       error: { name: "GitHubAPIError", message: userGHError instanceof Error ? userGHError.message : "Failed to fetch user" }
     });
+
+    if (isClientError) {
+      logger.warn("GitHub User Profile fetch rejected", { status: userGHError.response?.status });
+      response(res, 401, "Authentication failed");
+      return;
+    }
+
     logger.error("Failed to fetch GitHub user profile", userGHError);
     throw new ApiError("Internal Server Error", 500);
   }
@@ -149,7 +177,6 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError("Internal Server Error", 500);
   }
 
-  // Existing user: update their profile and token
   if (existingUser) {
     enrichContext({
       user: { id: existingUser._id.toString() },
@@ -171,7 +198,10 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       profile_image_url,
     });
 
+    const saveStartTime = performance.now();
     const [, saveError] = await tryCatch(existingUser.save());
+    enrichContext({ db_write_latency_ms: Math.round(performance.now() - saveStartTime) });
+
     if (saveError) {
       enrichContext({
         outcome: "error",
@@ -197,7 +227,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       session_token
     );
   } else {
-    // New user: create account
+    const createStartTime = performance.now();
     const [newUser, createError] = await tryCatch(
       User.create({
         github_id: github_id.toString(),
@@ -207,6 +237,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         github_access_token: encryptedAccessToken,
       })
     );
+    enrichContext({ db_write_latency_ms: Math.round(performance.now() - createStartTime) });
 
     if (createError) {
       enrichContext({

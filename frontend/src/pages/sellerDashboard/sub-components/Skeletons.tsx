@@ -32,6 +32,16 @@ export const SalesMetricsSkeleton = () => (
   </div>
 );
 
+export const MonthlySalesHeaderSkeleton = () => (
+  <div className="flex items-center gap-2.5">
+    <Skeleton className="w-8 h-8 rounded-lg bg-gray-700/50" />
+    <div className="space-y-1.5">
+      <Skeleton className="h-6 w-32 bg-gray-700/50" />
+      <Skeleton className="h-3 w-48 bg-gray-700/50 hidden sm:block" />
+    </div>
+  </div>
+);
+
 export const ChartSkeleton = () => (
   <div className="flex flex-col h-full">
     <div className="flex-1 min-h-0 relative">

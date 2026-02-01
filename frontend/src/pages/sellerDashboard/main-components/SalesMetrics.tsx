@@ -22,7 +22,7 @@ export const SalesMetrics: React.FC<SalesMetricsProps> = ({
         value={salesInfo.best_seller || "None"}
       />
       <DashboardCard
-        title="Customer Rating"
+        title="Average Customer Rating"
         value={
           salesInfo.customer_rating
             ? `${salesInfo.customer_rating}/5`

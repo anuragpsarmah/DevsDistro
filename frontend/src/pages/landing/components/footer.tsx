@@ -58,7 +58,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
           <p className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} DevExchange. Open source under MIT License.
+            © {new Date().getFullYear()} DevExchange. Open source under CC BY-NC-SA 4.0 License.
           </p>
           <p className="text-gray-500 text-sm">
             Developed with ❤️ by{" "}

@@ -99,7 +99,7 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 blur-3xl scale-75 pointer-events-none" />
               
-              <div className="absolute right-20 top-1/2 -translate-y-1/2 pointer-events-none rotate-[-14deg]">
+              <div className="absolute right-28 top-1/2 -translate-y-1/2 pointer-events-none rotate-[-14deg]">
                 <motion.div
                   animate={{ x: [20, 80], opacity: [0, 0.6, 0] }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: "easeOut", delay: 0 }}
@@ -143,20 +143,20 @@ export default function HeroSection({ handleAuthNavigate }: HeroSectionProps) {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="absolute -left-8 bottom-4 bg-gray-900/90 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hidden sm:block"
+                className="absolute -left-18 lg:-left-20 bottom-4 bg-gray-900/90 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hidden sm:block"
               >
-                <div className="text-sm font-semibold text-white">Open Source</div>
-                <div className="text-xs text-gray-400">MIT License</div>
+                <div className="text-sm font-semibold text-blue-400">Open Source</div>
+                <div className="text-xs text-gray-400">CC BY-NC-SA License</div>
               </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
-                className="absolute -right-8 top-4 bg-gray-900/90 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hidden sm:block"
+                className="absolute -right-2 top-4 bg-gray-900/90 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 hidden sm:block"
               >
                 <div className="text-sm font-semibold text-blue-400">99%</div>
-                <div className="text-xs text-gray-400">Keep Earnings</div>
+                <div className="text-xs text-gray-400">Earnings Kept</div>
               </motion.div>
             </div>
           </motion.div>

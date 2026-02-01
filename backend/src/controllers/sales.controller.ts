@@ -37,7 +37,6 @@ const getCommonSalesInformation = asyncHandler(
       throw new ApiError("Error fetching data", 500);
     }
 
-    // Return default 0-values if no sales history exists
     if (!salesData) {
       enrichContext({ outcome: "success", has_sales_data: false });
       response(res, 200, "Data fetched successfully with default values", {
@@ -100,7 +99,6 @@ const getYearlySalesInformation = asyncHandler(
       throw new ApiError("Error fetching data", 500);
     }
 
-    // If no data for requested year, return empty months to prevent UI crash
     if (
       !yearlySalesData ||
       !yearlySalesData.yearly_sales ||

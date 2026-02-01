@@ -55,14 +55,32 @@ export const fileMetadataSchema = z.array(
       .max(100, "Name can be at most 50 characters long"),
     fileType: z.enum(FILE_TYPE_ENUM, {
       errorMap: () => ({
-        message: `Invalid file type was provided. Expected one of: ${FILE_TYPE_ENUM.join(", ")}`,
+        message: `Invalid file type was provided. Expected one of: ${FILE_TYPE_ENUM.join(
+          ", "
+        )}`,
       }),
     }),
-    fileSize: z
-      .number({
-        required_error: "File size is required",
-      })
-      .max(5000000, "File size cannot exceed 5MB"),
+    fileSize: z.number({
+      required_error: "File size is required",
+    }),
+  }).superRefine((data, ctx) => {
+    if (data.fileType === "video/mp4") {
+      if (data.fileSize > 52428800) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Video size cannot exceed 50MB",
+          path: ["fileSize"],
+        });
+      }
+    } else {
+      if (data.fileSize > 2097152) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Image size cannot exceed 2MB",
+          path: ["fileSize"],
+        });
+      }
+    }
   })
 );
 
