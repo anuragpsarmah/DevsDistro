@@ -155,7 +155,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
           ))}
 
           {totalImagesCount < MAX_IMAGES && (
-            <label className="w-20 h-20 flex items-center justify-center bg-gray-700 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:bg-gray-600 transition-colors">
+            <label className="w-20 h-20 flex items-center justify-center bg-white/5 border-2 border-dashed border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/20 transition-all duration-200">
               <input
                 type="file"
                 accept="image/*"
@@ -201,7 +201,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
             </button>
           </div>
         ) : (
-          <label className="flex items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:bg-gray-700 transition-colors">
+          <label className="flex items-center justify-center w-full h-32 mt-2 border-2 border-dashed border-white/10 rounded-lg cursor-pointer hover:bg-white/5 hover:border-white/20 transition-all duration-200">
             <input
               type="file"
               accept="video/*"

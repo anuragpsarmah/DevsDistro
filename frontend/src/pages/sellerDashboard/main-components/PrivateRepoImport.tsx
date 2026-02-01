@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RepoImportSkeleton } from "../sub-components/Skeletons";
-import { MagicCard } from "@/components/ui/magic-card";
 
 export default function PrivateRepoImport({
   userData,
@@ -29,15 +28,10 @@ export default function PrivateRepoImport({
 
   return (
     <div>
-      <MagicCard
-        className="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg transition-all duration-300 ease-in-out"
-        gradientSize={300}
-        gradientColor="#3B82F6"
-        gradientOpacity={0.2}
-      >
-        <h2 className="flex flex-row justify-between items-center text-2xl font-semibold text-gray-100 mb-6 text-center lg:text-left md:text-left">
+      <div className="rounded-xl">
+        <h2 className="flex flex-row justify-between items-center text-xl lg:text-2xl font-semibold text-gray-100 mb-6 text-center lg:text-left md:text-left">
           <span className="text-left md:text-left">Import Git Repository</span>
-          <span className="w-full text-right flex flex-col justify-center md:w-auto md:text-left md:block">
+          <span className="w-full text-right flex flex-col justify-center md:w-auto md:text-left md:block text-gray-400">
             {!totalListedProjectsDataLoading &&
               totalListedProjectsData &&
               totalListedProjectsData.data.totalListedProjects !== -1 &&
@@ -47,16 +41,16 @@ export default function PrivateRepoImport({
         </h2>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-2 bg-gray-700 border border-gray-600 rounded-md text-gray-300">
+          <div className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg text-gray-300">
             <div className="flex items-center space-x-2">
-              <Github className="h-4 w-4" />
+              <Github className="h-4 w-4 text-purple-400" />
               <span>{userData.username}</span>
             </div>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleRefresh}
-              className="h-8 w-8 hover:bg-gray-600"
+              className="h-8 w-8 hover:bg-white/10 text-gray-400 hover:text-white"
             >
               <RefreshCw className="h-4 w-4" />
             </Button>
@@ -69,17 +63,17 @@ export default function PrivateRepoImport({
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-gray-700 border-gray-700 text-gray-300 w-full"
+              className="pl-10 bg-white/5 border-white/10 text-gray-300 w-full focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200"
             />
           </div>
 
-          <ScrollArea className="max-h-[80vh] overflow-y-auto rounded-md border border-gray-700">
+          <ScrollArea className="h-[340px] md:h-[440px] lg:h-[585px] rounded-lg border border-white/10">
             <div className="relative">
               {!totalListedProjectsDataLoading &&
                 totalListedProjectsData &&
                 (totalListedProjectsData.data.totalListedProjects >= 2 ||
                   totalListedProjectsData.data.totalListedProjects === -1) && (
-                  <div className="absolute inset-0 bg-gray-900/90 z-10 flex items-center justify-center p-4">
+                  <div className="absolute inset-0 bg-gray-900/90 backdrop-blur-sm z-10 flex items-center justify-center p-4 rounded-lg">
                     <div className="max-w-sm mx-auto text-center">
                       <p className="text-gray-200 font-medium text-base sm:text-lg break-words">
                         {totalListedProjectsData.data.totalListedProjects >= 2
@@ -98,10 +92,10 @@ export default function PrivateRepoImport({
                   filteredRepos.map((repo, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 transition-all duration-200"
                     >
                       <div className="flex items-center space-x-3 w-full">
-                        <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-gray-300 font-medium">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center text-gray-300 font-medium border border-white/10">
                           {repo.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="truncate flex-1">
@@ -112,8 +106,8 @@ export default function PrivateRepoImport({
                                 : repo.name}
                             </span>
                             <div className="flex items-center space-x-1">
-                              <Lock className="h-4 w-4 text-gray-400" />
-                              <span className="text-gray-400 text-sm">
+                              <Lock className="h-4 w-4 text-gray-500" />
+                              <span className="text-gray-500 text-sm">
                                 {repo.updated_at}
                               </span>
                             </div>
@@ -121,7 +115,7 @@ export default function PrivateRepoImport({
                         </div>
                         <Button
                           variant="default"
-                          className="bg-gray-800 shrink-0"
+                          className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 hover:from-blue-500/20 hover:to-purple-500/20 text-blue-100 border border-blue-500/20 hover:border-blue-500/40 shrink-0 transition-all duration-200"
                           onClick={() => handleImportClick(index)}
                         >
                           Import
@@ -130,7 +124,7 @@ export default function PrivateRepoImport({
                     </div>
                   ))
                 ) : (
-                  <div className="text-center text-gray-400">
+                  <div className="text-center text-gray-400 py-8">
                     No matching repositories found.
                   </div>
                 )}
@@ -138,7 +132,7 @@ export default function PrivateRepoImport({
             </div>
           </ScrollArea>
         </div>
-      </MagicCard>
+      </div>
     </div>
   );
 }

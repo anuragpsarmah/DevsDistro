@@ -7,7 +7,6 @@ import UploadOverlay from "../sub-components/UploadOverlay";
 import ProjectGeneralInfo from "../sub-components/ProjectGeneralInfo";
 import ProjectMediaUploader from "../sub-components/ProjectMediaUploader";
 import ProjectPriceSelection from "../sub-components/ProjectPriceSelection";
-import { MagicCard } from "@/components/ui/magic-card";
 
 export default function ProjectListingForm({
   formProps,
@@ -62,19 +61,14 @@ export default function ProjectListingForm({
     <div>
       {isSubmitting && <UploadOverlay uploadProgress={uploadProgress} />}
 
-      <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
-        <MagicCard
-          className="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg transition-all duration-300 ease-in-out"
-          gradientSize={300}
-          gradientColor="#3B82F6"
-          gradientOpacity={0.2}
-        >
-          <div className="bg-transparent rounded-xl space-y-4">
+      <div className="space-y-6">
+        <div className="rounded-xl">
+          <div className="space-y-6">
             <div className="flex lg:justify-end md:justify-end justify-center mb-4">
               <Button
                 type="button"
                 variant="outline"
-                className="flex items-center gap-2 bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600 hover:text-white"
+                className="flex items-center gap-2 bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all duration-200"
                 onClick={handleDifferentProjectImport}
               >
                 <Import className="w-4 h-4" />
@@ -108,13 +102,13 @@ export default function ProjectListingForm({
 
             <Button
               type="button"
-              className="w-full bg-gradient-to-r from-blue-400 to-purple-500 hover:from-blue-500 hover:to-purple-600 text-white font-semibold py-2 px-6 rounded-md transition duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg shadow-purple-500/20 transition-all duration-300"
               onClick={onSubmit}
             >
               Submit Project
             </Button>
           </div>
-        </MagicCard>
+        </div>
       </div>
     </div>
   );

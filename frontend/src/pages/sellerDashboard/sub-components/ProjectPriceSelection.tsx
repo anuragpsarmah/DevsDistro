@@ -118,7 +118,7 @@ export default function ProjectPriceSelection({
   }, [price, currency]);
 
   return (
-    <div className="border-t border-gray-600 pt-4">
+    <div className="border-t border-white/10 pt-6">
       <Label htmlFor="price" className="text-gray-300 mb-3 block">
         Project Price (SOL)
       </Label>
@@ -139,7 +139,7 @@ export default function ProjectPriceSelection({
                   onChange={handleInputChange}
                   onBlur={handleBlur}
                   onKeyDown={handleKeyDown}
-                  className="bg-gray-700 border-gray-500 text-white focus:border-white transition-colors text-2xl font-bold text-center appearance-none pl-10 pr-12"
+                  className="bg-white/5 border-white/10 text-white focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200 text-2xl font-bold text-center appearance-none pl-10 pr-12"
                   placeholder="e.g., 10000"
                   required
                 />

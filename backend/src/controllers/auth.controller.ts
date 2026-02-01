@@ -18,7 +18,7 @@ const createSessionToken = (
   name: string,
   profile_image_url: string
 ) => {
-  const expiresIn = "3d";
+  const expiresIn = process.env.JWT_EXPIRES_IN as string;
   enrichContext({
     auth_session_created: true,
     auth_session_expires_in: expiresIn

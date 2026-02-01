@@ -76,7 +76,7 @@ export default function ProjectGeneralInfo({
           id="title"
           ref={title}
           defaultValue={defaultTitle || ""}
-          className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+          className="bg-white/5 border-white/10 text-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200"
           placeholder="e.g., E-commerce Dashboard, AI Content Generator"
           required
         />
@@ -91,7 +91,7 @@ export default function ProjectGeneralInfo({
           placeholder="Provide a clear overview of your project. Include key features, technologies used, and what problems it solves. Be specific about your role and contributions."
           value={description}
           onChange={handleDescriptionChange}
-          className="bg-gray-700 text-gray-300 border-gray-600 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors h-32 resize-none"
+          className="bg-white/5 text-gray-300 border-white/10 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200 h-32 resize-none"
         />
         <p
           className={`text-sm mt-1 ${MAX_DESCRIPTION_LENGTH - description.length <= 50 ? "text-red-400" : "text-gray-400"}`}
@@ -108,12 +108,16 @@ export default function ProjectGeneralInfo({
           value={projectType}
           onValueChange={(value: ProjectType) => setProjectType(value)}
         >
-          <SelectTrigger className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors">
+          <SelectTrigger className="bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20 transition-colors duration-200 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50">
             <SelectValue placeholder="Choose the category that best fits your project" />
           </SelectTrigger>
-          <SelectContent className="bg-gray-700 text-gray-300 border-gray-600">
+          <SelectContent className="bg-[#14152b]/90 border-white/10 text-white backdrop-blur-xl">
             {PROJECT_TYPES.map((type) => (
-              <SelectItem key={type} value={type}>
+              <SelectItem 
+                key={type} 
+                value={type}
+                className="focus:bg-white/10 hover:bg-white/10 cursor-pointer text-gray-300 focus:text-white"
+              >
                 {type}
               </SelectItem>
             ))}
@@ -130,7 +134,7 @@ export default function ProjectGeneralInfo({
           value={techInput}
           onChange={handleTechInputChange}
           onKeyDown={handleTechInputKeyDown}
-          className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+          className="bg-white/5 border-white/10 text-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200"
           placeholder="e.g., React, Node.js, MongoDB (Press Enter to add)"
         />
         <p className="text-sm text-gray-400 mt-1">
@@ -140,7 +144,7 @@ export default function ProjectGeneralInfo({
           {techStack.map((tech, index) => (
             <div
               key={index}
-              className="flex items-center bg-gray-700 text-gray-300 px-4 pt-1 pb-2 text-sm rounded-full"
+              className="flex items-center bg-white/5 border border-white/10 text-gray-300 px-4 pt-1 pb-2 text-sm rounded-full"
             >
               <span>{tech}</span>
               <button
@@ -169,7 +173,7 @@ export default function ProjectGeneralInfo({
           type="url"
           value={liveLink}
           onChange={(e) => setLiveLink(e.target.value)}
-          className="bg-gray-700 border-gray-600 text-gray-300 focus:ring-0 focus:border-white focus:border-[0.5px] transition-colors"
+          className="bg-white/5 border-white/10 text-gray-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-indigo-500/50 transition-colors duration-200"
           placeholder="https://project-demo.com or https://username.github.io/project"
         />
         <p className="text-sm text-gray-400 mt-1">
