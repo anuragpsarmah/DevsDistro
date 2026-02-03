@@ -189,6 +189,7 @@ export interface TransitionWrapperProps {
   isTransitioning: boolean;
   children: ReactNode;
   identifier: string | number;
+  className?: string;
 }
 
 export interface MonthlySalesProps {

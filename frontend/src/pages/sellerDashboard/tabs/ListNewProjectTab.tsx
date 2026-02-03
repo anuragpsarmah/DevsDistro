@@ -136,6 +136,7 @@ export default function ListNewProjectTab({
               <TransitionWrapper
                 isTransitioning={isTransitioning}
                 identifier={isImportState ? "import" : "form"}
+                className={isImportState ? "h-full flex flex-col" : ""}
               >
                 {isImportState ? (
                   <PrivateRepoImport

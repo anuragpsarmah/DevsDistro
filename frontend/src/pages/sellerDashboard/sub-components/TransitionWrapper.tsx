@@ -12,6 +12,7 @@ export const TransitionWrapper = ({
   isTransitioning,
   children,
   identifier,
+  className,
 }: TransitionWrapperProps) => {
   if (isTransitioning) {
     return (
@@ -30,6 +31,7 @@ export const TransitionWrapper = ({
         animate="animate"
         exit="exit"
         transition={{ duration: 0.1 }}
+        className={className}
       >
         {children}
       </motion.div>

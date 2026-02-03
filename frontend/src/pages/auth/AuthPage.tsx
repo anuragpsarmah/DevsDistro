@@ -170,7 +170,6 @@ export default function AuthPage() {
 
       <Footer />
 
-      {/* Security Recommendation Modal */}
       <AnimatePresence>
         {showWarningModal && (
           <motion.div
@@ -186,10 +185,10 @@ export default function AuthPage() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-md bg-gray-900/95 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-md bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-600/5 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-purple-600/[0.02] pointer-events-none" />
               
               <div className="relative p-6">
                 <button

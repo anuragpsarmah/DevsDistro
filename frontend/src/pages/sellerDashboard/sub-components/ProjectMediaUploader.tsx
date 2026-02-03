@@ -117,7 +117,6 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
           Add screenshots or mockups showcasing key features
         </p>
         <div className="flex flex-wrap gap-4 mt-2">
-          {/* Only render existing images if they exist */}
           {existingImages?.map((url, index) => (
             <div key={`existing-${url}`} className="relative">
               <img
