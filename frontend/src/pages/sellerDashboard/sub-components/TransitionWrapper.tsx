@@ -16,7 +16,7 @@ export const TransitionWrapper = ({
 }: TransitionWrapperProps) => {
   if (isTransitioning) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
+      <div className="flex justify-center items-center h-full w-full min-h-[50vh]">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
       </div>
     );

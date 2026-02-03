@@ -23,7 +23,7 @@ export function Toaster() {
               <ToastDescription className="text-sm py-0.5">
                 {description}
               </ToastDescription>
-              <ToastClose className="text-gray-400 hover:text-gray-200 p-0 h-4 w-4" />
+              <ToastClose className="text-gray-500 hover:text-white p-0 h-4 w-4 transition-colors duration-200" />
             </div>
           </Toast>
         );

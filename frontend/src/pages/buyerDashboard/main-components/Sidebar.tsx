@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { SidebarContentProps, SidebarProps } from "../utils/types";
 import { sidebarItems } from "../utils/constants";
+import { useState } from "react";
 
 export default function Sidebar({
   activeTab,
@@ -82,6 +83,8 @@ function SidebarContent({
   setIsSidebarOpen,
   onSwitchToSeller,
 }: SidebarContentProps) {
+  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-6">
@@ -91,12 +94,17 @@ function SidebarContent({
         <p className="text-sm text-gray-400 mt-1">Buyer Marketplace</p>
       </div>
       <nav className="flex-1 overflow-y-auto py-2">
-        <ul className="space-y-1 2xl:space-y-2 px-3 2xl:px-4">
+        <ul 
+          className="space-y-1 2xl:space-y-2 px-3 2xl:px-4"
+          onMouseLeave={() => setHoveredTab(null)}
+        >
           {sidebarItems.map((item, index) => (
             <SidebarItem
               key={index}
               {...item}
               isActive={activeTab === item.label}
+              isHovered={hoveredTab === item.label}
+              onMouseEnter={() => setHoveredTab(item.label)}
               onClick={() => {
                 setActiveTab(item.label);
                 if (isSidebarOpen && setIsSidebarOpen) setIsSidebarOpen(false);
@@ -128,31 +136,68 @@ function SidebarItem({
   icon: Icon,
   label,
   isActive,
+  isHovered,
   onClick,
+  onMouseEnter,
 }: {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
   isActive: boolean;
+  isHovered: boolean;
   onClick: () => void;
+  onMouseEnter: () => void;
 }) {
+  const showHoverHighlight = isHovered && !isActive;
+
   return (
-    <li>
+    <li className="relative">
       <button
         onClick={onClick}
+        onMouseEnter={onMouseEnter}
         className={cn(
-          "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 2xl:py-3 text-sm transition-colors duration-150",
-          isActive
-            ? "bg-white/10 text-white"
-            : "text-gray-400 hover:text-white hover:bg-white/5",
-          "focus:outline-none"
+          "relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 2xl:py-3 text-sm transition-colors duration-200 focus:outline-none",
+          isActive || isHovered ? "text-white" : "text-gray-400"
         )}
+        style={{ willChange: "transform" }}
       >
-        <Icon className="h-4 w-4 flex-shrink-0" />
-        <span className="truncate">{label}</span>
-        <ChevronRight className={cn(
-          "h-4 w-4 ml-auto flex-shrink-0 transition-transform",
-          isActive && "text-purple-400"
-        )} />
+        {/* Hover highlight - only shown when hovered but not active */}
+        {showHoverHighlight && (
+          <motion.div
+            layoutId="buyer-sidebar-hover-highlight"
+            className="absolute inset-0 bg-white/5 rounded-lg"
+            initial={false}
+            transition={{
+              type: "spring",
+              stiffness: 350,
+              damping: 30,
+            }}
+            style={{ willChange: "transform" }}
+          />
+        )}
+        {/* Active highlight - always takes priority */}
+        {isActive && (
+          <motion.div
+            layoutId="buyer-sidebar-active-highlight"
+            className="absolute inset-0 bg-white/10 rounded-lg"
+            initial={false}
+            transition={{
+              type: "spring",
+              stiffness: 350,
+              damping: 30,
+            }}
+            style={{ willChange: "transform" }}
+          />
+        )}
+        <span className="relative z-10 flex items-center gap-3 flex-1">
+          <Icon className="h-4 w-4 flex-shrink-0" />
+          <span className="truncate">{label}</span>
+        </span>
+        <ChevronRight
+          className={cn(
+            "relative z-10 h-4 w-4 ml-auto flex-shrink-0 transition-transform duration-200",
+            isActive && "text-purple-400"
+          )}
+        />
       </button>
     </li>
   );
