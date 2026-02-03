@@ -20,7 +20,7 @@ export default function ProjectModificationForm({
   const title = useRef<HTMLInputElement | null>(null);
   const [description, setDescription] = useState(formProps.description || "");
   const [projectType, setProjectType] =
-    useState<ProjectType>("Web Application");
+    useState<ProjectType>((formProps.project_type as ProjectType) || "Web Application");
   const [techStack, setTechStack] = useState<string[]>(formProps.tech_stack);
   const [techInput, setTechInput] = useState("");
   const [liveLink, setLiveLink] = useState(formProps.live_link || "");

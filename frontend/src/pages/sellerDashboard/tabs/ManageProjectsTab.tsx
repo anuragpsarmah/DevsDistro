@@ -151,7 +151,6 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
             className="h-full"
           >
             {componentIdentifier ? (
-              /* Projects list - marketplace style without outer container */
               <div className="h-full overflow-y-auto custom-scrollbar">
                 <ListedProjects
                   initialProjectData={initialData?.data}
@@ -164,7 +163,6 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
                 />
               </div>
             ) : (
-              /* Form - with glassmorphism container */
               <div className="h-full relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-2xl rounded-3xl pointer-events-none" />
                 <div className="relative h-full bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">

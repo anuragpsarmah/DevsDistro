@@ -177,7 +177,6 @@ function SidebarItem({
         )}
         style={{ willChange: "transform" }}
       >
-        {/* Hover highlight - rendered when hovered, invisible on active tab to keep layoutId animation smooth */}
         {isHovered && (
           <motion.div
             layoutId="sidebar-hover-highlight"

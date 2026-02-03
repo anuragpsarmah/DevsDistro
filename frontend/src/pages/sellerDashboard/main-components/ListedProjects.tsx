@@ -13,6 +13,7 @@ import { ErrorScreenListedProjects } from "../sub-components/ErrorScreens";
 import { NoProjectsScreen } from "../sub-components/NoProjectsScreen";
 import { RenderTechStack } from "../sub-components/RenderTechStack";
 import { DeleteConfirmationModal } from "../sub-components/DeleteConfirmationModal";
+import { ListedProjectSkeleton } from "../sub-components/Skeletons";
 
 const ListedProjects = ({
   initialProjectData,
@@ -64,7 +65,6 @@ const ListedProjects = ({
   };
 
   const handleEditProject = (idx: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { project_images, ...other_props } = initialProjectData[idx];
     setFormProps((prev) => {
       return { ...prev, ...other_props };
@@ -74,11 +74,10 @@ const ListedProjects = ({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="relative w-12 h-12">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 animate-spin" style={{ clipPath: 'polygon(50% 50%, 100% 0, 100% 100%, 50% 100%)' }}></div>
-          <div className="absolute inset-1 rounded-full bg-gray-900"></div>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-4 lg:gap-6 p-4 lg:p-6">
+        {[...Array(6)].map((_, index) => (
+          <ListedProjectSkeleton key={index} />
+        ))}
       </div>
     );
   }

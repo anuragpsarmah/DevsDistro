@@ -137,3 +137,32 @@ export const RepoImportSkeleton = () => (
     <Skeleton className="w-16 h-8 bg-gray-700/40 rounded-lg" />
   </div>
 );
+
+export const ListedProjectSkeleton = () => (
+  <div className="relative">
+    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-xl rounded-2xl pointer-events-none" />
+    <div className="relative bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-white/10 p-4 lg:p-5 flex flex-col h-full overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-purple-600/[0.02] pointer-events-none" />
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="relative mb-4">
+          <Skeleton className="w-full h-48 rounded-xl bg-gray-700/50" />
+          <div className="absolute bottom-0 left-0 right-0 p-2">
+            <Skeleton className="h-6 w-3/4 bg-gray-800/80 rounded-md backdrop-blur-sm" />
+          </div>
+        </div>
+        <div className="flex flex-col flex-grow space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full bg-gray-700/40" />
+            <Skeleton className="h-4 w-11/12 bg-gray-700/40" />
+            <Skeleton className="h-4 w-2/3 bg-gray-700/40" />
+          </div>
+          <div className="mt-auto flex gap-2">
+            <Skeleton className="h-6 w-16 rounded-full bg-gray-700/40" />
+            <Skeleton className="h-6 w-20 rounded-full bg-gray-700/40" />
+            <Skeleton className="h-6 w-14 rounded-full bg-gray-700/40" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
