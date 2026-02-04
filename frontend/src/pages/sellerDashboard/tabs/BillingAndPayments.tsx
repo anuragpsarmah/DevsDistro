@@ -4,6 +4,7 @@ import ConnectToWallet from "../main-components/ConnectToWallet";
 import { useUpdateWalletAddressMutation } from "@/hooks/apiMutations";
 import { useGetWalletAddress } from "@/hooks/apiQueries";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { SolanaLogo } from "@/components/ui/solanaLogo";
 import { errorToast } from "@/components/ui/customToast";
 import { tryCatch } from "@/utils/tryCatch.util";
 
@@ -37,7 +38,6 @@ export default function BillingAndPaymentsTab({
     if (!existingAddressLoading && walletData && !hasInitialized.current) {
       hasInitialized.current = true;
 
-      // Only need cleanup if: no stored address BUT wallet is connected (silent connection)
       const needsCleanup = !existingAddress && connected && publicKey;
       
       if (needsCleanup) {
@@ -123,10 +123,20 @@ export default function BillingAndPaymentsTab({
 
   return (
     <AnimatedLoadWrapper>
-      <div className="space-y-6 mt-6 lg:mt-0 md:mt-0">
-        <h1 className="text-4xl text-center md:text-left lg:text-left font-bold mb-6 pb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 animate-gradient-x">
-          Wallet Connection
-        </h1>
+      <div className="flex flex-col h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)] mt-10 lg:mt-0 md:mt-0 pb-4 lg:pb-6">
+        <div className="flex-shrink-0 mb-4 lg:mb-5">
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+              <SolanaLogo className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl lg:text-3xl text-left font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+                Wallet Connection
+              </h1>
+              <p className="text-xs lg:text-sm text-gray-500">Manage your wallet and payment settings</p>
+            </div>
+          </div>
+        </div>
         <ConnectToWallet
           walletAddress={existingAddress}
           isLoading={isLoading}
