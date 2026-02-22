@@ -74,6 +74,19 @@ const projectSchema = new Schema(
       type: String,
       default: null,
     },
+    repo_tree_status: {
+      type: String,
+      enum: ["PROCESSING", "SUCCESS", "FAILED"],
+      default: null,
+    },
+    repo_tree: {
+      type: Schema.Types.Mixed,
+      default: null,
+    },
+    repo_tree_error: {
+      type: String,
+      default: null,
+    },
     avgRating: {
       type: Number,
       default: 0,

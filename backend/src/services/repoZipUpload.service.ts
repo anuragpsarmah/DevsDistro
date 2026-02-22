@@ -8,9 +8,98 @@ import { tryCatch } from "../utils/tryCatch.util";
 const MAX_REPO_SIZE_BYTES = 500 * 1024 * 1024;
 const LOCK_TTL_SECONDS = 600;
 
+type TreeNode = {
+  name: string;
+  type: "file" | "directory";
+  children?: TreeNode[];
+};
+
 export default class RepoZipUploadService {
   private getLockKey(projectId: string): string {
     return `repo-zip-lock:${projectId}`;
+  }
+
+  private async fetchAndStoreRepoTree(
+    projectId: string,
+    githubRepoId: string,
+    installationToken: string
+  ): Promise<void> {
+    await tryCatch(
+      Project.findByIdAndUpdate(projectId, { repo_tree_status: "PROCESSING" })
+    );
+
+    const [repoResponse, repoError] = await tryCatch(
+      axios.get<{ full_name: string; default_branch: string }>(
+        `https://api.github.com/repositories/${githubRepoId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${installationToken}`,
+            Accept: "application/vnd.github+json",
+          },
+        }
+      )
+    );
+
+    if (repoError || !repoResponse) {
+      throw new Error(
+        `Failed to fetch repo info: ${repoError instanceof Error ? repoError.message : "Unknown error"}`
+      );
+    }
+
+    const { full_name, default_branch } = repoResponse.data;
+
+    const [treeResponse, treeError] = await tryCatch(
+      axios.get<{ tree: Array<{ path: string; type: string }>; truncated: boolean }>(
+        `https://api.github.com/repos/${full_name}/git/trees/${default_branch}?recursive=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${installationToken}`,
+            Accept: "application/vnd.github+json",
+          },
+        }
+      )
+    );
+
+    if (treeError || !treeResponse) {
+      throw new Error(
+        `Failed to fetch repo tree: ${treeError instanceof Error ? treeError.message : "Unknown error"}`
+      );
+    }
+
+    const { tree: entries, truncated } = treeResponse.data;
+
+    if (truncated) {
+      logger.warn("Repo tree was truncated by GitHub (>100k entries)", { projectId });
+    }
+
+    const root: TreeNode = { name: "root", type: "directory", children: [] };
+    const nodeMap = new Map<string, TreeNode>();
+    nodeMap.set("", root);
+
+    for (const entry of entries) {
+      const lastSlash = entry.path.lastIndexOf("/");
+      const parentPath = lastSlash === -1 ? "" : entry.path.substring(0, lastSlash);
+      const name = lastSlash === -1 ? entry.path : entry.path.substring(lastSlash + 1);
+
+      const parent = nodeMap.get(parentPath);
+      if (!parent?.children) continue;
+
+      if (entry.type === "tree") {
+        const dirNode: TreeNode = { name, type: "directory", children: [] };
+        parent.children.push(dirNode);
+        nodeMap.set(entry.path, dirNode);
+      } else {
+        parent.children.push({ name, type: "file" });
+      }
+    }
+
+    await tryCatch(
+      Project.findByIdAndUpdate(projectId, {
+        repo_tree: root,
+        repo_tree_status: "SUCCESS",
+        repo_tree_error: null,
+      })
+    );
   }
 
   async processRepoZipUpload(
@@ -95,7 +184,6 @@ export default class RepoZipUploadService {
         );
       }
 
-      // Track streamed bytes to enforce size limit even without content-length
       let streamedBytes = 0;
       const sizeEnforcedStream = zipResponse.data;
       sizeEnforcedStream.on("data", (chunk: Buffer) => {
@@ -141,6 +229,28 @@ export default class RepoZipUploadService {
         s3Key,
         sizeBytes: streamedBytes,
       });
+
+      const [, treeError] = await tryCatch(
+        this.fetchAndStoreRepoTree(projectId, githubRepoId, installationToken)
+      );
+
+      if (treeError) {
+        const treeErrorMessage =
+          treeError instanceof Error ? treeError.message : "Unknown error";
+        await tryCatch(
+          Project.findByIdAndUpdate(projectId, {
+            repo_tree_status: "FAILED",
+            repo_tree_error: treeErrorMessage,
+          })
+        );
+        logger.error("Repo tree fetch failed", {
+          projectId,
+          githubRepoId,
+          error: treeErrorMessage,
+        });
+      } else {
+        logger.info("Repo tree fetched successfully", { projectId });
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";

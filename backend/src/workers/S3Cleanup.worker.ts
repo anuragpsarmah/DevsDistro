@@ -12,7 +12,6 @@ export default class S3CleanupService {
 
     try {
       const now = Date.now();
-      // Fetch items passing their TTL (score < now)
       const expiredKeys = await redisClient.zrangebyscore(
         "media-cleanup-schedule",
         0,
@@ -21,7 +20,7 @@ export default class S3CleanupService {
 
       for (const key of expiredKeys) {
         try {
-          const actualS3Key = key.replace("s3upload_", "");
+          const actualS3Key = key.startsWith("s3upload_") ? key.slice("s3upload_".length) : key;
           await s3Service.deleteObject(actualS3Key);
           await redisClient.zrem("media-cleanup-schedule", key);
           cleanupItems.push(key);
@@ -55,9 +54,8 @@ export default class S3CleanupService {
 
   static async startWorker() {
     const cronExpression =
-      process.env.WORKER_CRON_EXPRESSION || "0 0 */12 * * *";
+      process.env.WORKER_CRON_EXPRESSION || "0 0 */12 * * *"; // Run cleanup every 12 hours (default)
 
-    // Run cleanup every 12 hours (default)
     cron.schedule(cronExpression, async () => {
       const [, error] = await tryCatch(this.processExpiredJobs());
 
