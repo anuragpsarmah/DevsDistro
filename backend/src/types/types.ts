@@ -29,17 +29,20 @@ export interface CityInfo {
 
 export interface ProjectQuery {
   isActive: boolean;
+  github_access_revoked: boolean;
+  repo_zip_status: string;
   project_type?: { $in: string[] };
-  $text?: { $search: string };
+  tech_stack?: { $in: string[] };
+  price?: { $gte?: number; $lte?: number };
+  $or?: Array<Record<string, unknown>>;
 }
 
 export interface ProjectSort {
-  score?: { $meta: "textScore" };
   createdAt?: 1 | -1;
   price?: 1 | -1;
   avgRating?: 1 | -1;
   totalReviews?: 1 | -1;
-  [key: string]: any; // Add index signature for flexibility
+  [key: string]: any;
 }
 
 export type SortOption =

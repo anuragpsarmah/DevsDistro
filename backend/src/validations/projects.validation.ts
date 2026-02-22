@@ -83,30 +83,47 @@ export const githubRepoIdSchema = z.object({
   github_repo_id: z.string().min(1, "GitHub repository ID is required"),
 });
 
-export const searchProjectSchema = z.object({
-  searchTerm: z.string().max(50).optional().default(""),
-  projectTypes: z
-    .array(z.enum([...PROJECT_TYPE_ENUM] as [string, ...string[]]))
-    .optional()
-    .default([])
-    .refine((types) => types.length <= 10, {
-      message: "Maximum 10 project types allowed",
-    }),
-  sortBy: z
-    .enum(["newest", "price_low", "price_high", "rating_high", "rating_low"])
-    .optional()
-    .default("newest"),
-  limit: z
-    .number()
-    .int()
-    .min(1, "Limit must be at least 1")
-    .max(100, "Limit cannot exceed 100")
-    .optional()
-    .default(10),
-  offset: z
-    .number()
-    .int()
-    .min(0, "Offset must be non-negative")
-    .optional()
-    .default(0),
-});
+export const searchProjectSchema = z
+  .object({
+    searchTerm: z.string().max(50).optional().default(""),
+    projectTypes: z
+      .array(z.enum([...PROJECT_TYPE_ENUM] as [string, ...string[]]))
+      .optional()
+      .default([])
+      .refine((types) => types.length <= 10, {
+        message: "Maximum 10 project types allowed",
+      }),
+    techStack: z
+      .array(z.string().max(30))
+      .max(10, "Maximum 10 tech stack filters allowed")
+      .optional()
+      .default([]),
+    minPrice: z.number().min(0, "Minimum price cannot be negative").optional(),
+    maxPrice: z.number().min(0, "Maximum price cannot be negative").optional(),
+    sortBy: z
+      .enum(["newest", "price_low", "price_high", "rating_high", "rating_low"])
+      .optional()
+      .default("newest"),
+    limit: z
+      .number()
+      .int()
+      .min(1, "Limit must be at least 1")
+      .max(50, "Limit cannot exceed 50")
+      .optional()
+      .default(12),
+    offset: z
+      .number()
+      .int()
+      .min(0, "Offset must be non-negative")
+      .optional()
+      .default(0),
+  })
+  .refine(
+    (data) => {
+      if (data.minPrice !== undefined && data.maxPrice !== undefined) {
+        return data.minPrice <= data.maxPrice;
+      }
+      return true;
+    },
+    { message: "minPrice must be less than or equal to maxPrice", path: ["minPrice"] }
+  );

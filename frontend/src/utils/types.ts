@@ -38,3 +38,47 @@ export interface projectListingValidatedFormData {
   project_images: string[];
   project_video: string;
 }
+
+export interface MarketplaceSearchParams {
+  searchTerm?: string;
+  projectTypes?: string[];
+  techStack?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  sortBy?: string;
+  limit?: number;
+}
+
+export interface MarketplaceProject {
+  _id: string;
+  title: string;
+  description: string;
+  project_type: string;
+  tech_stack: string[];
+  price: number;
+  avgRating: number;
+  totalReviews: number;
+  live_link?: string;
+  createdAt: string;
+  project_images: string;
+  userid: {
+    username: string;
+    name: string;
+    profile_image_url: string;
+  };
+}
+
+export interface MarketplaceSearchResponse {
+  data: {
+    projects: MarketplaceProject[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalCount: number;
+      limit: number;
+      offset: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+  };
+}

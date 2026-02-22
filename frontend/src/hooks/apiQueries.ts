@@ -2,7 +2,13 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useHandleError } from "./useHandleErrors";
 import { errorToast, successToast } from "@/components/ui/customToast";
-import { User, ProfileUpdateData, walletAddressData } from "@/utils/types";
+import {
+  User,
+  ProfileUpdateData,
+  walletAddressData,
+  MarketplaceSearchParams,
+  MarketplaceSearchResponse,
+} from "@/utils/types";
 import { tryCatch } from "@/utils/tryCatch.util";
 
 const backend_uri = import.meta.env.VITE_BACKEND_URI;
@@ -337,6 +343,51 @@ const useRepoZipStatusQuery = ({ logout }: queryParameter) => {
   return getStatus;
 };
 
+const useMarketplaceSearchQuery = (
+  params: MarketplaceSearchParams,
+  { logout }: queryParameter
+) => {
+  const { handleError } = useHandleError({ logout });
+  const limit = params.limit || 12;
+
+  return useInfiniteQuery({
+    queryKey: ["marketplaceSearch", params],
+    queryFn: async ({ pageParam = 0 }) => {
+      const [response, error] = await tryCatch(
+        axios.post<MarketplaceSearchResponse>(
+          `${backend_uri}/projects/search`,
+          {
+            searchTerm: params.searchTerm || "",
+            projectTypes: params.projectTypes || [],
+            techStack: params.techStack || [],
+            minPrice: params.minPrice,
+            maxPrice: params.maxPrice,
+            sortBy: params.sortBy || "newest",
+            limit,
+            offset: pageParam,
+          },
+          { withCredentials: true }
+        )
+      );
+
+      if (error) {
+        await handleError(error);
+        throw error;
+      }
+
+      return response.data.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage?.pagination.hasNextPage) {
+        return lastPage.pagination.offset + limit;
+      }
+      return undefined;
+    },
+    initialPageParam: 0,
+    refetchOnWindowFocus: false,
+  });
+};
+
 export {
   useAuthValidationQuery,
   useLogoutQuery,
@@ -352,4 +403,5 @@ export {
   useSpecificProjectDataQuery,
   useGetWalletAddress,
   useRepoZipStatusQuery,
+  useMarketplaceSearchQuery,
 };

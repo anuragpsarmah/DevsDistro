@@ -88,42 +88,18 @@ const projectSchema = new Schema(
   { timestamps: true }
 );
 
-projectSchema.index({ isActive: 1 });
-projectSchema.index(
-  { title: "text", tech_stack: "text" },
-  { weights: { title: 10, tech_stack: 1 } }
-); // Text search index
-projectSchema.index({ isActive: 1, createdAt: -1 }); // Newest sort
-projectSchema.index({ isActive: 1, price: 1, createdAt: -1 }); // Price low with tie-breaker
-projectSchema.index({ isActive: 1, price: -1, createdAt: -1 }); // Price high with tie-breaker
-projectSchema.index({
-  isActive: 1,
-  avgRating: -1,
-  totalReviews: -1,
-  createdAt: -1,
-}); // Rating high
-projectSchema.index({
-  isActive: 1,
-  avgRating: 1,
-  totalReviews: 1,
-  createdAt: -1,
-}); // Rating low
-projectSchema.index({ isActive: 1, project_type: 1, createdAt: -1 }); // Type + newest
-projectSchema.index({ isActive: 1, project_type: 1, price: 1, createdAt: -1 }); // Type + price low
-projectSchema.index({ isActive: 1, project_type: 1, price: -1, createdAt: -1 }); // Type + price high
-projectSchema.index({
-  isActive: 1,
-  project_type: 1,
-  avgRating: -1,
-  totalReviews: -1,
-  createdAt: -1,
-}); // Type + rating high
-projectSchema.index({
-  isActive: 1,
-  project_type: 1,
-  avgRating: 1,
-  totalReviews: 1,
-  createdAt: -1,
-}); // Type + rating low
+const MKT = { isActive: 1, github_access_revoked: 1, repo_zip_status: 1 } as const;
+
+projectSchema.index({ ...MKT, createdAt: -1 }); // Newest
+projectSchema.index({ ...MKT, price: 1, createdAt: -1 }); // Price low
+projectSchema.index({ ...MKT, price: -1, createdAt: -1 }); // Price high
+projectSchema.index({ ...MKT, avgRating: -1, totalReviews: -1, createdAt: -1 }); // Rating high
+projectSchema.index({ ...MKT, avgRating: 1, totalReviews: 1, createdAt: -1 }); // Rating low
+
+projectSchema.index({ ...MKT, project_type: 1, createdAt: -1 }); // Type + newest
+projectSchema.index({ ...MKT, project_type: 1, price: 1, createdAt: -1 }); // Type + price low
+projectSchema.index({ ...MKT, project_type: 1, price: -1, createdAt: -1 }); // Type + price high
+projectSchema.index({ ...MKT, project_type: 1, avgRating: -1, totalReviews: -1, createdAt: -1 }); // Type + rating high
+projectSchema.index({ ...MKT, project_type: 1, avgRating: 1, totalReviews: 1, createdAt: -1 }); // Type + rating low
 
 export const Project = model("Project", projectSchema);

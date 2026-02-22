@@ -28,88 +28,108 @@ import { MAX_ALLOWED_IMAGES } from "../types/constants";
 import { tryCatch } from "../utils/tryCatch.util";
 import { enrichContext } from "../utils/asyncContext";
 
+const MARKETPLACE_SELECT = {
+  title: 1,
+  description: 1,
+  project_type: 1,
+  tech_stack: 1,
+  price: 1,
+  avgRating: 1,
+  totalReviews: 1,
+  live_link: 1,
+  createdAt: 1,
+  project_images: { $slice: 1 },
+} as const;
+
+const SELLER_POPULATE = {
+  path: "userid",
+  select: "username name profile_image_url -_id",
+} as const;
+
 const searchAndFilterProjects = async (
   searchTerm: string = "",
   projectTypes: string[] = [],
+  techStack: string[] = [],
+  minPrice?: number,
+  maxPrice?: number,
   sortBy: SortOption = "newest",
-  limit: number = 10,
+  limit: number = 12,
   offset: number = 0
 ) => {
-  let query: ProjectQuery = { isActive: true };
-  let sort: ProjectSort = {};
+  const query: ProjectQuery = {
+    isActive: true,
+    github_access_revoked: false,
+    repo_zip_status: "SUCCESS",
+  };
 
-  if (projectTypes && projectTypes.length > 0) {
+  if (projectTypes.length > 0) {
     query.project_type = { $in: projectTypes };
   }
 
-  const hasSearchTerm = searchTerm && searchTerm.trim().length > 0;
-  if (hasSearchTerm) {
-    query.$text = { $search: searchTerm.trim() };
+  if (techStack.length > 0) {
+    query.tech_stack = { $in: techStack };
   }
 
-  if (hasSearchTerm) {
-    sort.score = { $meta: "textScore" };
+  if (minPrice !== undefined || maxPrice !== undefined) {
+    query.price = {};
+    if (minPrice !== undefined) query.price.$gte = minPrice;
+    if (maxPrice !== undefined) query.price.$lte = maxPrice;
+  }
 
-    switch (sortBy) {
-      case "newest":
-        sort.createdAt = -1;
-        break;
-      case "price_low":
-        sort.price = 1;
-        sort.createdAt = -1;
-        break;
-      case "price_high":
-        sort.price = -1;
-        sort.createdAt = -1;
-        break;
-      case "rating_high":
-        sort.avgRating = -1;
-        sort.totalReviews = -1;
-        sort.createdAt = -1;
-        break;
-      case "rating_low":
-        sort.avgRating = 1;
-        sort.totalReviews = 1;
-        sort.createdAt = -1;
-        break;
-    }
-  } else {
-    switch (sortBy) {
-      case "newest":
-        sort.createdAt = -1;
-        break;
-      case "price_low":
-        sort.price = 1;
-        sort.createdAt = -1;
-        break;
-      case "price_high":
-        sort.price = -1;
-        sort.createdAt = -1;
-        break;
-      case "rating_high":
-        sort.avgRating = -1;
-        sort.totalReviews = -1;
-        sort.createdAt = -1;
-        break;
-      case "rating_low":
-        sort.avgRating = 1;
-        sort.totalReviews = 1;
-        sort.createdAt = -1;
-        break;
-    }
+  const trimmedSearch = searchTerm.trim();
+  if (trimmedSearch.length > 0) {
+    const escaped = trimmedSearch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    query.$or = [
+      { title: { $regex: escaped, $options: "i" } },
+      { description: { $regex: escaped, $options: "i" } },
+      { tech_stack: { $regex: escaped, $options: "i" } },
+    ];
+  }
+
+  const sort: ProjectSort = {};
+
+  switch (sortBy) {
+    case "newest":
+      sort.createdAt = -1;
+      break;
+    case "price_low":
+      sort.price = 1;
+      sort.createdAt = -1;
+      break;
+    case "price_high":
+      sort.price = -1;
+      sort.createdAt = -1;
+      break;
+    case "rating_high":
+      sort.avgRating = -1;
+      sort.totalReviews = -1;
+      sort.createdAt = -1;
+      break;
+    case "rating_low":
+      sort.avgRating = 1;
+      sort.totalReviews = 1;
+      sort.createdAt = -1;
+      break;
   }
 
   const [projects, totalCount] = await Promise.all([
     Project.find(query)
       .sort(sort)
-      .limit(limit)
       .skip(offset)
-      .select("-__v")
+      .limit(limit)
+      .select(MARKETPLACE_SELECT)
+      .populate(SELLER_POPULATE)
       .lean(),
     Project.countDocuments(query),
   ]);
 
-  return { projects, totalCount };
+  return {
+    projects: projects.map((p) => ({
+      ...p,
+      project_images: p.project_images?.[0] ?? "",
+    })),
+    totalCount,
+  };
 };
 
 const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
@@ -1189,17 +1209,36 @@ const searchProject = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  const { searchTerm, projectTypes, sortBy, limit, offset } = req.body;
+  const {
+    searchTerm,
+    projectTypes,
+    techStack,
+    minPrice,
+    maxPrice,
+    sortBy,
+    limit,
+    offset,
+  } = validationResult.data;
+
   enrichContext({
     search: {
-      term: searchTerm || null,
-      filters: { projectTypes, sortBy },
+      term: searchTerm || undefined,
+      filters: { projectTypes, techStack, minPrice, maxPrice, sortBy },
     },
   });
 
   const dbStartTime = performance.now();
   const [searchData, searchError] = await tryCatch(
-    searchAndFilterProjects(searchTerm, projectTypes, sortBy, limit, offset)
+    searchAndFilterProjects(
+      searchTerm,
+      projectTypes,
+      techStack,
+      minPrice,
+      maxPrice,
+      sortBy,
+      limit,
+      offset
+    )
   );
   enrichContext({ db_latency_ms: Math.round(performance.now() - dbStartTime) });
 
@@ -1231,13 +1270,6 @@ const searchProject = asyncHandler(async (req: Request, res: Response) => {
       offset,
       hasNextPage,
       hasPrevPage,
-    },
-    searchInfo: {
-      searchTerm: searchTerm || null,
-      projectTypes: projectTypes.length > 0 ? projectTypes : null,
-      sortBy,
-      resultsFound: totalCount > 0,
-      hasTextSearch: searchTerm && searchTerm.trim().length > 0,
     },
   });
 });

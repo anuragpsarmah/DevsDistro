@@ -35,16 +35,29 @@ const PROJECT_TYPES = [
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },
-  { value: "price-high", label: "Price: High to Low" },
-  { value: "price-low", label: "Price: Low to High" },
-  { value: "rating-high", label: "Rating: High to Low" },
-  { value: "rating-low", label: "Rating: Low to High" },
+  { value: "price_high", label: "Price: High to Low" },
+  { value: "price_low", label: "Price: Low to High" },
+  { value: "rating_high", label: "Rating: High to Low" },
+  { value: "rating_low", label: "Rating: Low to High" },
 ] as const;
 
-export default function SearchBar() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
-  const [selectedSort, setSelectedSort] = useState("newest");
+interface SearchBarProps {
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
+  selectedFilters: string[];
+  onFiltersChange: (filters: string[]) => void;
+  selectedSort: string;
+  onSortChange: (sort: string) => void;
+}
+
+export default function SearchBar({
+  searchQuery,
+  onSearchQueryChange,
+  selectedFilters,
+  onFiltersChange,
+  selectedSort,
+  onSortChange,
+}: SearchBarProps) {
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -56,10 +69,9 @@ export default function SearchBar() {
 
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth < 1024; // Use lg breakpoint
+      const mobile = window.innerWidth < 1024;
       setIsMobile(mobile);
 
-      // Reset dropdowns when switching between mobile/desktop
       if (mobile) {
         setShowFilterDropdown(false);
         setShowSortDropdown(false);
@@ -71,7 +83,6 @@ export default function SearchBar() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Cleanup timeouts
   useEffect(() => {
     return () => {
       if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current);
@@ -80,19 +91,18 @@ export default function SearchBar() {
   }, []);
 
   const handleFilterToggle = (filter: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(filter)
-        ? prev.filter((f) => f !== filter)
-        : [...prev, filter]
-    );
+    const updated = selectedFilters.includes(filter)
+      ? selectedFilters.filter((f) => f !== filter)
+      : [...selectedFilters, filter];
+    onFiltersChange(updated);
   };
 
   const clearFilters = () => {
-    setSelectedFilters([]);
+    onFiltersChange([]);
   };
 
   const handleSortChange = (sortValue: string) => {
-    setSelectedSort(sortValue);
+    onSortChange(sortValue);
     setShowSortDropdown(false);
   };
 
@@ -103,7 +113,6 @@ export default function SearchBar() {
     );
   };
 
-  // Desktop hover handlers
   const handleFilterHoverEnter = () => {
     if (!isMobile) {
       if (filterTimeoutRef.current) {
@@ -146,7 +155,6 @@ export default function SearchBar() {
     }
   };
 
-  // Mobile click handlers
   const handleFilterClick = () => {
     if (isMobile) {
       setShowFilterDropdown(!showFilterDropdown);
@@ -163,16 +171,12 @@ export default function SearchBar() {
 
   return (
     <div className="w-full">
-      {/* Main Search Bar */}
       <div className="relative overflow-visible rounded-3xl">
-        {/* Glassmorphism Background */}
         <div className="absolute inset-0 bg-gradient-to-r from-gray-900/80 via-gray-800/80 to-gray-900/80 backdrop-blur-xl rounded-3xl border border-gray-700/50 shadow-2xl"></div>
 
-        {/* Glow Effect - contained within border */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-lg opacity-50"></div>
 
         <div className="relative flex flex-col lg:flex-row items-stretch lg:items-center overflow-hidden rounded-3xl">
-          {/* Search Input */}
           <div className="flex-1 relative group">
             <div className="absolute left-6 top-1/2 transform -translate-y-1/2 transition-colors duration-300">
               <Search className="h-5 w-5 text-gray-400 group-focus-within:text-blue-400" />
@@ -181,14 +185,12 @@ export default function SearchBar() {
               type="text"
               placeholder="Search Projects"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => onSearchQueryChange(e.target.value)}
               className="w-full pl-14 pr-6 py-3 bg-transparent text-white placeholder-gray-400 focus:outline-none text-lg font-medium focus:placeholder-gray-500 transition-colors duration-300 hover:bg-white/5"
             />
           </div>
 
-          {/* Mobile: Buttons in Row */}
           <div className="flex lg:hidden border-t border-gray-700/50">
-            {/* Filter Button Mobile */}
             <div className="relative flex-1">
               <button
                 onClick={handleFilterClick}
@@ -207,7 +209,6 @@ export default function SearchBar() {
               </button>
             </div>
 
-            {/* Sort Button Mobile */}
             <div className="relative flex-1">
               <button
                 onClick={handleSortClick}
@@ -222,9 +223,7 @@ export default function SearchBar() {
             </div>
           </div>
 
-          {/* Desktop: Buttons Side by Side */}
           <div className="hidden lg:flex">
-            {/* Filter Button Desktop */}
             <div
               ref={filterContainerRef}
               className="relative"
@@ -243,7 +242,6 @@ export default function SearchBar() {
               </button>
             </div>
 
-            {/* Sort Button Desktop */}
             <div
               ref={sortContainerRef}
               className="relative"
@@ -259,7 +257,6 @@ export default function SearchBar() {
           </div>
         </div>
 
-        {/* Filter Dropdown - Always in DOM */}
         <div
           className={`absolute top-full right-0 lg:right-32 mt-4 w-full max-w-sm bg-gray-900/95 backdrop-blur-2xl border border-gray-700/50 rounded-2xl shadow-2xl z-50 overflow-hidden transition-all duration-300 transform ${
             showFilterDropdown
@@ -269,7 +266,6 @@ export default function SearchBar() {
           onMouseEnter={handleFilterHoverEnter}
           onMouseLeave={handleFilterHoverLeave}
         >
-          {/* Glow effect for dropdown */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl"></div>
 
           <div className="relative p-6">
@@ -321,7 +317,6 @@ export default function SearchBar() {
           </div>
         </div>
 
-        {/* Sort Dropdown - Always in DOM */}
         <div
           className={`absolute top-full right-0 mt-4 w-full max-w-xs bg-gray-900/95 backdrop-blur-2xl border border-gray-700/50 rounded-2xl shadow-2xl z-50 overflow-hidden transition-all duration-300 transform ${
             showSortDropdown
@@ -331,7 +326,6 @@ export default function SearchBar() {
           onMouseEnter={handleSortHoverEnter}
           onMouseLeave={handleSortHoverLeave}
         >
-          {/* Glow effect for dropdown */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl"></div>
 
           <div className="relative p-3">

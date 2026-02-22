@@ -320,7 +320,7 @@ const useRefreshRepoZipMutation = ({ logout }: mutationParameter) => {
         handleError(error);
         throw error;
       }
-      successToast("Refresh initiated");
+      successToast("Repackage initiated");
       return response.data;
     },
   });
