@@ -10,6 +10,7 @@ export interface ProfileUpdateData {
   review_description: string;
   review_stars: number;
   profile_visibility: boolean;
+  auto_repackage_on_push: boolean;
 }
 
 export interface walletAddressData {

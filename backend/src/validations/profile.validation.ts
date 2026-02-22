@@ -3,11 +3,14 @@ import { JOB_ROLE_ENUM } from "../types/constants";
 
 export const profileInformationSchema = z.object({
   job_role: z
-    .enum(JOB_ROLE_ENUM, {
-      errorMap: () => ({
-        message: `Invalid job role was provided. Expected one of: ${JOB_ROLE_ENUM.join(", ")}`,
+    .union([
+      z.enum(JOB_ROLE_ENUM, {
+        errorMap: () => ({
+          message: `Invalid job role was provided. Expected one of: ${JOB_ROLE_ENUM.join(", ")}`,
+        }),
       }),
-    })
+      z.literal(""),
+    ])
     .optional(),
   location: z.string().optional(),
   review_description: z
@@ -20,6 +23,7 @@ export const profileInformationSchema = z.object({
     .max(5, "Review stars must be between 0 and 5")
     .optional(),
   profile_visibility: z.boolean().optional(),
+  auto_repackage_on_push: z.boolean().optional(),
 });
 
 export const walletAddressSchema = z

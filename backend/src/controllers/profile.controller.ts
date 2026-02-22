@@ -52,6 +52,7 @@ const getProfileInformation = asyncHandler(
       review_description: user.review_description,
       review_stars: user.review_stars,
       profile_visibility: user.profile_visibility,
+      auto_repackage_on_push: user.auto_repackage_on_push,
     };
 
     response(res, 200, "User info fetched successfully", responseObj);
@@ -76,6 +77,7 @@ const updateProfileInformation = asyncHandler(
       review_stars,
       location,
       profile_visibility,
+      auto_repackage_on_push,
     } = req.body;
 
     const result = profileInformationSchema.safeParse({
@@ -84,6 +86,7 @@ const updateProfileInformation = asyncHandler(
       review_stars,
       location,
       profile_visibility,
+      auto_repackage_on_push,
     });
 
     if (!result.success) {
@@ -123,6 +126,7 @@ const updateProfileInformation = asyncHandler(
       review_stars,
       location,
       profile_visibility,
+      auto_repackage_on_push,
     });
 
     const [, saveUserError] = await tryCatch(user.save());

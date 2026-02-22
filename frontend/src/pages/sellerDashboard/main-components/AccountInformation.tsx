@@ -161,6 +161,33 @@ export default function AccountInformation({
             />
           )}
         </div>
+
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-200">
+              Auto-repackage on code change
+            </h3>
+            <p className="text-sm text-gray-400">
+              Automatically repackage your listed projects when you push code changes to GitHub
+            </p>
+          </div>
+          {isInitialLoading ? (
+            <div className="w-10 h-6">
+              <Skeleton className="w-full h-full rounded-full bg-gray-700" />
+            </div>
+          ) : (
+            <Switch
+              checked={profileInformationData.auto_repackage_on_push}
+              onCheckedChange={(checked: boolean) => {
+                setProfileInformationData((prev) => ({
+                  ...prev,
+                  auto_repackage_on_push: checked,
+                }));
+              }}
+              className="data-[state=checked]:bg-blue-950 data-[state=unchecked]:bg-white/20 border-white/10 hover:border-white/20"
+            />
+          )}
+        </div>
       </div>
     </>
   );

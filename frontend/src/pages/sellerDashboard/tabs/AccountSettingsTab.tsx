@@ -56,6 +56,7 @@ export default function AccountSettingsTab({
       review_description: review,
       review_stars: rating,
       profile_visibility: profileInformationData.profile_visibility,
+      auto_repackage_on_push: profileInformationData.auto_repackage_on_push,
     });
   };
 

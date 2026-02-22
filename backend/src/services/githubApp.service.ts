@@ -176,7 +176,7 @@ class GitHubAppService {
     page: number = 1
   ): Promise<{ repos: Repository[]; totalCount: number }> {
     const token = await this.getInstallationToken(installationId);
-    const perPage = 100;
+    const perPage = 10;
 
     const [response, error] = await tryCatch(
       axios.get<{ repositories: Repository[]; total_count: number }>(
@@ -217,7 +217,7 @@ class GitHubAppService {
     while (true) {
       const { repos } = await this.getInstallationRepos(installationId, page);
       allRepos.push(...repos);
-      if (repos.length < 100) break;
+      if (repos.length < 10) break;
       page++;
     }
 

@@ -63,6 +63,7 @@ export const INITIAL_PROFILE_INFORMATION_DATA: ProfileInformation = {
   review_description: "",
   review_stars: 0,
   profile_visibility: true,
+  auto_repackage_on_push: false,
 } as const;
 
 export const PROJECT_TYPES = [

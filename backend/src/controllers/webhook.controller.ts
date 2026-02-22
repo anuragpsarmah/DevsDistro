@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { GitHubAppInstallation } from "../models/githubAppInstallation.model";
 import { Project } from "../models/project.model";
+import { User } from "../models/user.model";
 import asyncHandler from "../utils/asyncHandler.util";
 import response from "../utils/response.util";
 import { tryCatch } from "../utils/tryCatch.util";
@@ -9,6 +10,9 @@ import { githubAppService } from "../services/githubApp.service";
 import logger from "../logger/logger";
 import { redisClient } from "..";
 import { privateRepoPrefix } from "../utils/redisPrefixGenerator.util";
+import RepoZipUploadService from "../services/repoZipUpload.service";
+
+const repoZipUploadService = new RepoZipUploadService();
 
 interface WebhookPayload {
   action: string;
@@ -44,6 +48,8 @@ interface WebhookPayload {
     login: string;
     id: number;
   };
+  ref?: string;
+  after?: string;
 }
 
 const handleWebhook = asyncHandler(async (req: Request, res: Response) => {
@@ -95,6 +101,9 @@ const handleWebhook = asyncHandler(async (req: Request, res: Response) => {
         break;
       case "repository":
         await handleRepositoryEvent(payload);
+        break;
+      case "push":
+        await handlePushEvent(payload);
         break;
       default:
         logger.info("Unhandled webhook event", { event });
@@ -417,6 +426,92 @@ async function handleRepositoryEvent(payload: WebhookPayload) {
     default:
       logger.info("Unhandled repository action", { action, repoId });
   }
+}
+
+async function handlePushEvent(payload: WebhookPayload) {
+  const { repository } = payload;
+
+  if (!repository) {
+    logger.warn("Push event missing repository data");
+    return;
+  }
+
+  const repoId = repository.id.toString();
+
+  const [project, findError] = await tryCatch(
+    Project.findOne({
+      github_repo_id: repoId,
+      github_access_revoked: { $ne: true },
+      repo_zip_status: "SUCCESS",
+    })
+      .select("_id userid github_repo_id github_installation_id repo_zip_s3_key")
+      .lean()
+  );
+
+  if (findError) {
+    logger.error("Failed to query project for push auto-repackage", { repoId, findError });
+    return;
+  }
+
+  if (!project) return;
+
+  const [user, userFindError] = await tryCatch(
+    User.findOne({ _id: project.userid, auto_repackage_on_push: true })
+      .select("_id")
+      .lean()
+  );
+
+  if (userFindError) {
+    logger.error("Failed to query user for push auto-repackage", { repoId, userFindError });
+    return;
+  }
+
+  if (!user) return;
+
+  if (project.repo_zip_s3_key) {
+    const [, cleanupError] = await tryCatch(
+      redisClient.zadd("media-cleanup-schedule", Date.now(), project.repo_zip_s3_key)
+    );
+    if (cleanupError) {
+      logger.error("Failed to queue old ZIP for cleanup during auto-repackage", {
+        projectId: project._id,
+        cleanupError,
+      });
+    }
+  }
+
+  const [, updateError] = await tryCatch(
+    Project.updateOne(
+      { _id: project._id },
+      {
+        repo_zip_status: "PROCESSING",
+        $unset: { repo_zip_s3_key: 1, repo_zip_error: 1 },
+      }
+    )
+  );
+
+  if (updateError) {
+    logger.error("Failed to reset project for auto-repackage", {
+      projectId: project._id,
+      updateError,
+    });
+    return;
+  }
+
+  repoZipUploadService
+    .processRepoZipUpload(
+      project._id.toString(),
+      project.github_repo_id,
+      project.github_installation_id!
+    )
+    .catch((err) => {
+      logger.error("Auto-repackage on push failed", {
+        projectId: project._id.toString(),
+        error: err instanceof Error ? err.message : "Unknown error",
+      });
+    });
+
+  logger.info("Auto-repackage triggered on push", { projectId: project._id, repoId });
 }
 
 export { handleWebhook };

@@ -53,6 +53,10 @@ const userSchema = new Schema(
       type: Number,
       default: null,
     },
+    auto_repackage_on_push: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

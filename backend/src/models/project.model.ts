@@ -52,6 +52,7 @@ const projectSchema = new Schema(
     },
     github_repo_id: {
       type: String,
+      unique: true,
       required: [true, "GitHub repository ID is required"],
       index: true,
     },
