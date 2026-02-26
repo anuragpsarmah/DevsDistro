@@ -5,18 +5,22 @@ import AppInstallCallbackPage from "@/pages/auth/AppInstallCallbackPage";
 import ProfileSelectionPage from "@/pages/profileSelection/ProfileSelectionPage";
 import ErrorPage from "@/pages/error/ErrorPage";
 import LandingPage from "@/pages/landing/LandingPage";
-import ProtectedRouteWrapper from "@/components/wrappers/protectedRouteWrapper";
+import ProtectedRouteWrapper from "./components/wrappers/ProtectedRouteWrapper";
 import SellerDashboardPage from "@/pages/sellerDashboard/SellerDashboardPage";
 import BuyerDashboardPage from "./pages/buyerDashboard/BuyerDashboardPage";
 import TermsOfService from "@/pages/legal/TermsOfService";
 import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
-import PreAuthWrapper from "@/components/wrappers/PreAuthWrapper";
+import SmoothTransitionWrapper from "@/components/wrappers/SmoothTransitionWrapper";
 
 export const router = createBrowserRouter([
   {
-    element: <PreAuthWrapper />,
+    element: <SmoothTransitionWrapper />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "*",
+        element: <ErrorPage />,
+      },
       {
         path: "/",
         element: <LandingPage />,
@@ -37,38 +41,38 @@ export const router = createBrowserRouter([
         path: "/privacy",
         element: <PrivacyPolicy />,
       },
+      {
+        path: "/app-install-callback",
+        element: (
+          <ProtectedRouteWrapper>
+            <AppInstallCallbackPage />
+          </ProtectedRouteWrapper>
+        ),
+      },
+      {
+        path: "/profile-selection",
+        element: (
+          <ProtectedRouteWrapper>
+            <ProfileSelectionPage />
+          </ProtectedRouteWrapper>
+        ),
+      },
+      {
+        path: "/seller-dashboard",
+        element: (
+          <ProtectedRouteWrapper>
+            <SellerDashboardPage />
+          </ProtectedRouteWrapper>
+        ),
+      },
+      {
+        path: "/buyer-marketplace",
+        element: (
+          <ProtectedRouteWrapper>
+            <BuyerDashboardPage />
+          </ProtectedRouteWrapper>
+        ),
+      },
     ],
-  },
-  {
-    path: "/app-install-callback",
-    element: (
-      <ProtectedRouteWrapper>
-        <AppInstallCallbackPage />
-      </ProtectedRouteWrapper>
-    ),
-  },
-  {
-    path: "/profile-selection",
-    element: (
-      <ProtectedRouteWrapper>
-        <ProfileSelectionPage />
-      </ProtectedRouteWrapper>
-    ),
-  },
-  {
-    path: "/seller-dashboard",
-    element: (
-      <ProtectedRouteWrapper>
-        <SellerDashboardPage />
-      </ProtectedRouteWrapper>
-    ),
-  },
-  {
-    path: "/buyer-marketplace",
-    element: (
-      <ProtectedRouteWrapper>
-        <BuyerDashboardPage />
-      </ProtectedRouteWrapper>
-    ),
   },
 ]);

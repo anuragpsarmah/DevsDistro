@@ -36,19 +36,21 @@ const ConnectToWallet = ({
 
   if (isError) {
     return (
-      <div className="w-full h-full p-6 flex flex-col justify-center">
-        <ErrorScreenConnectToWallet />
+      <div className="relative max-w-5xl mx-auto w-full">
+        <div className="relative bg-white dark:bg-[#050505] border-2 border-black dark:border-white transition-colors duration-300 flex flex-col overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+          <div className="relative z-10 p-8 md:p-12 flex flex-col justify-center">
+            <ErrorScreenConnectToWallet />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full p-6 flex flex-col justify-center">
-      <div className="relative w-full max-w-6xl mx-auto">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 blur-xl rounded-2xl pointer-events-none" />
-        <div className="relative bg-gray-900/60 backdrop-blur-xl rounded-2xl border border-white/10 p-6 lg:p-8 transition-all duration-300 ease-in-out flex flex-col justify-center min-h-[600px]">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-purple-600/[0.02] pointer-events-none rounded-2xl" />
-          <div className="relative z-10 w-full">
+    <div className="relative max-w-5xl mx-auto w-full">
+      <div className="relative bg-white dark:bg-[#050505] border-2 border-black dark:border-white transition-colors duration-300 flex flex-col overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+        <div className="relative z-10 p-8 md:p-12">
+          <div className="w-full flex flex-col justify-center max-w-4xl mx-auto">
             {!walletAddress ? (
               <WalletConnect
                 detectedWallets={detectedWallets}

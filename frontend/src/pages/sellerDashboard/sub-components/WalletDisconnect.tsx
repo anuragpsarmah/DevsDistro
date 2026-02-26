@@ -41,42 +41,38 @@ export const WalletDisconnect = ({
   const hasMismatchCondition = shouldShowMismatchUI();
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 lg:gap-12">
+    <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
       <div className="flex flex-col flex-1 space-y-8">
-        <div className="flex items-center space-x-3 pb-4 border-b border-white/10">
-           <div className={`p-2 rounded-lg ${hasMismatchCondition ? "bg-amber-500/10" : "bg-green-500/10"}`}>
-             <Wallet className={`h-6 w-6 ${hasMismatchCondition ? "text-amber-400" : "text-green-400"}`} />
-           </div>
-          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+        <div className="flex items-center space-x-4 pb-4 border-b-2 border-black dark:border-white transition-colors duration-300">
+          <div className={`p-2 border-2 ${hasMismatchCondition ? "border-red-500 bg-red-500/10" : "border-black dark:border-white bg-black dark:bg-white"}`}>
+            <Wallet className={`h-6 w-6 ${hasMismatchCondition ? "text-red-500 animate-[pulse_1s_steps(2,start)_infinite]" : "text-white dark:text-black"}`} />
+          </div>
+          <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-black dark:text-white transition-colors duration-300">
             Solana Wallet
           </h2>
         </div>
 
-        <div className="flex flex-col items-center justify-center flex-grow py-8 space-y-6">
+        <div className="flex flex-col items-center justify-center flex-grow py-8 space-y-8">
           <div className="relative group">
-            <div className={`absolute inset-0 blur-xl rounded-full opacity-50 transition-colors duration-500 ${
-              hasMismatchCondition ? "bg-amber-500/20" : "bg-green-500/20"
-            }`} />
-            <div className={`bg-gray-800/50 p-8 rounded-2xl border backdrop-blur-sm relative transition-colors duration-300 ${
-              hasMismatchCondition ? "border-amber-500/20" : "border-green-500/20"
-            }`}>
+            <div className={`p-8 border-2 bg-white dark:bg-[#050505] transition-all duration-300 ${hasMismatchCondition
+                ? "border-red-500 group-hover:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]"
+                : "border-black dark:border-white group-hover:bg-black dark:group-hover:bg-white group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+              } group-hover:-translate-y-1`}>
               <SolanaLogo
-                className={`h-16 w-16 ${
-                  hasMismatchCondition ? "text-amber-400" : "text-green-400"
-                }`}
+                className={`h-16 w-16 transition-colors duration-300 ${hasMismatchCondition ? "text-red-500" : "text-black dark:text-white group-hover:text-white dark:group-hover:text-black"
+                  }`}
               />
             </div>
           </div>
 
-          <div className="text-center space-y-3 max-w-sm">
-            <h3 className={`text-xl font-semibold ${
-              hasMismatchCondition ? "text-amber-100" : "text-white"
-            }`}>
+          <div className="text-center space-y-4 max-w-sm">
+            <h3 className={`text-xl font-space font-bold uppercase tracking-widest transition-colors duration-300 ${hasMismatchCondition ? "text-red-600 dark:text-red-500" : "text-black dark:text-white"
+              }`}>
               {hasMismatchCondition
-                ? "Wallet Address Mismatch Detected"
-                : "Wallet Connected Successfully"}
+                ? "Wallet Mismatch"
+                : "Wallet Connected"}
             </h3>
-            <p className="text-gray-400 text-sm leading-relaxed">
+            <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-300">
               {hasMismatchCondition
                 ? "There's a mismatch between your stored and connected wallet addresses. Please reconnect with the correct wallet."
                 : "Your Solana wallet is connected and ready to manage payments, track transactions, and receive funds from buyers."}
@@ -85,43 +81,46 @@ export const WalletDisconnect = ({
         </div>
       </div>
 
-      <div className="hidden md:block w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+      <div className="hidden md:block w-[2px] bg-black dark:bg-white transition-colors duration-300" />
 
       <div className="flex-1 flex flex-col justify-center">
-        <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-          Wallet Details
-        </h3>
-        
-        <div className="space-y-6">
-          <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-            <div className="p-4 space-y-1">
-              <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <div className="flex items-center space-x-3 mb-8">
+          <div className="w-8 h-[2px] bg-red-500"></div>
+          <h3 className="text-lg font-space font-bold uppercase tracking-widest text-black dark:text-white transition-colors duration-300">
+            Wallet Details
+          </h3>
+        </div>
+
+        <div className="space-y-8">
+          <div className="bg-transparent border-2 border-black dark:border-white p-6 transition-colors duration-300">
+            <div className="space-y-2">
+              <span className="text-xs font-space font-bold text-red-500 uppercase tracking-[0.2em]">
                 {hasWalletMismatch ? "Stored Wallet Address" : "Current Wallet Address"}
               </span>
-              <div className="flex items-center justify-between">
-                <span className="text-lg text-white font-mono tracking-wider">
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-lg text-black dark:text-white font-space font-bold tracking-wider">
                   {truncateAddress(displayAddress || "")}
                 </span>
-                <div className="flex space-x-1">
+                <div className="flex space-x-2">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
                     onClick={handleCopyAddress}
-                    className="h-8 w-8 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+                    className="h-10 w-10 rounded-none border-2 border-black dark:border-white text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all duration-300"
                     disabled={isProcessing}
                     title="Copy Address"
                   >
                     {copied ? (
-                      <CheckCircle className="h-4 w-4 text-green-400" />
+                      <CheckCircle className="h-4 w-4" />
                     ) : (
                       <Copy className="h-4 w-4" />
                     )}
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
                     onClick={onViewOnExplorer}
-                    className="h-8 w-8 rounded-lg text-gray-400 hover:text-white hover:bg-white/10"
+                    className="h-10 w-10 rounded-none border-2 border-black dark:border-white text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all duration-300"
                     disabled={isProcessing}
                     title="View on Explorer"
                   >
@@ -142,19 +141,18 @@ export const WalletDisconnect = ({
 
           <Button
             type="button"
-            variant="destructive"
-            className="w-full h-12 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/30 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 group"
+            className="w-full h-14 bg-red-500 text-white border-2 border-transparent hover:border-black dark:hover:border-white rounded-none transition-all duration-300 flex items-center justify-center gap-3 group font-space uppercase tracking-widest font-bold text-sm hover:bg-red-600"
             onClick={onDisconnect}
             disabled={isProcessing}
           >
             {isProcessing ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin text-red-400" />
+                <Loader2 className="h-5 w-5 animate-spin text-white" />
                 <span>Disconnecting...</span>
               </>
             ) : (
               <>
-                <LogOut className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                <LogOut className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
                 <span>Disconnect Wallet</span>
               </>
             )}
