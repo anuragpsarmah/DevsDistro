@@ -5,18 +5,18 @@ import { SolanaWalletProvider } from "./components/providers/SolanaWalletProvide
 import { ThemeProvider } from "./components/providers/ThemeProvider";
 import { router } from "./AppRoutes";
 
-function App() {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-      mutations: {
-        retry: false,
-      },
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
     },
-  });
+    mutations: {
+      retry: false,
+    },
+  },
+});
 
+function App() {
   return (
     <ThemeProvider>
       <SolanaWalletProvider>

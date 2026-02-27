@@ -51,6 +51,9 @@ export default function AccountSettingsTab({
 
   const handleProfileUpdate = async () => {
     await mutateAsync({
+      website_url: profileInformationData.website_url,
+      x_username: profileInformationData.x_username,
+      short_bio: profileInformationData.short_bio,
       job_role: selectedJobRole,
       location: cityInput,
       review_description: review,

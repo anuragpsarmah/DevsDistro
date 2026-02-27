@@ -22,7 +22,7 @@ export const DeleteConfirmationModal: React.FC<
 > = ({ deleteDialogOpen, setDeleteDialogOpen, handleDeleteConfirm }) => {
   return (
     <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-      <AlertDialogContent className="bg-white dark:bg-[#050505] p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] w-full max-w-sm mx-auto rounded-none overflow-hidden transition-colors duration-300">
+      <AlertDialogContent className="bg-white dark:bg-[#050505] p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] w-full max-w-lg mx-auto rounded-none overflow-hidden transition-colors duration-300">
         <AlertDialogHeader className="relative z-10 m-0 p-0">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-12 h-12 border-2 border-black dark:border-white flex items-center justify-center transition-colors duration-300 shrink-0 bg-transparent">

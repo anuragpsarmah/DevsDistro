@@ -58,6 +58,9 @@ export const MAX_DESCRIPTION_LENGTH = 1000;
 export const MAX_IMAGES = 5;
 
 export const INITIAL_PROFILE_INFORMATION_DATA: ProfileInformation = {
+  website_url: "",
+  x_username: "",
+  short_bio: "",
   job_role: "",
   location: "",
   review_description: "",

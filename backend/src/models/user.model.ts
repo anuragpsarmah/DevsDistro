@@ -19,6 +19,18 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Profile image is required"],
     },
+    website_url: {
+      type: String,
+      default: "",
+    },
+    x_username: {
+      type: String,
+      default: "",
+    },
+    short_bio: {
+      type: String,
+      default: "",
+    },
     job_role: {
       type: String,
       default: "",
@@ -57,8 +69,30 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    refresh_tokens: {
+      type: [
+        {
+          token_hash: {
+            type: String,
+            required: true,
+          },
+          expires_at: {
+            type: Date,
+            required: true,
+          },
+          created_at: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+      default: [],
+      _id: false,
+    },
   },
   { timestamps: true }
 );
+
+userSchema.index({ "refresh_tokens.token_hash": 1 }, { sparse: true });
 
 export const User = model("User", userSchema);

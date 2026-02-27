@@ -2,6 +2,12 @@ import z from "zod";
 import { JOB_ROLE_ENUM } from "../types/constants";
 
 export const profileInformationSchema = z.object({
+  website_url: z.union([z.string().url(), z.literal("")]).optional(),
+  x_username: z.string().optional(),
+  short_bio: z
+    .string()
+    .max(250, "Short bio must be 250 characters or less")
+    .optional(),
   job_role: z
     .union([
       z.enum(JOB_ROLE_ENUM, {

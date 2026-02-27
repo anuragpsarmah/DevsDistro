@@ -31,7 +31,7 @@ export interface LogContext {
     error_message?: string;
     external_api_latency_ms?: number;
     db_latency_ms?: number;
-    auth_status?: "authenticated" | "unauthenticated" | "token_invalid" | "token_expired";
+    auth_status?: "authenticated" | "unauthenticated" | "token_invalid" | "token_expired" | "token_reuse_detected";
     [key: string]: unknown;
 }
 

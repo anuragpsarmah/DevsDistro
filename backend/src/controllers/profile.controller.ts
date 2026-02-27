@@ -47,6 +47,9 @@ const getProfileInformation = asyncHandler(
 
     enrichContext({ outcome: "success" });
     const responseObj = {
+      website_url: user.website_url,
+      x_username: user.x_username,
+      short_bio: user.short_bio,
       job_role: user.job_role,
       location: user.location,
       review_description: user.review_description,
@@ -72,6 +75,9 @@ const updateProfileInformation = asyncHandler(
     enrichContext({ entity: { type: "user", id: userId.toString() } });
 
     const {
+      website_url,
+      x_username,
+      short_bio,
       job_role,
       review_description,
       review_stars,
@@ -81,6 +87,9 @@ const updateProfileInformation = asyncHandler(
     } = req.body;
 
     const result = profileInformationSchema.safeParse({
+      website_url,
+      x_username,
+      short_bio,
       job_role,
       review_description,
       review_stars,
@@ -121,6 +130,9 @@ const updateProfileInformation = asyncHandler(
     }
 
     Object.assign(user, {
+      website_url,
+      x_username,
+      short_bio,
       job_role,
       review_description,
       review_stars,

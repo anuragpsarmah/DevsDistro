@@ -4,33 +4,19 @@ import { encrypt } from "../utils/encryption.util";
 import asyncHandler from "../utils/asyncHandler.util";
 import response from "../utils/response.util";
 import ApiError from "../utils/ApiError.util";
-import jwt from "jsonwebtoken";
 import axios from "axios";
-import mongoose from "mongoose";
 import logger from "../logger/logger";
 import { githubCodeSchema } from "../validations/auth.validation";
+import { refreshTokenCookieSchema } from "../validations/refresh.validation";
 import { tryCatch } from "../utils/tryCatch.util";
 import { enrichContext } from "../utils/asyncContext";
-
-const createSessionToken = (
-  userid: mongoose.Types.ObjectId,
-  username: string,
-  name: string,
-  profile_image_url: string
-) => {
-  const expiresIn = process.env.JWT_EXPIRES_IN as string;
-  enrichContext({
-    auth_session_created: true,
-    auth_session_expires_in: expiresIn
-  });
-  const session_token = jwt.sign(
-    { _id: userid, username, name, profile_image_url },
-    process.env.JWT_SECRET as string,
-    { expiresIn: expiresIn as unknown as number }
-  );
-
-  return session_token;
-};
+import {
+  generateRefreshToken,
+  addRefreshToken,
+  rotateRefreshToken,
+  revokeRefreshToken,
+  createSessionToken
+} from "../utils/authToken.util";
 
 const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "github_login" });
@@ -211,6 +197,13 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       throw new ApiError("Internal Server Error", 500);
     }
 
+    const rawRefreshToken = generateRefreshToken();
+    const [, rtSaveError] = await tryCatch(addRefreshToken(existingUser._id, rawRefreshToken));
+    if (rtSaveError) {
+      logger.error("Failed to save refresh token for existing user", rtSaveError);
+      throw new ApiError("Internal Server Error", 500);
+    }
+
     enrichContext({ outcome: "success" });
     response(
       res,
@@ -224,7 +217,8 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       },
       {},
       false,
-      session_token
+      session_token,
+      rawRefreshToken
     );
   } else {
     const createStartTime = performance.now();
@@ -262,6 +256,14 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       name || "",
       profile_image_url
     );
+
+    const rawRefreshToken = generateRefreshToken();
+    const [, rtSaveError] = await tryCatch(addRefreshToken(newUser._id, rawRefreshToken));
+    if (rtSaveError) {
+      logger.error("Failed to save refresh token for new user", rtSaveError);
+      throw new ApiError("Internal Server Error", 500);
+    }
+
     response(
       res,
       200,
@@ -274,7 +276,8 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       },
       {},
       false,
-      session_token
+      session_token,
+      rawRefreshToken
     );
   }
 });
@@ -301,9 +304,77 @@ const authValidation = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const githubLogout = asyncHandler(async (req: Request, res: Response) => {
-  enrichContext({ action: "github_logout", outcome: "success" });
-  response(res, 200, "User Logged out successfully", {}, {}, true);
+  enrichContext({ action: "github_logout" });
+
+  const rawRefreshToken = req.cookies.refresh_token;
+
+  if (rawRefreshToken) {
+    const [, revokeError] = await tryCatch(revokeRefreshToken(rawRefreshToken));
+    if (revokeError) {
+      logger.warn("Failed to revoke refresh token during logout", revokeError);
+    }
+  }
+
+  enrichContext({ outcome: "success" });
+  response(res, 200, "User Logged out successfully", {}, {}, true, "", "", true);
 });
 
-export { githubLogin, authValidation, githubLogout };
+const refreshTokenHandler = asyncHandler(async (req: Request, res: Response) => {
+  enrichContext({ action: "token_refresh" });
+  const cookieValidation = refreshTokenCookieSchema.safeParse(req.cookies);
+  if (!cookieValidation.success) {
+    enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
+    response(res, 401, "Unauthorized Access");
+    return;
+  }
 
+  const rawRefreshToken = cookieValidation.data.refresh_token;
+  const newRawRefreshToken = generateRefreshToken();
+
+  const [result, rotateError] = await tryCatch(
+    rotateRefreshToken(rawRefreshToken, newRawRefreshToken)
+  );
+
+  if (rotateError) {
+    logger.error("Failed to rotate refresh token", rotateError);
+    throw new ApiError("Internal Server Error", 500);
+  }
+
+  if (result === "REUSE_DETECTED") {
+    enrichContext({ outcome: "unauthorized", auth_status: "token_reuse_detected" });
+    logger.warn("Refresh token reuse detected — all sessions revoked for user");
+    response(res, 401, "Unauthorized Access", {}, {}, true, "", "", true);
+    return;
+  }
+
+  if (!result) {
+    enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
+    response(res, 401, "Unauthorized Access", {}, {}, true, "", "", true);
+    return;
+  }
+
+  enrichContext({
+    entity: { type: "user", id: result._id.toString() },
+  });
+
+  const newSessionToken = createSessionToken(
+    result._id,
+    result.username,
+    result.name,
+    result.profile_image_url
+  );
+
+  enrichContext({ outcome: "success" });
+  response(
+    res,
+    200,
+    "Token refreshed successfully",
+    {},
+    {},
+    false,
+    newSessionToken,
+    newRawRefreshToken
+  );
+});
+
+export { githubLogin, authValidation, githubLogout, refreshTokenHandler };

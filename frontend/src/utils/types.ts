@@ -5,6 +5,9 @@ export interface User {
   profile_image_url: string;
 }
 export interface ProfileUpdateData {
+  website_url: string;
+  x_username: string;
+  short_bio: string;
   job_role: string;
   location: string;
   review_description: string;

@@ -22,6 +22,9 @@ export interface CommonSalesInformation {
 }
 
 export interface ProfileInformation {
+  website_url: string;
+  x_username: string;
+  short_bio: string;
   job_role: string;
   location: string;
   review_description: string;
@@ -31,6 +34,9 @@ export interface ProfileInformation {
 }
 
 export interface ProfileUpdatePayload {
+  website_url: string;
+  x_username: string;
+  short_bio: string;
   job_role: string;
   location: string;
   review_description: string;

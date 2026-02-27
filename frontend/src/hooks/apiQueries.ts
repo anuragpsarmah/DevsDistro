@@ -1,5 +1,6 @@
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { apiClient } from "@/lib/axiosInstance";
 import { useHandleError } from "./useHandleErrors";
 import { errorToast, successToast } from "@/components/ui/customToast";
 import {
@@ -11,8 +12,6 @@ import {
 } from "@/utils/types";
 import { tryCatch } from "@/utils/tryCatch.util";
 
-const backend_uri = import.meta.env.VITE_BACKEND_URI;
-
 interface queryParameter {
   logout?: () => Promise<void>;
 }
@@ -21,12 +20,7 @@ const useAuthValidationQuery = () => {
   return useQuery({
     queryKey: ["authValidation"],
     queryFn: async () => {
-      const response = await axios.get<{ data: User }>(
-        `${backend_uri}/auth/authValidation`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await apiClient.get<{ data: User }>("/auth/authValidation");
       return response.data;
     },
   });
@@ -36,11 +30,7 @@ const useLogoutQuery = () => {
   return useQuery({
     queryKey: ["logoutQuery"],
     queryFn: async () => {
-      const [, error] = await tryCatch(
-        axios.get(`${backend_uri}/auth/githubLogout`, {
-          withCredentials: true,
-        })
-      );
+      const [, error] = await tryCatch(apiClient.get("/auth/githubLogout"));
 
       if (error) errorToast("Something went wrong. You are still logged in.");
     },
@@ -70,9 +60,7 @@ const useCommonSalesInformationQuery = ({ logout }: queryParameter) => {
     queryKey: ["commonSalesInformationQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        axios.get(`${backend_uri}/sales/getCommonSalesInformation`, {
-          withCredentials: true,
-        })
+        apiClient.get("/sales/getCommonSalesInformation")
       );
 
       if (error) {
@@ -97,12 +85,7 @@ const useYearlySalesInformationQuery = (
       const [, year] = queryKey;
 
       const [response, error] = await tryCatch(
-        axios.get(
-          `${backend_uri}/sales/getYearlySalesInformation?year=${year}`,
-          {
-            withCredentials: true,
-          }
-        )
+        apiClient.get(`/sales/getYearlySalesInformation?year=${year}`)
       );
 
       if (error) {
@@ -121,12 +104,7 @@ const useProfileInformationQuery = ({ logout }: queryParameter) => {
     queryKey: ["useProfileInformationQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        axios.get<{ data: ProfileUpdateData }>(
-          `${backend_uri}/profile/getProfileInformation`,
-          {
-            withCredentials: true,
-          }
-        )
+        apiClient.get<{ data: ProfileUpdateData }>("/profile/getProfileInformation")
       );
 
       if (error) {
@@ -143,9 +121,7 @@ const useFeaturedReviewQuery = () => {
   return useQuery({
     queryKey: ["featuredReviewQuery"],
     queryFn: async () => {
-      const response = await axios.get(
-        `${backend_uri}/reviews/getFeaturedReviews`
-      );
+      const response = await apiClient.get("/reviews/getFeaturedReviews");
       return response.data;
     },
     refetchOnWindowFocus: false,
@@ -158,9 +134,7 @@ const useTotalListedProjectsQuery = ({ logout }: queryParameter) => {
     queryKey: ["totalListedProjectsQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        axios.get(`${backend_uri}/projects/getTotalListedProjects`, {
-          withCredentials: true,
-        })
+        apiClient.get("/projects/getTotalListedProjects")
       );
 
       if (error) {
@@ -179,9 +153,7 @@ const useInstallationStatusQuery = ({ logout }: queryParameter) => {
     queryKey: ["installationStatusQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        axios.get(`${backend_uri}/github-app/status`, {
-          withCredentials: true,
-        })
+        apiClient.get("/github-app/status")
       );
 
       if (error) {
@@ -200,9 +172,7 @@ const usePrivateReposInfiniteQuery = ({ logout }: queryParameter) => {
     queryKey: ["privateRepoQuery"],
     queryFn: async ({ pageParam }) => {
       const [response, error] = await tryCatch(
-        axios.get(`${backend_uri}/projects/getPrivateRepos?page=${pageParam}`, {
-          withCredentials: true,
-        })
+        apiClient.get(`/projects/getPrivateRepos?page=${pageParam}`)
       );
 
       if (error) {
@@ -260,9 +230,7 @@ const useInitialProjectDataQuery = ({ logout }: queryParameter) => {
     queryKey: ["initialProjectDataQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        axios.get(`${backend_uri}/projects/getInitialProjectData`, {
-          withCredentials: true,
-        })
+        apiClient.get("/projects/getInitialProjectData")
       );
 
       if (error) {
@@ -279,12 +247,7 @@ const useSpecificProjectDataQuery = ({ logout }: queryParameter) => {
   const { handleError } = useHandleError({ logout });
   const getData = async (github_repo_id: string) => {
     const [response, error] = await tryCatch(
-      axios.get(
-        `${backend_uri}/projects/getSpecificProjectData?github_repo_id=${github_repo_id}`,
-        {
-          withCredentials: true,
-        }
-      )
+      apiClient.get(`/projects/getSpecificProjectData?github_repo_id=${github_repo_id}`)
     );
 
     if (error) {
@@ -304,12 +267,7 @@ const useGetWalletAddress = ({ logout }: queryParameter) => {
     queryKey: ["getWalletAddressQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        axios.get<{ data: walletAddressData }>(
-          `${backend_uri}/profile/getWalletAddress`,
-          {
-            withCredentials: true,
-          }
-        )
+        apiClient.get<{ data: walletAddressData }>("/profile/getWalletAddress")
       );
 
       if (error) {
@@ -327,10 +285,7 @@ const useRepoZipStatusQuery = ({ logout }: queryParameter) => {
 
   const getStatus = async (github_repo_id: string) => {
     const [response, error] = await tryCatch(
-      axios.get(
-        `${backend_uri}/projects/getRepoZipStatus?github_repo_id=${github_repo_id}`,
-        { withCredentials: true }
-      )
+      apiClient.get(`/projects/getRepoZipStatus?github_repo_id=${github_repo_id}`)
     );
 
     if (error) {
@@ -354,20 +309,16 @@ const useMarketplaceSearchQuery = (
     queryKey: ["marketplaceSearch", params],
     queryFn: async ({ pageParam = 0 }) => {
       const [response, error] = await tryCatch(
-        axios.post<MarketplaceSearchResponse>(
-          `${backend_uri}/projects/search`,
-          {
-            searchTerm: params.searchTerm || "",
-            projectTypes: params.projectTypes || [],
-            techStack: params.techStack || [],
-            minPrice: params.minPrice,
-            maxPrice: params.maxPrice,
-            sortBy: params.sortBy || "newest",
-            limit,
-            offset: pageParam,
-          },
-          { withCredentials: true }
-        )
+        apiClient.post<MarketplaceSearchResponse>("/projects/search", {
+          searchTerm: params.searchTerm || "",
+          projectTypes: params.projectTypes || [],
+          techStack: params.techStack || [],
+          minPrice: params.minPrice,
+          maxPrice: params.maxPrice,
+          sortBy: params.sortBy || "newest",
+          limit,
+          offset: pageParam,
+        })
       );
 
       if (error) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
+import { apiClient } from "@/lib/axiosInstance";
 import { tryCatch } from "@/utils/tryCatch.util";
 import { useNavigate } from "react-router-dom";
 import { user } from "@/utils/atom";
@@ -11,7 +12,6 @@ export default function LoginValidationPage() {
   const navigate = useNavigate();
   const url = new URL(window.location.href);
   const githubCode = url.searchParams.get("code");
-  const backend_uri = import.meta.env.VITE_BACKEND_URI;
   const hasValidated = useRef(false);
 
   useEffect(() => {
@@ -20,10 +20,7 @@ export default function LoginValidationPage() {
 
     const validateLogin = async () => {
       const [response, error] = await tryCatch<AxiosResponse>(() =>
-        axios.get(
-          `${backend_uri}/auth/githubLogin?code=${githubCode}`,
-          { withCredentials: true }
-        )
+        apiClient.get(`/auth/githubLogin?code=${githubCode}`)
       );
 
       if (error || !response) {
@@ -37,7 +34,7 @@ export default function LoginValidationPage() {
     };
 
     validateLogin();
-  }, [backend_uri, githubCode, navigate, setActiveUser]);
+  }, [githubCode, navigate, setActiveUser]);
 
   return (
     <div className="min-h-screen overflow-hidden w-full bg-white dark:bg-[#050505] text-black dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex items-center justify-center p-4">

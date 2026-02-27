@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useRecoilState } from "recoil";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { apiClient } from "@/lib/axiosInstance";
 import { user } from "@/utils/atom";
 import {
   usePrivateReposInfiniteQuery,
@@ -27,7 +28,6 @@ import { Loader2 } from "lucide-react";
 import { errorToast, successToast } from "@/components/ui/customToast";
 import { tryCatch } from "@/utils/tryCatch.util";
 
-const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
 interface ListNewProjectTabProps {
   logout?: () => Promise<void>;
@@ -101,10 +101,7 @@ export default function ListNewProjectTab({
   const handleRefresh = async () => {
     setIsRefreshing(true);
     const [response, error] = await tryCatch(
-      axios.get(
-        `${backend_uri}/projects/getPrivateRepos?page=1&refreshStatus=true`,
-        { withCredentials: true }
-      )
+      apiClient.get("/projects/getPrivateRepos?page=1&refreshStatus=true")
     );
 
     if (error) {

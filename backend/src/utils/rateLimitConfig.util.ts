@@ -1,6 +1,14 @@
 import { rateLimit } from "express-rate-limit";
 import { RequestHandler } from "express";
 
+export const refreshRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  message: "Too many token refresh attempts. Please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 export const healthMemoryCheckLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 6,

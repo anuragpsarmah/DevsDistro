@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { apiClient } from "@/lib/axiosInstance";
 import { successToast } from "@/components/ui/customToast";
 import {
   ProfileUpdateData,
@@ -9,8 +9,6 @@ import {
 } from "@/utils/types";
 import { useHandleError } from "./useHandleErrors";
 import { tryCatch } from "@/utils/tryCatch.util";
-
-const backend_uri = import.meta.env.VITE_BACKEND_URI;
 
 interface mutationParameter {
   logout?: () => Promise<void>;
@@ -31,11 +29,7 @@ const useProfileUpdateMutation = ({ logout }: mutationParameter) => {
       operationInProgress = true;
 
       const [response, error] = await tryCatch(
-        axios.put(
-          `${backend_uri}/profile/updateProfileInformation`,
-          data,
-          { withCredentials: true }
-        )
+        apiClient.put("/profile/updateProfileInformation", data)
       );
 
       setTimeout(() => {
@@ -81,16 +75,12 @@ const usePreSignedUrlForProjectMediaUploadMutation = ({
       operationInProgress = true;
 
       const [response, error] = await tryCatch(
-        axios.post(
-          `${backend_uri}/projects/getPreSignedUrlForProjectMediaUpload`,
-          {
-            metadata,
-            existingImageCount,
-            existingVideoCount,
-            modificationType,
-          },
-          { withCredentials: true }
-        )
+        apiClient.post("/projects/getPreSignedUrlForProjectMediaUpload", {
+          metadata,
+          existingImageCount,
+          existingVideoCount,
+          modificationType,
+        })
       );
 
       operationInProgress = false;
@@ -126,11 +116,10 @@ const useValidateMediaUploadAndStoreProjectMutation = ({
       operationInProgress = true;
 
       const [response, error] = await tryCatch(
-        axios.put(
-          `${backend_uri}/projects/validateMediaUploadAndStoreProject`,
-          { projectData, modificationType },
-          { withCredentials: true }
-        )
+        apiClient.put("/projects/validateMediaUploadAndStoreProject", {
+          projectData,
+          modificationType,
+        })
       );
 
       operationInProgress = false;
@@ -158,11 +147,7 @@ const useToggleProjectListingMutation = ({ logout }: mutationParameter) => {
       operationInProgress = true;
 
       const [response, error] = await tryCatch(
-        axios.patch(
-          `${backend_uri}/projects/toggleProjectListing`,
-          { github_repo_id },
-          { withCredentials: true }
-        )
+        apiClient.patch("/projects/toggleProjectListing", { github_repo_id })
       );
 
       operationInProgress = false;
@@ -195,9 +180,8 @@ const useDeleteProjectListingMutation = ({ logout }: mutationParameter) => {
       operationInProgress = true;
 
       const [, error] = await tryCatch(
-        axios.delete(
-          `${backend_uri}/projects/deleteProjectListing?github_repo_id=${github_repo_id}`,
-          { withCredentials: true }
+        apiClient.delete(
+          `/projects/deleteProjectListing?github_repo_id=${github_repo_id}`
         )
       );
 
@@ -237,9 +221,7 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
           };
 
       const [response, error] = await tryCatch(
-        axios.put(`${backend_uri}/profile/updateWalletAddress`, payload, {
-          withCredentials: true,
-        })
+        apiClient.put("/profile/updateWalletAddress", payload)
       );
 
       if (response) successToast("Wallet address updated successfully");
@@ -274,11 +256,7 @@ const useRetryRepoZipUploadMutation = ({ logout }: mutationParameter) => {
       operationInProgress = true;
 
       const [response, error] = await tryCatch(
-        axios.post(
-          `${backend_uri}/projects/retryRepoZipUpload`,
-          { github_repo_id },
-          { withCredentials: true }
-        )
+        apiClient.post("/projects/retryRepoZipUpload", { github_repo_id })
       );
 
       operationInProgress = false;
@@ -307,11 +285,7 @@ const useRefreshRepoZipMutation = ({ logout }: mutationParameter) => {
       operationInProgress = true;
 
       const [response, error] = await tryCatch(
-        axios.post(
-          `${backend_uri}/projects/refreshRepoZip`,
-          { github_repo_id },
-          { withCredentials: true }
-        )
+        apiClient.post("/projects/refreshRepoZip", { github_repo_id })
       );
 
       operationInProgress = false;

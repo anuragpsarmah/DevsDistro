@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
+import { apiClient } from "@/lib/axiosInstance";
 import { tryCatch } from "@/utils/tryCatch.util";
 import { useNavigate } from "react-router-dom";
 import { errorToast, successToast } from "@/components/ui/customToast";
@@ -10,8 +11,6 @@ export default function AppInstallCallbackPage() {
   const installationId = url.searchParams.get("installation_id");
   const setupAction = url.searchParams.get("setup_action");
   const state = url.searchParams.get("state");
-  const backend_uri = import.meta.env.VITE_BACKEND_URI;
-
   useEffect(() => {
     const handleInstallCallback = async () => {
       if (!installationId || !state) {
@@ -21,9 +20,8 @@ export default function AppInstallCallbackPage() {
       }
 
       const [response, error] = await tryCatch<AxiosResponse>(() =>
-        axios.get(
-          `${backend_uri}/github-app/callback?installation_id=${installationId}&setup_action=${setupAction || ""}&state=${encodeURIComponent(state)}`,
-          { withCredentials: true }
+        apiClient.get(
+          `/github-app/callback?installation_id=${installationId}&setup_action=${setupAction || ""}&state=${encodeURIComponent(state)}`
         )
       );
 

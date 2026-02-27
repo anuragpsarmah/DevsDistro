@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, cloneElement, isValidElement } from "react";
+import { ReactNode, useEffect, useRef, cloneElement, isValidElement } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { user, userCurrency } from "@/utils/atom";
 import { useRecoilState } from "recoil";
@@ -73,7 +73,11 @@ export default function ProtectedRouteWrapper({
   const queryClient = useQueryClient();
   const { refetch: logout } = useLogoutQuery();
 
+  const isLoggingOut = useRef(false);
+
   const handleLogout = async () => {
+    if (isLoggingOut.current) return;
+    isLoggingOut.current = true;
     await logout();
     queryClient.removeQueries({ queryKey: ["authValidation"] });
     setActiveUser(emptyUserObject);
@@ -83,6 +87,8 @@ export default function ProtectedRouteWrapper({
   useEffect(() => {
     const handleAuthValidation = async () => {
       if (isUserDataError) {
+        if (isLoggingOut.current) return;
+        isLoggingOut.current = true;
         await logout();
         setActiveUser(emptyUserObject);
         navigate("/");
@@ -127,7 +133,7 @@ export default function ProtectedRouteWrapper({
 
   return isValidElement(children)
     ? cloneElement(children, { logout: handleLogout } as {
-        logout: () => Promise<void>;
-      })
+      logout: () => Promise<void>;
+    })
     : children;
 }
