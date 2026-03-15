@@ -5,6 +5,7 @@
 */dist
 
 */tsconfig.app.tsbuildinfo
+*/tsconfig.node.tsbuildinfo
 
 .claude
 .agents

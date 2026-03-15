@@ -26,7 +26,7 @@ export default function Footer() {
               DevExchange
             </h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-8 leading-relaxed transition-colors">
-              Bypassing the gatekeepers. A decentralized protocol for code monetization powered by Solana and GitHub.
+              A decentralized protocol for code monetization powered by Solana and GitHub.
             </p>
             <div className="flex gap-4">
               <a href="https://github.com/anuragpsarmah/DevExchange" target="_blank" rel="noopener noreferrer" className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center">

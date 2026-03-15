@@ -3,7 +3,7 @@ import { RequestHandler } from "express";
 
 export const globalRateLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 200,
+  limit: 300,
   message: "Too many requests. Please slow down.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -19,7 +19,7 @@ export const githubOAuthLimiter = rateLimit({
 
 export const logoutLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 10,
+  limit: 15,
   message: "Too many logout attempts. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -27,7 +27,7 @@ export const logoutLimiter = rateLimit({
 
 export const generalAuthReadLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 60,
+  limit: 100,
   message: "Too many requests. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -35,7 +35,7 @@ export const generalAuthReadLimiter = rateLimit({
 
 export const heavyReadLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 30,
+  limit: 45,
   message: "Too many requests. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -74,15 +74,15 @@ export const webhookLimiter = rateLimit({
 });
 
 export const featuredReviewsLimiter = rateLimit({
-  windowMs: 1000,
-  limit: 3,
+  windowMs: 60 * 1000,
+  limit: 30,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 export const refreshRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 10,
+  limit: 20,
   message: "Too many token refresh attempts. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -90,22 +90,22 @@ export const refreshRateLimiter = rateLimit({
 
 export const healthMemoryCheckLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 6,
+  limit: 10,
 });
 
 export const toggleProjectListingLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 6,
+  limit: 10,
 });
 
 export const toggleWalletConnectionLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 6,
+  limit: 10,
 });
 
 export const projectMediaUploadLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  limit: 5,
+  limit: 10,
   message: "Too many upload requests. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -137,7 +137,7 @@ export const deleteProjectListingLimiter = rateLimit({
 
 export const initiatePurchaseLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 5,
+  limit: 10,
   message: "Too many purchase initiation attempts. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -145,7 +145,7 @@ export const initiatePurchaseLimiter = rateLimit({
 
 export const confirmPurchaseLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 10,
+  limit: 15,
   message: "Too many purchase confirmation attempts. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -161,7 +161,7 @@ export const downloadLimiter = rateLimit({
 
 export const receiptLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  limit: 10,
+  limit: 20,
   message: "Too many receipt requests. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,
@@ -185,7 +185,7 @@ export const deleteReviewLimiter = rateLimit({
 
 export const getReviewsLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 30,
+  limit: 60,
   message: "Too many requests. Please try again later.",
   standardHeaders: true,
   legacyHeaders: false,

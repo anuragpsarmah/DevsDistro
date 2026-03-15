@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, Code2 } from "lucide-react";
+import { Code2 } from "lucide-react";
 import noiseUrl from "@/assets/noise.svg";
 
 interface PrologueProps {
