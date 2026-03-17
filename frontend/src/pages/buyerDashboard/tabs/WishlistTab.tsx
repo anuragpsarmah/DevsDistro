@@ -86,9 +86,14 @@ export default function WishlistTab({ logout }: WishlistTabProps) {
             </span>
           </div>
           <div className="flex items-start lg:items-center justify-between flex-col lg:flex-row gap-4">
-            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none transition-colors duration-300">
-              Saved Projects
-            </h1>
+            <div className="space-y-4">
+              <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none transition-colors duration-300">
+                Saved Projects
+              </h1>
+              <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
+                Projects you've saved for later review and purchase.
+              </p>
+            </div>
             {countDisplay !== null && (
               <span className="hidden md:block text-sm font-space text-black dark:text-white font-bold uppercase tracking-widest border-2 border-black dark:border-white px-4 py-2 bg-white dark:bg-[#050505] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,1)]">
                 {countDisplay} saved

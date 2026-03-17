@@ -97,17 +97,20 @@ export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
     <TransitionWrapper identifier="marketplace-list" isTransitioning={false}>
       <div className="space-y-6 mt-6 lg:mt-0 md:mt-0 flex flex-col min-h-[calc(100vh-4rem)]">
         <div className="flex-shrink-0 mb-8 lg:mb-10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-[2px] bg-red-500"></div>
+            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
+              Marketplace
+            </span>
+          </div>
           <div className="flex items-start lg:items-center justify-between flex-col lg:flex-row gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-[2px] bg-red-500"></div>
-                <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-                  Marketplace
-                </span>
-              </div>
+            <div className="space-y-4">
               <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
                 Explore Projects
               </h1>
+              <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
+                Browse and discover source code projects from the community.
+              </p>
             </div>
             {!isInitialLoading && totalCount > 0 && (
               <span className="hidden md:block text-sm font-space text-black dark:text-white font-bold uppercase tracking-widest border-2 border-black dark:border-white px-4 py-2 bg-white dark:bg-[#050505] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,1)]">
