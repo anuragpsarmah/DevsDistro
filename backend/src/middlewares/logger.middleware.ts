@@ -45,7 +45,7 @@ const loggerMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
       const wideEvent = {
         request_id: store.request_id,
-        service: process.env.SERVICE_NAME || "devexchange-backend",
+        service: process.env.SERVICE_NAME || "devdistro-backend",
         version: process.env.SERVICE_VERSION || "1.0.0",
         environment: process.env.NODE_ENV || "development",
         ip,

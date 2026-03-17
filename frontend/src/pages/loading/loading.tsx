@@ -27,7 +27,7 @@ export default function LoadingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          DevExchange
+          DevDistro
         </motion.h1>
 
         <motion.div

@@ -23,13 +23,13 @@ export default function Footer() {
           <div className="md:col-span-2">
             <h3 className="font-syne text-3xl font-black uppercase tracking-widest mb-6 flex items-center gap-3 justify-center md:justify-start">
               <LogoIcon className="w-8 h-8" />
-              DevExchange
+              DevDistro
             </h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-8 leading-relaxed transition-colors text-center md:text-left mx-auto md:mx-0">
               A decentralized protocol for code monetization powered by Solana and GitHub.
             </p>
             <div className="flex gap-4 justify-center md:justify-start">
-              <a href="https://github.com/anuragpsarmah/DevExchange" target="_blank" rel="noopener noreferrer" className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center">
+              <a href="https://github.com/anuragpsarmah/DevDistro" target="_blank" rel="noopener noreferrer" className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center">
                 <Github size={20} />
               </a>
               <a href="https://x.com/anuragpsarmah" target="_blank" rel="noopener noreferrer" className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center">
@@ -41,9 +41,9 @@ export default function Footer() {
           <div>
             <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-gray-500 dark:text-gray-500 transition-colors text-center md:text-left">Navigation</h4>
             <ul className="space-y-4 text-center md:text-left">
-              {["DevExchange", "The Revelation", "The Mechanics", "Validations", "Query Log"].map((item) => {
+              {["DevDistro", "The Revelation", "The Mechanics", "Validations", "Query Log"].map((item) => {
                 let id = item.toLowerCase().replace(" ", "-");
-                if (id === "devexchange") id = "the-introduction";
+                if (id === "devdistro") id = "the-introduction";
                 return (
                   <li key={item}>
                     <Link
@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-gray-600 uppercase tracking-widest transition-colors">
-          <p>© {new Date().getFullYear()} DevExchange. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} DevDistro. All rights reserved.</p>
           <div className="flex gap-8 border border-black/10 dark:border-white/10 px-4 py-2 transition-colors">
             <span>Status: <span className="text-green-600 dark:text-green-500">Operational</span></span>
           </div>

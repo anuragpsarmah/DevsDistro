@@ -295,7 +295,7 @@ const updateWalletAddress = asyncHandler(
     }
 
     if (wallet_address && signature && message) {
-      const messageRegex = /^DevExchange Wallet Verification\nAddress: ([1-9A-HJ-NP-Za-km-z]{32,44})\nTimestamp: (\d+)$/;
+      const messageRegex = /^DevDistro Wallet Verification\nAddress: ([1-9A-HJ-NP-Za-km-z]{32,44})\nTimestamp: (\d+)$/;
       const match = message.match(messageRegex);
 
       if (!match) {

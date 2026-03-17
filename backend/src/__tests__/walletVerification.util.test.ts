@@ -15,7 +15,7 @@ function makeSignedMessage(message: string): { address: string; signature: strin
 }
 
 describe("verifyWalletSignature", () => {
-  const message = "DevExchange Wallet Verification\nAddress: testAddress\nTimestamp: 1700000000000";
+  const message = "DevDistro Wallet Verification\nAddress: testAddress\nTimestamp: 1700000000000";
 
   it("returns true for a valid signature", () => {
     const { address, signature } = makeSignedMessage(message);

@@ -55,7 +55,7 @@ export default function PrivacyPolicy() {
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
-                <span><strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">Repository Metadata -</strong> We fetch listed repository metadata (names, descriptions, stack, statistics) to display your listings on the DevExchange marketplace.</span>
+                <span><strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">Repository Metadata -</strong> We fetch listed repository metadata (names, descriptions, stack, statistics) to display your listings on the DevDistro marketplace.</span>
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
@@ -67,12 +67,12 @@ export default function PrivacyPolicy() {
           <section>
             <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">02. App Security & Code Storage</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
-              DevExchange treats your intellectual property with the highest security standards. We have deliberately shifted away from storing long-lived personal access tokens in favor of robust App-level sandboxing:
+              DevDistro treats your intellectual property with the highest security standards. We have deliberately shifted away from storing long-lived personal access tokens in favor of robust App-level sandboxing:
             </p>
             <ul className="space-y-4 text-gray-600 dark:text-gray-400 text-lg">
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
-                <span><strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">GitHub App Integration -</strong> You authorize the DevExchange GitHub App exclusively for the repositories you choose to list. We do not have read or write access to your entire GitHub account. Authentication is handled via short-lived, automated JWTs defined directly by GitHub's OAuth APIs.</span>
+                <span><strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">GitHub App Integration -</strong> You authorize the DevDistro GitHub App exclusively for the repositories you choose to list. We do not have read or write access to your entire GitHub account. Authentication is handled via short-lived, automated JWTs defined directly by GitHub's OAuth APIs.</span>
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
@@ -127,7 +127,7 @@ export default function PrivacyPolicy() {
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
-                Purge your account and associated webhook subscriptions from DevExchange servers.
+                Purge your account and associated webhook subscriptions from DevDistro servers.
               </li>
             </ul>
           </section>

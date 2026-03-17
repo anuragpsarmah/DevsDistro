@@ -442,7 +442,7 @@ const useDownloadReceiptMutation = ({ logout }: mutationParameter) => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `devexchange-receipt-${purchase_id.slice(0, 8)}.pdf`;
+      link.download = `devdistro-receipt-${purchase_id.slice(0, 8)}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

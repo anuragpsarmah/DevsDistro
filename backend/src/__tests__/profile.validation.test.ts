@@ -145,7 +145,7 @@ describe("profileInformationSchema", () => {
 describe("walletAddressSchema", () => {
   const validAddress = "GsbwXfJraMomNxBcpR3DBuWMxSrPMD8HuCHBuyBEjMzN";
   const validSignature = "4rQBPFE3v8s5TxNJuBvmNdq1ZzWqHmLRUMXsMtPP1H5MfnMoQqMKe7LzCa6s5ZbxFsR3d2eY2pHh7XUuFmBMaCm";
-  const validMessage = `DevExchange Wallet Verification\nAddress: ${validAddress}\nTimestamp: ${Date.now()}`;
+  const validMessage = `DevDistro Wallet Verification\nAddress: ${validAddress}\nTimestamp: ${Date.now()}`;
 
   it("passes with valid address, signature and message", () => {
     const result = walletAddressSchema.safeParse({

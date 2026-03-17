@@ -53,7 +53,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           >
             <div className="w-12 h-[2px] bg-red-500"></div>
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-              DevExchange
+              DevDistro
             </span>
             <div className="w-12 h-[2px] bg-red-500"></div>
           </motion.div>
@@ -93,7 +93,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
               onClick={handleAuthNavigate}
               className="group relative px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest overflow-hidden transition-colors"
             >
-              <div className="absolute inset-0 w-0 bg-red-500 transition-all duration-[250ms] ease-out group-hover:w-full"></div>
+              <div className="absolute inset-0 w-0 bg-red-500 transition-all transition-duration-[250ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 group-hover:text-white dark:group-hover:text-black transition-colors duration-200 flex items-center gap-2">
                 Init Setup <Code2 size={18} />
               </span>
@@ -115,7 +115,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Protocol:</span>
-              <span className="text-black dark:text-white w-24 text-left">DevExchange</span>
+              <span className="text-black dark:text-white w-24 text-left">DevDistro</span>
             </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Version:</span>

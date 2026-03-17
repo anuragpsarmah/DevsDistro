@@ -96,7 +96,7 @@ const makeMockReview = (overrides: Record<string, any> = {}) => ({
 
 const validWalletBody = (timestampOffset = 0) => {
   const ts = Date.now() + timestampOffset;
-  const message = `DevExchange Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${ts}`;
+  const message = `DevDistro Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${ts}`;
   return {
     wallet_address: VALID_WALLET,
     signature: "validSig123",
@@ -506,7 +506,7 @@ describe("profile.controller", () => {
 
     it("returns 400 when the message address does not match submitted address", async () => {
       const differentAddress = "DifferentAddr1111111111111111111111111111111";
-      const message = `DevExchange Wallet Verification\nAddress: ${differentAddress}\nTimestamp: ${Date.now()}`;
+      const message = `DevDistro Wallet Verification\nAddress: ${differentAddress}\nTimestamp: ${Date.now()}`;
       const req = makeReq({
         body: { wallet_address: VALID_WALLET, signature: "sig", message },
       });
@@ -518,7 +518,7 @@ describe("profile.controller", () => {
 
     it("returns 400 when the timestamp is expired (> 5 min ago)", async () => {
       const expiredTs = Date.now() - 6 * 60 * 1000;
-      const message = `DevExchange Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${expiredTs}`;
+      const message = `DevDistro Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${expiredTs}`;
       const req = makeReq({ body: { wallet_address: VALID_WALLET, signature: "sig", message } });
       updateWalletAddress(req, res, next);
       await flushPromises();
@@ -528,7 +528,7 @@ describe("profile.controller", () => {
 
     it("returns 400 when the timestamp is more than 60s in the future", async () => {
       const futureTs = Date.now() + 70_000;
-      const message = `DevExchange Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${futureTs}`;
+      const message = `DevDistro Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${futureTs}`;
       const req = makeReq({ body: { wallet_address: VALID_WALLET, signature: "sig", message } });
       updateWalletAddress(req, res, next);
       await flushPromises();

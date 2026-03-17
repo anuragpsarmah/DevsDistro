@@ -22,7 +22,7 @@ export default function FAQ() {
               <span className="text-black/40 dark:text-white/40">Asked.</span>
             </h2>
             <p className="font-space text-gray-600 dark:text-gray-500 text-sm transition-colors text-center md:text-left">
-              Operational specifications and technical constraints regarding DevExchange.
+              Operational specifications and technical constraints regarding DevDistro.
             </p>
           </div>
 

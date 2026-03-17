@@ -194,7 +194,7 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
         })
       );
 
-      // Transfer 1% to DevExchange treasury
+      // Transfer 1% to DevDistro treasury
       tx.add(
         SystemProgram.transfer({
           fromPubkey: buyerPubkey,

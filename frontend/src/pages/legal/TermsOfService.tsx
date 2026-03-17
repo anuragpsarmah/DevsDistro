@@ -46,7 +46,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">01. Acceptance of Terms</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-              By accessing or using DevExchange ("Platform"), you agree to be bound by these Terms of Service.
+              By accessing or using DevDistro ("Platform"), you agree to be bound by these Terms of Service.
               The Platform provides a decentralized marketplace for developers to buy and sell source code securely and efficiently.
             </p>
           </section>
@@ -54,7 +54,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">02. Account Security & GitHub Access</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
-              To use the Platform, you are required to authenticate via GitHub OAuth and authorize the official DevExchange GitHub App.
+              To use the Platform, you are required to authenticate via GitHub OAuth and authorize the official DevDistro GitHub App.
               This is a mandatory requirement to verify your identity and confirm cryptographic ownership of the repositories you intend to list.
               The GitHub App requests scoped permissions exclusively for the repositories you select, ensuring we only interact with the code you choose to monetize.
             </p>
@@ -97,11 +97,11 @@ export default function TermsOfService() {
             <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">04. Transactions & Delivery</h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
               <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">Solana Settlement /</strong>
-              You define the valuation of your codebase in USD fiat. At the time of execution, DevExchange automatically converts this amount and processes the transaction exclusively in native SOL on the Solana blockchain through a connected Web3 wallet (e.g., Phantom, Solflare).
+              You define the valuation of your codebase in USD fiat. At the time of execution, DevDistro automatically converts this amount and processes the transaction exclusively in native SOL on the Solana blockchain through a connected Web3 wallet (e.g., Phantom, Solflare).
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
               <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">Automated Delivery /</strong>
-              When you list a repository, we immediately pull the latest commit and compile it into a secure ZIP file stored in our AWS S3 infrastructure. Upon on-chain confirmation of payment, this pre-packaged archive is served directly to the buyer for immediate download. DevExchange facilitates the pipeline but relies on the immutability of the blockchain for settlement.
+              When you list a repository, we immediately pull the latest commit and compile it into a secure ZIP file stored in our AWS S3 infrastructure. Upon on-chain confirmation of payment, this pre-packaged archive is served directly to the buyer for immediate download. DevDistro facilitates the pipeline but relies on the immutability of the blockchain for settlement.
             </p>
           </section>
 
@@ -115,10 +115,10 @@ export default function TermsOfService() {
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
               <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">Platform Errors & Software Defects /</strong>
-              DevExchange makes reasonable efforts to maintain the integrity, security, and reliability of the Platform. However, all software may contain defects, bugs, or vulnerabilities. To the maximum extent permitted by applicable law, DevExchange shall not be held responsible or liable for any loss of funds, digital assets, cryptocurrency, or financial damages of any nature arising from software errors, bugs, platform malfunctions, failed transactions, incorrect price calculations, or any other technical deficiency — whether or not such deficiency was known or foreseeable by DevExchange at the time of the incident.
+              DevDistro makes reasonable efforts to maintain the integrity, security, and reliability of the Platform. However, all software may contain defects, bugs, or vulnerabilities. To the maximum extent permitted by applicable law, DevDistro shall not be held responsible or liable for any loss of funds, digital assets, cryptocurrency, or financial damages of any nature arising from software errors, bugs, platform malfunctions, failed transactions, incorrect price calculations, or any other technical deficiency — whether or not such deficiency was known or foreseeable by DevDistro at the time of the incident.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-              By using the Platform and initiating any financial transaction, you expressly acknowledge and accept that all transactions are executed at your own risk. You are solely responsible for independently verifying transaction details — including recipient addresses and SOL amounts — prior to authorizing any payment through your connected Web3 wallet. DevExchange strongly recommends transacting only amounts you are prepared to lose in the event of an unforeseen technical failure.
+              By using the Platform and initiating any financial transaction, you expressly acknowledge and accept that all transactions are executed at your own risk. You are solely responsible for independently verifying transaction details — including recipient addresses and SOL amounts — prior to authorizing any payment through your connected Web3 wallet. DevDistro strongly recommends transacting only amounts you are prepared to lose in the event of an unforeseen technical failure.
             </p>
           </section>
 
