@@ -159,7 +159,9 @@ describe("reviews.controller", () => {
     it("returns 409 when review already exists and does not create duplicate", async () => {
       mockProjectFindById({ _id: VALID_PROJECT_ID, userid: VALID_SELLER_ID, isActive: true });
       mockPurchaseFindOne({ _id: "purchase_1" });
-      mockReviewFindOne({ _id: VALID_REVIEW_ID });
+      vi.mocked(Review.create).mockRejectedValue(
+        Object.assign(new Error("Duplicate key"), { code: 11000 })
+      );
 
       const req = makeReq({
         body: { project_id: VALID_PROJECT_ID, rating: 4, review: "already reviewed" },
@@ -168,7 +170,6 @@ describe("reviews.controller", () => {
       await flushPromises();
 
       expect(res.status).toHaveBeenCalledWith(409);
-      expect(Review.create).not.toHaveBeenCalled();
     });
 
     it("enforces confirmed purchase when submitting a review", async () => {

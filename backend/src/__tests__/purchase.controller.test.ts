@@ -1137,6 +1137,7 @@ describe("downloadProject", () => {
         repo_zip_status: "SUCCESS",
         repo_zip_s3_key: "zips/project-abc.zip",
         title: "Test Project",
+        price: 99,
       }) as any
     );
 

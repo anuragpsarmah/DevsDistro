@@ -162,6 +162,7 @@ const mockProjectDoc = (overrides: Record<string, any> = {}) => ({
   title: "My Awesome Project",
   repo_zip_status: "SUCCESS",
   repo_zip_s3_key: VALID_S3_KEY,
+  price: 99,
   ...overrides,
 });
 
@@ -214,6 +215,7 @@ describe("downloadProject", () => {
   // ── Purchase verification ─────────────────────────────────────────────────
 
   it("returns 403 when buyer has not purchased the project", async () => {
+    stubProjectFindById(mockProjectDoc()); // project exists and is paid
     stubPurchaseFindOne(null); // no purchase record
     const req = makeReq();
     downloadProject(req as any, res, next);
@@ -223,10 +225,10 @@ describe("downloadProject", () => {
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({ message: "You have not purchased this project" })
     );
-    expect(Project.findById).not.toHaveBeenCalled();
   });
 
   it("returns 500 when purchase DB lookup fails", async () => {
+    stubProjectFindById(mockProjectDoc()); // project exists and is paid
     stubPurchaseFindOneError(new Error("Mongo timeout"));
     const req = makeReq();
     downloadProject(req as any, res, next);
@@ -427,6 +429,7 @@ describe("downloadProject", () => {
   // ── Purchase lookup uses correct query ────────────────────────────────────
 
   it("verifies purchase with CONFIRMED status (not any status)", async () => {
+    stubProjectFindById(mockProjectDoc()); // project exists and is paid
     stubPurchaseFindOne(null);
     const req = makeReq();
     downloadProject(req as any, res, next);
@@ -438,6 +441,7 @@ describe("downloadProject", () => {
   });
 
   it("fetches purchase by both buyerId and projectId to ensure ownership", async () => {
+    stubProjectFindById(mockProjectDoc()); // project exists and is paid
     stubPurchaseFindOne(null);
     const req = makeReq();
     downloadProject(req as any, res, next);

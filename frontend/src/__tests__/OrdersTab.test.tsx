@@ -9,7 +9,7 @@
  *   - Download and Receipt button callbacks
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -47,6 +47,16 @@ vi.mock("../pages/buyerDashboard/sub-components/TransitionWrapper", () => ({
 vi.mock("../pages/buyerDashboard/sub-components/ProjectDetailPage", () => ({
   default: () => <div data-testid="project-detail" />,
 }));
+
+// Mock IntersectionObserver — not available in jsdom
+beforeAll(() => {
+  (global as any).IntersectionObserver = class {
+    observe    = vi.fn();
+    unobserve  = vi.fn();
+    disconnect = vi.fn();
+    constructor(_cb: any, _opts?: any) {}
+  };
+});
 
 // ─── Imports after mocks ──────────────────────────────────────────────────────
 

@@ -425,7 +425,9 @@ describe("validateMediaUploadAndStoreProject", () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
     vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
     vi.mocked(axios.get).mockResolvedValue({} as any);
-    vi.mocked(Project.findOne).mockResolvedValue(null as any);
+    vi.mocked(Project.findOne)
+      .mockResolvedValueOnce(null as any)
+      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
 
     const req = makeReq({
       projectData: makeValidProjectData({
@@ -447,7 +449,9 @@ describe("validateMediaUploadAndStoreProject", () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
     vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
     vi.mocked(axios.get).mockResolvedValue({} as any);
-    vi.mocked(Project.findOne).mockResolvedValue(null as any);
+    vi.mocked(Project.findOne)
+      .mockResolvedValueOnce(null as any)
+      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
     vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockRejectedValue(
       new Error("Object not found in S3")
     );
@@ -464,7 +468,9 @@ describe("validateMediaUploadAndStoreProject", () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
     vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
     vi.mocked(axios.get).mockResolvedValue({} as any);
-    vi.mocked(Project.findOne).mockResolvedValue(null as any);
+    vi.mocked(Project.findOne)
+      .mockResolvedValueOnce(null as any)
+      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
     // Card image + 2 detail images → mismatch (1 vs 2)
     vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl)
       .mockResolvedValueOnce(`${CLOUDFRONT_DOMAIN}/card.png` as any)
@@ -496,7 +502,9 @@ describe("validateMediaUploadAndStoreProject", () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
     vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
     vi.mocked(axios.get).mockResolvedValue({} as any);
-    vi.mocked(Project.findOne).mockResolvedValue(null as any);
+    vi.mocked(Project.findOne)
+      .mockResolvedValueOnce(null as any)
+      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
     vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
       `${CLOUDFRONT_DOMAIN}/new-img.png` as any
     );
@@ -548,7 +556,9 @@ describe("validateMediaUploadAndStoreProject", () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
     vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
     vi.mocked(axios.get).mockResolvedValue({} as any);
-    vi.mocked(Project.findOne).mockResolvedValue(projectDoc as any);
+    vi.mocked(Project.findOne)
+      .mockResolvedValueOnce(projectDoc as any)
+      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
     vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
       `${CLOUDFRONT_DOMAIN}/updated-img.png` as any
     );
@@ -572,7 +582,9 @@ describe("validateMediaUploadAndStoreProject", () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
     vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
     vi.mocked(axios.get).mockResolvedValue({} as any);
-    vi.mocked(Project.findOne).mockResolvedValue(projectDoc as any);
+    vi.mocked(Project.findOne)
+      .mockResolvedValueOnce(projectDoc as any)
+      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
     // New S3 key resolves to a different CloudFront URL
     vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
       `${CLOUDFRONT_DOMAIN}/new-replacement.png` as any
