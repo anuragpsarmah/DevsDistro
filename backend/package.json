@@ -4,8 +4,9 @@
   "main": "./src/index.ts",
   "scripts": {
     "dev": "nodemon",
-    "build": "npm install && npx tsc",
+    "build": "npx tsc",
     "start": "cross-env NODE_ENV=production node ./dist/index.js",
+    "start:worker": "cross-env NODE_ENV=production node ./dist/worker.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write \"src/**/*\"",

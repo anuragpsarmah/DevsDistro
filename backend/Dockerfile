@@ -1,45 +1,28 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM node:25-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
 COPY . .
-
-# Build the application
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine AS production
+FROM ghcr.io/platformatic/node-caged:25-slim AS production
 
-# Set working directory
 WORKDIR /app
-
-# Set Node environment to production
 ENV NODE_ENV=production
 
-# Copy package files
 COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Install only production dependencies
-RUN npm ci --only=production
+COPY --from=builder --chown=node:node /app/dist ./dist
+RUN chown -R node:node /app
 
-# Copy built files from builder stage
-COPY --from=builder /app/dist ./dist
+USER node
 
-# Add a non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
-# Expose port
 EXPOSE 3000
-
-# Start the application
+# Default: API server. Worker containers override CMD with "node dist/worker.js"
 CMD ["node", "dist/index.js"]
