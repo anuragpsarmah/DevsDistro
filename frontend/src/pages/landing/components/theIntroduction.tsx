@@ -53,7 +53,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           >
             <div className="w-12 h-[2px] bg-red-500"></div>
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-              DevDistro
+              DevsDistro
             </span>
             <div className="w-12 h-[2px] bg-red-500"></div>
           </motion.div>
@@ -115,7 +115,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Protocol:</span>
-              <span className="text-black dark:text-white w-24 text-left">DevDistro</span>
+              <span className="text-black dark:text-white w-24 text-left">DevsDistro</span>
             </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Version:</span>

@@ -98,7 +98,7 @@ function SidebarContent({
         <div className="flex items-center gap-3 mb-6">
           <LogoIcon className="w-7 h-7 2xl:w-8 2xl:h-8 text-black dark:text-white flex-shrink-0" />
           <h2 className="font-syne text-xl 2xl:text-2xl font-black uppercase tracking-widest leading-none text-black dark:text-white whitespace-nowrap">
-            DevDistro
+            DevsDistro
           </h2>
         </div>
         <div className="flex items-center gap-3">

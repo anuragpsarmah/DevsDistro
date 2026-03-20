@@ -33,7 +33,7 @@ export default function Header({
       <nav className="w-full flex justify-between items-center px-6 py-4">
         <Link to="/" className="flex items-center gap-3 text-xl font-syne font-black tracking-widest text-black dark:text-white uppercase transition-colors group">
           <LogoIcon className="w-8 h-8 group-hover:scale-110 transition-transform duration-300" />
-          <span className="group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">DevDistro</span>
+          <span className="group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">DevsDistro</span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8 lg:gap-12 font-space text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">

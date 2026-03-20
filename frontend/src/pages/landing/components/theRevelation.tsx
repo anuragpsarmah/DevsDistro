@@ -72,7 +72,7 @@ export default function TheShift() {
             <div className="space-y-6 font-space text-gray-600 dark:text-gray-400 text-lg transition-colors">
               <p>
 
-                DevDistro connects you with a global audience of developers and builders through frictionless Solana settlements.
+                DevsDistro connects you with a global audience of developers and builders through frictionless Solana settlements.
               </p>
               <p className="border-l-2 border-red-500 pl-4 text-black dark:text-white transition-colors">
                 You price it in fiat. They pay via Web3 wallets. We handle the conversion and the secure ZIP delivery in milliseconds.

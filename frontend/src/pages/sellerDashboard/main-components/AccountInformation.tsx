@@ -298,7 +298,7 @@ export default function AccountInformation({
                   Danger Zone
                 </h3>
                 <p className="font-space text-sm lg:text-[15px] font-medium leading-relaxed text-gray-700 dark:text-gray-300">
-                  Proceeding will permanently delete your DevDistro account, wipe all personal profile data, and unlist any active repositories from the marketplace. <strong className="text-red-500 dark:text-red-400">This action is irreversible.</strong>
+                  Proceeding will permanently delete your DevsDistro account, wipe all personal profile data, and unlist any active repositories from the marketplace. <strong className="text-red-500 dark:text-red-400">This action is irreversible.</strong>
                 </p>
               </div>
 

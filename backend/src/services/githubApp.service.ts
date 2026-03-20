@@ -329,7 +329,7 @@ class GitHubAppService {
       .digest("hex");
 
     const state = `${payload}.${signature}`;
-    return `https://github.com/apps/devexcahnge-local/installations/new?state=${encodeURIComponent(state)}`;
+    return `https://github.com/apps/devsdistro-local/installations/new?state=${encodeURIComponent(state)}`;
   }
 
   async reactivateProjectsWithRestoredAccess(

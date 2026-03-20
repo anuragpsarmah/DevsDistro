@@ -120,7 +120,7 @@ export const useWalletManager = ({
         intentionalOperation.current = true;
 
         const [, error] = await tryCatch(async () => {
-          const message = `DevDistro Wallet Verification\nAddress: ${publicKey.toString()}\nTimestamp: ${Date.now()}`;
+          const message = `DevsDistro Wallet Verification\nAddress: ${publicKey.toString()}\nTimestamp: ${Date.now()}`;
           const messageBytes = new TextEncoder().encode(message);
 
           const signatureBytes = await signMessage(messageBytes);

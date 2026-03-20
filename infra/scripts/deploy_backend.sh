@@ -2,8 +2,8 @@
 set -euo pipefail
 
 SHA="${1:?Usage: deploy_backend.sh <git-sha>}"
-IMAGE="ghcr.io/anuragpsarmah/devdistro-backend:${SHA}"
-DEPLOY_DIR="/opt/devdistro"
+IMAGE="ghcr.io/anuragpsarmah/devsdistro-backend:${SHA}"
+DEPLOY_DIR="/opt/devsdistro"
 ENV_FILE="${DEPLOY_DIR}/config/backend.env"
 NGINX_ACTIVE="${DEPLOY_DIR}/nginx/active"
 NGINX_CONF_DIR="${DEPLOY_DIR}/nginx"
@@ -29,7 +29,7 @@ docker stop "backend-${INACTIVE}" 2>/dev/null && \
 # ── Start candidate container ─────────────────────────────────────────────────
 docker run -d \
   --name "backend-${INACTIVE}" \
-  --network devdistro-internal \
+  --network devsdistro-internal \
   --restart unless-stopped \
   -p "127.0.0.1:${INACTIVE_PORT}:3000" \
   --env-file "${ENV_FILE}" \
@@ -73,7 +73,7 @@ echo "==> Stopped old container backend-${ACTIVE}"
 docker stop backend-worker && docker rm backend-worker || true
 docker run -d \
   --name backend-worker \
-  --network devdistro-internal \
+  --network devsdistro-internal \
   --restart unless-stopped \
   --env-file "${ENV_FILE}" \
   "${IMAGE}" \

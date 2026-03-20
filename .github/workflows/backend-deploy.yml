@@ -31,8 +31,8 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-            ghcr.io/anuragpsarmah/devdistro-backend:${{ github.sha }}
-            ghcr.io/anuragpsarmah/devdistro-backend:latest
+            ghcr.io/anuragpsarmah/devsdistro-backend:${{ github.sha }}
+            ghcr.io/anuragpsarmah/devsdistro-backend:latest
 
   deploy:
     name: Deploy to VPS
@@ -46,7 +46,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           fingerprint: ${{ secrets.VPS_HOST_FINGERPRINT }}
           script: |
-            cd /opt/devdistro/repo
+            cd /opt/devsdistro/repo
             git pull --ff-only
-            install -m 755 infra/scripts/deploy_backend.sh /opt/devdistro/scripts/deploy_backend.sh
-            /opt/devdistro/scripts/deploy_backend.sh ${{ github.sha }}
+            install -m 755 infra/scripts/deploy_backend.sh /opt/devsdistro/scripts/deploy_backend.sh
+            /opt/devsdistro/scripts/deploy_backend.sh ${{ github.sha }}

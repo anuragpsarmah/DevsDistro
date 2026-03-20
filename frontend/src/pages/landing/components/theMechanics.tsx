@@ -32,7 +32,7 @@ export default function TheMechanics() {
             <div className="font-space text-4xl font-bold mb-8 text-black dark:text-white group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">01.</div>
             <h3 className="font-syne text-2xl font-bold uppercase mb-4">OAuth & App Sync</h3>
             <p className="font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
-              Begin with standard GitHub OAuth, followed by our native GitHub App Integration. This grants DevDistro the specific scoped access needed to securely fetch your repository code for packaging.
+              Begin with standard GitHub OAuth, followed by our native GitHub App Integration. This grants DevsDistro the specific scoped access needed to securely fetch your repository code for packaging.
             </p>
           </motion.div>
 
@@ -75,7 +75,7 @@ export default function TheMechanics() {
               <div className="font-space text-4xl font-bold mb-8 text-gray-500 dark:text-gray-500 group-hover:text-white dark:group-hover:text-black transition-colors">04.</div>
               <h3 className="font-syne text-3xl font-bold uppercase mb-4">Automated Archive Delivery</h3>
               <p className="font-space text-lg leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors">
-                The instant the Solana transaction is validated on-chain, DevDistro orchestrates the secure downloading and compiling of your repository into a downloadable ZIP file, immediately served to the buyer. No manual labor required.
+                The instant the Solana transaction is validated on-chain, DevsDistro orchestrates the secure downloading and compiling of your repository into a downloadable ZIP file, immediately served to the buyer. No manual labor required.
               </p>
             </div>
           </motion.div>

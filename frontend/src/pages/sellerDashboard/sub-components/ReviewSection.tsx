@@ -15,7 +15,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-[2px] bg-red-500"></div>
         <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-          DevDistro Review
+          DevsDistro Review
         </span>
       </div>
       <Textarea
@@ -38,7 +38,7 @@ export const ReviewSection: React.FC<ReviewSectionProps> = ({
     </div>
     <div className="border-t-2 border-black/10 dark:border-white/10 pt-8 mt-2">
       <Label className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-4 block">
-        DevDistro Rating
+        DevsDistro Rating
       </Label>
       <div className="flex items-center space-x-4">
         {[1, 2, 3, 4, 5].map((star) => (

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEPLOY_DIR="/opt/devdistro"
+DEPLOY_DIR="/opt/devsdistro"
 NGINX_ACTIVE="${DEPLOY_DIR}/nginx/active"
 NGINX_CONF_DIR="${DEPLOY_DIR}/nginx"
 RELEASES_DIR="${DEPLOY_DIR}/backend/releases"
@@ -37,7 +37,7 @@ docker stop "backend-${PREV_COLOR}" 2>/dev/null && \
   docker rm  "backend-${PREV_COLOR}" 2>/dev/null || true
 docker run -d \
   --name "backend-${PREV_COLOR}" \
-  --network devdistro-internal \
+  --network devsdistro-internal \
   --restart unless-stopped \
   -p "127.0.0.1:${PREV_PORT}:3000" \
   --env-file "${ENV_FILE}" \
@@ -66,7 +66,7 @@ docker stop "backend-${CURR_COLOR}" && docker rm "backend-${CURR_COLOR}" || true
 docker stop backend-worker && docker rm backend-worker || true
 docker run -d \
   --name backend-worker \
-  --network devdistro-internal \
+  --network devsdistro-internal \
   --restart unless-stopped \
   --env-file "${ENV_FILE}" \
   "${PREV_IMAGE}" \

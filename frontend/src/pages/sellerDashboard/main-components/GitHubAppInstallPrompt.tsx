@@ -23,7 +23,7 @@ export default function GitHubAppInstallPrompt({
             </h2>
 
             <p className="font-space text-sm text-gray-600 dark:text-gray-400 mb-8 leading-relaxed transition-colors duration-300">
-              Install the DevDistro GitHub App on your personal GitHub
+              Install the DevsDistro GitHub App on your personal GitHub
               account to grant access to specific repositories you want to
               list for sale.
             </p>

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 BUCKET="${MONGO_BACKUP_BUCKET:?Set MONGO_BACKUP_BUCKET env var}"
-PREFIX="devdistro/mongodb"
+PREFIX="devsdistro/mongodb"
 MAX_SNAPSHOTS=4
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 ARCHIVE_KEY="${PREFIX}/backup-${TIMESTAMP}.archive.gz"
