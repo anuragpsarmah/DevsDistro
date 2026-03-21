@@ -54,7 +54,10 @@ function FileTreeNode({ node, depth }: FileTreeNodeProps) {
       </button>
 
       {isOpen && node.children && node.children.length > 0 && (
-        <div className="border-l-2 border-black/20 dark:border-white/20" style={{ marginLeft: `${paddingLeft + 14}px` }}>
+        <div
+          className="border-l-2 border-black/20 dark:border-white/20"
+          style={{ marginLeft: `${paddingLeft + 14}px` }}
+        >
           {node.children.map((child, idx) => (
             <FileTreeNode key={`${child.name}-${idx}`} node={child} depth={0} />
           ))}

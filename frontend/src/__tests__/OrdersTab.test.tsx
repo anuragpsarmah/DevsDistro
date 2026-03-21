@@ -15,7 +15,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 const mockDownloadMutate = vi.fn();
-const mockReceiptMutate  = vi.fn();
+const mockReceiptMutate = vi.fn();
 
 vi.mock("@/hooks/apiQueries", () => ({
   useGetPurchasedProjectsInfiniteQuery: vi.fn(),
@@ -23,22 +23,28 @@ vi.mock("@/hooks/apiQueries", () => ({
 
 vi.mock("@/hooks/apiMutations", () => ({
   useDownloadProjectMutation: vi.fn(() => ({ mutate: mockDownloadMutate })),
-  useDownloadReceiptMutation: vi.fn(() => ({ mutate: mockReceiptMutate  })),
+  useDownloadReceiptMutation: vi.fn(() => ({ mutate: mockReceiptMutate })),
 }));
 
 // Lightweight stubs for sub-components that are out of scope here
-vi.mock("../pages/buyerDashboard/sub-components/MarketplaceProjectCard", () => ({
-  default: ({ project, footerContent }: any) => (
-    <div data-testid="project-card">
-      <span>{project?.title}</span>
-      {footerContent}
-    </div>
-  ),
-}));
+vi.mock(
+  "../pages/buyerDashboard/sub-components/MarketplaceProjectCard",
+  () => ({
+    default: ({ project, footerContent }: any) => (
+      <div data-testid="project-card">
+        <span>{project?.title}</span>
+        {footerContent}
+      </div>
+    ),
+  })
+);
 
-vi.mock("../pages/buyerDashboard/sub-components/MarketplaceCardSkeleton", () => ({
-  default: () => <div data-testid="skeleton" />,
-}));
+vi.mock(
+  "../pages/buyerDashboard/sub-components/MarketplaceCardSkeleton",
+  () => ({
+    default: () => <div data-testid="skeleton" />,
+  })
+);
 
 vi.mock("../pages/buyerDashboard/sub-components/TransitionWrapper", () => ({
   TransitionWrapper: ({ children }: any) => <div>{children}</div>,
@@ -51,8 +57,8 @@ vi.mock("../pages/buyerDashboard/sub-components/ProjectDetailPage", () => ({
 // Mock IntersectionObserver — not available in jsdom
 beforeAll(() => {
   (global as any).IntersectionObserver = class {
-    observe    = vi.fn();
-    unobserve  = vi.fn();
+    observe = vi.fn();
+    unobserve = vi.fn();
     disconnect = vi.fn();
     constructor(_cb: any, _opts?: any) {}
   };
@@ -78,14 +84,19 @@ const mockPagination = {
 /** Wrap purchases into the InfiniteQuery data shape the component expects */
 function makeInfiniteData(purchases: any[]) {
   return {
-    pages: [{ purchases, pagination: { ...mockPagination, totalCount: purchases.length } }],
+    pages: [
+      {
+        purchases,
+        pagination: { ...mockPagination, totalCount: purchases.length },
+      },
+    ],
     pageParams: [0],
   };
 }
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const PROJECT_ID  = "507f1f77bcf86cd799439033";
+const PROJECT_ID = "507f1f77bcf86cd799439033";
 const PURCHASE_ID = "507f1f77bcf86cd799439044";
 
 const mockActivePurchase = {
@@ -101,10 +112,15 @@ const mockActivePurchase = {
   price_usd: 10,
   price_sol_total: 0.1,
   buyer_wallet: "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK",
-  tx_signature: "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr",
+  tx_signature:
+    "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr",
   createdAt: "2024-06-15T12:00:00Z",
   project_snapshot: { title: "Awesome Web App", project_type: "Web App" },
-  seller_snapshot: { name: "Seller", username: "seller", profile_image_url: "" },
+  seller_snapshot: {
+    name: "Seller",
+    username: "seller",
+    profile_image_url: "",
+  },
 };
 
 const mockDeletedPurchase = {
@@ -211,7 +227,10 @@ describe("OrdersTab", () => {
 
     render(<OrdersTab logout={vi.fn()} />);
     fireEvent.click(screen.getByText("Download"));
-    expect(mockDownloadMutate).toHaveBeenCalledWith(PROJECT_ID, expect.any(Object));
+    expect(mockDownloadMutate).toHaveBeenCalledWith(
+      PROJECT_ID,
+      expect.any(Object)
+    );
   });
 
   it("calls receiptMutation.mutate with the purchase _id when Receipt is clicked", () => {
@@ -224,7 +243,10 @@ describe("OrdersTab", () => {
 
     render(<OrdersTab logout={vi.fn()} />);
     fireEvent.click(screen.getByText("Receipt"));
-    expect(mockReceiptMutate).toHaveBeenCalledWith(PURCHASE_ID, expect.any(Object));
+    expect(mockReceiptMutate).toHaveBeenCalledWith(
+      PURCHASE_ID,
+      expect.any(Object)
+    );
   });
 
   it("shows a deletion warning badge when scheduled_deletion_at is set", () => {

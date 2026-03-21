@@ -255,10 +255,11 @@ export default function SearchBar({
         </div>
 
         <div
-          className={`absolute top-full right-0 lg:right-32 mt-4 w-full max-w-sm bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${showFilterDropdown
-            ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
-            : "opacity-0 -translate-y-4 scale-95 pointer-events-none"
-            }`}
+          className={`absolute top-full right-0 lg:right-32 mt-4 w-full max-w-sm bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${
+            showFilterDropdown
+              ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+              : "opacity-0 -translate-y-4 scale-95 pointer-events-none"
+          }`}
           onMouseEnter={handleFilterHoverEnter}
           onMouseLeave={handleFilterHoverLeave}
         >
@@ -291,10 +292,11 @@ export default function SearchBar({
                       className="sr-only"
                     />
                     <div
-                      className={`w-5 h-5 border-2 flex items-center justify-center transition-all duration-300 ${selectedFilters.includes(type)
-                        ? "bg-red-500 border-black dark:border-white"
-                        : "border-black dark:border-white bg-white dark:bg-[#050505]"
-                        }`}
+                      className={`w-5 h-5 border-2 flex items-center justify-center transition-all duration-300 ${
+                        selectedFilters.includes(type)
+                          ? "bg-red-500 border-black dark:border-white"
+                          : "border-black dark:border-white bg-white dark:bg-[#050505]"
+                      }`}
                     >
                       {selectedFilters.includes(type) && (
                         <Check className="h-3 w-3 text-white" />
@@ -311,10 +313,11 @@ export default function SearchBar({
         </div>
 
         <div
-          className={`absolute top-full right-0 mt-4 w-full max-w-xs bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${showSortDropdown
-            ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
-            : "opacity-0 -translate-y-4 scale-95 pointer-events-none"
-            }`}
+          className={`absolute top-full right-0 mt-4 w-full max-w-xs bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${
+            showSortDropdown
+              ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+              : "opacity-0 -translate-y-4 scale-95 pointer-events-none"
+          }`}
           onMouseEnter={handleSortHoverEnter}
           onMouseLeave={handleSortHoverLeave}
         >
@@ -323,10 +326,11 @@ export default function SearchBar({
               <button
                 key={option.value}
                 onClick={() => handleSortChange(option.value)}
-                className={`w-full text-left px-4 py-3 border-2 transition-all duration-300 flex items-center justify-between font-space font-bold uppercase tracking-wider text-sm ${selectedSort === option.value
-                  ? "bg-red-500 text-white border-black dark:border-white"
-                  : "border-transparent text-black dark:text-white hover:border-black dark:hover:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-                  }`}
+                className={`w-full text-left px-4 py-3 border-2 transition-all duration-300 flex items-center justify-between font-space font-bold uppercase tracking-wider text-sm ${
+                  selectedSort === option.value
+                    ? "bg-red-500 text-white border-black dark:border-white"
+                    : "border-transparent text-black dark:text-white hover:border-black dark:hover:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                }`}
               >
                 <span>{option.label}</span>
                 {selectedSort === option.value && <Check className="h-4 w-4" />}

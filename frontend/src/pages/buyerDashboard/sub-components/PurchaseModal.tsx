@@ -1,4 +1,11 @@
-import { X, Loader2, CheckCircle, AlertCircle, Wallet, RefreshCw } from "lucide-react";
+import {
+  X,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  Wallet,
+  RefreshCw,
+} from "lucide-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import { PurchaseFlowState } from "../hooks/usePurchaseFlow";
@@ -20,7 +27,9 @@ interface PurchaseModalProps {
 }
 
 function formatCountdown(seconds: number): string {
-  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const m = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, "0");
   const s = (seconds % 60).toString().padStart(2, "0");
   return `${m}:${s}`;
 }
@@ -59,7 +68,11 @@ export default function PurchaseModal({
   onClose,
 }: PurchaseModalProps) {
   const isActive = ACTIVE_STATES.includes(flowState);
-  const isQuoteExpired = countdown <= 0 && intent !== null && flowState !== "SUCCESS" && flowState !== "FAILED";
+  const isQuoteExpired =
+    countdown <= 0 &&
+    intent !== null &&
+    flowState !== "SUCCESS" &&
+    flowState !== "FAILED";
 
   const rateAgeMs = intent?.exchange_rate_fetched_at
     ? Date.now() - new Date(intent.exchange_rate_fetched_at).getTime()
@@ -84,7 +97,6 @@ export default function PurchaseModal({
 
       {/* Modal */}
       <div className="relative z-10 w-full max-w-lg border-2 border-black dark:border-white bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
-
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b-2 border-black dark:border-white">
           <div>
@@ -134,7 +146,6 @@ export default function PurchaseModal({
         {/* Normal flow */}
         {flowState !== "SUCCESS" && (
           <div className="p-6 space-y-6">
-
             {/* Price Summary */}
             {intent && (
               <div className="border-2 border-black dark:border-white p-5 bg-gray-50 dark:bg-[#0a0a0a]">
@@ -155,7 +166,8 @@ export default function PurchaseModal({
                 <div className="flex items-center justify-between text-xs font-space text-gray-400 dark:text-gray-600 border-t border-black/10 dark:border-white/10 pt-3 mt-3">
                   <div className="flex flex-col gap-1">
                     <span className="uppercase tracking-widest">
-                      Rate: 1 SOL = ${intent.sol_usd_rate.toFixed(2)} (CoinGecko)
+                      Rate: 1 SOL = ${intent.sol_usd_rate.toFixed(2)}{" "}
+                      (CoinGecko)
                     </span>
                     {isRateStale && (
                       <span
@@ -191,11 +203,15 @@ export default function PurchaseModal({
 
                 <div className="text-xs font-space text-gray-400 dark:text-gray-600 mt-2 space-y-1 border-t border-black/10 dark:border-white/10 pt-3">
                   <div className="flex justify-between">
-                    <span className="uppercase tracking-widest">Seller receives</span>
+                    <span className="uppercase tracking-widest">
+                      Seller receives
+                    </span>
                     <span>{intent.price_sol_seller.toFixed(6)} SOL (99%)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="uppercase tracking-widest">Platform fee</span>
+                    <span className="uppercase tracking-widest">
+                      Platform fee
+                    </span>
                     <span>{intent.price_sol_platform.toFixed(6)} SOL (1%)</span>
                   </div>
                 </div>
@@ -273,8 +289,8 @@ export default function PurchaseModal({
                           isDone
                             ? "bg-green-500 border-green-500"
                             : isCurrentStep
-                            ? "border-red-500"
-                            : "border-black/20 dark:border-white/20"
+                              ? "border-red-500"
+                              : "border-black/20 dark:border-white/20"
                         }`}
                       >
                         {isDone && (
@@ -289,8 +305,8 @@ export default function PurchaseModal({
                           isDone
                             ? "text-green-500"
                             : isCurrentStep
-                            ? "text-black dark:text-white"
-                            : "text-black/30 dark:text-white/30"
+                              ? "text-black dark:text-white"
+                              : "text-black/30 dark:text-white/30"
                         }`}
                       >
                         {label}

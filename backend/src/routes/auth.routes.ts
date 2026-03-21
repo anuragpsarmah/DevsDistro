@@ -20,7 +20,11 @@ export const authRouter = Router();
 
 authRouter.route("/githubLoginStart").get(githubOAuthLimiter, githubLoginStart);
 authRouter.route("/githubLogin").get(githubOAuthLimiter, githubLogin);
-authRouter.route("/authValidation").get(generalAuthReadLimiter, sessionValidation, authValidation);
+authRouter
+  .route("/authValidation")
+  .get(generalAuthReadLimiter, sessionValidation, authValidation);
 authRouter.route("/githubLogout").post(logoutLimiter, githubLogout);
 authRouter.route("/refresh").post(refreshRateLimiter, refreshTokenHandler);
-authRouter.route("/deleteAccount").delete(deleteAccountRateLimiter, sessionValidation, deleteAccount);
+authRouter
+  .route("/deleteAccount")
+  .delete(deleteAccountRateLimiter, sessionValidation, deleteAccount);

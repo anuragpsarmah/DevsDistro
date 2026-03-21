@@ -93,7 +93,9 @@ vi.mock("../utils/encryption.util", () => ({
 
 vi.mock("axios", () => ({
   default: { get: vi.fn().mockResolvedValue({ status: 200, data: {} }) },
-  AxiosError: class AxiosError extends Error { isAxiosError = true; },
+  AxiosError: class AxiosError extends Error {
+    isAxiosError = true;
+  },
 }));
 
 vi.mock("../utils/redisPrefixGenerator.util", () => ({
@@ -124,7 +126,8 @@ const FUTURE_DATE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -506,7 +509,9 @@ describe("validateMediaUploadAndStoreProject — soft-delete guard (existing mod
     vi.clearAllMocks();
     res = makeRes();
     process.env.S3_CLOUDFRONT_DISTRIBUTION = "https://cdn.example.com";
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token_abc");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token_abc"
+    );
     vi.mocked(axios.get).mockResolvedValue({ status: 200, data: {} } as any);
   });
 

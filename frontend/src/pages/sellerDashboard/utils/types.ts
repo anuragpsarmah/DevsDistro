@@ -6,7 +6,6 @@ export type ImageItem =
   | { type: "existing"; url: string }
   | { type: "new"; file: File; id: number; objectUrl: string };
 
-
 export type ImageCropResult =
   | { type: "existing_complete"; cardUrl: string; detailUrl: string }
   | { type: "existing_recrop"; cardUrl: string; detailBlob: Blob }
@@ -160,8 +159,8 @@ export interface RepoImportProps {
   isFetchingNextPage: boolean;
   totalListedProjectsDataLoading: boolean;
   totalListedProjectsData:
-  | { data: { totalListedProjects: number; projectListingLimit: number } }
-  | undefined;
+    | { data: { totalListedProjects: number; projectListingLimit: number } }
+    | undefined;
 }
 
 export interface ProjectListingFormProps {

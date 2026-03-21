@@ -25,7 +25,9 @@ const response = (
   };
 
   if (clearCookieFlag) {
-    let chain = res.status(statusCode).clearCookie("session_token", cookieOptions);
+    let chain = res
+      .status(statusCode)
+      .clearCookie("session_token", cookieOptions);
     if (clearRefreshCookie) {
       chain = chain.clearCookie("refresh_token", cookieOptions);
     }

@@ -43,21 +43,31 @@ export const useProjectSubmission = ({
       }
     });
 
-    const cardMetadata: ProjectMediaMetadata[] = cardBlobsToUpload.map((blob) => ({
-      originalName: "image.jpg",
-      fileType: "image/jpeg",
-      fileSize: blob.size,
-    }));
+    const cardMetadata: ProjectMediaMetadata[] = cardBlobsToUpload.map(
+      (blob) => ({
+        originalName: "image.jpg",
+        fileType: "image/jpeg",
+        fileSize: blob.size,
+      })
+    );
 
     const videoMetadata: ProjectMediaMetadata[] = formData.video
-      ? [{ originalName: formData.video.name, fileType: formData.video.type, fileSize: formData.video.size }]
+      ? [
+          {
+            originalName: formData.video.name,
+            fileType: formData.video.type,
+            fileSize: formData.video.size,
+          },
+        ]
       : [];
 
-    const detailMetadata: ProjectMediaMetadata[] = detailBlobsToUpload.map((blob) => ({
-      originalName: "detail.jpg",
-      fileType: "image/jpeg",
-      fileSize: blob.size,
-    }));
+    const detailMetadata: ProjectMediaMetadata[] = detailBlobsToUpload.map(
+      (blob) => ({
+        originalName: "detail.jpg",
+        fileType: "image/jpeg",
+        fileSize: blob.size,
+      })
+    );
 
     const existingImageCount = croppedItems.filter(
       (r) => r.type !== "new" && r.type !== "existing_card_recrop"
@@ -119,7 +129,9 @@ export const useProjectSubmission = ({
     }
 
     const cardKeys = keys.slice(0, cardBlobsToUpload.length);
-    const videoKey = formData.video ? keys[cardBlobsToUpload.length] : undefined;
+    const videoKey = formData.video
+      ? keys[cardBlobsToUpload.length]
+      : undefined;
     const detailKeys = keys.slice(cardAndVideoUrlCount);
 
     let cardKeyIdx = 0;
@@ -168,7 +180,8 @@ export const useProjectSubmission = ({
     if (storeError) {
       if (
         axios.isAxiosError(storeError) &&
-        (storeError.response?.status === 404 || storeError.response?.status === 403)
+        (storeError.response?.status === 404 ||
+          storeError.response?.status === 403)
       ) {
         if (onRepoAccessError) onRepoAccessError();
       }
@@ -178,7 +191,9 @@ export const useProjectSubmission = ({
     }
 
     if (finalResponse) {
-      successToast(finalResponse?.message || "Project listed/modified successfully");
+      successToast(
+        finalResponse?.message || "Project listed/modified successfully"
+      );
       if (setActiveTab) setActiveTab("My Projects");
       if (handleReturnToAllListings) handleReturnToAllListings();
     }

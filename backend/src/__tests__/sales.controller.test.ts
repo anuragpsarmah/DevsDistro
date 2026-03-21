@@ -31,7 +31,8 @@ import { Project } from "../models/project.model";
 
 const VALID_USER_ID = "507f1f77bcf86cd799439011";
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) =>
   ({
@@ -104,12 +105,20 @@ describe("sales.controller :: getCommonSalesInformation", () => {
       best_seller: "stale",
       active_projects: 999,
     });
-    vi.mocked(Purchase.aggregate).mockResolvedValue(
-      [
-        { _id: "projectB", salesCount: 5, revenue: 250, latestTitle: "Project B" },
-        { _id: "projectA", salesCount: 3, revenue: 150, latestTitle: "Project A" },
-      ] as any
-    );
+    vi.mocked(Purchase.aggregate).mockResolvedValue([
+      {
+        _id: "projectB",
+        salesCount: 5,
+        revenue: 250,
+        latestTitle: "Project B",
+      },
+      {
+        _id: "projectA",
+        salesCount: 3,
+        revenue: 150,
+        latestTitle: "Project A",
+      },
+    ] as any);
     vi.mocked(Project.countDocuments).mockResolvedValue(3 as any);
 
     const req = makeReq();
@@ -138,7 +147,9 @@ describe("sales.controller :: getCommonSalesInformation", () => {
 
   it("falls back to zero revenue and empty best_seller when purchase aggregation fails", async () => {
     mockSalesFindOne({ customer_rating: 4.2 });
-    vi.mocked(Purchase.aggregate).mockRejectedValue(new Error("aggregation failed"));
+    vi.mocked(Purchase.aggregate).mockRejectedValue(
+      new Error("aggregation failed")
+    );
     vi.mocked(Project.countDocuments).mockResolvedValue(2 as any);
 
     const req = makeReq();
@@ -160,10 +171,17 @@ describe("sales.controller :: getCommonSalesInformation", () => {
 
   it("falls back to active_projects=0 when active project count query fails", async () => {
     mockSalesFindOne({ customer_rating: 4.9 });
-    vi.mocked(Purchase.aggregate).mockResolvedValue(
-      [{ _id: "project1", salesCount: 1, revenue: 50, latestTitle: "Only Project" }] as any
+    vi.mocked(Purchase.aggregate).mockResolvedValue([
+      {
+        _id: "project1",
+        salesCount: 1,
+        revenue: 50,
+        latestTitle: "Only Project",
+      },
+    ] as any);
+    vi.mocked(Project.countDocuments).mockRejectedValue(
+      new Error("count failed")
     );
-    vi.mocked(Project.countDocuments).mockRejectedValue(new Error("count failed"));
 
     const req = makeReq();
     getCommonSalesInformation(req, res, next);
@@ -193,7 +211,9 @@ describe("sales.controller :: getCommonSalesInformation", () => {
 
     expect(Purchase.aggregate).toHaveBeenCalledWith(
       expect.arrayContaining([
-        expect.objectContaining({ $match: expect.objectContaining({ status: "CONFIRMED" }) }),
+        expect.objectContaining({
+          $match: expect.objectContaining({ status: "CONFIRMED" }),
+        }),
         expect.objectContaining({ $sort: { createdAt: -1 } }),
         expect.objectContaining({
           $group: expect.objectContaining({
@@ -231,20 +251,31 @@ describe("sales.controller :: getSalesTransactions", () => {
   it("returns first page with cursor and has_more=true", async () => {
     const rows = Array.from({ length: 21 }).map((_, index) => ({
       _id: `507f1f77bcf86cd7994390${(index + 10).toString().padStart(2, "0")}`,
-      createdAt: new Date(`2025-01-${String(index + 1).padStart(2, "0")}T00:00:00.000Z`),
+      createdAt: new Date(
+        `2025-01-${String(index + 1).padStart(2, "0")}T00:00:00.000Z`
+      ),
       tx_signature: `sig_${index}`,
       price_usd: 10 + index,
       price_sol_total: 0.1 + index,
       price_sol_seller: 0.09 + index,
-      project_snapshot: { title: `Project ${index}`, project_type: "Web Application" },
-      projectId: { _id: `proj_${index}`, title: `Project ${index}`, project_type: "Web Application" },
+      project_snapshot: {
+        title: `Project ${index}`,
+        project_type: "Web Application",
+      },
+      projectId: {
+        _id: `proj_${index}`,
+        title: `Project ${index}`,
+        project_type: "Web Application",
+      },
       buyer_username: `buyer_${index}`,
       is_unlisted: false,
     }));
 
     vi.mocked(Purchase.aggregate)
       .mockResolvedValueOnce(rows as any)
-      .mockResolvedValueOnce([{ value: "project_1", label: "Project 1" }] as any);
+      .mockResolvedValueOnce([
+        { value: "project_1", label: "Project 1" },
+      ] as any);
 
     const req = makeReq({ query: {} });
     getSalesTransactions(req, res, next);
@@ -283,7 +314,8 @@ describe("sales.controller :: getSalesTransactions", () => {
     await flushPromises();
 
     expect(Purchase.aggregate).toHaveBeenCalled();
-    const firstCallPipeline = vi.mocked(Purchase.aggregate).mock.calls[0][0] as any[];
+    const firstCallPipeline = vi.mocked(Purchase.aggregate).mock
+      .calls[0][0] as any[];
     expect(firstCallPipeline).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -304,7 +336,8 @@ describe("sales.controller :: getSalesTransactions", () => {
     getSalesTransactions(req, res, next);
     await flushPromises();
 
-    const firstCallPipeline = vi.mocked(Purchase.aggregate).mock.calls[0][0] as any[];
+    const firstCallPipeline = vi.mocked(Purchase.aggregate).mock
+      .calls[0][0] as any[];
     expect(firstCallPipeline).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -334,7 +367,9 @@ describe("sales.controller :: getSalesTransactions", () => {
   });
 
   it("returns 400 when only cursor_created_at is provided without cursor_id", async () => {
-    const req = makeReq({ query: { cursor_created_at: "2025-01-01T00:00:00.000Z" } });
+    const req = makeReq({
+      query: { cursor_created_at: "2025-01-01T00:00:00.000Z" },
+    });
     getSalesTransactions(req, res, next);
     await flushPromises();
 
@@ -373,7 +408,10 @@ describe("sales.controller :: getSalesTransactions", () => {
 
   it("returns 400 for invalid cursor_id (non-ObjectId string)", async () => {
     const req = makeReq({
-      query: { cursor_created_at: "2025-01-01T00:00:00.000Z", cursor_id: "bad-id" },
+      query: {
+        cursor_created_at: "2025-01-01T00:00:00.000Z",
+        cursor_id: "bad-id",
+      },
     });
     getSalesTransactions(req, res, next);
     await flushPromises();
@@ -390,15 +428,24 @@ describe("sales.controller :: getSalesTransactions", () => {
       price_usd: 99,
       price_sol_total: 1.0,
       price_sol_seller: 0.99,
-      project_snapshot: { title: "Only Project", project_type: "Web Application" },
-      projectId: { _id: "proj_0", title: "Only Project", project_type: "Web Application" },
+      project_snapshot: {
+        title: "Only Project",
+        project_type: "Web Application",
+      },
+      projectId: {
+        _id: "proj_0",
+        title: "Only Project",
+        project_type: "Web Application",
+      },
       buyer_username: "buyer_0",
       is_unlisted: false,
     };
 
     vi.mocked(Purchase.aggregate)
       .mockResolvedValueOnce([singleRow] as any)
-      .mockResolvedValueOnce([{ value: "proj_0", label: "Only Project" }] as any);
+      .mockResolvedValueOnce([
+        { value: "proj_0", label: "Only Project" },
+      ] as any);
 
     const req = makeReq({ query: {} });
     getSalesTransactions(req, res, next);
@@ -434,7 +481,10 @@ describe("sales.controller :: getSalesTransactions", () => {
       price_usd: 99,
       price_sol_total: 1.0,
       price_sol_seller: 0.99,
-      project_snapshot: { title: "Only Project", project_type: "Web Application" },
+      project_snapshot: {
+        title: "Only Project",
+        project_type: "Web Application",
+      },
       projectId: null,
       buyer_username: "buyer_0",
       is_unlisted: true,
@@ -580,6 +630,8 @@ describe("sales.controller :: getYearlySalesInformation", () => {
 
     expect(res.status).toHaveBeenCalledWith(200);
     const { monthly_sales } = res.json.mock.calls[0][0].data;
-    expect(monthly_sales.map((m: any) => m.month)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    expect(monthly_sales.map((m: any) => m.month)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ]);
   });
 });

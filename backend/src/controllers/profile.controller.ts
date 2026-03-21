@@ -32,12 +32,20 @@ const getProfileInformation = asyncHandler(
 
     const dbStartTime = performance.now();
     const [user, findError] = await tryCatch(User.findById(userId));
-    enrichContext({ db_latency_ms: Math.round(performance.now() - dbStartTime) });
+    enrichContext({
+      db_latency_ms: Math.round(performance.now() - dbStartTime),
+    });
 
     if (findError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: findError instanceof Error ? findError.message : "Database query failed" },
+        error: {
+          name: "DatabaseError",
+          message:
+            findError instanceof Error
+              ? findError.message
+              : "Database query failed",
+        },
       });
       logger.error("Failed to fetch user profile", findError);
       throw new ApiError("Internal Server Error", 500, {}, findError);
@@ -116,12 +124,20 @@ const updateProfileInformation = asyncHandler(
 
     const dbStartTime = performance.now();
     const [user, userFindError] = await tryCatch(User.findById(userId));
-    enrichContext({ db_latency_ms: Math.round(performance.now() - dbStartTime) });
+    enrichContext({
+      db_latency_ms: Math.round(performance.now() - dbStartTime),
+    });
 
     if (userFindError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: userFindError instanceof Error ? userFindError.message : "Database query failed" },
+        error: {
+          name: "DatabaseError",
+          message:
+            userFindError instanceof Error
+              ? userFindError.message
+              : "Database query failed",
+        },
       });
       logger.error("Failed to find user for profile update", userFindError);
       throw new ApiError("Internal Server Error", 500);
@@ -139,7 +155,13 @@ const updateProfileInformation = asyncHandler(
     if (saveUserError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: saveUserError instanceof Error ? saveUserError.message : "Failed to save user" },
+        error: {
+          name: "DatabaseError",
+          message:
+            saveUserError instanceof Error
+              ? saveUserError.message
+              : "Failed to save user",
+        },
       });
       logger.error("Failed to save user profile", saveUserError);
       throw new ApiError("Internal Server Error", 500);
@@ -152,7 +174,13 @@ const updateProfileInformation = asyncHandler(
       if (deleteReviewError) {
         enrichContext({
           outcome: "error",
-          error: { name: "DatabaseError", message: deleteReviewError instanceof Error ? deleteReviewError.message : "Failed to delete site review" },
+          error: {
+            name: "DatabaseError",
+            message:
+              deleteReviewError instanceof Error
+                ? deleteReviewError.message
+                : "Failed to delete site review",
+          },
         });
         logger.error("Failed to delete cleared site review", deleteReviewError);
         throw new ApiError("Internal Server Error", 500);
@@ -173,7 +201,13 @@ const updateProfileInformation = asyncHandler(
     if (findReviewError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: findReviewError instanceof Error ? findReviewError.message : "Failed to find review" },
+        error: {
+          name: "DatabaseError",
+          message:
+            findReviewError instanceof Error
+              ? findReviewError.message
+              : "Failed to find review",
+        },
       });
       logger.error("Failed to find user site review", findReviewError);
       throw new ApiError("Internal Server Error", 500);
@@ -193,7 +227,13 @@ const updateProfileInformation = asyncHandler(
       if (saveReviewError) {
         enrichContext({
           outcome: "error",
-          error: { name: "DatabaseError", message: saveReviewError instanceof Error ? saveReviewError.message : "Failed to save review" },
+          error: {
+            name: "DatabaseError",
+            message:
+              saveReviewError instanceof Error
+                ? saveReviewError.message
+                : "Failed to save review",
+          },
         });
         logger.error("Failed to update site review", saveReviewError);
         throw new ApiError("Internal Server Error", 500);
@@ -213,7 +253,13 @@ const updateProfileInformation = asyncHandler(
       if (newReviewError) {
         enrichContext({
           outcome: "error",
-          error: { name: "DatabaseError", message: newReviewError instanceof Error ? newReviewError.message : "Failed to create review" },
+          error: {
+            name: "DatabaseError",
+            message:
+              newReviewError instanceof Error
+                ? newReviewError.message
+                : "Failed to create review",
+          },
         });
         logger.error("Failed to create new site review", newReviewError);
         throw new ApiError("Internal Server Error", 500);
@@ -243,7 +289,13 @@ const getWalletAddress = asyncHandler(async (req: Request, res: Response) => {
   if (findUserError) {
     enrichContext({
       outcome: "error",
-      error: { name: "DatabaseError", message: findUserError instanceof Error ? findUserError.message : "Database query failed" },
+      error: {
+        name: "DatabaseError",
+        message:
+          findUserError instanceof Error
+            ? findUserError.message
+            : "Database query failed",
+      },
     });
     logger.error("Failed to fetch user wallet address", findUserError);
     throw new ApiError("Internal Server Error", 500);
@@ -295,12 +347,18 @@ const updateWalletAddress = asyncHandler(
     }
 
     if (wallet_address && signature && message) {
-      const messageRegex = /^DevsDistro Wallet Verification\nAddress: ([1-9A-HJ-NP-Za-km-z]{32,44})\nTimestamp: (\d+)$/;
+      const messageRegex =
+        /^DevsDistro Wallet Verification\nAddress: ([1-9A-HJ-NP-Za-km-z]{32,44})\nTimestamp: (\d+)$/;
       const match = message.match(messageRegex);
 
       if (!match) {
-        enrichContext({ outcome: "validation_failed", reason: "invalid_message_format" });
-        logger.warn("Invalid message format for wallet verification", { wallet_address });
+        enrichContext({
+          outcome: "validation_failed",
+          reason: "invalid_message_format",
+        });
+        logger.warn("Invalid message format for wallet verification", {
+          wallet_address,
+        });
         response(res, 400, "Invalid verification message format.");
         return;
       }
@@ -308,10 +366,13 @@ const updateWalletAddress = asyncHandler(
       const [, messageAddress, timestampStr] = match;
 
       if (messageAddress !== wallet_address) {
-        enrichContext({ outcome: "validation_failed", reason: "address_mismatch" });
+        enrichContext({
+          outcome: "validation_failed",
+          reason: "address_mismatch",
+        });
         logger.warn("Address mismatch in wallet verification", {
           submitted: wallet_address,
-          in_message: messageAddress
+          in_message: messageAddress,
         });
         response(res, 400, "Address mismatch. Please try connecting again.");
         return;
@@ -320,13 +381,24 @@ const updateWalletAddress = asyncHandler(
       const timestamp = parseInt(timestampStr, 10);
       const now = Date.now();
 
-      if (isNaN(timestamp) || now - timestamp > WALLET_VERIFICATION_WINDOW_MS || timestamp > now + WALLET_CLOCK_SKEW_MS) {
-        enrichContext({ outcome: "validation_failed", reason: "timestamp_expired" });
+      if (
+        isNaN(timestamp) ||
+        now - timestamp > WALLET_VERIFICATION_WINDOW_MS ||
+        timestamp > now + WALLET_CLOCK_SKEW_MS
+      ) {
+        enrichContext({
+          outcome: "validation_failed",
+          reason: "timestamp_expired",
+        });
         logger.warn("Expired or invalid timestamp in wallet verification", {
           timestamp,
-          current: now
+          current: now,
         });
-        response(res, 400, "Verification expired. Please try connecting again.");
+        response(
+          res,
+          400,
+          "Verification expired. Please try connecting again."
+        );
         return;
       }
 
@@ -356,12 +428,20 @@ const updateWalletAddress = asyncHandler(
     const [updatedUser, updateError] = await tryCatch(
       User.findByIdAndUpdate(userId, { wallet_address }, { new: true })
     );
-    enrichContext({ db_latency_ms: Math.round(performance.now() - dbStartTime) });
+    enrichContext({
+      db_latency_ms: Math.round(performance.now() - dbStartTime),
+    });
 
     if (updateError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: updateError instanceof Error ? updateError.message : "Database update failed" },
+        error: {
+          name: "DatabaseError",
+          message:
+            updateError instanceof Error
+              ? updateError.message
+              : "Database update failed",
+        },
       });
       logger.error("Failed to update wallet address", updateError);
       throw new ApiError("Internal Server Error", 500);
@@ -394,4 +474,3 @@ export {
   getWalletAddress,
   updateWalletAddress,
 };
-

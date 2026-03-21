@@ -40,7 +40,8 @@ import { verifyWalletSignature } from "../utils/walletVerification.util";
 const VALID_USER_ID = "507f1f77bcf86cd799439011";
 const VALID_WALLET = "GsbwXfJraMomNxBcpR3DBuWMxSrPMD8HuCHBuyBEjMzN";
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) =>
   ({
@@ -154,7 +155,9 @@ describe("profile.controller", () => {
     });
 
     it("returns 500 on DB error", async () => {
-      vi.mocked(User.findById).mockRejectedValue(new Error("DB connection lost"));
+      vi.mocked(User.findById).mockRejectedValue(
+        new Error("DB connection lost")
+      );
 
       const req = makeReq();
       getProfileInformation(req, res, next);
@@ -198,7 +201,9 @@ describe("profile.controller", () => {
     });
 
     it("returns 400 for an invalid job role", async () => {
-      const req = makeReq({ body: { ...validBody, job_role: "Galactic Overlord" } });
+      const req = makeReq({
+        body: { ...validBody, job_role: "Galactic Overlord" },
+      });
       updateProfileInformation(req, res, next);
       await flushPromises();
 
@@ -206,7 +211,9 @@ describe("profile.controller", () => {
     });
 
     it("returns 400 when short_bio exceeds 250 characters", async () => {
-      const req = makeReq({ body: { ...validBody, short_bio: "a".repeat(251) } });
+      const req = makeReq({
+        body: { ...validBody, short_bio: "a".repeat(251) },
+      });
       updateProfileInformation(req, res, next);
       await flushPromises();
 
@@ -214,7 +221,9 @@ describe("profile.controller", () => {
     });
 
     it("returns 400 when x_username exceeds 50 characters", async () => {
-      const req = makeReq({ body: { ...validBody, x_username: "a".repeat(51) } });
+      const req = makeReq({
+        body: { ...validBody, x_username: "a".repeat(51) },
+      });
       updateProfileInformation(req, res, next);
       await flushPromises();
 
@@ -222,7 +231,9 @@ describe("profile.controller", () => {
     });
 
     it("returns 400 when location exceeds 100 characters", async () => {
-      const req = makeReq({ body: { ...validBody, location: "a".repeat(101) } });
+      const req = makeReq({
+        body: { ...validBody, location: "a".repeat(101) },
+      });
       updateProfileInformation(req, res, next);
       await flushPromises();
 
@@ -256,7 +267,9 @@ describe("profile.controller", () => {
     });
 
     it("returns 500 when user.save() throws", async () => {
-      const mockUser = makeMockUser({ save: vi.fn().mockRejectedValue(new Error("write failed")) });
+      const mockUser = makeMockUser({
+        save: vi.fn().mockRejectedValue(new Error("write failed")),
+      });
       vi.mocked(User.findById).mockResolvedValue(mockUser as any);
 
       const req = makeReq({ body: validBody });
@@ -270,22 +283,32 @@ describe("profile.controller", () => {
       it("deletes the SiteReview and returns 200", async () => {
         const mockUser = makeMockUser();
         vi.mocked(User.findById).mockResolvedValue(mockUser as any);
-        vi.mocked(SiteReview.deleteOne).mockResolvedValue({ deletedCount: 1 } as any);
+        vi.mocked(SiteReview.deleteOne).mockResolvedValue({
+          deletedCount: 1,
+        } as any);
 
-        const req = makeReq({ body: { ...validBody, review_description: "", review_stars: 0 } });
+        const req = makeReq({
+          body: { ...validBody, review_description: "", review_stars: 0 },
+        });
         updateProfileInformation(req, res, next);
         await flushPromises();
 
-        expect(SiteReview.deleteOne).toHaveBeenCalledWith({ username: "testuser" });
+        expect(SiteReview.deleteOne).toHaveBeenCalledWith({
+          username: "testuser",
+        });
         expect(res.status).toHaveBeenCalledWith(200);
       });
 
       it("returns 500 when SiteReview.deleteOne throws", async () => {
         const mockUser = makeMockUser();
         vi.mocked(User.findById).mockResolvedValue(mockUser as any);
-        vi.mocked(SiteReview.deleteOne).mockRejectedValue(new Error("delete failed"));
+        vi.mocked(SiteReview.deleteOne).mockRejectedValue(
+          new Error("delete failed")
+        );
 
-        const req = makeReq({ body: { ...validBody, review_description: "", review_stars: 0 } });
+        const req = makeReq({
+          body: { ...validBody, review_description: "", review_stars: 0 },
+        });
         updateProfileInformation(req, res, next);
         await flushPromises();
 
@@ -295,9 +318,13 @@ describe("profile.controller", () => {
       it("does not reach SiteReview.findOne when review is cleared", async () => {
         const mockUser = makeMockUser();
         vi.mocked(User.findById).mockResolvedValue(mockUser as any);
-        vi.mocked(SiteReview.deleteOne).mockResolvedValue({ deletedCount: 0 } as any);
+        vi.mocked(SiteReview.deleteOne).mockResolvedValue({
+          deletedCount: 0,
+        } as any);
 
-        const req = makeReq({ body: { ...validBody, review_description: "", review_stars: 0 } });
+        const req = makeReq({
+          body: { ...validBody, review_description: "", review_stars: 0 },
+        });
         updateProfileInformation(req, res, next);
         await flushPromises();
 
@@ -362,7 +389,9 @@ describe("profile.controller", () => {
 
       it("returns 500 when existing SiteReview.save() throws", async () => {
         const mockUser = makeMockUser();
-        const mockReview = makeMockReview({ save: vi.fn().mockRejectedValue(new Error("save error")) });
+        const mockReview = makeMockReview({
+          save: vi.fn().mockRejectedValue(new Error("save error")),
+        });
         vi.mocked(User.findById).mockResolvedValue(mockUser as any);
         vi.mocked(SiteReview.findOne).mockResolvedValue(mockReview as any);
 
@@ -377,7 +406,9 @@ describe("profile.controller", () => {
         const mockUser = makeMockUser();
         vi.mocked(User.findById).mockResolvedValue(mockUser as any);
         vi.mocked(SiteReview.findOne).mockResolvedValue(null);
-        vi.mocked(SiteReview.create).mockRejectedValue(new Error("create error"));
+        vi.mocked(SiteReview.create).mockRejectedValue(
+          new Error("create error")
+        );
 
         const req = makeReq({ body: reviewBody });
         updateProfileInformation(req, res, next);
@@ -519,7 +550,9 @@ describe("profile.controller", () => {
     it("returns 400 when the timestamp is expired (> 5 min ago)", async () => {
       const expiredTs = Date.now() - 6 * 60 * 1000;
       const message = `DevsDistro Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${expiredTs}`;
-      const req = makeReq({ body: { wallet_address: VALID_WALLET, signature: "sig", message } });
+      const req = makeReq({
+        body: { wallet_address: VALID_WALLET, signature: "sig", message },
+      });
       updateWalletAddress(req, res, next);
       await flushPromises();
 
@@ -529,7 +562,9 @@ describe("profile.controller", () => {
     it("returns 400 when the timestamp is more than 60s in the future", async () => {
       const futureTs = Date.now() + 70_000;
       const message = `DevsDistro Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${futureTs}`;
-      const req = makeReq({ body: { wallet_address: VALID_WALLET, signature: "sig", message } });
+      const req = makeReq({
+        body: { wallet_address: VALID_WALLET, signature: "sig", message },
+      });
       updateWalletAddress(req, res, next);
       await flushPromises();
 
@@ -573,7 +608,9 @@ describe("profile.controller", () => {
 
     it("returns 500 on DB update error", async () => {
       vi.mocked(verifyWalletSignature).mockReturnValue(true);
-      vi.mocked(User.findByIdAndUpdate).mockRejectedValue(new Error("DB error"));
+      vi.mocked(User.findByIdAndUpdate).mockRejectedValue(
+        new Error("DB error")
+      );
 
       const req = makeReq({ body: validWalletBody() });
       updateWalletAddress(req, res, next);

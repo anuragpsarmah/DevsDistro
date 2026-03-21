@@ -187,15 +187,16 @@ export default class S3Service {
     filename?: string
   ): Promise<string> {
     // Use the provided filename if given, otherwise fall back to the S3 key segment.
-    const resolvedFilename =
-      filename ?? key.split("/").pop() ?? "download.zip";
+    const resolvedFilename = filename ?? key.split("/").pop() ?? "download.zip";
     const getCommand = new GetObjectCommand({
       Bucket: process.env.S3_BUCKET as string,
       Key: key,
       ResponseContentDisposition: `attachment; filename="${resolvedFilename}"`,
     });
 
-    const signedUrl = await getSignedUrl(this.s3Client, getCommand, { expiresIn });
+    const signedUrl = await getSignedUrl(this.s3Client, getCommand, {
+      expiresIn,
+    });
     return signedUrl;
   }
 

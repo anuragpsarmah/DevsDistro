@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { decrypt, encrypt } from "../utils/encryption.util";
 
 describe("encryption util", () => {
-  const key = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  const key =
+    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
 
   it("encrypt/decrypt round-trip works with v2 AES-GCM format", () => {
     const token = "gho_sensitive_access_token";
@@ -30,7 +31,8 @@ describe("encryption util", () => {
     const parts = encrypted.split(":");
     // Flip a character in the auth tag (parts[2])
     const tampered = parts[2];
-    const flipped = tampered[0] === "a" ? "b" + tampered.slice(1) : "a" + tampered.slice(1);
+    const flipped =
+      tampered[0] === "a" ? "b" + tampered.slice(1) : "a" + tampered.slice(1);
     parts[2] = flipped;
     const tamperedCiphertext = parts.join(":");
 
@@ -43,7 +45,10 @@ describe("encryption util", () => {
     const parts = encrypted.split(":");
     // Flip a character in the IV (parts[1])
     const originalIv = parts[1];
-    const flipped = originalIv[0] === "a" ? "b" + originalIv.slice(1) : "a" + originalIv.slice(1);
+    const flipped =
+      originalIv[0] === "a"
+        ? "b" + originalIv.slice(1)
+        : "a" + originalIv.slice(1);
     parts[1] = flipped;
     const tamperedCiphertext = parts.join(":");
 

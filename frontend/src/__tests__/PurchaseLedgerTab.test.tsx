@@ -55,7 +55,11 @@ const mockActivePurchase = {
   tx_signature: TX_SIG,
   createdAt: "2024-06-15T12:00:00Z",
   project_snapshot: { title: "Awesome Web App", project_type: "Web App" },
-  seller_snapshot: { name: "Alice Dev", username: "alicedev", profile_image_url: "" },
+  seller_snapshot: {
+    name: "Alice Dev",
+    username: "alicedev",
+    profile_image_url: "",
+  },
 };
 
 const mockDeletedPurchase = {

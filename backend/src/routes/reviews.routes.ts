@@ -18,7 +18,9 @@ import {
 
 export const reviewRouter = Router();
 
-reviewRouter.route("/getFeaturedReviews").get(featuredReviewsLimiter, getFeaturedReviews);
+reviewRouter
+  .route("/getFeaturedReviews")
+  .get(featuredReviewsLimiter, getFeaturedReviews);
 
 reviewRouter
   .route("/project")

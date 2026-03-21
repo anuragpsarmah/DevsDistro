@@ -18,7 +18,10 @@ export const confirmPurchaseSchema = z.object({
     .string()
     .min(80, "Invalid transaction signature")
     .max(100, "Invalid transaction signature")
-    .refine((val) => base58Regex.test(val), "Invalid transaction signature format"),
+    .refine(
+      (val) => base58Regex.test(val),
+      "Invalid transaction signature format"
+    ),
 
   // Solana wallet addresses are base58-encoded and 32-44 characters
   buyer_wallet: z

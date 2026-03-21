@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Wallet, CheckCircle, Copy, ExternalLink, LogOut, Loader2 } from "lucide-react";
+import {
+  Wallet,
+  CheckCircle,
+  Copy,
+  ExternalLink,
+  LogOut,
+  Loader2,
+} from "lucide-react";
 import { useState } from "react";
 import { WalletDisconnectProps } from "../utils/types";
 import { SolanaLogo } from "@/components/ui/solanaLogo";
@@ -40,8 +47,12 @@ export const WalletDisconnect = ({
     <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
       <div className="flex flex-col flex-1 space-y-8">
         <div className="flex items-center space-x-4 pb-4 border-b-2 border-black dark:border-white transition-colors duration-300">
-          <div className={`p-2 border-2 ${hasMismatchCondition ? "border-red-500 bg-red-500/10" : "border-black dark:border-white bg-black dark:bg-white"}`}>
-            <Wallet className={`h-6 w-6 ${hasMismatchCondition ? "text-red-500 animate-[pulse_1s_steps(2,start)_infinite]" : "text-white dark:text-black"}`} />
+          <div
+            className={`p-2 border-2 ${hasMismatchCondition ? "border-red-500 bg-red-500/10" : "border-black dark:border-white bg-black dark:bg-white"}`}
+          >
+            <Wallet
+              className={`h-6 w-6 ${hasMismatchCondition ? "text-red-500 animate-[pulse_1s_steps(2,start)_infinite]" : "text-white dark:text-black"}`}
+            />
           </div>
           <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-black dark:text-white transition-colors duration-300">
             Solana Wallet
@@ -50,23 +61,32 @@ export const WalletDisconnect = ({
 
         <div className="flex flex-col items-center justify-center flex-grow py-8 space-y-8">
           <div className="relative group">
-            <div className={`p-8 border-2 bg-white dark:bg-[#050505] transition-all duration-300 ${hasMismatchCondition
-                ? "border-red-500 group-hover:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]"
-                : "border-black dark:border-white group-hover:bg-black dark:group-hover:bg-white group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
-              } group-hover:-translate-y-1`}>
+            <div
+              className={`p-8 border-2 bg-white dark:bg-[#050505] transition-all duration-300 ${
+                hasMismatchCondition
+                  ? "border-red-500 group-hover:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]"
+                  : "border-black dark:border-white group-hover:bg-black dark:group-hover:bg-white group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+              } group-hover:-translate-y-1`}
+            >
               <SolanaLogo
-                className={`h-16 w-16 transition-colors duration-300 ${hasMismatchCondition ? "text-red-500" : "text-black dark:text-white group-hover:text-white dark:group-hover:text-black"
-                  }`}
+                className={`h-16 w-16 transition-colors duration-300 ${
+                  hasMismatchCondition
+                    ? "text-red-500"
+                    : "text-black dark:text-white group-hover:text-white dark:group-hover:text-black"
+                }`}
               />
             </div>
           </div>
 
           <div className="text-center space-y-4 max-w-sm">
-            <h3 className={`text-xl font-space font-bold uppercase tracking-widest transition-colors duration-300 ${hasMismatchCondition ? "text-red-600 dark:text-red-500" : "text-black dark:text-white"
-              }`}>
-              {hasMismatchCondition
-                ? "Wallet Mismatch"
-                : "Wallet Connected"}
+            <h3
+              className={`text-xl font-space font-bold uppercase tracking-widest transition-colors duration-300 ${
+                hasMismatchCondition
+                  ? "text-red-600 dark:text-red-500"
+                  : "text-black dark:text-white"
+              }`}
+            >
+              {hasMismatchCondition ? "Wallet Mismatch" : "Wallet Connected"}
             </h3>
             <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-300">
               {hasMismatchCondition
@@ -91,7 +111,9 @@ export const WalletDisconnect = ({
           <div className="bg-transparent border-2 border-black dark:border-white p-6 transition-colors duration-300">
             <div className="space-y-2">
               <span className="text-xs font-space font-bold text-red-500 uppercase tracking-[0.2em]">
-                {hasWalletMismatch ? "Stored Wallet Address" : "Current Wallet Address"}
+                {hasWalletMismatch
+                  ? "Stored Wallet Address"
+                  : "Current Wallet Address"}
               </span>
               <div className="flex items-center justify-between mt-2">
                 <span className="text-lg text-black dark:text-white font-space font-bold tracking-wider">

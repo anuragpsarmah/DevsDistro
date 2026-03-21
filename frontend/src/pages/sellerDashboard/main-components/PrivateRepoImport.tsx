@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { RepoImportProps } from "../utils/types";
-import { Search, Lock, Github, RefreshCw, AlertCircle, Loader2 } from "lucide-react";
+import {
+  Search,
+  Lock,
+  Github,
+  RefreshCw,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -62,7 +69,8 @@ export default function PrivateRepoImport({
   }, [handleScroll]);
 
   useEffect(() => {
-    if (repoDataLoading || !hasNextPage || isFetchingNextPage || searchQuery) return;
+    if (repoDataLoading || !hasNextPage || isFetchingNextPage || searchQuery)
+      return;
 
     const viewport = scrollContainerRef.current?.querySelector(
       "[data-radix-scroll-area-viewport]"
@@ -72,7 +80,14 @@ export default function PrivateRepoImport({
     if (viewport.scrollHeight <= viewport.clientHeight) {
       fetchNextPage();
     }
-  }, [privateRepoData, hasNextPage, isFetchingNextPage, searchQuery, fetchNextPage, repoDataLoading]);
+  }, [
+    privateRepoData,
+    hasNextPage,
+    isFetchingNextPage,
+    searchQuery,
+    fetchNextPage,
+    repoDataLoading,
+  ]);
 
   // When the user searches, eagerly load all remaining pages so the filter covers the full repo list.
   useEffect(() => {
@@ -107,7 +122,9 @@ export default function PrivateRepoImport({
               disabled={isRefreshing}
               className="h-10 w-10 rounded-none hover:bg-black/5 dark:hover:bg-white/5 text-black dark:text-white transition-colors duration-300"
             >
-              <RefreshCw className={`h-5 w-5 ${isRefreshing ? "animate-spin text-red-500" : ""}`} />
+              <RefreshCw
+                className={`h-5 w-5 ${isRefreshing ? "animate-spin text-red-500" : ""}`}
+              />
             </Button>
           </div>
 
@@ -121,14 +138,18 @@ export default function PrivateRepoImport({
               disabled={
                 !totalListedProjectsDataLoading &&
                 totalListedProjectsData &&
-                (totalListedProjectsData.data.totalListedProjects >= totalListedProjectsData.data.projectListingLimit ||
+                (totalListedProjectsData.data.totalListedProjects >=
+                  totalListedProjectsData.data.projectListingLimit ||
                   totalListedProjectsData.data.totalListedProjects === -1)
               }
               className="pl-12 py-6 bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white w-full rounded-none font-space placeholder:text-gray-400 focus:border-red-500 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase"
             />
           </div>
 
-          <div ref={scrollContainerRef} className="relative flex-1 min-h-0 mb-2 mt-4">
+          <div
+            ref={scrollContainerRef}
+            className="relative flex-1 min-h-0 mb-2 mt-4"
+          >
             <ScrollArea className="h-full border-2 border-black/20 dark:border-white/20 rounded-none bg-black/5 dark:bg-white/5 transition-colors duration-300">
               <div className="space-y-0 p-0 hover:border-transparent h-full">
                 {repoDataLoading || totalListedProjectsDataLoading ? (
@@ -198,7 +219,8 @@ export default function PrivateRepoImport({
 
             {!totalListedProjectsDataLoading &&
               totalListedProjectsData &&
-              (totalListedProjectsData.data.totalListedProjects >= totalListedProjectsData.data.projectListingLimit ||
+              (totalListedProjectsData.data.totalListedProjects >=
+                totalListedProjectsData.data.projectListingLimit ||
                 totalListedProjectsData.data.totalListedProjects === -1) && (
                 <div className="absolute inset-0 bg-white/90 dark:bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                   <div className="relative w-full max-w-sm">
@@ -209,12 +231,14 @@ export default function PrivateRepoImport({
                         </div>
 
                         <h3 className="font-syne text-2xl font-bold text-black dark:text-white mb-4 uppercase tracking-wider transition-colors duration-300">
-                          {totalListedProjectsData.data.totalListedProjects >= totalListedProjectsData.data.projectListingLimit
+                          {totalListedProjectsData.data.totalListedProjects >=
+                          totalListedProjectsData.data.projectListingLimit
                             ? "Limit Reached"
                             : "Error"}
                         </h3>
                         <p className="font-space text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300">
-                          {totalListedProjectsData.data.totalListedProjects >= totalListedProjectsData.data.projectListingLimit
+                          {totalListedProjectsData.data.totalListedProjects >=
+                          totalListedProjectsData.data.projectListingLimit
                             ? `Only ${totalListedProjectsData.data.projectListingLimit} projects can be listed at a time.`
                             : "Something went wrong. Please refresh."}
                         </p>

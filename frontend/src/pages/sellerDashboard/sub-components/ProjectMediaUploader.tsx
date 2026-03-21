@@ -48,7 +48,12 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
     if (available <= 0) return;
     const toAdd: ImageItem[] = files
       .slice(0, available)
-      .map((file) => ({ type: "new" as const, file, id: nextIdRef.current++, objectUrl: URL.createObjectURL(file) }));
+      .map((file) => ({
+        type: "new" as const,
+        file,
+        id: nextIdRef.current++,
+        objectUrl: URL.createObjectURL(file),
+      }));
     setImageItems((prev) => [...prev, ...toAdd]);
     e.target.value = "";
   };
@@ -141,9 +146,14 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
             const isDropTarget = dragOverIndex === index && dragIndex !== index;
             return (
               <div
-                key={item.type === "existing" ? `existing-${item.url}` : `new-${item.id}`}
-                className={`relative group cursor-grab active:cursor-grabbing transition-all duration-150 ${isDragging ? "opacity-40 scale-95" : "opacity-100"
-                  } ${isDropTarget ? "ring-2 ring-red-500 ring-offset-1" : ""}`}
+                key={
+                  item.type === "existing"
+                    ? `existing-${item.url}`
+                    : `new-${item.id}`
+                }
+                className={`relative group cursor-grab active:cursor-grabbing transition-all duration-150 ${
+                  isDragging ? "opacity-40 scale-95" : "opacity-100"
+                } ${isDropTarget ? "ring-2 ring-red-500 ring-offset-1" : ""}`}
                 draggable
                 onDragStart={(e) => handleDragStart(e, index)}
                 onDragOver={(e) => handleDragOver(e, index)}
@@ -195,7 +205,9 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
       <div className="mt-10">
         <Label className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block flex items-center">
           Project Demo Video
-          <span className="text-[10px] text-gray-400 ml-2 tracking-widest">(OPTIONAL)</span>
+          <span className="text-[10px] text-gray-400 ml-2 tracking-widest">
+            (OPTIONAL)
+          </span>
         </Label>
         <p className="font-space text-xs text-gray-500 mb-4 uppercase tracking-wider font-bold">
           Add a short demo video showcasing your project in action

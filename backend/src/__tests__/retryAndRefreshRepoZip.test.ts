@@ -92,7 +92,10 @@ vi.mock("../utils/redisPrefixGenerator.util", () => ({
 
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
 
-import { retryRepoZipUpload, refreshRepoZip } from "../controllers/projects.controller";
+import {
+  retryRepoZipUpload,
+  refreshRepoZip,
+} from "../controllers/projects.controller";
 import { Project } from "../models/project.model";
 import { redisClient, repoZipUploadService } from "..";
 
@@ -105,7 +108,8 @@ const FUTURE_DATE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -217,7 +221,9 @@ describe("retryRepoZipUpload — full flow", () => {
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: expect.stringContaining("GitHub repository access has been revoked"),
+        message: expect.stringContaining(
+          "GitHub repository access has been revoked"
+        ),
       })
     );
     expect(Project.updateOne).not.toHaveBeenCalled();
@@ -402,7 +408,9 @@ describe("refreshRepoZip — full flow", () => {
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: expect.stringContaining("GitHub repository access has been revoked"),
+        message: expect.stringContaining(
+          "GitHub repository access has been revoked"
+        ),
       })
     );
     expect(redisClient.zadd).not.toHaveBeenCalled();

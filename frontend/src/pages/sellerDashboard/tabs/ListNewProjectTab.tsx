@@ -172,7 +172,8 @@ export default function ListNewProjectTab({
         </div>
 
         <div className="flex-1 min-h-0 relative">
-          {!installationStatusLoading && !installationStatus?.data?.hasInstallation ? (
+          {!installationStatusLoading &&
+          !installationStatus?.data?.hasInstallation ? (
             <GitHubAppInstallPrompt
               installUrl={installationStatus?.data?.installUrl || ""}
             />
@@ -182,7 +183,10 @@ export default function ListNewProjectTab({
                 {installationStatusLoading ? (
                   <div className="space-y-8">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="flex items-center justify-between p-6 border-b-2 border-black/10 dark:border-white/10">
+                      <div
+                        key={i}
+                        className="flex items-center justify-between p-6 border-b-2 border-black/10 dark:border-white/10"
+                      >
                         <div className="flex items-center space-x-4">
                           <Skeleton className="w-10 h-10 rounded-none bg-black/10 dark:bg-white/10" />
                           <div className="space-y-3">

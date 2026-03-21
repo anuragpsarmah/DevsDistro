@@ -59,7 +59,13 @@ vi.mock("../models/githubAppInstallation.model", () => ({
 }));
 
 vi.mock("..", () => ({
-  redisClient: { zadd: vi.fn(), hset: vi.fn(), expire: vi.fn(), del: vi.fn(), getdel: vi.fn() },
+  redisClient: {
+    zadd: vi.fn(),
+    hset: vi.fn(),
+    expire: vi.fn(),
+    del: vi.fn(),
+    getdel: vi.fn(),
+  },
   s3Service: {
     validateAndCreatePreSignedDownloadUrl: vi.fn(),
     createSignedDownloadUrl: vi.fn(),
@@ -97,7 +103,9 @@ vi.mock("../utils/encryption.util", () => ({
 
 vi.mock("axios", () => ({
   default: { get: vi.fn() },
-  AxiosError: class AxiosError extends Error { isAxiosError = true; },
+  AxiosError: class AxiosError extends Error {
+    isAxiosError = true;
+  },
 }));
 
 vi.mock("../utils/redisPrefixGenerator.util", () => ({
@@ -125,7 +133,8 @@ const VALID_REPO_ID = "87654321";
  * setImmediate fires after all microtasks complete, so this
  * reliably flushes the entire async controller execution.
  */
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -212,7 +221,9 @@ describe("deleteProjectListing", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Failed to delete listed project. Try again later." })
+      expect.objectContaining({
+        message: "Failed to delete listed project. Try again later.",
+      })
     );
   });
 
@@ -226,7 +237,9 @@ describe("deleteProjectListing", () => {
 
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "No such project was listed. Invalid Request." })
+      expect.objectContaining({
+        message: "No such project was listed. Invalid Request.",
+      })
     );
     expect(Purchase.exists).not.toHaveBeenCalled();
   });
@@ -244,7 +257,9 @@ describe("deleteProjectListing", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Project is already scheduled for deletion." })
+      expect.objectContaining({
+        message: "Project is already scheduled for deletion.",
+      })
     );
     // Must not proceed to sales check
     expect(Purchase.exists).not.toHaveBeenCalled();
@@ -273,7 +288,9 @@ describe("deleteProjectListing", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Failed to delete listed project. Try again later." })
+      expect.objectContaining({
+        message: "Failed to delete listed project. Try again later.",
+      })
     );
   });
 
@@ -291,7 +308,10 @@ describe("deleteProjectListing", () => {
     // Should set isActive=false and scheduled_deletion_at
     expect(Project.updateOne).toHaveBeenCalledWith(
       { _id: VALID_PROJECT_ID },
-      expect.objectContaining({ isActive: false, scheduled_deletion_at: expect.any(Date) })
+      expect.objectContaining({
+        isActive: false,
+        scheduled_deletion_at: expect.any(Date),
+      })
     );
 
     // scheduled_deletion_at should be approximately 7 days from now
@@ -304,7 +324,8 @@ describe("deleteProjectListing", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Project scheduled for deletion in 7 days. Buyers will be notified.",
+        message:
+          "Project scheduled for deletion in 7 days. Buyers will be notified.",
       })
     );
   });
@@ -334,7 +355,9 @@ describe("deleteProjectListing", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Failed to delete listed project. Try again later." })
+      expect.objectContaining({
+        message: "Failed to delete listed project. Try again later.",
+      })
     );
     // Wishlist cleanup should NOT run if soft-delete update failed
     expect(User.updateMany).not.toHaveBeenCalled();
@@ -354,7 +377,8 @@ describe("deleteProjectListing", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Project scheduled for deletion in 7 days. Buyers will be notified.",
+        message:
+          "Project scheduled for deletion in 7 days. Buyers will be notified.",
       })
     );
   });

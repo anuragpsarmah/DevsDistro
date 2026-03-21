@@ -163,10 +163,11 @@ const handleAppInstallCallback = asyncHandler(
       throw new ApiError("Internal Server Error", 500);
     }
 
-    const reactivatedCount = await githubAppService.reactivateProjectsWithRestoredAccess(
-      req.user._id.toString(),
-      installationId
-    );
+    const reactivatedCount =
+      await githubAppService.reactivateProjectsWithRestoredAccess(
+        req.user._id.toString(),
+        installationId
+      );
 
     enrichContext({
       outcome: "success",
@@ -181,7 +182,4 @@ const handleAppInstallCallback = asyncHandler(
   }
 );
 
-export {
-  checkInstallationStatus,
-  handleAppInstallCallback
-};
+export { checkInstallationStatus, handleAppInstallCallback };

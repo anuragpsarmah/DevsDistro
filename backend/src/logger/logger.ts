@@ -12,13 +12,13 @@ const pinoInstance = pino({
   transport:
     process.env.NODE_ENV === "development"
       ? {
-        target: "pino-pretty",
-        options: {
-          colorize: true,
-          translateTime: "SYS:standard",
-          ignore: "pid,hostname",
-        },
-      }
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "SYS:standard",
+            ignore: "pid,hostname",
+          },
+        }
       : undefined,
   timestamp: pino.stdTimeFunctions.isoTime,
 });
@@ -40,7 +40,7 @@ class PinoAdapter {
           };
         } else {
           // If no error object, capture the message
-          store.error_message = args.map(String).join(' ');
+          store.error_message = args.map(String).join(" ");
         }
       }
     }
@@ -67,7 +67,9 @@ class PinoAdapter {
 
     // Case 3: Legacy/Text behavior
     const message = args
-      .map((arg) => (typeof arg === "object" ? JSON.stringify(arg) : String(arg)))
+      .map((arg) =>
+        typeof arg === "object" ? JSON.stringify(arg) : String(arg)
+      )
       .join(" ");
 
     // @ts-ignore

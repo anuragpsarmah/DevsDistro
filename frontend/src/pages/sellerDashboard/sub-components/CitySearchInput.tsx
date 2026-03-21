@@ -13,7 +13,10 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
   setShowSuggestions,
 }) => (
   <div className="relative">
-    <Label htmlFor="city" className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block">
+    <Label
+      htmlFor="city"
+      className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+    >
       City
     </Label>
     <Input
@@ -37,9 +40,13 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
             Loading cities...
           </div>
         ) : cityError ? (
-          <div className="px-5 py-3 text-sm text-red-500 font-bold uppercase tracking-widest">{cityError}</div>
+          <div className="px-5 py-3 text-sm text-red-500 font-bold uppercase tracking-widest">
+            {cityError}
+          </div>
         ) : cities.length === 0 ? (
-          <div className="px-5 py-3 text-sm text-gray-500 font-bold uppercase tracking-widest">No cities found</div>
+          <div className="px-5 py-3 text-sm text-gray-500 font-bold uppercase tracking-widest">
+            No cities found
+          </div>
         ) : (
           cities.map((city) => (
             <div

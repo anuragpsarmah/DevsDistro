@@ -101,7 +101,8 @@ export async function verifySolanaTransaction(
   }
 
   const sellerDelta = postBalances[sellerIndex] - preBalances[sellerIndex];
-  const treasuryDelta = postBalances[treasuryIndex] - preBalances[treasuryIndex];
+  const treasuryDelta =
+    postBalances[treasuryIndex] - preBalances[treasuryIndex];
 
   // Verify seller received at least the expected amount (within fixed tolerance)
   if (sellerDelta < expectedSellerLamports - LAMPORT_FIXED_TOLERANCE) {
@@ -120,8 +121,7 @@ export async function verifySolanaTransaction(
   }
 
   // Verify memo instruction contains the purchase reference
-  const instructions: any[] =
-    tx.transaction?.message?.instructions ?? [];
+  const instructions: any[] = tx.transaction?.message?.instructions ?? [];
 
   const memoInstruction = instructions.find(
     (ix: any) => ix.program === "spl-memo" || ix.programId === MEMO_PROGRAM_ID

@@ -22,7 +22,7 @@ export const createSessionToken = (
   const expiresIn = process.env.JWT_EXPIRES_IN as string;
   enrichContext({
     auth_session_created: true,
-    auth_session_expires_in: expiresIn
+    auth_session_expires_in: expiresIn,
   });
   const session_token = jwt.sign(
     { _id: userid, username, name, profile_image_url },
@@ -69,8 +69,12 @@ export async function addRefreshToken(
       $set: {
         refresh_tokens: {
           $cond: {
-            if: { $gte: [{ $size: "$refresh_tokens" }, REFRESH_TOKEN_MAX_PER_USER] },
-            then: { $slice: ["$refresh_tokens", -(REFRESH_TOKEN_MAX_PER_USER - 1)] },
+            if: {
+              $gte: [{ $size: "$refresh_tokens" }, REFRESH_TOKEN_MAX_PER_USER],
+            },
+            then: {
+              $slice: ["$refresh_tokens", -(REFRESH_TOKEN_MAX_PER_USER - 1)],
+            },
             else: "$refresh_tokens",
           },
         },
@@ -141,8 +145,15 @@ export async function rotateRefreshToken(
         $set: {
           refresh_tokens: {
             $cond: {
-              if: { $gte: [{ $size: "$refresh_tokens" }, REFRESH_TOKEN_MAX_PER_USER] },
-              then: { $slice: ["$refresh_tokens", -(REFRESH_TOKEN_MAX_PER_USER - 1)] },
+              if: {
+                $gte: [
+                  { $size: "$refresh_tokens" },
+                  REFRESH_TOKEN_MAX_PER_USER,
+                ],
+              },
+              then: {
+                $slice: ["$refresh_tokens", -(REFRESH_TOKEN_MAX_PER_USER - 1)],
+              },
               else: "$refresh_tokens",
             },
           },
@@ -153,7 +164,13 @@ export async function rotateRefreshToken(
           refresh_tokens: {
             $concatArrays: [
               "$refresh_tokens",
-              [{ token_hash: newHash, expires_at: newExpiresAt, created_at: now }],
+              [
+                {
+                  token_hash: newHash,
+                  expires_at: newExpiresAt,
+                  created_at: now,
+                },
+              ],
             ],
           },
         },
@@ -173,8 +190,7 @@ export async function rotateRefreshToken(
         "EX",
         REFRESH_TOKEN_DURATION_S
       );
-    } catch {
-    }
+    } catch {}
 
     return {
       _id: user._id,
@@ -199,8 +215,7 @@ export async function rotateRefreshToken(
       await revokeAllRefreshTokens(new mongoose.Types.ObjectId(userId));
       return "REUSE_DETECTED";
     }
-  } catch {
-  }
+  } catch {}
 
   return null;
 }

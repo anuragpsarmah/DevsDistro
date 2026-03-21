@@ -45,8 +45,12 @@ vi.mock("@solana/web3.js", () => {
 
   function MockPublicKey(this: any, addr: string) {
     this._addr = addr;
-    this.toBase58 = function () { return addr; };
-    this.toString  = function () { return addr; };
+    this.toBase58 = function () {
+      return addr;
+    };
+    this.toString = function () {
+      return addr;
+    };
   }
 
   function MockTransactionInstruction(this: any) {}
@@ -54,10 +58,14 @@ vi.mock("@solana/web3.js", () => {
   return {
     Transaction: vi.fn().mockImplementation(MockTransaction),
     SystemProgram: {
-      transfer: vi.fn().mockReturnValue({ programId: "11111111111111111111111111111111" }),
+      transfer: vi
+        .fn()
+        .mockReturnValue({ programId: "11111111111111111111111111111111" }),
     },
     PublicKey: vi.fn().mockImplementation(MockPublicKey),
-    TransactionInstruction: vi.fn().mockImplementation(MockTransactionInstruction),
+    TransactionInstruction: vi
+      .fn()
+      .mockImplementation(MockTransactionInstruction),
   };
 });
 
@@ -77,10 +85,12 @@ import { usePurchaseFlow } from "@/pages/buyerDashboard/hooks/usePurchaseFlow";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const BUYER_WALLET  = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
-const TX_SIG        = "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
-const PROJECT_ID    = "507f1f77bcf86cd799439033";
-const PURCHASE_REF  = "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
+const BUYER_WALLET = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
+const TX_SIG =
+  "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
+const PROJECT_ID = "507f1f77bcf86cd799439033";
+const PURCHASE_REF =
+  "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
 
 const MOCK_INTENT = {
   purchase_reference: PURCHASE_REF,
@@ -89,8 +99,8 @@ const MOCK_INTENT = {
   price_sol_seller: 0.099,
   price_sol_platform: 0.001,
   // Pre-computed by the backend — frontend must use these directly in the TX.
-  seller_lamports: 99_000_000,   // floor(round(0.1 * 1e9) * 99 / 100)
-  treasury_lamports: 1_000_000,  // round(0.1 * 1e9) - 99_000_000
+  seller_lamports: 99_000_000, // floor(round(0.1 * 1e9) * 99 / 100)
+  treasury_lamports: 1_000_000, // round(0.1 * 1e9) - 99_000_000
   seller_wallet: "ppjF9VR27TTxWCgWiGnjzEjuMBZDtyY9WQD5eCvyzNk",
   treasury_wallet: "AP3T1RCrTYSyC2Zq9Tq8ZJiKvWmatzbpzJgNZyET4Z4B",
   sol_usd_rate: 100,
@@ -127,7 +137,7 @@ function setupWallet({
 
 function setupMutations({
   initiateMutateAsync = vi.fn().mockResolvedValue(MOCK_INTENT),
-  confirmMutateAsync  = vi.fn().mockResolvedValue({ projectId: PROJECT_ID }),
+  confirmMutateAsync = vi.fn().mockResolvedValue({ projectId: PROJECT_ID }),
 }: {
   initiateMutateAsync?: ReturnType<typeof vi.fn>;
   confirmMutateAsync?: ReturnType<typeof vi.fn>;
@@ -197,7 +207,9 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
 
       expect(result.current.countdown).toBe(600);
     });
@@ -211,7 +223,9 @@ describe("usePurchaseFlow", () => {
         await result.current.initiate(PROJECT_ID);
       });
 
-      act(() => { vi.advanceTimersByTime(10_000); });
+      act(() => {
+        vi.advanceTimersByTime(10_000);
+      });
 
       expect(result.current.countdown).toBe(590);
     });
@@ -225,7 +239,9 @@ describe("usePurchaseFlow", () => {
         await result.current.initiate(PROJECT_ID);
       });
 
-      act(() => { vi.advanceTimersByTime(700_000); }); // past 600 seconds
+      act(() => {
+        vi.advanceTimersByTime(700_000);
+      }); // past 600 seconds
 
       expect(result.current.countdown).toBe(0);
     });
@@ -251,7 +267,9 @@ describe("usePurchaseFlow", () => {
 
     it("uses the raw error message as fallback when response.data.message is absent", async () => {
       setupMutations({
-        initiateMutateAsync: vi.fn().mockRejectedValue(new Error("Network error")),
+        initiateMutateAsync: vi
+          .fn()
+          .mockRejectedValue(new Error("Network error")),
       });
 
       const { result } = renderHook(() =>
@@ -266,7 +284,8 @@ describe("usePurchaseFlow", () => {
     });
 
     it("clears a previous error when re-initiating", async () => {
-      const initiateMutateAsync = vi.fn()
+      const initiateMutateAsync = vi
+        .fn()
         .mockRejectedValueOnce(new Error("First failure"))
         .mockResolvedValueOnce(MOCK_INTENT);
       setupMutations({ initiateMutateAsync });
@@ -276,11 +295,15 @@ describe("usePurchaseFlow", () => {
       );
 
       // First call → error
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
       expect(result.current.error).toBeTruthy();
 
       // Second call → success, error cleared
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
       expect(result.current.error).toBeNull();
     });
   });
@@ -294,8 +317,12 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("SUCCESS");
       expect(onSuccess).toHaveBeenCalledWith(PROJECT_ID);
@@ -307,21 +334,31 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.failedAfterOnChain).toBe(false);
     });
 
     it("goes to FAILED without failedAfterOnChain when the wallet rejects the signature", async () => {
-      mockSendTransaction.mockRejectedValue(new Error("User rejected the request."));
+      mockSendTransaction.mockRejectedValue(
+        new Error("User rejected the request.")
+      );
 
       const { result } = renderHook(() =>
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("FAILED");
       expect(result.current.failedAfterOnChain).toBe(false);
@@ -329,14 +366,20 @@ describe("usePurchaseFlow", () => {
     });
 
     it("goes to FAILED without failedAfterOnChain when on-chain confirmation fails", async () => {
-      mockConfirmTransaction.mockRejectedValue(new Error("BlockheightExceeded"));
+      mockConfirmTransaction.mockRejectedValue(
+        new Error("BlockheightExceeded")
+      );
 
       const { result } = renderHook(() =>
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("FAILED");
       // confirmTransaction failed, so pendingConfirmRef was not yet set
@@ -346,7 +389,9 @@ describe("usePurchaseFlow", () => {
     it("sets failedAfterOnChain = true when on-chain TX succeeds but backend confirm fails", async () => {
       setupMutations({
         confirmMutateAsync: vi.fn().mockRejectedValue({
-          response: { data: { message: "Purchase session expired or already used." } },
+          response: {
+            data: { message: "Purchase session expired or already used." },
+          },
         }),
       });
 
@@ -354,8 +399,12 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("FAILED");
       expect(result.current.failedAfterOnChain).toBe(true);
@@ -368,14 +417,20 @@ describe("usePurchaseFlow", () => {
       // (e.g. insufficient funds, instruction error). confirmTransaction resolves
       // without throwing but returns { value: { err: "InsufficientFunds" } }.
       // The hook must NOT proceed to backend confirmation with a failed TX.
-      mockConfirmTransaction.mockResolvedValue({ value: { err: "InsufficientFunds" } });
+      mockConfirmTransaction.mockResolvedValue({
+        value: { err: "InsufficientFunds" },
+      });
 
       const { result } = renderHook(() =>
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("FAILED");
       // pendingConfirmRef is null because the on-chain TX failed before we set it,
@@ -394,7 +449,9 @@ describe("usePurchaseFlow", () => {
       });
 
       // Expire the quote
-      act(() => { vi.advanceTimersByTime(700_000); });
+      act(() => {
+        vi.advanceTimersByTime(700_000);
+      });
       expect(result.current.countdown).toBe(0);
 
       await act(async () => {
@@ -413,8 +470,12 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("AWAITING_WALLET");
       expect(mockSendTransaction).not.toHaveBeenCalled();
@@ -438,11 +499,17 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       const countdownAtSuccess = result.current.countdown;
-      act(() => { vi.advanceTimersByTime(10_000); });
+      act(() => {
+        vi.advanceTimersByTime(10_000);
+      });
 
       // Timer should be cleared — countdown should not decrease further
       expect(result.current.countdown).toBe(countdownAtSuccess);
@@ -460,8 +527,12 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
 
       expect(result.current.flowState).toBe("SUCCESS");
       expect(transferSpy).toHaveBeenCalledTimes(2);
@@ -481,8 +552,11 @@ describe("usePurchaseFlow", () => {
   describe("retryConfirm()", () => {
     it("transitions to SUCCESS when the backend confirm succeeds on the second attempt", async () => {
       const onSuccess = vi.fn();
-      const confirmMutateAsync = vi.fn()
-        .mockRejectedValueOnce({ response: { data: { message: "Temporary server error" } } })
+      const confirmMutateAsync = vi
+        .fn()
+        .mockRejectedValueOnce({
+          response: { data: { message: "Temporary server error" } },
+        })
         .mockResolvedValueOnce({ projectId: PROJECT_ID });
       setupMutations({ confirmMutateAsync });
 
@@ -491,8 +565,12 @@ describe("usePurchaseFlow", () => {
       );
 
       // First attempt → backend fails after on-chain success
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
       expect(result.current.flowState).toBe("FAILED");
       expect(result.current.failedAfterOnChain).toBe(true);
 
@@ -507,7 +585,9 @@ describe("usePurchaseFlow", () => {
     it("keeps failedAfterOnChain = true when retryConfirm also fails", async () => {
       // The backend always rejects (e.g. always 410 due to the documented bug)
       const confirmMutateAsync = vi.fn().mockRejectedValue({
-        response: { data: { message: "Purchase session expired or already used." } },
+        response: {
+          data: { message: "Purchase session expired or already used." },
+        },
       });
       setupMutations({ confirmMutateAsync });
 
@@ -515,8 +595,12 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
       expect(result.current.failedAfterOnChain).toBe(true);
 
       await act(async () => {
@@ -546,7 +630,8 @@ describe("usePurchaseFlow", () => {
     });
 
     it("sends the exact same tx_signature and purchase_reference on retry (no new payment)", async () => {
-      const confirmMutateAsync = vi.fn()
+      const confirmMutateAsync = vi
+        .fn()
         .mockRejectedValueOnce(new Error("First attempt network error"))
         .mockResolvedValueOnce({ projectId: PROJECT_ID });
       setupMutations({ confirmMutateAsync });
@@ -555,17 +640,23 @@ describe("usePurchaseFlow", () => {
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
       await act(async () => {
         await result.current.retryConfirm();
       });
 
       const firstPayload = confirmMutateAsync.mock.calls[0][0];
-      const retryPayload  = confirmMutateAsync.mock.calls[1][0];
+      const retryPayload = confirmMutateAsync.mock.calls[1][0];
 
       expect(retryPayload.tx_signature).toBe(firstPayload.tx_signature);
-      expect(retryPayload.purchase_reference).toBe(firstPayload.purchase_reference);
+      expect(retryPayload.purchase_reference).toBe(
+        firstPayload.purchase_reference
+      );
       expect(retryPayload.buyer_wallet).toBe(firstPayload.buyer_wallet);
     });
   });
@@ -575,9 +666,10 @@ describe("usePurchaseFlow", () => {
   describe("refreshQuote()", () => {
     it("re-initiates the purchase and resets the countdown to the new expires_in", async () => {
       const freshIntent = { ...MOCK_INTENT, sol_usd_rate: 110 };
-      const initiateMutateAsync = vi.fn()
-        .mockResolvedValueOnce(MOCK_INTENT)    // first initiate
-        .mockResolvedValueOnce(freshIntent);   // refreshed quote
+      const initiateMutateAsync = vi
+        .fn()
+        .mockResolvedValueOnce(MOCK_INTENT) // first initiate
+        .mockResolvedValueOnce(freshIntent); // refreshed quote
       setupMutations({ initiateMutateAsync });
 
       const { result } = renderHook(() =>
@@ -590,7 +682,9 @@ describe("usePurchaseFlow", () => {
       });
 
       // Let 60 seconds elapse
-      act(() => { vi.advanceTimersByTime(60_000); });
+      act(() => {
+        vi.advanceTimersByTime(60_000);
+      });
       expect(result.current.countdown).toBe(540);
 
       // Refresh quote
@@ -617,7 +711,9 @@ describe("usePurchaseFlow", () => {
       });
       expect(result.current.intent).not.toBeNull();
 
-      act(() => { result.current.reset(); });
+      act(() => {
+        result.current.reset();
+      });
 
       expect(result.current.flowState).toBe("IDLE");
       expect(result.current.intent).toBeNull();
@@ -635,27 +731,39 @@ describe("usePurchaseFlow", () => {
         await result.current.initiate(PROJECT_ID);
       });
 
-      act(() => { result.current.reset(); });
+      act(() => {
+        result.current.reset();
+      });
 
       // After reset, advancing time should not change countdown
-      act(() => { vi.advanceTimersByTime(5000); });
+      act(() => {
+        vi.advanceTimersByTime(5000);
+      });
       expect(result.current.countdown).toBe(0);
     });
 
     it("clears failedAfterOnChain so modal shows correct buttons after re-open", async () => {
       setupMutations({
-        confirmMutateAsync: vi.fn().mockRejectedValue(new Error("backend fail")),
+        confirmMutateAsync: vi
+          .fn()
+          .mockRejectedValue(new Error("backend fail")),
       });
 
       const { result } = renderHook(() =>
         usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
       );
 
-      await act(async () => { await result.current.initiate(PROJECT_ID); });
-      await act(async () => { await result.current.executePurchase(); });
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
       expect(result.current.failedAfterOnChain).toBe(true);
 
-      act(() => { result.current.reset(); });
+      act(() => {
+        result.current.reset();
+      });
       expect(result.current.failedAfterOnChain).toBe(false);
     });
   });

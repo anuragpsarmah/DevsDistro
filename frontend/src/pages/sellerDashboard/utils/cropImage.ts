@@ -1,6 +1,8 @@
 import { CropArea } from "./types";
 
-export function loadImageForCanvas(src: string): Promise<HTMLImageElement | null> {
+export function loadImageForCanvas(
+  src: string
+): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -40,11 +42,7 @@ export async function getCroppedImageBlob(
   );
 
   return new Promise((resolve) => {
-    canvas.toBlob(
-      (blob) => resolve(blob),
-      "image/jpeg",
-      quality
-    );
+    canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
   });
 }
 

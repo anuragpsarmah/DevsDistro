@@ -1,4 +1,10 @@
-import { ReactNode, useEffect, useRef, cloneElement, isValidElement } from "react";
+import {
+  ReactNode,
+  useEffect,
+  useRef,
+  cloneElement,
+  isValidElement,
+} from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { user, userCurrency } from "@/utils/atom";
 import { useRecoilState } from "recoil";
@@ -129,7 +135,7 @@ export default function ProtectedRouteWrapper({
 
   return isValidElement(children)
     ? cloneElement(children, { logout: handleLogout } as {
-      logout: () => Promise<void>;
-    })
+        logout: () => Promise<void>;
+      })
     : children;
 }

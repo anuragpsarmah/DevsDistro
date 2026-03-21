@@ -6,7 +6,10 @@ import { Sales } from "../models/sales.model";
 import logger from "../logger/logger";
 import { tryCatch } from "./tryCatch.util";
 
-export function computeBestSellerBadge(avgRating: number, totalReviews: number): string {
+export function computeBestSellerBadge(
+  avgRating: number,
+  totalReviews: number
+): string {
   if (totalReviews >= 10 && avgRating >= 4.5) return "Best Seller";
   if (totalReviews >= 5 && avgRating >= 4.0) return "Top Rated";
   if (totalReviews >= 3 && avgRating >= 3.5) return "Rising Seller";
@@ -58,7 +61,9 @@ export async function recalculateProjectAggregates(
   }
 
   // Step 2: Resolve sellerId, then recompute seller customer_rating and badge
-  let sellerId = (project as any)?.userid as mongoose.Types.ObjectId | undefined;
+  let sellerId = (project as any)?.userid as
+    | mongoose.Types.ObjectId
+    | undefined;
 
   if (!sellerId) {
     const [sellerPurchase, sellerPurchaseError] = await tryCatch(
@@ -68,11 +73,16 @@ export async function recalculateProjectAggregates(
     );
 
     if (sellerPurchaseError) {
-      logger.error("Failed to resolve seller for rating recomputation", sellerPurchaseError);
+      logger.error(
+        "Failed to resolve seller for rating recomputation",
+        sellerPurchaseError
+      );
       return;
     }
 
-    sellerId = (sellerPurchase as any)?.sellerId as mongoose.Types.ObjectId | undefined;
+    sellerId = (sellerPurchase as any)?.sellerId as
+      | mongoose.Types.ObjectId
+      | undefined;
   }
 
   if (!sellerId) {
@@ -130,7 +140,10 @@ export async function recalculateProjectAggregates(
   );
 
   if (sellerRatingAggError) {
-    logger.error("Failed to aggregate seller rating from purchases/reviews", sellerRatingAggError);
+    logger.error(
+      "Failed to aggregate seller rating from purchases/reviews",
+      sellerRatingAggError
+    );
     return;
   }
 
@@ -143,7 +156,10 @@ export async function recalculateProjectAggregates(
     newCustomerRating = Math.round(avgRating * 10) / 10;
   }
 
-  const newBestSeller = computeBestSellerBadge(newCustomerRating, totalSellerReviews);
+  const newBestSeller = computeBestSellerBadge(
+    newCustomerRating,
+    totalSellerReviews
+  );
 
   const [, salesError] = await tryCatch(
     Sales.updateOne(

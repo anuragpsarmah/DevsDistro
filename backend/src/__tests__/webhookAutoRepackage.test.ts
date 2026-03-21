@@ -100,7 +100,8 @@ const GITHUB_REPO_ID = "99887766";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeRes = () => {
   const res: any = {};

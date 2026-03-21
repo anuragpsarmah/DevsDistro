@@ -1,11 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  ChangeEvent,
-  useState,
-  KeyboardEvent,
-  FocusEvent,
-} from "react";
+import { ChangeEvent, useState, KeyboardEvent, FocusEvent } from "react";
 
 interface ProjectPriceSelectionProps {
   price: number;
@@ -64,7 +59,10 @@ export default function ProjectPriceSelection({
 
   return (
     <div className="border-t-2 border-black/10 dark:border-white/10 pt-10 mt-10">
-      <Label htmlFor="price" className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-6 block text-center">
+      <Label
+        htmlFor="price"
+        className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-6 block text-center"
+      >
         Project Price (USD)
       </Label>
       <div className="relative flex justify-center">
@@ -91,7 +89,16 @@ export default function ProjectPriceSelection({
               onClick={incrementPrice}
               className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors duration-200"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
+              >
                 <path d="M18 15l-6-6-6 6" />
               </svg>
             </button>
@@ -100,7 +107,16 @@ export default function ProjectPriceSelection({
               onClick={decrementPrice}
               className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors duration-200"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="square" strokeLinejoin="miter">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinecap="square"
+                strokeLinejoin="miter"
+              >
                 <path d="M6 9l6 6 6-6" />
               </svg>
             </button>

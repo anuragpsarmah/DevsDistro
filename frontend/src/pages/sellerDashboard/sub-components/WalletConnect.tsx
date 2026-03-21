@@ -11,8 +11,6 @@ export const WalletConnect = ({
   onSelectWallet,
   onWalletRedirect,
 }: WalletConnectProps) => {
-
-
   const getWalletLink = (walletName: string): string => {
     return WALLET_LINKS[walletName] || "#";
   };
@@ -45,7 +43,9 @@ export const WalletConnect = ({
               Connect Your Wallet
             </h3>
             <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-300">
-              Link your Solana wallet to securely manage payments, verify ownership, and track your project sales directly on the blockchain.
+              Link your Solana wallet to securely manage payments, verify
+              ownership, and track your project sales directly on the
+              blockchain.
             </p>
           </div>
         </div>
@@ -64,7 +64,9 @@ export const WalletConnect = ({
         <div className="space-y-8">
           {detectedWallets.length > 0 && (
             <div className="space-y-4">
-              <h4 className="text-xs font-space font-bold text-red-500 uppercase tracking-[0.2em] ml-1">Detected</h4>
+              <h4 className="text-xs font-space font-bold text-red-500 uppercase tracking-[0.2em] ml-1">
+                Detected
+              </h4>
               <div className="space-y-4">
                 {detectedWallets.map((walletAdapter) => (
                   <Button
@@ -84,9 +86,7 @@ export const WalletConnect = ({
                           />
                         </div>
                       )}
-                      <span>
-                        {walletAdapter.adapter.name}
-                      </span>
+                      <span>{walletAdapter.adapter.name}</span>
                     </div>
                     <ChevronRight className="h-5 w-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </Button>
@@ -97,14 +97,18 @@ export const WalletConnect = ({
 
           {otherWallets.length > 0 && (
             <div className="space-y-4">
-              <h4 className="text-xs font-space font-bold text-red-500 uppercase tracking-[0.2em] ml-1">Other Options</h4>
+              <h4 className="text-xs font-space font-bold text-red-500 uppercase tracking-[0.2em] ml-1">
+                Other Options
+              </h4>
               <div className="space-y-4">
                 {otherWallets.map((walletAdapter) => (
                   <Button
                     key={walletAdapter.adapter.name}
                     variant="outline"
                     className="w-full justify-between h-14 px-6 bg-transparent border-2 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded-none transition-all duration-300 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white group font-space uppercase tracking-wider font-bold text-xs"
-                    onClick={() => handleWalletRedirect(walletAdapter.adapter.name)}
+                    onClick={() =>
+                      handleWalletRedirect(walletAdapter.adapter.name)
+                    }
                     disabled={isProcessing}
                   >
                     <div className="flex items-center gap-4">

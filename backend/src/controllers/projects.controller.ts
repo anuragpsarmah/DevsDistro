@@ -711,7 +711,10 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       return;
     }
 
-    const escapedTitle = result.data.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escapedTitle = result.data.title.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
     const titleRegex = new RegExp(`^${escapedTitle}$`, "i");
     const duplicateTitleQuery: Record<string, unknown> = {
       userid,
@@ -728,12 +731,18 @@ const validateMediaUploadAndStoreProject = asyncHandler(
 
     if (duplicateTitleError) {
       enrichContext({ outcome: "error", error: { name: "DatabaseError" } });
-      logger.error("Failed to check duplicate project title", duplicateTitleError);
+      logger.error(
+        "Failed to check duplicate project title",
+        duplicateTitleError
+      );
       throw new ApiError("Something went wrong", 500);
     }
 
     if (duplicateTitle) {
-      enrichContext({ outcome: "validation_failed", reason: "duplicate_title" });
+      enrichContext({
+        outcome: "validation_failed",
+        reason: "duplicate_title",
+      });
       response(res, 400, "A project with this name already exists");
       return;
     }
@@ -1276,7 +1285,10 @@ const toggleProjectListing = asyncHandler(
       userData?.project_listing_limit ??
       parseInt(process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2", 10);
 
-    if (!existingProject.isActive && activeProjectCount >= projectListingLimit) {
+    if (
+      !existingProject.isActive &&
+      activeProjectCount >= projectListingLimit
+    ) {
       enrichContext({
         outcome: "forbidden",
         reason: "project_listing_limit_reached",
@@ -1402,7 +1414,11 @@ const deleteProjectListing = asyncHandler(
         outcome: "validation_failed",
         reason: "repo_zip_in_progress",
       });
-      response(res, 400, "Cannot delete a project while its repository is being packaged.");
+      response(
+        res,
+        400,
+        "Cannot delete a project while its repository is being packaged."
+      );
       return;
     }
 
@@ -1913,7 +1929,10 @@ const getMarketplaceProjectDetail = asyncHandler(
       return;
     }
 
-    if (projectData.userid && (projectData.userid as any).profile_visibility === false) {
+    if (
+      projectData.userid &&
+      (projectData.userid as any).profile_visibility === false
+    ) {
       const { short_bio, location, website_url, x_username, ...publicFields } =
         projectData.userid as any;
       projectData.userid = { ...publicFields, profile_visibility: false };

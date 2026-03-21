@@ -1,4 +1,8 @@
-import { useQuery, useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  type InfiniteData,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { apiClient } from "@/lib/axiosInstance";
 import { useHandleError } from "./useHandleErrors";
@@ -30,15 +34,18 @@ interface SellerSalesTransactionsParams {
   cursor_id?: string;
 }
 
-type SellerSalesCursor =
-  | { cursor_created_at: string; cursor_id: string }
-  | null;
+type SellerSalesCursor = {
+  cursor_created_at: string;
+  cursor_id: string;
+} | null;
 
 const useAuthValidationQuery = () => {
   return useQuery({
     queryKey: ["authValidation"],
     queryFn: async () => {
-      const response = await apiClient.get<{ data: User }>("/auth/authValidation");
+      const response = await apiClient.get<{ data: User }>(
+        "/auth/authValidation"
+      );
       return response.data;
     },
   });
@@ -122,7 +129,9 @@ const useProfileInformationQuery = ({ logout }: queryParameter) => {
     queryKey: ["useProfileInformationQuery"],
     queryFn: async () => {
       const [response, error] = await tryCatch(
-        apiClient.get<{ data: ProfileUpdateData }>("/profile/getProfileInformation")
+        apiClient.get<{ data: ProfileUpdateData }>(
+          "/profile/getProfileInformation"
+        )
       );
 
       if (error) {
@@ -265,7 +274,9 @@ const useSpecificProjectDataQuery = ({ logout }: queryParameter) => {
   const { handleError } = useHandleError({ logout });
   const getData = async (github_repo_id: string) => {
     const [response, error] = await tryCatch(
-      apiClient.get(`/projects/getSpecificProjectData?github_repo_id=${github_repo_id}`)
+      apiClient.get(
+        `/projects/getSpecificProjectData?github_repo_id=${github_repo_id}`
+      )
     );
 
     if (error) {
@@ -303,7 +314,9 @@ const useRepoZipStatusQuery = ({ logout }: queryParameter) => {
 
   const getStatus = async (github_repo_id: string) => {
     const [response, error] = await tryCatch(
-      apiClient.get(`/projects/getRepoZipStatus?github_repo_id=${github_repo_id}`)
+      apiClient.get(
+        `/projects/getRepoZipStatus?github_repo_id=${github_repo_id}`
+      )
     );
 
     if (error) {
@@ -520,8 +533,13 @@ const useGetWishlistInfiniteQuery = ({ logout }: queryParameter) => {
     queryFn: async ({ pageParam = 0 }) => {
       const [response, error] = await tryCatch(
         apiClient.get<{
-          data: { projects: MarketplaceProject[]; pagination: WishlistPaginationMeta };
-        }>(`/wishlist/getWishlist?limit=${BUYER_PAGE_LIMIT}&offset=${pageParam}`)
+          data: {
+            projects: MarketplaceProject[];
+            pagination: WishlistPaginationMeta;
+          };
+        }>(
+          `/wishlist/getWishlist?limit=${BUYER_PAGE_LIMIT}&offset=${pageParam}`
+        )
       );
 
       if (error) {
@@ -550,8 +568,13 @@ const useGetPurchasedProjectsInfiniteQuery = ({ logout }: queryParameter) => {
     queryFn: async ({ pageParam = 0 }) => {
       const [response, error] = await tryCatch(
         apiClient.get<{
-          data: { purchases: PurchasedProject[]; pagination: WishlistPaginationMeta };
-        }>(`/purchases/getPurchasedProjects?limit=${BUYER_PAGE_LIMIT}&offset=${pageParam}`)
+          data: {
+            purchases: PurchasedProject[];
+            pagination: WishlistPaginationMeta;
+          };
+        }>(
+          `/purchases/getPurchasedProjects?limit=${BUYER_PAGE_LIMIT}&offset=${pageParam}`
+        )
       );
 
       if (error) {

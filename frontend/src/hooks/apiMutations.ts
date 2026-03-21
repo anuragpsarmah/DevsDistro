@@ -88,7 +88,9 @@ const usePreSignedUrlForProjectMediaUploadMutation = ({
           existingImageCount,
           existingVideoCount,
           modificationType,
-          ...(detailMetadata && detailMetadata.length > 0 ? { detailMetadata } : {}),
+          ...(detailMetadata && detailMetadata.length > 0
+            ? { detailMetadata }
+            : {}),
         })
       );
 
@@ -204,7 +206,9 @@ const useDeleteProjectListingMutation = ({ logout }: mutationParameter) => {
         handleError(error);
         return false;
       }
-      successToast(apiResponse?.data?.message ?? "Project was permanently deleted");
+      successToast(
+        apiResponse?.data?.message ?? "Project was permanently deleted"
+      );
       queryClient.invalidateQueries({ queryKey: ["totalListedProjectsQuery"] });
       return true;
     },
@@ -229,10 +233,10 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
         typeof data === "string"
           ? { wallet_address: data }
           : {
-            wallet_address: data.address,
-            signature: data.signature,
-            message: data.message,
-          };
+              wallet_address: data.address,
+              signature: data.signature,
+              message: data.message,
+            };
 
       const [response, error] = await tryCatch(
         apiClient.put("/profile/updateWalletAddress", payload)
@@ -240,7 +244,11 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
 
       if (response) {
         const isDisconnect = typeof data === "string";
-        successToast(isDisconnect ? "Wallet disconnected successfully" : "Wallet connected successfully");
+        successToast(
+          isDisconnect
+            ? "Wallet disconnected successfully"
+            : "Wallet connected successfully"
+        );
       }
 
       setTimeout(() => {
@@ -324,9 +332,12 @@ const useToggleWishlistMutation = ({ logout }: mutationParameter) => {
   return useMutation({
     mutationFn: async (project_id: string) => {
       const [response, error] = await tryCatch(
-        apiClient.post<{ data: { isWishlisted: boolean } }>("/wishlist/toggle", {
-          project_id,
-        })
+        apiClient.post<{ data: { isWishlisted: boolean } }>(
+          "/wishlist/toggle",
+          {
+            project_id,
+          }
+        )
       );
 
       if (error) {
@@ -337,7 +348,9 @@ const useToggleWishlistMutation = ({ logout }: mutationParameter) => {
       return response.data.data;
     },
     onSuccess: (data) => {
-      successToast(data.isWishlisted ? "Added to wishlist" : "Removed from wishlist");
+      successToast(
+        data.isWishlisted ? "Added to wishlist" : "Removed from wishlist"
+      );
       queryClient.invalidateQueries({ queryKey: ["wishlistQuery"] });
       queryClient.invalidateQueries({ queryKey: ["wishlistInfinite"] });
       queryClient.invalidateQueries({ queryKey: ["wishlistCount"] });
@@ -351,7 +364,9 @@ const useInitiatePurchaseMutation = ({ logout }: mutationParameter) => {
   return useMutation({
     mutationFn: async (project_id: string) => {
       const [response, error] = await tryCatch(
-        apiClient.post<{ data: PurchaseIntent }>("/purchases/initiate", { project_id })
+        apiClient.post<{ data: PurchaseIntent }>("/purchases/initiate", {
+          project_id,
+        })
       );
 
       if (error) {
@@ -371,7 +386,10 @@ const useConfirmPurchaseMutation = ({ logout }: mutationParameter) => {
   return useMutation({
     mutationFn: async (payload: PurchaseConfirmPayload) => {
       const [response, error] = await tryCatch(
-        apiClient.post<{ data: { projectId: string } }>("/purchases/confirm", payload)
+        apiClient.post<{ data: { projectId: string } }>(
+          "/purchases/confirm",
+          payload
+        )
       );
 
       if (error) {
@@ -383,7 +401,9 @@ const useConfirmPurchaseMutation = ({ logout }: mutationParameter) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchasedProjectsQuery"] });
-      queryClient.invalidateQueries({ queryKey: ["purchasedProjectsInfinite"] });
+      queryClient.invalidateQueries({
+        queryKey: ["purchasedProjectsInfinite"],
+      });
       queryClient.invalidateQueries({ queryKey: ["wishlistQuery"] });
       queryClient.invalidateQueries({ queryKey: ["wishlistInfinite"] });
       queryClient.invalidateQueries({ queryKey: ["wishlistCount"] });
@@ -469,9 +489,15 @@ const useSubmitReviewMutation = ({ logout }: mutationParameter) => {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["projectReviews", variables.project_id] });
-      queryClient.invalidateQueries({ queryKey: ["myProjectReview", variables.project_id] });
-      queryClient.invalidateQueries({ queryKey: ["projectDetail", variables.project_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["projectReviews", variables.project_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["myProjectReview", variables.project_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["projectDetail", variables.project_id],
+      });
     },
   });
 };
@@ -494,9 +520,15 @@ const useUpdateReviewMutation = ({ logout }: mutationParameter) => {
       return response.data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["projectReviews", variables.project_id] });
-      queryClient.invalidateQueries({ queryKey: ["myProjectReview", variables.project_id] });
-      queryClient.invalidateQueries({ queryKey: ["projectDetail", variables.project_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["projectReviews", variables.project_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["myProjectReview", variables.project_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["projectDetail", variables.project_id],
+      });
     },
   });
 };
@@ -519,9 +551,15 @@ const useDeleteReviewMutation = ({ logout }: mutationParameter) => {
       return response.data;
     },
     onSuccess: (_, project_id) => {
-      queryClient.invalidateQueries({ queryKey: ["projectReviews", project_id] });
-      queryClient.invalidateQueries({ queryKey: ["myProjectReview", project_id] });
-      queryClient.invalidateQueries({ queryKey: ["projectDetail", project_id] });
+      queryClient.invalidateQueries({
+        queryKey: ["projectReviews", project_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["myProjectReview", project_id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["projectDetail", project_id],
+      });
     },
   });
 };

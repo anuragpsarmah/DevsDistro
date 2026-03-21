@@ -1,7 +1,17 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { ShoppingBag, SearchX, Download, Loader2, FileText, AlertTriangle } from "lucide-react";
+import {
+  ShoppingBag,
+  SearchX,
+  Download,
+  Loader2,
+  FileText,
+  AlertTriangle,
+} from "lucide-react";
 import { useGetPurchasedProjectsInfiniteQuery } from "@/hooks/apiQueries";
-import { useDownloadProjectMutation, useDownloadReceiptMutation } from "@/hooks/apiMutations";
+import {
+  useDownloadProjectMutation,
+  useDownloadReceiptMutation,
+} from "@/hooks/apiMutations";
 import MarketplaceProjectCard from "../sub-components/MarketplaceProjectCard";
 import MarketplaceCardSkeleton from "../sub-components/MarketplaceCardSkeleton";
 import { TransitionWrapper } from "../sub-components/TransitionWrapper";
@@ -9,7 +19,9 @@ import ProjectDetailPage from "../sub-components/ProjectDetailPage";
 import { OrdersTabProps } from "../utils/types";
 
 export default function OrdersTab({ logout }: OrdersTabProps) {
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null
+  );
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [receiptingId, setReceiptingId] = useState<string | null>(null);
   const {
@@ -71,7 +83,11 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
   }
 
   return (
-    <TransitionWrapper identifier="orders-list" isTransitioning={false} className="h-full">
+    <TransitionWrapper
+      identifier="orders-list"
+      isTransitioning={false}
+      className="h-full"
+    >
       <div className="flex flex-col h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)] mt-10 lg:mt-0 md:mt-0 pb-4 lg:pb-6">
         <div className="flex-shrink-0 mb-8 lg:mb-10 w-full">
           <div className="flex items-center gap-3 mb-6">
@@ -115,41 +131,52 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                 <SearchX className="w-8 h-8 text-white" />
               </div>
               <p className="font-space font-bold uppercase tracking-widest text-black dark:text-white text-center max-w-md">
-                Something went wrong while fetching your purchases. Please try again later.
+                Something went wrong while fetching your purchases. Please try
+                again later.
               </p>
             </div>
           )}
 
-          {!isLoading && !isError && allPurchases.length > 0 && activePurchases.length === 0 && (
-            <div className="flex-1 p-4 lg:p-6 flex flex-col items-center justify-center">
-              <div className="w-full max-w-2xl border-2 border-black dark:border-white bg-white dark:bg-[#050505] p-8 lg:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center transition-colors duration-300">
-                <div className="mb-8">
-                  <div className="w-16 h-16 bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-black dark:border-white">
-                    <ShoppingBag className="h-8 w-8 text-black dark:text-white" strokeWidth={2} />
+          {!isLoading &&
+            !isError &&
+            allPurchases.length > 0 &&
+            activePurchases.length === 0 && (
+              <div className="flex-1 p-4 lg:p-6 flex flex-col items-center justify-center">
+                <div className="w-full max-w-2xl border-2 border-black dark:border-white bg-white dark:bg-[#050505] p-8 lg:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center transition-colors duration-300">
+                  <div className="mb-8">
+                    <div className="w-16 h-16 bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-black dark:border-white">
+                      <ShoppingBag
+                        className="h-8 w-8 text-black dark:text-white"
+                        strokeWidth={2}
+                      />
+                    </div>
+                  </div>
+                  <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-black dark:text-white mb-6 transition-colors duration-300">
+                    No Active Purchases
+                  </h2>
+                  <div className="font-space max-w-md mx-auto space-y-4">
+                    <p className="text-black/40 dark:text-white/40 uppercase tracking-wider text-sm font-bold">
+                      [Status: All Projects Removed]
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300 uppercase tracking-wider">
+                      All your purchased projects have been removed by their
+                      sellers. Your full transaction history is available in the
+                      Purchase Ledger tab.
+                    </p>
                   </div>
                 </div>
-                <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-black dark:text-white mb-6 transition-colors duration-300">
-                  No Active Purchases
-                </h2>
-                <div className="font-space max-w-md mx-auto space-y-4">
-                  <p className="text-black/40 dark:text-white/40 uppercase tracking-wider text-sm font-bold">
-                    [Status: All Projects Removed]
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300 uppercase tracking-wider">
-                    All your purchased projects have been removed by their sellers. Your full transaction history is available in the Purchase Ledger tab.
-                  </p>
-                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {!isLoading && !isError && allPurchases.length === 0 && (
             <div className="flex-1 p-4 lg:p-6 flex flex-col items-center justify-center">
               <div className="w-full max-w-2xl border-2 border-black dark:border-white bg-white dark:bg-[#050505] p-8 lg:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center transition-colors duration-300">
-
                 <div className="mb-8">
                   <div className="w-16 h-16 bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-black dark:border-white">
-                    <ShoppingBag className="h-8 w-8 text-black dark:text-white" strokeWidth={2} />
+                    <ShoppingBag
+                      className="h-8 w-8 text-black dark:text-white"
+                      strokeWidth={2}
+                    />
                   </div>
                 </div>
 
@@ -162,7 +189,8 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                     [Status: No Purchases]
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300 uppercase tracking-wider">
-                    Browse the Marketplace and purchase projects. They will appear here with a download option.
+                    Browse the Marketplace and purchase projects. They will
+                    appear here with a download option.
                   </p>
                 </div>
               </div>
@@ -184,13 +212,24 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/10 border-b-2 border-amber-500">
                           <AlertTriangle className="w-3 h-3 text-amber-500 flex-shrink-0" />
                           <span className="font-space text-[9px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                            Seller has unlisted this project. It is scheduled for deletion on {new Date(purchase.projectId.scheduled_deletion_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                            Seller has unlisted this project. It is scheduled
+                            for deletion on{" "}
+                            {new Date(
+                              purchase.projectId.scheduled_deletion_at
+                            ).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
                           </span>
                         </div>
                       )}
                       <div className="flex items-center justify-between gap-2 px-3 py-2">
                         <span className="font-space text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
-                          {new Date(purchase.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          {new Date(purchase.createdAt).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric", year: "numeric" }
+                          )}
                         </span>
                         <div className="flex items-center gap-2">
                           <button
@@ -251,11 +290,14 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
             </div>
           )}
 
-          {!isLoading && activePurchases.length > 0 && !hasNextPage && !isFetchingNextPage && (
-            <p className="text-center font-space font-bold uppercase tracking-widest text-black dark:text-white text-sm pb-4 pt-4">
-              System Update: End of Purchases Reached
-            </p>
-          )}
+          {!isLoading &&
+            activePurchases.length > 0 &&
+            !hasNextPage &&
+            !isFetchingNextPage && (
+              <p className="text-center font-space font-bold uppercase tracking-widest text-black dark:text-white text-sm pb-4 pt-4">
+                System Update: End of Purchases Reached
+              </p>
+            )}
         </div>
       </div>
     </TransitionWrapper>

@@ -85,7 +85,9 @@ describe("PurchaseModal — FAILED state recovery buttons", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: /Try Again/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Try Again/i })
+    ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: /Retry Confirmation/i })
     ).not.toBeInTheDocument();
@@ -124,7 +126,8 @@ describe("PurchaseModal — FAILED state recovery buttons", () => {
   });
 
   it("displays the error message text in the FAILED state", () => {
-    const errorMsg = "Seller received insufficient SOL. Expected 99000000 lamports.";
+    const errorMsg =
+      "Seller received insufficient SOL. Expected 99000000 lamports.";
     render(
       <PurchaseModal
         {...defaultProps}
@@ -176,7 +179,9 @@ describe("PurchaseModal — active transaction progress steps", () => {
       />
     );
 
-    expect(screen.queryByRole("button", { name: /Cancel/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Cancel/i })
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -227,7 +232,9 @@ describe("PurchaseModal — quote expiry and confirm button", () => {
   // F8 — countdown = 0 ────────────────────────────────────────────────────────
 
   it("F8: Confirm button is disabled when countdown is exactly 0 (quote expired)", () => {
-    render(<PurchaseModal {...defaultProps} countdown={0} isWalletConnected={true} />);
+    render(
+      <PurchaseModal {...defaultProps} countdown={0} isWalletConnected={true} />
+    );
 
     const btn = screen.getByRole("button", { name: "Confirm Purchase" });
     expect(btn).toBeDisabled();
@@ -236,7 +243,13 @@ describe("PurchaseModal — quote expiry and confirm button", () => {
   // F9 — countdown < 0 (stale interval fires after expiry) ───────────────────
 
   it("F9: Confirm button is disabled when countdown goes negative (stale interval cycle)", () => {
-    render(<PurchaseModal {...defaultProps} countdown={-1} isWalletConnected={true} />);
+    render(
+      <PurchaseModal
+        {...defaultProps}
+        countdown={-1}
+        isWalletConnected={true}
+      />
+    );
 
     const btn = screen.getByRole("button", { name: "Confirm Purchase" });
     expect(btn).toBeDisabled();
@@ -245,7 +258,13 @@ describe("PurchaseModal — quote expiry and confirm button", () => {
   // F10 — valid quote + connected wallet ─────────────────────────────────────
 
   it("F10: Confirm button is enabled when countdown > 0 and wallet is connected", () => {
-    render(<PurchaseModal {...defaultProps} countdown={300} isWalletConnected={true} />);
+    render(
+      <PurchaseModal
+        {...defaultProps}
+        countdown={300}
+        isWalletConnected={true}
+      />
+    );
 
     const btn = screen.getByRole("button", { name: "Confirm Purchase" });
     expect(btn).not.toBeDisabled();
@@ -290,7 +309,9 @@ describe("PurchaseModal — quote expiry and confirm button", () => {
     expect(screen.getByText("Purchase Confirmed")).toBeInTheDocument();
     expect(screen.getByText(/Orders tab/i)).toBeInTheDocument();
     // Confirm Purchase button is not rendered in SUCCESS state
-    expect(screen.queryByRole("button", { name: "Confirm Purchase" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Confirm Purchase" })
+    ).not.toBeInTheDocument();
   });
 });
 
@@ -308,7 +329,9 @@ describe("PurchaseModal — stale rate warning", () => {
     );
 
     expect(screen.getByTestId("stale-rate-warning")).toBeInTheDocument();
-    expect(screen.getByTestId("stale-rate-warning")).toHaveTextContent(/price may vary/i);
+    expect(screen.getByTestId("stale-rate-warning")).toHaveTextContent(
+      /price may vary/i
+    );
   });
 
   it("does not show stale-rate warning when exchange_rate_fetched_at is within the last 5 minutes", () => {

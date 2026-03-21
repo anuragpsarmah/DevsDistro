@@ -148,7 +148,6 @@ async function handleInstallationEvent(payload: WebhookPayload) {
           )
         );
 
-
         const [, cacheError] = await tryCatch(
           redisClient.del(
             privateRepoPrefix(deletedInstallation.user_id.toString())
@@ -160,7 +159,6 @@ async function handleInstallationEvent(payload: WebhookPayload) {
             { installationId, cacheError }
           );
         }
-
 
         logger.info("Installation deleted, projects marked as access revoked", {
           installationId,
@@ -196,8 +194,6 @@ async function handleInstallationEvent(payload: WebhookPayload) {
           )
         );
 
-
-
         const [, suspendCacheError] = await tryCatch(
           redisClient.del(
             privateRepoPrefix(suspendedInstallation.user_id.toString())
@@ -209,7 +205,6 @@ async function handleInstallationEvent(payload: WebhookPayload) {
             suspendCacheError,
           });
         }
-
 
         logger.info("Installation suspended, projects deactivated", {
           installationId,
@@ -227,10 +222,11 @@ async function handleInstallationEvent(payload: WebhookPayload) {
       );
 
       if (unsuspendedInstallation) {
-        const reactivatedCount = await githubAppService.reactivateProjectsWithRestoredAccess(
-          unsuspendedInstallation.user_id.toString(),
-          installationId
-        );
+        const reactivatedCount =
+          await githubAppService.reactivateProjectsWithRestoredAccess(
+            unsuspendedInstallation.user_id.toString(),
+            installationId
+          );
 
         enrichContext({
           outcome: "success",
@@ -244,10 +240,13 @@ async function handleInstallationEvent(payload: WebhookPayload) {
             )
           );
           if (unsuspendCacheError) {
-            logger.error("Failed to clear private repos cache after unsuspend", {
-              installationId,
-              unsuspendCacheError,
-            });
+            logger.error(
+              "Failed to clear private repos cache after unsuspend",
+              {
+                installationId,
+                unsuspendCacheError,
+              }
+            );
           }
         }
 
@@ -346,7 +345,11 @@ async function handleInstallationRepositoriesEvent(payload: WebhookPayload) {
           github_installation_id: installationId,
           github_repo_id: { $in: removedRepoIdStrings },
         },
-        { isActive: false, github_access_revoked: true, github_installation_id: installationId }
+        {
+          isActive: false,
+          github_access_revoked: true,
+          github_installation_id: installationId,
+        }
       )
     );
 
@@ -356,7 +359,8 @@ async function handleInstallationRepositoriesEvent(payload: WebhookPayload) {
       )
     );
 
-    if (removedInstallationDoc && removedInstallationDoc.suspended_at !== null) return;
+    if (removedInstallationDoc && removedInstallationDoc.suspended_at !== null)
+      return;
 
     if (removedInstallationDoc?.user_id) {
       const [, cacheError] = await tryCatch(
@@ -415,7 +419,6 @@ async function handleRepositoryEvent(payload: WebhookPayload) {
             { repoId, userId: affectedProject.userid.toString(), cacheError }
           );
         }
-
       }
 
       logger.info(
@@ -454,12 +457,17 @@ async function handlePushEvent(payload: WebhookPayload) {
       repo_zip_status: "SUCCESS",
       scheduled_deletion_at: null,
     })
-      .select("_id userid github_repo_id github_installation_id repo_zip_s3_key")
+      .select(
+        "_id userid github_repo_id github_installation_id repo_zip_s3_key"
+      )
       .lean()
   );
 
   if (findError) {
-    logger.error("Failed to query project for push auto-repackage", { repoId, findError });
+    logger.error("Failed to query project for push auto-repackage", {
+      repoId,
+      findError,
+    });
     return;
   }
 
@@ -472,7 +480,10 @@ async function handlePushEvent(payload: WebhookPayload) {
   );
 
   if (userFindError) {
-    logger.error("Failed to query user for push auto-repackage", { repoId, userFindError });
+    logger.error("Failed to query user for push auto-repackage", {
+      repoId,
+      userFindError,
+    });
     return;
   }
 
@@ -480,13 +491,20 @@ async function handlePushEvent(payload: WebhookPayload) {
 
   if (project.repo_zip_s3_key) {
     const [, cleanupError] = await tryCatch(
-      redisClient.zadd("media-cleanup-schedule", Date.now(), project.repo_zip_s3_key)
+      redisClient.zadd(
+        "media-cleanup-schedule",
+        Date.now(),
+        project.repo_zip_s3_key
+      )
     );
     if (cleanupError) {
-      logger.error("Failed to queue old ZIP for cleanup during auto-repackage", {
-        projectId: project._id,
-        cleanupError,
-      });
+      logger.error(
+        "Failed to queue old ZIP for cleanup during auto-repackage",
+        {
+          projectId: project._id,
+          cleanupError,
+        }
+      );
     }
   }
 
@@ -521,7 +539,10 @@ async function handlePushEvent(payload: WebhookPayload) {
       });
     });
 
-  logger.info("Auto-repackage triggered on push", { projectId: project._id, repoId });
+  logger.info("Auto-repackage triggered on push", {
+    projectId: project._id,
+    repoId,
+  });
 }
 
 export { handleWebhook };

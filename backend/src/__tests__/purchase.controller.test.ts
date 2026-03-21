@@ -86,22 +86,29 @@ vi.mock("pdfkit", () => {
     this.page = { width: 595, height: 841 };
     const self = this;
     const chain = () => self;
-    this.pipe     = vi.fn().mockImplementation((dest: any) => { self._dest = dest; });
-    this.end      = vi.fn().mockImplementation(() => { /* no-op */ });
-    this.font     = vi.fn().mockReturnValue(self);
+    this.pipe = vi.fn().mockImplementation((dest: any) => {
+      self._dest = dest;
+    });
+    this.end = vi.fn().mockImplementation(() => {
+      /* no-op */
+    });
+    this.font = vi.fn().mockReturnValue(self);
     this.fontSize = vi.fn().mockReturnValue(self);
-    this.fillColor= vi.fn().mockReturnValue(self);
-    this.text     = vi.fn().mockImplementation((t: string) => { self._texts.push(t); return self; });
-    this.moveTo   = vi.fn().mockReturnValue(self);
-    this.lineTo   = vi.fn().mockReturnValue(self);
-    this.lineWidth= vi.fn().mockReturnValue(self);
-    this.stroke   = vi.fn().mockReturnValue(self);
-    this.path     = vi.fn().mockReturnValue(self);
-    this.clip     = vi.fn().mockReturnValue(self);
-    this.save     = vi.fn().mockReturnValue(self);
-    this.restore  = vi.fn().mockReturnValue(self);
-    this.fill     = vi.fn().mockReturnValue(self);
-    this.addPage  = vi.fn().mockReturnValue(self);
+    this.fillColor = vi.fn().mockReturnValue(self);
+    this.text = vi.fn().mockImplementation((t: string) => {
+      self._texts.push(t);
+      return self;
+    });
+    this.moveTo = vi.fn().mockReturnValue(self);
+    this.lineTo = vi.fn().mockReturnValue(self);
+    this.lineWidth = vi.fn().mockReturnValue(self);
+    this.stroke = vi.fn().mockReturnValue(self);
+    this.path = vi.fn().mockReturnValue(self);
+    this.clip = vi.fn().mockReturnValue(self);
+    this.save = vi.fn().mockReturnValue(self);
+    this.restore = vi.fn().mockReturnValue(self);
+    this.fill = vi.fn().mockReturnValue(self);
+    this.addPage = vi.fn().mockReturnValue(self);
     this.moveDown = vi.fn().mockReturnValue(self);
     this.y = 150;
   }
@@ -134,14 +141,18 @@ import { User } from "../models/user.model";
 import { GitHubAppInstallation } from "../models/githubAppInstallation.model";
 import { Purchase } from "../models/purchase.model";
 import { Sales } from "../models/sales.model";
-import { getSolanaUsdRate, computeLamportSplit } from "../utils/solanaPrice.util";
+import {
+  getSolanaUsdRate,
+  computeLamportSplit,
+} from "../utils/solanaPrice.util";
 import { verifySolanaTransaction } from "../utils/solanaVerification.util";
 import { redisClient, s3Service } from "..";
 
 // ─── Test utilities ───────────────────────────────────────────────────────────
 
 /** Wait for all pending microtasks / Promise callbacks to settle. */
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeRes = () => {
   const res: any = {};
@@ -174,15 +185,17 @@ function mockSelectLean(value: unknown) {
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
-const BUYER_ID      = "507f1f77bcf86cd799439011";
-const SELLER_ID     = "507f1f77bcf86cd799439022";
-const PROJECT_ID    = "507f1f77bcf86cd799439033";
-const PURCHASE_ID   = "507f1f77bcf86cd799439044";
+const BUYER_ID = "507f1f77bcf86cd799439011";
+const SELLER_ID = "507f1f77bcf86cd799439022";
+const PROJECT_ID = "507f1f77bcf86cd799439033";
+const PURCHASE_ID = "507f1f77bcf86cd799439044";
 const TREASURY_ADDR = "AP3T1RCrTYSyC2Zq9Tq8ZJiKvWmatzbpzJgNZyET4Z4B";
 const SELLER_WALLET = "ppjF9VR27TTxWCgWiGnjzEjuMBZDtyY9WQD5eCvyzNk";
-const BUYER_WALLET  = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
-const TX_SIG        = "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
-const PURCHASE_REF  = "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
+const BUYER_WALLET = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
+const TX_SIG =
+  "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
+const PURCHASE_REF =
+  "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
 
 const MOCK_PROJECT = {
   _id: PROJECT_ID,
@@ -237,7 +250,7 @@ const MOCK_INTENT_OBJ = {
 };
 
 const VALID_INITIATE_BODY = { project_id: PROJECT_ID };
-const VALID_CONFIRM_BODY  = {
+const VALID_CONFIRM_BODY = {
   purchase_reference: PURCHASE_REF,
   tx_signature: TX_SIG,
   buyer_wallet: BUYER_WALLET,
@@ -253,13 +266,19 @@ describe("initiatePurchase", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.SOLANA_TREASURY_WALLET = TREASURY_ADDR;
-    process.env.SOLANA_RPC_URL         = "https://api.devnet.solana.com";
-    process.env.PLATFORM_FEE_PERCENT   = "1";
+    process.env.SOLANA_RPC_URL = "https://api.devnet.solana.com";
+    process.env.PLATFORM_FEE_PERCENT = "1";
 
     // Happy-path defaults
-    vi.mocked(Project.findById).mockReturnValue(mockSelectLean(MOCK_PROJECT) as any);
-    vi.mocked(Purchase.findOne).mockReturnValue({ lean: vi.fn().mockResolvedValue(null) } as any);
-    vi.mocked(User.findById).mockReturnValue(mockSelectLean(MOCK_SELLER) as any);
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean(MOCK_PROJECT) as any
+    );
+    vi.mocked(Purchase.findOne).mockReturnValue({
+      lean: vi.fn().mockResolvedValue(null),
+    } as any);
+    vi.mocked(User.findById).mockReturnValue(
+      mockSelectLean(MOCK_SELLER) as any
+    );
     vi.mocked(GitHubAppInstallation.findOne).mockReturnValue(
       mockSelectLean({ suspended_at: null }) as any
     );
@@ -334,7 +353,9 @@ describe("initiatePurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/not currently active/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not currently active/i
+    );
   });
 
   it("returns 400 when GitHub repository access has been revoked", async () => {
@@ -385,7 +406,10 @@ describe("initiatePurchase", () => {
   it("returns 400 when the buyer is attempting to purchase their own project", async () => {
     // The project's seller IS the authenticated buyer
     vi.mocked(Project.findById).mockReturnValue(
-      mockSelectLean({ ...MOCK_PROJECT, userid: { toString: () => BUYER_ID } }) as any
+      mockSelectLean({
+        ...MOCK_PROJECT,
+        userid: { toString: () => BUYER_ID },
+      }) as any
     );
 
     const req = makeReq({ body: VALID_INITIATE_BODY });
@@ -395,13 +419,15 @@ describe("initiatePurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/cannot purchase your own/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /cannot purchase your own/i
+    );
   });
 
   it("returns 409 when the buyer has already purchased this project", async () => {
-    vi.mocked(Purchase.findOne).mockReturnValue(
-      { lean: vi.fn().mockResolvedValue({ _id: "existing-purchase-id" }) } as any
-    );
+    vi.mocked(Purchase.findOne).mockReturnValue({
+      lean: vi.fn().mockResolvedValue({ _id: "existing-purchase-id" }),
+    } as any);
 
     const req = makeReq({ body: VALID_INITIATE_BODY });
     const res = makeRes();
@@ -410,7 +436,9 @@ describe("initiatePurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(409);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/already purchased/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /already purchased/i
+    );
   });
 
   it("returns 400 when the seller has not connected a Solana wallet", async () => {
@@ -425,7 +453,9 @@ describe("initiatePurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/not connected a payment wallet/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not connected a payment wallet/i
+    );
   });
 
   it("returns 400 when the seller's GitHub App installation is suspended", async () => {
@@ -467,11 +497,15 @@ describe("initiatePurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/configuration error/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /configuration error/i
+    );
   });
 
   it("returns 500 when Redis fails to store the intent", async () => {
-    vi.mocked(redisClient.setex).mockRejectedValue(new Error("Redis unavailable"));
+    vi.mocked(redisClient.setex).mockRejectedValue(
+      new Error("Redis unavailable")
+    );
 
     const req = makeReq({ body: VALID_INITIATE_BODY });
     const res = makeRes();
@@ -507,13 +541,19 @@ describe("initiatePurchase", () => {
     expect(typeof body.data.seller_lamports).toBe("number");
     expect(typeof body.data.treasury_lamports).toBe("number");
     expect(body.data.seller_lamports).toBe(MOCK_LAMPORT_SPLIT.sellerLamports);
-    expect(body.data.treasury_lamports).toBe(MOCK_LAMPORT_SPLIT.platformLamports);
+    expect(body.data.treasury_lamports).toBe(
+      MOCK_LAMPORT_SPLIT.platformLamports
+    );
   });
 
   // Fix #10: repo_zip_s3_key null even when status is SUCCESS — fail fast at initiate time
   it("returns 400 when repo_zip_s3_key is null despite SUCCESS status (data inconsistency)", async () => {
     vi.mocked(Project.findById).mockReturnValue(
-      mockSelectLean({ ...MOCK_PROJECT, repo_zip_status: "SUCCESS", repo_zip_s3_key: null }) as any
+      mockSelectLean({
+        ...MOCK_PROJECT,
+        repo_zip_status: "SUCCESS",
+        repo_zip_s3_key: null,
+      }) as any
     );
 
     const req = makeReq({ body: VALID_INITIATE_BODY });
@@ -543,7 +583,7 @@ describe("confirmPurchase", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env.SOLANA_RPC_URL       = "https://api.devnet.solana.com";
+    process.env.SOLANA_RPC_URL = "https://api.devnet.solana.com";
     process.env.PLATFORM_FEE_PERCENT = "1";
 
     // Intent exists in Redis by default (GET, not GETDEL — new behaviour)
@@ -559,7 +599,11 @@ describe("confirmPurchase", () => {
 
     // No existing purchase by tx_signature (first call) or (buyerId, projectId) (second call)
     vi.mocked(Purchase.findOne)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any)
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any)
       .mockReturnValueOnce({ lean: vi.fn().mockResolvedValue(null) } as any);
 
     // Solana verification passes
@@ -570,7 +614,11 @@ describe("confirmPurchase", () => {
       mockSelectLean({ title: "Test Project", project_type: "Web App" }) as any
     );
     vi.mocked(User.findById).mockReturnValue(
-      mockSelectLean({ name: "Test Seller", username: "testseller", profile_image_url: "" }) as any
+      mockSelectLean({
+        name: "Test Seller",
+        username: "testseller",
+        profile_image_url: "",
+      }) as any
     );
 
     // Purchase saved successfully
@@ -648,8 +696,16 @@ describe("confirmPurchase", () => {
     // Reset first so beforeEach's lean()-only Mock #2 doesn't break Step 3.
     vi.mocked(Purchase.findOne).mockReset();
     vi.mocked(Purchase.findOne)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any)
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -673,7 +729,9 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/does not match your session/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /does not match your session/i
+    );
   });
 
   it("returns 200 (idempotent) when the tx_signature was already confirmed (checked before Redis)", async () => {
@@ -682,9 +740,11 @@ describe("confirmPurchase", () => {
     vi.mocked(Purchase.findOne).mockReset();
     const existing = { _id: "already-confirmed", projectId: PROJECT_ID };
     // First findOne call (upfront tx_sig check) → finds existing purchase
-    vi.mocked(Purchase.findOne).mockReturnValueOnce(
-      { select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(existing) }) } as any
-    );
+    vi.mocked(Purchase.findOne).mockReturnValueOnce({
+      select: vi
+        .fn()
+        .mockReturnValue({ lean: vi.fn().mockResolvedValue(existing) }),
+    } as any);
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -706,7 +766,9 @@ describe("confirmPurchase", () => {
     // which is not this path (intent is present), so only 2 mocks are needed.
     vi.mocked(Purchase.findOne)
       .mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
       } as any)
       .mockReturnValueOnce({
         lean: vi.fn().mockResolvedValue({ _id: "dup-purchase" }),
@@ -719,13 +781,16 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(409);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/already purchased/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /already purchased/i
+    );
   });
 
   it("returns 400 with the verification error message when Solana TX verification fails", async () => {
     vi.mocked(verifySolanaTransaction).mockResolvedValue({
       valid: false,
-      error: "Seller received insufficient SOL. Expected 99000000 lamports, got 50000000",
+      error:
+        "Seller received insufficient SOL. Expected 99000000 lamports, got 50000000",
     });
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
@@ -735,12 +800,16 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/insufficient SOL/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /insufficient SOL/i
+    );
     expect(Purchase.create).not.toHaveBeenCalled();
   });
 
   it("returns 200 (idempotent) when Purchase.create fails with a duplicate-key error (race condition) and deletes intent", async () => {
-    const duplicateKeyErr = Object.assign(new Error("E11000 duplicate key"), { code: 11000 });
+    const duplicateKeyErr = Object.assign(new Error("E11000 duplicate key"), {
+      code: 11000,
+    });
     vi.mocked(Purchase.create).mockRejectedValue(duplicateKeyErr);
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
@@ -750,13 +819,19 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/already confirmed/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /already confirmed/i
+    );
     // Race winner already saved the purchase, so intent should be cleaned up
-    expect(redisClient.del).toHaveBeenCalledWith(`purchase_intent_${PURCHASE_REF}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `purchase_intent_${PURCHASE_REF}`
+    );
   });
 
   it("returns 500 when Purchase.create fails with a generic database error", async () => {
-    vi.mocked(Purchase.create).mockRejectedValue(new Error("MongoDB write timeout"));
+    vi.mocked(Purchase.create).mockRejectedValue(
+      new Error("MongoDB write timeout")
+    );
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -765,13 +840,17 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/contact support/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /contact support/i
+    );
   });
 
   it("still returns 200 when the Sales document update fails (non-fatal)", async () => {
     // Simulate all three Sales.updateOne calls (step 1a, 1b, step 2) failing.
     // The purchase is confirmed on-chain — Sales being unavailable must not fail it.
-    vi.mocked((Sales as any).updateOne).mockRejectedValue(new Error("Sales DB connection lost"));
+    vi.mocked((Sales as any).updateOne).mockRejectedValue(
+      new Error("Sales DB connection lost")
+    );
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -839,9 +918,11 @@ describe("confirmPurchase", () => {
     const savedPurchase = { _id: PURCHASE_ID, projectId: PROJECT_ID };
 
     // Retry attempt: upfront tx_sig check FINDS the purchase (saved on first attempt)
-    vi.mocked(Purchase.findOne).mockReturnValueOnce(
-      { select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(savedPurchase) }) } as any
-    );
+    vi.mocked(Purchase.findOne).mockReturnValueOnce({
+      select: vi
+        .fn()
+        .mockReturnValue({ lean: vi.fn().mockResolvedValue(savedPurchase) }),
+    } as any);
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -862,21 +943,34 @@ describe("confirmPurchase", () => {
 
     // Upfront tx_sig check → null (first attempt's create failed, nothing in DB)
     vi.mocked(Purchase.findOne)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any)
-      .mockReturnValueOnce({ lean: vi.fn().mockResolvedValue(null) } as any);  // (buyerId, projectId) check
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any)
+      .mockReturnValueOnce({ lean: vi.fn().mockResolvedValue(null) } as any); // (buyerId, projectId) check
 
     // Intent still available in Redis (was not deleted on failure)
-    vi.mocked(redisClient.get).mockResolvedValue(JSON.stringify(MOCK_INTENT_OBJ) as any);
+    vi.mocked(redisClient.get).mockResolvedValue(
+      JSON.stringify(MOCK_INTENT_OBJ) as any
+    );
     vi.mocked(redisClient.del).mockResolvedValue(1 as any);
 
     vi.mocked(verifySolanaTransaction).mockResolvedValue({ valid: true });
-    vi.mocked(Purchase.create).mockResolvedValue({ _id: PURCHASE_ID, projectId: PROJECT_ID } as any);
+    vi.mocked(Purchase.create).mockResolvedValue({
+      _id: PURCHASE_ID,
+      projectId: PROJECT_ID,
+    } as any);
 
     vi.mocked(Project.findById).mockReturnValue(
       mockSelectLean({ title: "Test Project", project_type: "Web App" }) as any
     );
     vi.mocked(User.findById).mockReturnValue(
-      mockSelectLean({ name: "Test Seller", username: "testseller", profile_image_url: "" }) as any
+      mockSelectLean({
+        name: "Test Seller",
+        username: "testseller",
+        profile_image_url: "",
+      }) as any
     );
     vi.mocked(User.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
 
@@ -888,11 +982,15 @@ describe("confirmPurchase", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(Purchase.create).toHaveBeenCalledTimes(1);
     // Intent must be deleted after successful create
-    expect(redisClient.del).toHaveBeenCalledWith(`purchase_intent_${PURCHASE_REF}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `purchase_intent_${PURCHASE_REF}`
+    );
   });
 
   it("returns 500 and does NOT delete intent when Purchase.create fails (intent preserved for retry)", async () => {
-    vi.mocked(Purchase.create).mockRejectedValue(new Error("MongoDB connection timeout"));
+    vi.mocked(Purchase.create).mockRejectedValue(
+      new Error("MongoDB connection timeout")
+    );
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -900,7 +998,9 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/contact support/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /contact support/i
+    );
     // Intent must NOT be deleted — user needs it to retry
     expect(redisClient.del).not.toHaveBeenCalled();
   });
@@ -913,7 +1013,9 @@ describe("confirmPurchase", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(redisClient.del).toHaveBeenCalledWith(`purchase_intent_${PURCHASE_REF}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `purchase_intent_${PURCHASE_REF}`
+    );
   });
 
   // ── Gap #6: Input validation (controller integration level) ─────────────────
@@ -935,7 +1037,9 @@ describe("confirmPurchase", () => {
   it("returns 400 when tx_signature contains disallowed base58 chars (0, O, I, l)", async () => {
     // '0' and 'O' are excluded from base58 encoding — any string with them is invalid
     const badSig = "0".repeat(88); // 88 chars but all-zero is invalid base58
-    const req = makeReq({ body: { ...VALID_CONFIRM_BODY, tx_signature: badSig } });
+    const req = makeReq({
+      body: { ...VALID_CONFIRM_BODY, tx_signature: badSig },
+    });
     const res = makeRes();
 
     confirmPurchase(req, res, next);
@@ -945,7 +1049,9 @@ describe("confirmPurchase", () => {
   });
 
   it("returns 400 when buyer_wallet is too short to be a valid Solana base58 address", async () => {
-    const req = makeReq({ body: { ...VALID_CONFIRM_BODY, buyer_wallet: "tooshort" } });
+    const req = makeReq({
+      body: { ...VALID_CONFIRM_BODY, buyer_wallet: "tooshort" },
+    });
     const res = makeRes();
 
     confirmPurchase(req, res, next);
@@ -965,15 +1071,19 @@ describe("confirmPurchase", () => {
     const savedByA = { _id: PURCHASE_ID, projectId: PROJECT_ID };
 
     // Step 1: upfront tx_sig check → null (not already confirmed from THIS request's perspective)
-    vi.mocked(Purchase.findOne).mockReturnValueOnce(
-      { select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any
-    );
+    vi.mocked(Purchase.findOne).mockReturnValueOnce({
+      select: vi
+        .fn()
+        .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+    } as any);
     // Redis GET: intent is gone (deleted by Request A)
     vi.mocked(redisClient.get).mockResolvedValue(null as any);
     // Step 3: race-check → finds the purchase saved by Request A
-    vi.mocked(Purchase.findOne).mockReturnValueOnce(
-      { select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(savedByA) }) } as any
-    );
+    vi.mocked(Purchase.findOne).mockReturnValueOnce({
+      select: vi
+        .fn()
+        .mockReturnValue({ lean: vi.fn().mockResolvedValue(savedByA) }),
+    } as any);
 
     const req = makeReq({ body: VALID_CONFIRM_BODY });
     const res = makeRes();
@@ -1021,7 +1131,11 @@ describe("getPurchasedProjects", () => {
         tx_signature: TX_SIG,
         createdAt: new Date(),
         project_snapshot: { title: "Test Project", project_type: "Web App" },
-        seller_snapshot: { name: "Seller", username: "seller", profile_image_url: "" },
+        seller_snapshot: {
+          name: "Seller",
+          username: "seller",
+          profile_image_url: "",
+        },
       },
     ]);
 
@@ -1065,7 +1179,11 @@ describe("getPurchasedProjects", () => {
         projectId: null, // project was hard-deleted
         price_usd: 10,
         project_snapshot: { title: "Deleted Project", project_type: "Web App" },
-        seller_snapshot: { name: "Seller", username: "seller", profile_image_url: "" },
+        seller_snapshot: {
+          name: "Seller",
+          username: "seller",
+          profile_image_url: "",
+        },
         createdAt: new Date(),
       },
     ]);
@@ -1203,7 +1321,9 @@ describe("downloadProject", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(403);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/not purchased/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not purchased/i
+    );
   });
 
   it("returns 404 when the project has been deleted after purchase", async () => {
@@ -1234,7 +1354,9 @@ describe("downloadProject", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(400);
-    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(/not available/i);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not available/i
+    );
   });
 
   it("returns 500 when S3 presigned URL generation fails", async () => {
@@ -1276,24 +1398,37 @@ const MOCK_PURCHASE_FULL = {
   purchase_reference: PURCHASE_REF,
   status: "CONFIRMED",
   project_snapshot: { title: "Test Project", project_type: "Web App" },
-  seller_snapshot: { name: "Test Seller", username: "testseller", profile_image_url: "" },
+  seller_snapshot: {
+    name: "Test Seller",
+    username: "testseller",
+    profile_image_url: "",
+  },
   createdAt: new Date("2024-06-15T12:00:00Z"),
 };
 
 describe("downloadReceipt", () => {
   const next = vi.fn();
 
-  const MOCK_BUYER_USER  = { username: "testbuyer",  name: "Test Buyer" };
+  const MOCK_BUYER_USER = { username: "testbuyer", name: "Test Buyer" };
   const MOCK_SELLER_USER = { username: "testseller", name: "Test Seller" };
-  const MOCK_PROJECT_FOR_RECEIPT = { title: "Test Project", project_type: "Web App", tech_stack: ["React", "Node.js"], price: 10 };
+  const MOCK_PROJECT_FOR_RECEIPT = {
+    title: "Test Project",
+    project_type: "Web App",
+    tech_stack: ["React", "Node.js"],
+    price: 10,
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(Purchase.findOne).mockReturnValue({ lean: vi.fn().mockResolvedValue(MOCK_PURCHASE_FULL) } as any);
+    vi.mocked(Purchase.findOne).mockReturnValue({
+      lean: vi.fn().mockResolvedValue(MOCK_PURCHASE_FULL),
+    } as any);
     vi.mocked(User.findById)
       .mockReturnValueOnce(mockSelectLean(MOCK_BUYER_USER) as any)
       .mockReturnValueOnce(mockSelectLean(MOCK_SELLER_USER) as any);
-    vi.mocked(Project.findById).mockReturnValue(mockSelectLean(MOCK_PROJECT_FOR_RECEIPT) as any);
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean(MOCK_PROJECT_FOR_RECEIPT) as any
+    );
   });
 
   it("returns 200 with Content-Type: application/pdf and Content-Disposition header", async () => {
@@ -1304,7 +1439,10 @@ describe("downloadReceipt", () => {
     downloadReceipt(req, res, next);
     await flushPromises();
 
-    expect(res.setHeader).toHaveBeenCalledWith("Content-Type", "application/pdf");
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "Content-Type",
+      "application/pdf"
+    );
     expect(res.setHeader).toHaveBeenCalledWith(
       "Content-Disposition",
       expect.stringContaining("attachment; filename=")
@@ -1322,7 +1460,8 @@ describe("downloadReceipt", () => {
     downloadReceipt(req, res, next);
     await flushPromises();
 
-    const pdfInstance = PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
     const allText = pdfInstance._texts.join(" ");
 
     expect(allText).toContain(PURCHASE_REF);
@@ -1341,7 +1480,8 @@ describe("downloadReceipt", () => {
     downloadReceipt(req, res, next);
     await flushPromises();
 
-    const pdfInstance = PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
     const allText = pdfInstance._texts.join(" ");
 
     expect(allText).toContain("testbuyer");
@@ -1362,7 +1502,8 @@ describe("downloadReceipt", () => {
     downloadReceipt(req, res, next);
     await flushPromises();
 
-    const pdfInstance = PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
     const allText = pdfInstance._texts.join(" ");
 
     // snapshot title should appear — receipt is still valid after deletion
@@ -1390,7 +1531,9 @@ describe("downloadReceipt", () => {
   });
 
   it("returns 404 when the purchase does not belong to this buyer or does not exist", async () => {
-    vi.mocked(Purchase.findOne).mockReturnValue({ lean: vi.fn().mockResolvedValue(null) } as any);
+    vi.mocked(Purchase.findOne).mockReturnValue({
+      lean: vi.fn().mockResolvedValue(null),
+    } as any);
 
     const req = makeReq({ query: { purchase_id: PURCHASE_ID } });
     const res = makeRes();
@@ -1437,9 +1580,9 @@ describe("downloadReceipt", () => {
     downloadReceipt(req, res, next);
     await flushPromises();
 
-    const disposition = vi.mocked(res.setHeader).mock.calls.find(
-      (c) => c[0] === "Content-Disposition"
-    )?.[1] as string;
+    const disposition = vi
+      .mocked(res.setHeader)
+      .mock.calls.find((c) => c[0] === "Content-Disposition")?.[1] as string;
 
     // First 16 chars of purchase_reference uppercased in filename
     expect(disposition).toContain(PURCHASE_REF.slice(0, 16).toUpperCase());

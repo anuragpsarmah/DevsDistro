@@ -43,8 +43,13 @@ export default function BillingAndPaymentsTab({
         const cleanupSilentConnection = async () => {
           const [, error] = await tryCatch(() => disconnect());
           if (error) {
-            console.error("Error disconnecting silently connected wallet:", error);
-            errorToast("Error disconnecting silently connected wallet. Refresh the page.");
+            console.error(
+              "Error disconnecting silently connected wallet:",
+              error
+            );
+            errorToast(
+              "Error disconnecting silently connected wallet. Refresh the page."
+            );
           }
           setTimeout(() => {
             setIsInitializing(false);

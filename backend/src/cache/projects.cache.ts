@@ -46,12 +46,7 @@ const getPrivateReposFromCache = asyncHandler(
       const cachedData = await redisClient.hget(redisKey, `page:${page}`);
 
       if (cachedData) {
-        response(
-          res,
-          200,
-          "Repos fetched from cache",
-          JSON.parse(cachedData)
-        );
+        response(res, 200, "Repos fetched from cache", JSON.parse(cachedData));
         return;
       }
 

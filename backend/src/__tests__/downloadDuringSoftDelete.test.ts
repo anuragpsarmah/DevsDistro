@@ -99,11 +99,13 @@ import { s3Service } from "..";
 const VALID_USER_ID = "507f1f77bcf86cd799439011";
 const VALID_PROJECT_ID = "507f191e810c19729de860ea";
 const VALID_S3_KEY = "zips/my-project-abc123.zip";
-const PRESIGNED_URL = "https://s3.amazonaws.com/bucket/zips/my-project.zip?X-Amz-Signature=abc";
+const PRESIGNED_URL =
+  "https://s3.amazonaws.com/bucket/zips/my-project.zip?X-Amz-Signature=abc";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -223,7 +225,9 @@ describe("downloadProject", () => {
 
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "You have not purchased this project" })
+      expect.objectContaining({
+        message: "You have not purchased this project",
+      })
     );
   });
 
@@ -236,7 +240,9 @@ describe("downloadProject", () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Failed to process download. Try again later." })
+      expect.objectContaining({
+        message: "Failed to process download. Try again later.",
+      })
     );
   });
 
@@ -280,7 +286,9 @@ describe("downloadProject", () => {
     });
     stubPurchaseFindOne(mockPurchaseRecord());
     stubProjectFindById(softDeletedProject);
-    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(PRESIGNED_URL);
+    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(
+      PRESIGNED_URL
+    );
 
     const req = makeReq();
     downloadProject(req as any, res, next);
@@ -304,7 +312,9 @@ describe("downloadProject", () => {
 
   it("returns 400 when project zip is PROCESSING", async () => {
     stubPurchaseFindOne(mockPurchaseRecord());
-    stubProjectFindById(mockProjectDoc({ repo_zip_status: "PROCESSING", repo_zip_s3_key: null }));
+    stubProjectFindById(
+      mockProjectDoc({ repo_zip_status: "PROCESSING", repo_zip_s3_key: null })
+    );
     const req = makeReq();
     downloadProject(req as any, res, next);
     await flushPromises();
@@ -319,7 +329,9 @@ describe("downloadProject", () => {
 
   it("returns 400 when project zip is FAILED", async () => {
     stubPurchaseFindOne(mockPurchaseRecord());
-    stubProjectFindById(mockProjectDoc({ repo_zip_status: "FAILED", repo_zip_s3_key: null }));
+    stubProjectFindById(
+      mockProjectDoc({ repo_zip_status: "FAILED", repo_zip_s3_key: null })
+    );
     const req = makeReq();
     downloadProject(req as any, res, next);
     await flushPromises();
@@ -380,7 +392,9 @@ describe("downloadProject", () => {
   it("returns 200 with presigned URL for normal active project download", async () => {
     stubPurchaseFindOne(mockPurchaseRecord());
     stubProjectFindById(mockProjectDoc({ title: "React Dashboard Pro" }));
-    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(PRESIGNED_URL);
+    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(
+      PRESIGNED_URL
+    );
 
     const req = makeReq();
     downloadProject(req as any, res, next);
@@ -396,8 +410,12 @@ describe("downloadProject", () => {
 
   it("generates a safe filename from the project title (no unsafe chars)", async () => {
     stubPurchaseFindOne(mockPurchaseRecord());
-    stubProjectFindById(mockProjectDoc({ title: "My Awesome React App! v2.0" }));
-    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(PRESIGNED_URL);
+    stubProjectFindById(
+      mockProjectDoc({ title: "My Awesome React App! v2.0" })
+    );
+    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(
+      PRESIGNED_URL
+    );
 
     const req = makeReq();
     downloadProject(req as any, res, next);
@@ -413,7 +431,9 @@ describe("downloadProject", () => {
   it("generates a 15-minute (900s) presigned URL", async () => {
     stubPurchaseFindOne(mockPurchaseRecord());
     stubProjectFindById(mockProjectDoc());
-    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(PRESIGNED_URL);
+    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(
+      PRESIGNED_URL
+    );
 
     const req = makeReq();
     downloadProject(req as any, res, next);

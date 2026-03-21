@@ -76,13 +76,19 @@ const toggleWishlist = asyncHandler(async (req: Request, res: Response) => {
 
     if (purchaseCheckError) {
       enrichContext({ outcome: "error", error: { name: "DatabaseError" } });
-      logger.error("Failed to check purchase status for wishlist", purchaseCheckError);
+      logger.error(
+        "Failed to check purchase status for wishlist",
+        purchaseCheckError
+      );
       response(res, 500, "Failed to update wishlist. Try again later.");
       return;
     }
 
     if (existingPurchase) {
-      enrichContext({ outcome: "validation_failed", reason: "already_purchased" });
+      enrichContext({
+        outcome: "validation_failed",
+        reason: "already_purchased",
+      });
       response(res, 409, "You already own this project");
       return;
     }
@@ -132,7 +138,9 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
   const limit = rawLimit
     ? Math.min(Math.max(parseInt(rawLimit as string, 10) || 12, 1), 50)
     : null;
-  const offset = rawOffset ? Math.max(parseInt(rawOffset as string, 10) || 0, 0) : 0;
+  const offset = rawOffset
+    ? Math.max(parseInt(rawOffset as string, 10) || 0, 0)
+    : 0;
 
   const [userData, userError] = await tryCatch(
     User.findById(userId).select("wishlist").lean()
@@ -177,22 +185,26 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
 
   if (limit !== null) {
     // Paginated path
-    const [[projects, fetchError], [totalCount, countError]] = await Promise.all([
-      tryCatch(
-        Project.find(matchQuery)
-          .sort({ createdAt: -1 })
-          .skip(offset)
-          .limit(limit)
-          .select(WISHLIST_PROJECT_SELECT)
-          .populate(WISHLIST_SELLER_POPULATE)
-          .lean()
-      ),
-      tryCatch(Project.countDocuments(matchQuery)),
-    ]);
+    const [[projects, fetchError], [totalCount, countError]] =
+      await Promise.all([
+        tryCatch(
+          Project.find(matchQuery)
+            .sort({ createdAt: -1 })
+            .skip(offset)
+            .limit(limit)
+            .select(WISHLIST_PROJECT_SELECT)
+            .populate(WISHLIST_SELLER_POPULATE)
+            .lean()
+        ),
+        tryCatch(Project.countDocuments(matchQuery)),
+      ]);
 
     if (fetchError || countError) {
       enrichContext({ outcome: "error", error: { name: "DatabaseError" } });
-      logger.error("Failed to fetch paginated wishlist", fetchError ?? countError);
+      logger.error(
+        "Failed to fetch paginated wishlist",
+        fetchError ?? countError
+      );
       response(res, 500, "Failed to fetch wishlist. Try again later.");
       return;
     }
@@ -211,7 +223,15 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
     enrichContext({ outcome: "success", wishlist_count: total });
     response(res, 200, "Wishlist fetched successfully", {
       projects: mappedProjects,
-      pagination: { totalCount: total, currentPage, totalPages, hasNextPage, hasPrevPage, limit, offset },
+      pagination: {
+        totalCount: total,
+        currentPage,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+        limit,
+        offset,
+      },
     });
   } else {
     // Non-paginated path (backward compatible — returns all active wishlist items)
@@ -234,8 +254,13 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
       project_images: p.project_images?.[0] ?? "",
     }));
 
-    enrichContext({ outcome: "success", wishlist_count: mappedProjects.length });
-    response(res, 200, "Wishlist fetched successfully", { projects: mappedProjects });
+    enrichContext({
+      outcome: "success",
+      wishlist_count: mappedProjects.length,
+    });
+    response(res, 200, "Wishlist fetched successfully", {
+      projects: mappedProjects,
+    });
   }
 });
 

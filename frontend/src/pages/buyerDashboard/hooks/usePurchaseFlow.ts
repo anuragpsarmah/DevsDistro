@@ -1,8 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import {
-  useWallet,
-  useConnection,
-} from "@solana/wallet-adapter-react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Transaction,
   SystemProgram,

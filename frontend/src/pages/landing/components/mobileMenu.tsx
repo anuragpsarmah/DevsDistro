@@ -42,7 +42,12 @@ export default function MobileMenu({
         >
           <div className="flex flex-col gap-8 h-full">
             <div className="flex flex-col gap-6 font-syne text-3xl font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              {["The Revelation", "The Mechanics", "Validations", "Query Log"].map((item) => {
+              {[
+                "The Revelation",
+                "The Mechanics",
+                "Validations",
+                "Query Log",
+              ].map((item) => {
                 const id = item.toLowerCase().replace(" ", "-");
                 return (
                   <Link
@@ -78,19 +83,28 @@ export default function MobileMenu({
                 {isDarkMode ? (
                   <>
                     <Sun size={20} />
-                    <span className="font-space font-bold uppercase tracking-widest text-sm">Light Mode</span>
+                    <span className="font-space font-bold uppercase tracking-widest text-sm">
+                      Light Mode
+                    </span>
                   </>
                 ) : (
                   <>
                     <Moon size={20} />
-                    <span className="font-space font-bold uppercase tracking-widest text-sm">Dark Mode</span>
+                    <span className="font-space font-bold uppercase tracking-widest text-sm">
+                      Dark Mode
+                    </span>
                   </>
                 )}
               </button>
             </div>
 
             <div className="mt-auto pb-12 opacity-10 dark:opacity-30 pointer-events-none overflow-hidden">
-              <h2 className="font-syne text-2xl font-black text-transparent text-center w-full" style={{ WebkitTextStroke: isDarkMode ? "1px white" : "1px black" }}>
+              <h2
+                className="font-syne text-2xl font-black text-transparent text-center w-full"
+                style={{
+                  WebkitTextStroke: isDarkMode ? "1px white" : "1px black",
+                }}
+              >
                 DEVS_DISTRO
               </h2>
             </div>

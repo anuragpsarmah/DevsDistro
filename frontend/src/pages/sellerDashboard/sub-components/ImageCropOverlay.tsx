@@ -44,20 +44,19 @@ export default function ImageCropOverlay({
   onComplete,
   onCancel,
 }: ImageCropOverlayProps) {
-  const getImageSrc = useCallback(
-    (item: ImageItem): string => {
-      if (item.type === "new") return item.objectUrl;
-      return item.url;
-    },
-    []
-  );
+  const getImageSrc = useCallback((item: ImageItem): string => {
+    if (item.type === "new") return item.objectUrl;
+    return item.url;
+  }, []);
   const [cropStates, setCropStates] = useState<PerImageCropState[]>(() =>
     imageItems.map(() => makeDefaultCropState())
   );
   const [croppablePos, setCroppablePos] = useState(0);
   const [cropView, setCropView] = useState<CropView>("card");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [userVisitedTabs, setUserVisitedTabs] = useState<Set<string>>(new Set());
+  const [userVisitedTabs, setUserVisitedTabs] = useState<Set<string>>(
+    new Set()
+  );
   const markVisited = (itemIndex: number, view: CropView) => {
     const key = `${itemIndex}_${view}`;
     setUserVisitedTabs((prev) => {
@@ -140,21 +139,39 @@ export default function ImageCropOverlay({
         const visitedDetail = userVisitedTabs.has(`${i}_detail`);
 
         if (!visitedCard && !visitedDetail) {
-          results.push({ type: "existing_complete", cardUrl: item.url, detailUrl: existingDetailUrl });
+          results.push({
+            type: "existing_complete",
+            cardUrl: item.url,
+            detailUrl: existingDetailUrl,
+          });
           continue;
         }
 
         const [cardBlob, detailBlob] = await Promise.all([
           visitedCard
-            ? getCroppedImageBlob(cardSrc, state.card.croppedAreaPixels!, CARD_CROP_WIDTH, CARD_CROP_HEIGHT)
+            ? getCroppedImageBlob(
+                cardSrc,
+                state.card.croppedAreaPixels!,
+                CARD_CROP_WIDTH,
+                CARD_CROP_HEIGHT
+              )
             : Promise.resolve(null),
           visitedDetail
-            ? getCroppedImageBlob(detailSrc, state.detail.croppedAreaPixels!, DETAIL_CROP_WIDTH, DETAIL_CROP_HEIGHT)
+            ? getCroppedImageBlob(
+                detailSrc,
+                state.detail.croppedAreaPixels!,
+                DETAIL_CROP_WIDTH,
+                DETAIL_CROP_HEIGHT
+              )
             : Promise.resolve(null),
         ]);
 
         if ((visitedCard && !cardBlob) || (visitedDetail && !detailBlob)) {
-          results.push({ type: "existing_complete", cardUrl: item.url, detailUrl: existingDetailUrl });
+          results.push({
+            type: "existing_complete",
+            cardUrl: item.url,
+            detailUrl: existingDetailUrl,
+          });
           corsFailCount++;
           continue;
         }
@@ -162,21 +179,43 @@ export default function ImageCropOverlay({
         if (cardBlob && detailBlob) {
           results.push({ type: "new", cardBlob, detailBlob });
         } else if (cardBlob) {
-          results.push({ type: "existing_card_recrop", cardBlob, detailUrl: existingDetailUrl });
+          results.push({
+            type: "existing_card_recrop",
+            cardBlob,
+            detailUrl: existingDetailUrl,
+          });
         } else {
-          results.push({ type: "existing_recrop", cardUrl: item.url, detailBlob: detailBlob! });
+          results.push({
+            type: "existing_recrop",
+            cardUrl: item.url,
+            detailBlob: detailBlob!,
+          });
         }
       } else {
         const src = getImageSrc(item);
-        const cardPixels = state.card.croppedAreaPixels ?? await getDefaultCrop(src, CARD_ASPECT_RATIO);
-        const detailPixels = state.detail.croppedAreaPixels ?? await getDefaultCrop(src, DETAIL_ASPECT_RATIO);
+        const cardPixels =
+          state.card.croppedAreaPixels ??
+          (await getDefaultCrop(src, CARD_ASPECT_RATIO));
+        const detailPixels =
+          state.detail.croppedAreaPixels ??
+          (await getDefaultCrop(src, DETAIL_ASPECT_RATIO));
 
         const [cardBlob, detailBlob] = await Promise.all([
           cardPixels
-            ? getCroppedImageBlob(src, cardPixels, CARD_CROP_WIDTH, CARD_CROP_HEIGHT)
+            ? getCroppedImageBlob(
+                src,
+                cardPixels,
+                CARD_CROP_WIDTH,
+                CARD_CROP_HEIGHT
+              )
             : null,
           detailPixels
-            ? getCroppedImageBlob(src, detailPixels, DETAIL_CROP_WIDTH, DETAIL_CROP_HEIGHT)
+            ? getCroppedImageBlob(
+                src,
+                detailPixels,
+                DETAIL_CROP_WIDTH,
+                DETAIL_CROP_HEIGHT
+              )
             : null,
         ]);
 
@@ -200,19 +239,21 @@ export default function ImageCropOverlay({
     onComplete(results);
   };
 
-  const aspectRatio = cropView === "card" ? CARD_ASPECT_RATIO : DETAIL_ASPECT_RATIO;
-  const cropLabel = cropView === "card" ? "Card Thumbnail (16:9)" : "Detail Header (21:9)";
+  const aspectRatio =
+    cropView === "card" ? CARD_ASPECT_RATIO : DETAIL_ASPECT_RATIO;
+  const cropLabel =
+    cropView === "card" ? "Card Thumbnail (16:9)" : "Detail Header (21:9)";
 
   const imageSrc = (() => {
     if (!currentItem) return "";
     if (currentItem.type === "new") return currentItem.objectUrl;
-    if (cropView === "detail") return detailUrlMap.get(currentItem.url) ?? currentItem.url;
+    if (cropView === "detail")
+      return detailUrlMap.get(currentItem.url) ?? currentItem.url;
     return currentItem.url;
   })();
 
-  const currentState = cropView === "card"
-    ? currentCropState?.card
-    : currentCropState?.detail;
+  const currentState =
+    cropView === "card" ? currentCropState?.card : currentCropState?.detail;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
@@ -257,25 +298,30 @@ export default function ImageCropOverlay({
         <div className="flex border-b-2 border-black dark:border-white flex-shrink-0">
           <button
             onClick={() => handleTabClick("card")}
-            className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors border-r-2 border-black dark:border-white ${cropView === "card"
-              ? "bg-black text-white dark:bg-white dark:text-black"
-              : "text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5"
-              }`}
+            className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors border-r-2 border-black dark:border-white ${
+              cropView === "card"
+                ? "bg-black text-white dark:bg-white dark:text-black"
+                : "text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5"
+            }`}
           >
             Card (16:9)
           </button>
           <button
             onClick={() => handleTabClick("detail")}
-            className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors ${cropView === "detail"
-              ? "bg-black text-white dark:bg-white dark:text-black"
-              : "text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5"
-              }`}
+            className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors ${
+              cropView === "detail"
+                ? "bg-black text-white dark:bg-white dark:text-black"
+                : "text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5"
+            }`}
           >
             Detail (21:9)
           </button>
         </div>
 
-        <div className="relative flex-1 min-h-0 bg-gray-900" style={{ minHeight: "280px" }}>
+        <div
+          className="relative flex-1 min-h-0 bg-gray-900"
+          style={{ minHeight: "280px" }}
+        >
           {imageSrc && currentState && (
             <Cropper
               key={`${currentItemIndex}_${cropView}`}
@@ -310,7 +356,9 @@ export default function ImageCropOverlay({
               step={0.05}
               value={currentState?.zoom ?? 1}
               onChange={(e) =>
-                updateCropState(currentItemIndex, cropView, { zoom: Number(e.target.value) })
+                updateCropState(currentItemIndex, cropView, {
+                  zoom: Number(e.target.value),
+                })
               }
               className="flex-1 accent-black dark:accent-white h-1"
             />
@@ -331,10 +379,11 @@ export default function ImageCropOverlay({
                     setCropView("card");
                     markVisited(i, "card");
                   }}
-                  className={`flex-shrink-0 relative w-12 h-12 border-2 overflow-hidden transition-all ${isCurrentImage
-                    ? "border-red-500"
-                    : "border-black dark:border-white opacity-60 hover:opacity-100"
-                    }`}
+                  className={`flex-shrink-0 relative w-12 h-12 border-2 overflow-hidden transition-all ${
+                    isCurrentImage
+                      ? "border-red-500"
+                      : "border-black dark:border-white opacity-60 hover:opacity-100"
+                  }`}
                 >
                   <img
                     src={src}

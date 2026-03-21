@@ -116,7 +116,8 @@ const CLOUDFRONT_DOMAIN = "https://cdn.example.com";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 /** Minimal valid projectData that passes projectFormDataSchema */
 const makeValidProjectData = (overrides: Record<string, any> = {}) => ({
@@ -302,7 +303,9 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 404 when GitHub API returns 404 for the repository", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockRejectedValue(
       Object.assign(new Error("Not Found"), {
         isAxiosError: true,
@@ -325,7 +328,9 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 403 when GitHub API returns 403 for the repository", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockRejectedValue(
       Object.assign(new Error("Forbidden"), {
         isAxiosError: true,
@@ -346,7 +351,9 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 500 when GitHub API returns another HTTP error status", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockRejectedValue(
       Object.assign(new Error("Internal Server Error"), {
         isAxiosError: true,
@@ -366,7 +373,9 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 400 when project already exists for 'new' modificationType", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne).mockResolvedValue(makeMockProjectDoc() as any);
 
@@ -383,7 +392,9 @@ describe("validateMediaUploadAndStoreProject", () => {
 
   it("returns 400 when project not found for 'existing' modificationType", async () => {
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne).mockResolvedValue(null as any);
 
@@ -402,7 +413,9 @@ describe("validateMediaUploadAndStoreProject", () => {
       scheduled_deletion_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne).mockResolvedValue(projectDoc as any);
 
@@ -423,11 +436,17 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 400 when 'new' imageOrder contains CloudFront URLs", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne)
       .mockResolvedValueOnce(null as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
 
     const req = makeReq({
       projectData: makeValidProjectData({
@@ -447,14 +466,20 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 400 when S3 validation throws (Error instance)", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne)
       .mockResolvedValueOnce(null as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockRejectedValue(
-      new Error("Object not found in S3")
-    );
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockRejectedValue(new Error("Object not found in S3"));
 
     const req = makeReq();
     validateMediaUploadAndStoreProject(req as any, res, next);
@@ -466,11 +491,17 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 400 when imageOrder_detail length mismatches imageOrder length", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne)
       .mockResolvedValueOnce(null as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
     // Card image + 2 detail images → mismatch (1 vs 2)
     vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl)
       .mockResolvedValueOnce(`${CLOUDFRONT_DOMAIN}/card.png` as any)
@@ -479,7 +510,7 @@ describe("validateMediaUploadAndStoreProject", () => {
 
     const req = makeReq({
       projectData: makeValidProjectData({
-        imageOrder: ["projectMedia/card.png"],          // 1 card image
+        imageOrder: ["projectMedia/card.png"], // 1 card image
         imageOrder_detail: [
           "projectMedia/detail1.png",
           "projectMedia/detail2.png",
@@ -500,14 +531,20 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 200, creates project, and fires processRepoZipUpload for 'new' project", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne)
       .mockResolvedValueOnce(null as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
-      `${CLOUDFRONT_DOMAIN}/new-img.png` as any
-    );
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockResolvedValue(`${CLOUDFRONT_DOMAIN}/new-img.png` as any);
     vi.mocked(Project.create).mockResolvedValue({
       _id: "new_project_id",
       github_repo_id: VALID_REPO_ID,
@@ -534,12 +571,14 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 500 when Project.create throws", async () => {
     stubNewLimitCheck(0, 2);
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne).mockResolvedValue(null as any);
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
-      `${CLOUDFRONT_DOMAIN}/new-img.png` as any
-    );
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockResolvedValue(`${CLOUDFRONT_DOMAIN}/new-img.png` as any);
     vi.mocked(Project.create).mockRejectedValue(new Error("DB write error"));
 
     const req = makeReq();
@@ -554,14 +593,20 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("returns 200 and saves existing project via set().save()", async () => {
     const projectDoc = makeMockProjectDoc();
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne)
       .mockResolvedValueOnce(projectDoc as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
-      `${CLOUDFRONT_DOMAIN}/updated-img.png` as any
-    );
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockResolvedValue(`${CLOUDFRONT_DOMAIN}/updated-img.png` as any);
 
     const req = makeReq({ modificationType: "existing" });
     validateMediaUploadAndStoreProject(req as any, res, next);
@@ -580,15 +625,21 @@ describe("validateMediaUploadAndStoreProject", () => {
       project_images: [oldImgUrl],
     });
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne)
       .mockResolvedValueOnce(projectDoc as any)
-      .mockReturnValueOnce({ select: vi.fn().mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }) } as any);
+      .mockReturnValueOnce({
+        select: vi
+          .fn()
+          .mockReturnValue({ lean: vi.fn().mockResolvedValue(null) }),
+      } as any);
     // New S3 key resolves to a different CloudFront URL
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
-      `${CLOUDFRONT_DOMAIN}/new-replacement.png` as any
-    );
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockResolvedValue(`${CLOUDFRONT_DOMAIN}/new-replacement.png` as any);
     vi.mocked(redisClient.zadd).mockResolvedValue(1 as any);
 
     const req = makeReq({
@@ -613,12 +664,14 @@ describe("validateMediaUploadAndStoreProject", () => {
       save: vi.fn().mockRejectedValue(new Error("Save failed")),
     });
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne).mockResolvedValue(projectDoc as any);
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
-      `${CLOUDFRONT_DOMAIN}/updated-img.png` as any
-    );
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockResolvedValue(`${CLOUDFRONT_DOMAIN}/updated-img.png` as any);
 
     const req = makeReq({ modificationType: "existing" });
     validateMediaUploadAndStoreProject(req as any, res, next);
@@ -632,12 +685,14 @@ describe("validateMediaUploadAndStoreProject", () => {
   it("does NOT check listing limit for 'existing' modificationType", async () => {
     const projectDoc = makeMockProjectDoc();
     stubInstallation({ installation_id: INSTALLATION_ID });
-    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue("ghs_token");
+    vi.mocked(githubAppService.getInstallationToken).mockResolvedValue(
+      "ghs_token"
+    );
     vi.mocked(axios.get).mockResolvedValue({} as any);
     vi.mocked(Project.findOne).mockResolvedValue(projectDoc as any);
-    vi.mocked(s3Service.validateAndCreatePreSignedDownloadUrl).mockResolvedValue(
-      `${CLOUDFRONT_DOMAIN}/img.png` as any
-    );
+    vi.mocked(
+      s3Service.validateAndCreatePreSignedDownloadUrl
+    ).mockResolvedValue(`${CLOUDFRONT_DOMAIN}/img.png` as any);
 
     const req = makeReq({ modificationType: "existing" });
     validateMediaUploadAndStoreProject(req as any, res, next);

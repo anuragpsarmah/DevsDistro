@@ -42,7 +42,10 @@ export default class RepoZipUploadService {
     const { full_name, default_branch } = repoResponse.data;
 
     const [treeResponse, treeError] = await tryCatch(
-      axios.get<{ tree: Array<{ path: string; type: string }>; truncated: boolean }>(
+      axios.get<{
+        tree: Array<{ path: string; type: string }>;
+        truncated: boolean;
+      }>(
         `https://api.github.com/repos/${full_name}/git/trees/${default_branch}?recursive=1`,
         {
           headers: {
@@ -62,7 +65,9 @@ export default class RepoZipUploadService {
     const { tree: entries, truncated } = treeResponse.data;
 
     if (truncated) {
-      logger.warn("Repo tree was truncated by GitHub (>100k entries)", { projectId });
+      logger.warn("Repo tree was truncated by GitHub (>100k entries)", {
+        projectId,
+      });
     }
 
     const root: TreeNode = { name: "root", type: "directory", children: [] };
@@ -71,8 +76,10 @@ export default class RepoZipUploadService {
 
     for (const entry of entries) {
       const lastSlash = entry.path.lastIndexOf("/");
-      const parentPath = lastSlash === -1 ? "" : entry.path.substring(0, lastSlash);
-      const name = lastSlash === -1 ? entry.path : entry.path.substring(lastSlash + 1);
+      const parentPath =
+        lastSlash === -1 ? "" : entry.path.substring(0, lastSlash);
+      const name =
+        lastSlash === -1 ? entry.path : entry.path.substring(lastSlash + 1);
 
       const parent = nodeMap.get(parentPath);
       if (!parent?.children) continue;
@@ -123,7 +130,10 @@ export default class RepoZipUploadService {
       if (findError || !project) {
         logger.error("Failed to find project for ZIP upload", {
           projectId,
-          error: findError instanceof Error ? findError.message : "Project not found",
+          error:
+            findError instanceof Error
+              ? findError.message
+              : "Project not found",
         });
         await redisClient.del(lockKey);
         return;
@@ -211,10 +221,16 @@ export default class RepoZipUploadService {
       );
 
       if (updateError) {
-        logger.error("Failed to update project status after successful upload", {
-          projectId,
-          error: updateError instanceof Error ? updateError.message : "Unknown error",
-        });
+        logger.error(
+          "Failed to update project status after successful upload",
+          {
+            projectId,
+            error:
+              updateError instanceof Error
+                ? updateError.message
+                : "Unknown error",
+          }
+        );
       }
 
       logger.info("Repo ZIP uploaded successfully", {

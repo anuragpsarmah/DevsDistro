@@ -32,26 +32,27 @@ import axios from "axios";
 import { verifySolanaTransaction } from "../utils/solanaVerification.util";
 
 // ─── Constants (taken from the real test purchase in the DB) ─────────────────
-const BUYER =    "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
-const SELLER =   "ppjF9VR27TTxWCgWiGnjzEjuMBZDtyY9WQD5eCvyzNk";
+const BUYER = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
+const SELLER = "ppjF9VR27TTxWCgWiGnjzEjuMBZDtyY9WQD5eCvyzNk";
 const TREASURY = "AP3T1RCrTYSyC2Zq9Tq8ZJiKvWmatzbpzJgNZyET4Z4B";
-const REF =      "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
-const TX_SIG =   "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
-const RPC_URL =  "https://api.devnet.solana.com";
+const REF = "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
+const TX_SIG =
+  "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
+const RPC_URL = "https://api.devnet.solana.com";
 
-const SELLER_LAMPORTS =   11_454_356;
+const SELLER_LAMPORTS = 11_454_356;
 const TREASURY_LAMPORTS = 115_701;
 
 // ─── Default params object ───────────────────────────────────────────────────
 const BASE_PARAMS = {
-  txSignature:              TX_SIG,
-  expectedBuyerWallet:      BUYER,
-  expectedSellerWallet:     SELLER,
-  expectedTreasuryWallet:   TREASURY,
-  expectedSellerLamports:   SELLER_LAMPORTS,
+  txSignature: TX_SIG,
+  expectedBuyerWallet: BUYER,
+  expectedSellerWallet: SELLER,
+  expectedTreasuryWallet: TREASURY,
+  expectedSellerLamports: SELLER_LAMPORTS,
   expectedTreasuryLamports: TREASURY_LAMPORTS,
-  purchaseReference:        REF,
-  rpcUrl:                   RPC_URL,
+  purchaseReference: REF,
+  rpcUrl: RPC_URL,
 };
 
 // ─── Mock RPC response builder ───────────────────────────────────────────────
@@ -59,23 +60,23 @@ const BASE_PARAMS = {
 // Constructs a mock axios response that looks like a real Solana jsonParsed
 // getTransaction result. Individual fields can be overridden per test.
 interface MockTxOptions {
-  buyerPubkey?:      string;
-  sellerPubkey?:     string;
-  treasuryPubkey?:   string;
-  sellerReceived?:   number;
+  buyerPubkey?: string;
+  sellerPubkey?: string;
+  treasuryPubkey?: string;
+  sellerReceived?: number;
   treasuryReceived?: number;
-  memo?:             string | null; // null = omit memo instruction entirely
-  metaErr?:          unknown;       // non-null = transaction failed on-chain
+  memo?: string | null; // null = omit memo instruction entirely
+  metaErr?: unknown; // non-null = transaction failed on-chain
 }
 
 function buildRpcResponse({
-  buyerPubkey      = BUYER,
-  sellerPubkey     = SELLER,
-  treasuryPubkey   = TREASURY,
-  sellerReceived   = SELLER_LAMPORTS,
+  buyerPubkey = BUYER,
+  sellerPubkey = SELLER,
+  treasuryPubkey = TREASURY,
+  sellerReceived = SELLER_LAMPORTS,
   treasuryReceived = TREASURY_LAMPORTS,
-  memo             = REF as string | null,
-  metaErr          = null,
+  memo = REF as string | null,
+  metaErr = null,
 }: MockTxOptions = {}) {
   const instructions: unknown[] = [
     // Two SystemProgram transfers (buyer → seller, buyer → treasury)
@@ -93,7 +94,7 @@ function buildRpcResponse({
         meta: {
           err: metaErr,
           // Indices align with accountKeys below
-          preBalances:  [1_000_000_000, 0, 0],
+          preBalances: [1_000_000_000, 0, 0],
           postBalances: [
             1_000_000_000 - sellerReceived - treasuryReceived - 5_000,
             sellerReceived,
@@ -103,8 +104,8 @@ function buildRpcResponse({
         transaction: {
           message: {
             accountKeys: [
-              { pubkey: buyerPubkey },    // index 0 = fee payer
-              { pubkey: sellerPubkey },   // index 1
+              { pubkey: buyerPubkey }, // index 0 = fee payer
+              { pubkey: sellerPubkey }, // index 1
               { pubkey: treasuryPubkey }, // index 2
             ],
             instructions,
@@ -153,7 +154,9 @@ describe("verifySolanaTransaction", () => {
 
   it("returns valid: false when the transaction failed on-chain (meta.err !== null)", async () => {
     mockPost.mockResolvedValueOnce(
-      buildRpcResponse({ metaErr: { InstructionError: [0, "InvalidAccountData"] } })
+      buildRpcResponse({
+        metaErr: { InstructionError: [0, "InvalidAccountData"] },
+      })
     );
     const result = await verifySolanaTransaction(BASE_PARAMS);
     expect(result.valid).toBe(false);
@@ -258,7 +261,9 @@ describe("verifySolanaTransaction", () => {
 
   it("returns valid: false when the memo is a completely different string", async () => {
     mockPost.mockResolvedValueOnce(
-      buildRpcResponse({ memo: "aaaa1111bbbb2222cccc3333dddd4444eeee5555ffff6666gggg7777hhhh8888" })
+      buildRpcResponse({
+        memo: "aaaa1111bbbb2222cccc3333dddd4444eeee5555ffff6666gggg7777hhhh8888",
+      })
     );
     const result = await verifySolanaTransaction(BASE_PARAMS);
     expect(result.valid).toBe(false);
@@ -301,7 +306,7 @@ describe("verifySolanaTransaction", () => {
   it("returns valid: false when preBalances and postBalances have mismatched lengths", async () => {
     // The balance arrays being out of sync indicates a malformed RPC response.
     const response = buildRpcResponse();
-    response.data.result.meta.preBalances = [1_000_000_000];        // length 1
+    response.data.result.meta.preBalances = [1_000_000_000]; // length 1
     response.data.result.meta.postBalances = [900_000_000, 50_000]; // length 2
     mockPost.mockResolvedValueOnce(response);
     const result = await verifySolanaTransaction(BASE_PARAMS);

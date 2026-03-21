@@ -56,7 +56,8 @@ const VALID_SELLER_ID = "507f191e810c19729de860ef";
 const VALID_PROJECT_ID = "507f191e810c19729de860ea";
 const VALID_REVIEW_ID = "507f191e810c19729de860ab";
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) =>
   ({
@@ -140,7 +141,10 @@ describe("reviews.controller", () => {
 
   describe("submitProjectReview (POST /reviews/project)", () => {
     it("returns 401 when user is unauthenticated", async () => {
-      const req = makeReq({ user: undefined, body: { project_id: VALID_PROJECT_ID, rating: 5 } });
+      const req = makeReq({
+        user: undefined,
+        body: { project_id: VALID_PROJECT_ID, rating: 5 },
+      });
       submitProjectReview(req, res, next);
       await flushPromises();
 
@@ -157,14 +161,22 @@ describe("reviews.controller", () => {
     });
 
     it("returns 409 when review already exists and does not create duplicate", async () => {
-      mockProjectFindById({ _id: VALID_PROJECT_ID, userid: VALID_SELLER_ID, isActive: true });
+      mockProjectFindById({
+        _id: VALID_PROJECT_ID,
+        userid: VALID_SELLER_ID,
+        isActive: true,
+      });
       mockPurchaseFindOne({ _id: "purchase_1" });
       vi.mocked(Review.create).mockRejectedValue(
         Object.assign(new Error("Duplicate key"), { code: 11000 })
       );
 
       const req = makeReq({
-        body: { project_id: VALID_PROJECT_ID, rating: 4, review: "already reviewed" },
+        body: {
+          project_id: VALID_PROJECT_ID,
+          rating: 4,
+          review: "already reviewed",
+        },
       });
       submitProjectReview(req, res, next);
       await flushPromises();
@@ -173,7 +185,11 @@ describe("reviews.controller", () => {
     });
 
     it("enforces confirmed purchase when submitting a review", async () => {
-      mockProjectFindById({ _id: VALID_PROJECT_ID, userid: VALID_SELLER_ID, isActive: true });
+      mockProjectFindById({
+        _id: VALID_PROJECT_ID,
+        userid: VALID_SELLER_ID,
+        isActive: true,
+      });
       mockPurchaseFindOne(null);
       mockReviewFindOne(null);
 
@@ -190,7 +206,11 @@ describe("reviews.controller", () => {
     });
 
     it("creates review and recalculates project and seller aggregates", async () => {
-      mockProjectFindById({ _id: VALID_PROJECT_ID, userid: VALID_SELLER_ID, isActive: true });
+      mockProjectFindById({
+        _id: VALID_PROJECT_ID,
+        userid: VALID_SELLER_ID,
+        isActive: true,
+      });
       mockPurchaseFindOne({ _id: "purchase_1" });
       mockReviewFindOne(null);
       vi.mocked(Review.create).mockResolvedValue({
@@ -219,7 +239,9 @@ describe("reviews.controller", () => {
       expect(Sales.updateOne).toHaveBeenCalledWith(
         { userId: expect.anything() },
         expect.objectContaining({
-          $set: expect.objectContaining({ customer_rating: expect.any(Number) }),
+          $set: expect.objectContaining({
+            customer_rating: expect.any(Number),
+          }),
           $setOnInsert: expect.any(Object),
         }),
         { upsert: true }
@@ -230,7 +252,9 @@ describe("reviews.controller", () => {
   describe("updateProjectReview (PUT /reviews/project)", () => {
     it("returns 403 if user did not purchase project in confirmed state", async () => {
       mockPurchaseFindOne(null);
-      const req = makeReq({ body: { project_id: VALID_PROJECT_ID, rating: 4, review: "text" } });
+      const req = makeReq({
+        body: { project_id: VALID_PROJECT_ID, rating: 4, review: "text" },
+      });
       updateProjectReview(req, res, next);
       await flushPromises();
 
@@ -246,7 +270,9 @@ describe("reviews.controller", () => {
         lean: vi.fn().mockResolvedValue(null),
       } as any);
 
-      const req = makeReq({ body: { project_id: VALID_PROJECT_ID, rating: 3, review: "" } });
+      const req = makeReq({
+        body: { project_id: VALID_PROJECT_ID, rating: 3, review: "" },
+      });
       updateProjectReview(req, res, next);
       await flushPromises();
 
@@ -265,7 +291,9 @@ describe("reviews.controller", () => {
         }),
       } as any);
 
-      const req = makeReq({ body: { project_id: VALID_PROJECT_ID, rating: 2, review: "changed" } });
+      const req = makeReq({
+        body: { project_id: VALID_PROJECT_ID, rating: 2, review: "changed" },
+      });
       updateProjectReview(req, res, next);
       await flushPromises();
 
@@ -395,7 +423,9 @@ describe("reviews.controller", () => {
       } as any);
       vi.mocked(Review.countDocuments).mockResolvedValue(1 as any);
 
-      const req = makeReq({ query: { project_id: VALID_PROJECT_ID, offset: "0", limit: "10" } });
+      const req = makeReq({
+        query: { project_id: VALID_PROJECT_ID, offset: "0", limit: "10" },
+      });
       getProjectReviews(req, res, next);
       await flushPromises();
 

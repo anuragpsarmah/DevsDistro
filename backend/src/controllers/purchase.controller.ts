@@ -337,7 +337,10 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       Purchase.findOne({ tx_signature }).select("_id projectId").lean()
     );
     if (!raceCheckErr && raceCheck) {
-      enrichContext({ outcome: "success", reason: "race_condition_idempotent_late" });
+      enrichContext({
+        outcome: "success",
+        reason: "race_condition_idempotent_late",
+      });
       response(res, 200, "Purchase already confirmed", {
         projectId: raceCheck.projectId,
       });
@@ -627,7 +630,9 @@ const getPurchasedProjects = asyncHandler(
     const limit = rawLimit
       ? Math.min(Math.max(parseInt(rawLimit as string, 10) || 12, 1), 50)
       : null;
-    const offset = rawOffset ? Math.max(parseInt(rawOffset as string, 10) || 0, 0) : 0;
+    const offset = rawOffset
+      ? Math.max(parseInt(rawOffset as string, 10) || 0, 0)
+      : 0;
 
     const baseQuery = { buyerId, status: "CONFIRMED" };
 
@@ -650,24 +655,28 @@ const getPurchasedProjects = asyncHandler(
 
     if (limit !== null) {
       // Paginated path
-      const [[purchases, purchasesError], [totalCount, countError]] = await Promise.all([
-        tryCatch(
-          Purchase.find(baseQuery)
-            .populate({
-              path: "projectId",
-              select: PURCHASED_PROJECT_SELECT,
-              populate: PURCHASED_SELLER_POPULATE,
-            })
-            .sort({ createdAt: -1 })
-            .skip(offset)
-            .limit(limit)
-            .lean()
-        ),
-        tryCatch(Purchase.countDocuments(baseQuery)),
-      ]);
+      const [[purchases, purchasesError], [totalCount, countError]] =
+        await Promise.all([
+          tryCatch(
+            Purchase.find(baseQuery)
+              .populate({
+                path: "projectId",
+                select: PURCHASED_PROJECT_SELECT,
+                populate: PURCHASED_SELLER_POPULATE,
+              })
+              .sort({ createdAt: -1 })
+              .skip(offset)
+              .limit(limit)
+              .lean()
+          ),
+          tryCatch(Purchase.countDocuments(baseQuery)),
+        ]);
 
       if (purchasesError || countError) {
-        logger.error("Failed to fetch purchased projects", purchasesError ?? countError);
+        logger.error(
+          "Failed to fetch purchased projects",
+          purchasesError ?? countError
+        );
         response(res, 500, "Failed to fetch purchases. Try again later.");
         return;
       }
@@ -682,7 +691,15 @@ const getPurchasedProjects = asyncHandler(
       enrichContext({ outcome: "success", purchase_count: total });
       response(res, 200, "Purchased projects fetched successfully", {
         purchases: validPurchases,
-        pagination: { totalCount: total, currentPage, totalPages, hasNextPage, hasPrevPage, limit, offset },
+        pagination: {
+          totalCount: total,
+          currentPage,
+          totalPages,
+          hasNextPage,
+          hasPrevPage,
+          limit,
+          offset,
+        },
       });
     } else {
       // Non-paginated path (backward compatible — returns all purchases)
@@ -707,7 +724,10 @@ const getPurchasedProjects = asyncHandler(
       // Snapshot fields provide fallback data for deleted-project purchases.
       const validPurchases = (purchases ?? []).map(mapPurchase);
 
-      enrichContext({ outcome: "success", purchase_count: validPurchases.length });
+      enrichContext({
+        outcome: "success",
+        purchase_count: validPurchases.length,
+      });
       response(res, 200, "Purchased projects fetched successfully", {
         purchases: validPurchases,
       });

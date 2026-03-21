@@ -17,7 +17,8 @@ const asyncHandler = (
         error: {
           message: error.message,
           name: error.name,
-          stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+          stack:
+            process.env.NODE_ENV === "development" ? error.stack : undefined,
         },
         error_message: error.message,
       });
@@ -47,4 +48,3 @@ const asyncHandler = (
 };
 
 export default asyncHandler;
-

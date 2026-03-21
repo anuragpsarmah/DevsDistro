@@ -126,7 +126,8 @@ const GITHUB_REPO_ID_2 = 22222222;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeRes = () => {
   const res: any = {};
@@ -138,10 +139,7 @@ const makeRes = () => {
 const next = vi.fn();
 
 /** Build a webhook request for any event/action */
-const makeWebhookReq = (
-  event: string,
-  payload: Record<string, any>
-) => ({
+const makeWebhookReq = (event: string, payload: Record<string, any>) => ({
   headers: {
     "x-github-event": event,
     "x-hub-signature-256": "sha256=valid_signature",
@@ -153,7 +151,10 @@ const makeWebhookReq = (
   },
 });
 
-const mockInstallationPayload = (action: string, extras: Record<string, any> = {}) => ({
+const mockInstallationPayload = (
+  action: string,
+  extras: Record<string, any> = {}
+) => ({
   action,
   installation: {
     id: INSTALLATION_ID,
@@ -176,7 +177,10 @@ describe("handleWebhook — signature verification", () => {
 
   it("returns 401 when signature is invalid (installation event)", async () => {
     vi.mocked(githubAppService.verifyWebhookSignature).mockReturnValue(false);
-    const req = makeWebhookReq("installation", mockInstallationPayload("deleted"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("deleted")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -201,10 +205,15 @@ describe("handleInstallationEvent — 'deleted'", () => {
       installation_id: INSTALLATION_ID,
       user_id: VALID_USER_ID,
     } as any);
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 3 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 3,
+    } as any);
     vi.mocked(redisClient.del).mockResolvedValue(1 as any);
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("deleted"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("deleted")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -215,14 +224,21 @@ describe("handleInstallationEvent — 'deleted'", () => {
       { userid: VALID_USER_ID },
       { isActive: false, github_access_revoked: true }
     );
-    expect(redisClient.del).toHaveBeenCalledWith(`private-repos:${VALID_USER_ID}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `private-repos:${VALID_USER_ID}`
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
   it("does NOT call Project.updateMany when installation is not found in DB", async () => {
-    vi.mocked(GitHubAppInstallation.findOneAndDelete).mockResolvedValue(null as any);
+    vi.mocked(GitHubAppInstallation.findOneAndDelete).mockResolvedValue(
+      null as any
+    );
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("deleted"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("deleted")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -236,7 +252,10 @@ describe("handleInstallationEvent — 'deleted'", () => {
       new Error("DB timeout")
     );
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("deleted"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("deleted")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -257,16 +276,22 @@ describe("handleInstallationEvent — 'suspend'", () => {
   });
 
   it("updates installation suspended_at, deactivates projects, clears cache", async () => {
-    vi.mocked(GitHubAppInstallation.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
+    vi.mocked(GitHubAppInstallation.updateOne).mockResolvedValue({
+      modifiedCount: 1,
+    } as any);
     vi.mocked(GitHubAppInstallation.findOne).mockReturnValue({
       select: vi.fn().mockResolvedValue({ user_id: VALID_USER_ID }),
     } as any);
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 2 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 2,
+    } as any);
     vi.mocked(redisClient.del).mockResolvedValue(1 as any);
 
     const req = makeWebhookReq(
       "installation",
-      mockInstallationPayload("suspend", { suspended_at: "2025-01-01T00:00:00Z" })
+      mockInstallationPayload("suspend", {
+        suspended_at: "2025-01-01T00:00:00Z",
+      })
     );
     handleWebhook(req as any, res, next);
     await flushPromises();
@@ -279,17 +304,24 @@ describe("handleInstallationEvent — 'suspend'", () => {
       { userid: VALID_USER_ID },
       { isActive: false, github_access_revoked: true }
     );
-    expect(redisClient.del).toHaveBeenCalledWith(`private-repos:${VALID_USER_ID}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `private-repos:${VALID_USER_ID}`
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
   it("does NOT call Project.updateMany when no installation record found after suspend", async () => {
-    vi.mocked(GitHubAppInstallation.updateOne).mockResolvedValue({ modifiedCount: 0 } as any);
+    vi.mocked(GitHubAppInstallation.updateOne).mockResolvedValue({
+      modifiedCount: 0,
+    } as any);
     vi.mocked(GitHubAppInstallation.findOne).mockReturnValue({
       select: vi.fn().mockResolvedValue(null), // no record
     } as any);
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("suspend"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("suspend")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -313,10 +345,15 @@ describe("handleInstallationEvent — 'unsuspend'", () => {
     vi.mocked(GitHubAppInstallation.findOneAndUpdate).mockReturnValue({
       select: vi.fn().mockResolvedValue({ user_id: VALID_USER_ID }),
     } as any);
-    vi.mocked(githubAppService.reactivateProjectsWithRestoredAccess).mockResolvedValue(3);
+    vi.mocked(
+      githubAppService.reactivateProjectsWithRestoredAccess
+    ).mockResolvedValue(3);
     vi.mocked(redisClient.del).mockResolvedValue(1 as any);
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("unsuspend"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("unsuspend")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -324,11 +361,12 @@ describe("handleInstallationEvent — 'unsuspend'", () => {
       { installation_id: INSTALLATION_ID },
       { suspended_at: null }
     );
-    expect(githubAppService.reactivateProjectsWithRestoredAccess).toHaveBeenCalledWith(
-      VALID_USER_ID,
-      INSTALLATION_ID
+    expect(
+      githubAppService.reactivateProjectsWithRestoredAccess
+    ).toHaveBeenCalledWith(VALID_USER_ID, INSTALLATION_ID);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `private-repos:${VALID_USER_ID}`
     );
-    expect(redisClient.del).toHaveBeenCalledWith(`private-repos:${VALID_USER_ID}`);
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
@@ -337,11 +375,16 @@ describe("handleInstallationEvent — 'unsuspend'", () => {
       select: vi.fn().mockResolvedValue(null),
     } as any);
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("unsuspend"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("unsuspend")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
-    expect(githubAppService.reactivateProjectsWithRestoredAccess).not.toHaveBeenCalled();
+    expect(
+      githubAppService.reactivateProjectsWithRestoredAccess
+    ).not.toHaveBeenCalled();
     expect(redisClient.del).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(200);
   });
@@ -350,11 +393,14 @@ describe("handleInstallationEvent — 'unsuspend'", () => {
     vi.mocked(GitHubAppInstallation.findOneAndUpdate).mockReturnValue({
       select: vi.fn().mockResolvedValue({ user_id: VALID_USER_ID }),
     } as any);
-    vi.mocked(githubAppService.reactivateProjectsWithRestoredAccess).mockRejectedValue(
-      new Error("Reactivation failed")
-    );
+    vi.mocked(
+      githubAppService.reactivateProjectsWithRestoredAccess
+    ).mockRejectedValue(new Error("Reactivation failed"));
 
-    const req = makeWebhookReq("installation", mockInstallationPayload("unsuspend"));
+    const req = makeWebhookReq(
+      "installation",
+      mockInstallationPayload("unsuspend")
+    );
     handleWebhook(req as any, res, next);
     await flushPromises();
 
@@ -375,7 +421,9 @@ describe("handleInstallationRepositoriesEvent — 'removed'", () => {
   });
 
   it("calls Project.updateMany with removed repo IDs and clears cache", async () => {
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 2 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 2,
+    } as any);
     vi.mocked(GitHubAppInstallation.findOne).mockReturnValue({
       select: vi.fn().mockResolvedValue({
         user_id: VALID_USER_ID,
@@ -386,7 +434,10 @@ describe("handleInstallationRepositoriesEvent — 'removed'", () => {
 
     const req = makeWebhookReq("installation_repositories", {
       action: "removed",
-      installation: { id: INSTALLATION_ID, account: { login: "u", id: 1, type: "User" } },
+      installation: {
+        id: INSTALLATION_ID,
+        account: { login: "u", id: 1, type: "User" },
+      },
       repositories_removed: [
         { id: GITHUB_REPO_ID_1, name: "repo-1", full_name: "u/repo-1" },
         { id: GITHUB_REPO_ID_2, name: "repo-2", full_name: "u/repo-2" },
@@ -403,14 +454,22 @@ describe("handleInstallationRepositoriesEvent — 'removed'", () => {
           $in: [GITHUB_REPO_ID_1.toString(), GITHUB_REPO_ID_2.toString()],
         },
       }),
-      { isActive: false, github_access_revoked: true, github_installation_id: INSTALLATION_ID }
+      {
+        isActive: false,
+        github_access_revoked: true,
+        github_installation_id: INSTALLATION_ID,
+      }
     );
-    expect(redisClient.del).toHaveBeenCalledWith(`private-repos:${VALID_USER_ID}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `private-repos:${VALID_USER_ID}`
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
   it("does NOT call redisClient.del when installation is suspended", async () => {
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 1 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 1,
+    } as any);
     vi.mocked(GitHubAppInstallation.findOne).mockReturnValue({
       select: vi.fn().mockResolvedValue({
         user_id: VALID_USER_ID,
@@ -420,7 +479,10 @@ describe("handleInstallationRepositoriesEvent — 'removed'", () => {
 
     const req = makeWebhookReq("installation_repositories", {
       action: "removed",
-      installation: { id: INSTALLATION_ID, account: { login: "u", id: 1, type: "User" } },
+      installation: {
+        id: INSTALLATION_ID,
+        account: { login: "u", id: 1, type: "User" },
+      },
       repositories_removed: [
         { id: GITHUB_REPO_ID_1, name: "repo-1", full_name: "u/repo-1" },
       ],
@@ -455,14 +517,24 @@ describe("handleInstallationRepositoriesEvent — 'added'", () => {
         suspended_at: null, // not suspended
       }),
     } as any);
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 1 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 1,
+    } as any);
     vi.mocked(redisClient.del).mockResolvedValue(1 as any);
 
     const req = makeWebhookReq("installation_repositories", {
       action: "added",
-      installation: { id: INSTALLATION_ID, account: { login: "u", id: 1, type: "User" } },
+      installation: {
+        id: INSTALLATION_ID,
+        account: { login: "u", id: 1, type: "User" },
+      },
       repositories_added: [
-        { id: GITHUB_REPO_ID_1, name: "repo-1", full_name: "u/repo-1", private: true },
+        {
+          id: GITHUB_REPO_ID_1,
+          name: "repo-1",
+          full_name: "u/repo-1",
+          private: true,
+        },
       ],
       sender: { login: "u", id: 1 },
     });
@@ -481,7 +553,9 @@ describe("handleInstallationRepositoriesEvent — 'added'", () => {
         github_installation_id: INSTALLATION_ID,
       }
     );
-    expect(redisClient.del).toHaveBeenCalledWith(`private-repos:${VALID_USER_ID}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `private-repos:${VALID_USER_ID}`
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
@@ -495,9 +569,17 @@ describe("handleInstallationRepositoriesEvent — 'added'", () => {
 
     const req = makeWebhookReq("installation_repositories", {
       action: "added",
-      installation: { id: INSTALLATION_ID, account: { login: "u", id: 1, type: "User" } },
+      installation: {
+        id: INSTALLATION_ID,
+        account: { login: "u", id: 1, type: "User" },
+      },
       repositories_added: [
-        { id: GITHUB_REPO_ID_1, name: "repo-1", full_name: "u/repo-1", private: true },
+        {
+          id: GITHUB_REPO_ID_1,
+          name: "repo-1",
+          full_name: "u/repo-1",
+          private: true,
+        },
       ],
       sender: { login: "u", id: 1 },
     });
@@ -515,9 +597,17 @@ describe("handleInstallationRepositoriesEvent — 'added'", () => {
 
     const req = makeWebhookReq("installation_repositories", {
       action: "added",
-      installation: { id: INSTALLATION_ID, account: { login: "u", id: 1, type: "User" } },
+      installation: {
+        id: INSTALLATION_ID,
+        account: { login: "u", id: 1, type: "User" },
+      },
       repositories_added: [
-        { id: GITHUB_REPO_ID_1, name: "repo-1", full_name: "u/repo-1", private: true },
+        {
+          id: GITHUB_REPO_ID_1,
+          name: "repo-1",
+          full_name: "u/repo-1",
+          private: true,
+        },
       ],
       sender: { login: "u", id: 1 },
     });
@@ -541,7 +631,9 @@ describe("handleRepositoryEvent — 'deleted'", () => {
   });
 
   it("marks projects as access revoked and clears user's cache", async () => {
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 1 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 1,
+    } as any);
     vi.mocked(Project.findOne).mockReturnValue({
       select: vi.fn().mockReturnValue({
         lean: vi.fn().mockResolvedValue({ userid: VALID_USER_ID }),
@@ -569,12 +661,16 @@ describe("handleRepositoryEvent — 'deleted'", () => {
     expect(Project.findOne).toHaveBeenCalledWith({
       github_repo_id: GITHUB_REPO_ID_1.toString(),
     });
-    expect(redisClient.del).toHaveBeenCalledWith(`private-repos:${VALID_USER_ID}`);
+    expect(redisClient.del).toHaveBeenCalledWith(
+      `private-repos:${VALID_USER_ID}`
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
   it("does NOT call redisClient.del when no project found for deleted repo", async () => {
-    vi.mocked(Project.updateMany).mockResolvedValue({ modifiedCount: 0 } as any);
+    vi.mocked(Project.updateMany).mockResolvedValue({
+      modifiedCount: 0,
+    } as any);
     vi.mocked(Project.findOne).mockReturnValue({
       select: vi.fn().mockReturnValue({
         lean: vi.fn().mockResolvedValue(null), // no project
@@ -583,7 +679,12 @@ describe("handleRepositoryEvent — 'deleted'", () => {
 
     const req = makeWebhookReq("repository", {
       action: "deleted",
-      repository: { id: GITHUB_REPO_ID_1, name: "my-repo", full_name: "u/my-repo", private: true },
+      repository: {
+        id: GITHUB_REPO_ID_1,
+        name: "my-repo",
+        full_name: "u/my-repo",
+        private: true,
+      },
       sender: { login: "u", id: 1 },
     });
     handleWebhook(req as any, res, next);
@@ -603,7 +704,12 @@ describe("handleRepositoryEvent — 'deleted'", () => {
 
     const req = makeWebhookReq("repository", {
       action: "deleted",
-      repository: { id: GITHUB_REPO_ID_1, name: "repo", full_name: "u/repo", private: true },
+      repository: {
+        id: GITHUB_REPO_ID_1,
+        name: "repo",
+        full_name: "u/repo",
+        private: true,
+      },
       sender: { login: "u", id: 1 },
     });
     handleWebhook(req as any, res, next);

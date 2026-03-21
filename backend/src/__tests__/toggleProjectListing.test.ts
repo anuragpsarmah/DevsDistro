@@ -102,7 +102,8 @@ const FUTURE_DATE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -126,7 +127,11 @@ const next = vi.fn();
  * Stubs the Promise.all call in toggleProjectListing:
  * [ Project.findOne().select(...), User.findById().select().lean(), Project.countDocuments() ]
  */
-const stubQueryAll = (projectMock: any, userMock: any, activeCount: number = 0) => {
+const stubQueryAll = (
+  projectMock: any,
+  userMock: any,
+  activeCount: number = 0
+) => {
   vi.mocked(Project.findOne).mockReturnValue({
     select: vi.fn().mockResolvedValue(projectMock),
   } as any);
@@ -195,7 +200,9 @@ describe("toggleProjectListing — full flow", () => {
 
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Invalid Repo ID. No such records found." })
+      expect.objectContaining({
+        message: "Invalid Repo ID. No such records found.",
+      })
     );
     expect(Project.findOneAndUpdate).not.toHaveBeenCalled();
   });
@@ -241,7 +248,9 @@ describe("toggleProjectListing — full flow", () => {
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: expect.stringContaining("GitHub repository access has been revoked"),
+        message: expect.stringContaining(
+          "GitHub repository access has been revoked"
+        ),
       })
     );
     expect(Project.findOneAndUpdate).not.toHaveBeenCalled();
@@ -357,7 +366,9 @@ describe("toggleProjectListing — full flow", () => {
       },
       { project_listing_limit: 2 }
     );
-    vi.mocked(Project.findOneAndUpdate).mockRejectedValue(new Error("DB error"));
+    vi.mocked(Project.findOneAndUpdate).mockRejectedValue(
+      new Error("DB error")
+    );
 
     const req = makeReq();
     toggleProjectListing(req as any, res, next);

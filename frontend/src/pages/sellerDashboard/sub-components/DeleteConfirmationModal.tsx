@@ -20,9 +20,20 @@ interface DeleteConfirmationModalProps {
 
 export const DeleteConfirmationModal: React.FC<
   DeleteConfirmationModalProps
-> = ({ deleteDialogOpen, setDeleteDialogOpen, handleDeleteConfirm, isDeleting }) => {
+> = ({
+  deleteDialogOpen,
+  setDeleteDialogOpen,
+  handleDeleteConfirm,
+  isDeleting,
+}) => {
   return (
-    <AlertDialog open={deleteDialogOpen} onOpenChange={(open) => { if (isDeleting) return; setDeleteDialogOpen(open); }}>
+    <AlertDialog
+      open={deleteDialogOpen}
+      onOpenChange={(open) => {
+        if (isDeleting) return;
+        setDeleteDialogOpen(open);
+      }}
+    >
       <AlertDialogContent className="bg-white dark:bg-[#050505] p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] w-full max-w-lg mx-auto rounded-none overflow-hidden transition-colors duration-300">
         <AlertDialogHeader className="relative z-10 m-0 p-0">
           <div className="flex items-center gap-4 mb-8">
@@ -38,7 +49,8 @@ export const DeleteConfirmationModal: React.FC<
         </AlertDialogHeader>
         <div className="mb-8">
           <AlertDialogDescription className="font-space text-xs uppercase font-bold tracking-widest text-gray-500 transition-colors duration-300 text-left leading-relaxed">
-            Are you sure you want to delete this project? This action cannot be undone.
+            Are you sure you want to delete this project? This action cannot be
+            undone.
           </AlertDialogDescription>
         </div>
         <AlertDialogFooter className="relative z-10 flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
@@ -61,5 +73,3 @@ export const DeleteConfirmationModal: React.FC<
     </AlertDialog>
   );
 };
-
-

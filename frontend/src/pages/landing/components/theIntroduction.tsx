@@ -25,9 +25,11 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             linear-gradient(to right, rgba(0,0,0,0.5) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(0,0,0,0.5) 1px, transparent 1px)
           `,
-          backgroundSize: '4rem 4rem',
-          maskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)'
+          backgroundSize: "4rem 4rem",
+          maskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
         }}
       ></div>
       <div
@@ -37,9 +39,11 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px)
           `,
-          backgroundSize: '4rem 4rem',
-          maskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)'
+          backgroundSize: "4rem 4rem",
+          maskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
         }}
       ></div>
 
@@ -80,7 +84,8 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0"
           >
-            The open marketplace where developers sell private repos — priced in USD, settled in SOL, delivered instantly.
+            The open marketplace where developers sell private repos — priced in
+            USD, settled in SOL, delivered instantly.
           </motion.p>
 
           <motion.div
@@ -108,14 +113,20 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           className="lg:col-span-4 hidden lg:flex flex-col justify-end items-end"
         >
           <div className="border-r-2 border-red-500 pr-6 py-2 flex flex-col gap-3 font-space text-[10px] sm:text-xs uppercase tracking-widest text-gray-500">
-            <div className="text-black dark:text-white font-bold mb-4 text-right">System Diagnostics</div>
+            <div className="text-black dark:text-white font-bold mb-4 text-right">
+              System Diagnostics
+            </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Status:</span>
-              <span className="text-black dark:text-white w-24 text-left">Operational</span>
+              <span className="text-black dark:text-white w-24 text-left">
+                Operational
+              </span>
             </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Protocol:</span>
-              <span className="text-black dark:text-white w-24 text-left">DevsDistro</span>
+              <span className="text-black dark:text-white w-24 text-left">
+                DevsDistro
+              </span>
             </div>
             <div className="flex justify-end gap-6 text-right">
               <span>Version:</span>

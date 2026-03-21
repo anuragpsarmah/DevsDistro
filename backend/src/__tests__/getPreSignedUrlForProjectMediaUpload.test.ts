@@ -96,8 +96,10 @@ import { s3Service } from "..";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const VALID_USER_ID = "507f1f77bcf86cd799439011";
-const SIGNED_URL_1 = "https://s3.amazonaws.com/bucket/presigned-1?X-Amz-Signature=abc";
-const SIGNED_URL_2 = "https://s3.amazonaws.com/bucket/presigned-2?X-Amz-Signature=def";
+const SIGNED_URL_1 =
+  "https://s3.amazonaws.com/bucket/presigned-1?X-Amz-Signature=abc";
+const SIGNED_URL_2 =
+  "https://s3.amazonaws.com/bucket/presigned-2?X-Amz-Signature=def";
 
 const IMAGE_META = {
   originalName: "screenshot.png",
@@ -113,7 +115,8 @@ const VIDEO_META = {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (bodyOverrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -205,7 +208,9 @@ describe("getPreSignedUrlForProjectMediaUpload", () => {
     stubNewProjectLimitCheck(1, 2); // under limit — will proceed past quota check
 
     // Stub remaining validations to avoid crashing after the quota check
-    vi.mocked(s3Service.createPreSignedUploadUrl).mockResolvedValue("https://s3.example.com/presigned" as any);
+    vi.mocked(s3Service.createPreSignedUploadUrl).mockResolvedValue(
+      "https://s3.example.com/presigned" as any
+    );
 
     const req = makeReq({ modificationType: "new" });
     getPreSignedUrlForProjectMediaUpload(req as any, res, next);
@@ -265,7 +270,9 @@ describe("getPreSignedUrlForProjectMediaUpload", () => {
   it("returns 400 when file metadata has invalid fileType", async () => {
     stubNewProjectLimitCheck(0, 2);
     const req = makeReq({
-      metadata: [{ originalName: "file.gif", fileType: "image/gif", fileSize: 100 }],
+      metadata: [
+        { originalName: "file.gif", fileType: "image/gif", fileSize: 100 },
+      ],
       existingImageCount: 0,
       existingVideoCount: 0,
     });
@@ -408,8 +415,14 @@ describe("getPreSignedUrlForProjectMediaUpload", () => {
   it("returns combined URLs for both card images and detail images", async () => {
     stubNewProjectLimitCheck(0, 2);
     vi.mocked(s3Service.createPreSignedUploadUrl)
-      .mockResolvedValueOnce({ uploadSignedUrl: SIGNED_URL_1, key: "projectMedia/card.jpg" } as any)
-      .mockResolvedValueOnce({ uploadSignedUrl: SIGNED_URL_2, key: "projectMedia/detail.jpg" } as any);
+      .mockResolvedValueOnce({
+        uploadSignedUrl: SIGNED_URL_1,
+        key: "projectMedia/card.jpg",
+      } as any)
+      .mockResolvedValueOnce({
+        uploadSignedUrl: SIGNED_URL_2,
+        key: "projectMedia/detail.jpg",
+      } as any);
 
     const detailMeta = { ...IMAGE_META, originalName: "detail.jpg" };
     const req = makeReq({
@@ -433,7 +446,11 @@ describe("getPreSignedUrlForProjectMediaUpload", () => {
     } as any);
 
     const req = makeReq({
-      metadata: [IMAGE_META, { ...IMAGE_META, originalName: "img2.jpg" }, VIDEO_META],
+      metadata: [
+        IMAGE_META,
+        { ...IMAGE_META, originalName: "img2.jpg" },
+        VIDEO_META,
+      ],
     });
     getPreSignedUrlForProjectMediaUpload(req as any, res, next);
     await flushPromises();

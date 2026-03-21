@@ -4,7 +4,10 @@ import bs58 from "bs58";
 import { verifyWalletSignature } from "../utils/walletVerification.util";
 
 // Generates a real keypair + signature so we can test both valid and invalid paths
-function makeSignedMessage(message: string): { address: string; signature: string } {
+function makeSignedMessage(message: string): {
+  address: string;
+  signature: string;
+} {
   const keypair = nacl.sign.keyPair();
   const messageBytes = new TextEncoder().encode(message);
   const signatureBytes = nacl.sign.detached(messageBytes, keypair.secretKey);
@@ -15,7 +18,8 @@ function makeSignedMessage(message: string): { address: string; signature: strin
 }
 
 describe("verifyWalletSignature", () => {
-  const message = "DevsDistro Wallet Verification\nAddress: testAddress\nTimestamp: 1700000000000";
+  const message =
+    "DevsDistro Wallet Verification\nAddress: testAddress\nTimestamp: 1700000000000";
 
   it("returns true for a valid signature", () => {
     const { address, signature } = makeSignedMessage(message);
@@ -25,7 +29,9 @@ describe("verifyWalletSignature", () => {
   it("returns false when the message has been tampered", () => {
     const { address, signature } = makeSignedMessage(message);
     const tamperedMessage = message.replace("testAddress", "differentAddress");
-    expect(verifyWalletSignature(address, signature, tamperedMessage)).toBe(false);
+    expect(verifyWalletSignature(address, signature, tamperedMessage)).toBe(
+      false
+    );
   });
 
   it("returns false when verified against a different public key", () => {
@@ -37,12 +43,16 @@ describe("verifyWalletSignature", () => {
 
   it("returns false for an invalid base58 signature (does not throw)", () => {
     const { address } = makeSignedMessage(message);
-    expect(verifyWalletSignature(address, "not-valid-base58!!!", message)).toBe(false);
+    expect(verifyWalletSignature(address, "not-valid-base58!!!", message)).toBe(
+      false
+    );
   });
 
   it("returns false for an invalid base58 address (does not throw)", () => {
     const { signature } = makeSignedMessage(message);
-    expect(verifyWalletSignature("not-valid-base58!!!", signature, message)).toBe(false);
+    expect(
+      verifyWalletSignature("not-valid-base58!!!", signature, message)
+    ).toBe(false);
   });
 
   it("returns false when signature bytes are the correct length but all zeros", () => {

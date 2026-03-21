@@ -97,12 +97,12 @@ const purchaseSchema = new Schema(
 
     // Snapshots captured at purchase time — survive project/seller changes or deletion
     project_snapshot: {
-      title:        { type: String, required: true },
+      title: { type: String, required: true },
       project_type: { type: String, required: true },
     },
     seller_snapshot: {
-      name:              { type: String, required: true },
-      username:          { type: String, required: true },
+      name: { type: String, required: true },
+      username: { type: String, required: true },
       profile_image_url: { type: String, default: "" },
     },
   },
@@ -114,6 +114,12 @@ purchaseSchema.index({ buyerId: 1, projectId: 1 }, { unique: true });
 // Optimizes seller sales ledger pagination/filter queries (unfiltered and date-filtered)
 purchaseSchema.index({ sellerId: 1, status: 1, createdAt: -1, _id: -1 });
 // Optimizes per-project filtered ledger queries at scale
-purchaseSchema.index({ sellerId: 1, status: 1, projectId: 1, createdAt: -1, _id: -1 });
+purchaseSchema.index({
+  sellerId: 1,
+  status: 1,
+  projectId: 1,
+  createdAt: -1,
+  _id: -1,
+});
 
 export const Purchase = model("Purchase", purchaseSchema);

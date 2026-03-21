@@ -14,7 +14,8 @@ vi.mock("../logger/logger", () => ({
 import { sessionValidation } from "../middlewares/sessionValidation.middlewares";
 import { enrichContext } from "../utils/asyncContext";
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeRes = () => {
   const res: any = {};
@@ -203,4 +204,3 @@ describe("sessionValidation middleware", () => {
     );
   });
 });
-

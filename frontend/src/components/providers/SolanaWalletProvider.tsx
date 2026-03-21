@@ -36,9 +36,9 @@ export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({
 }) => {
   const network = getNetwork();
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
-  
+
   const wallets = useMemo(() => {
-const adapters = [
+    const adapters = [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter({ network }),
     ];

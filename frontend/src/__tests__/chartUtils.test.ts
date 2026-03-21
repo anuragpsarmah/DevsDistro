@@ -2,8 +2,18 @@ import { describe, it, expect } from "vitest";
 import { mergeChartData } from "../pages/sellerDashboard/utils/chartUtils";
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 function makeChartData(sales = 0) {
@@ -23,11 +33,7 @@ describe("mergeChartData", () => {
 
   it("only updates the first N months when partial data is provided", () => {
     const prevData = makeChartData(0);
-    const monthlySales = [
-      { sales: 500 },
-      { sales: 300 },
-      { sales: 800 },
-    ];
+    const monthlySales = [{ sales: 500 }, { sales: 300 }, { sales: 800 }];
     const result = mergeChartData(prevData, monthlySales);
 
     expect(result[0].sales).toBe(500);

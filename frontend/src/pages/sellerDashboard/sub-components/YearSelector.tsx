@@ -15,7 +15,9 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
   isLoading = false,
 }) => {
   if (isLoading) {
-    return <Skeleton className="h-12 w-[120px] rounded-none bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10" />;
+    return (
+      <Skeleton className="h-12 w-[120px] rounded-none bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10" />
+    );
   }
 
   return (

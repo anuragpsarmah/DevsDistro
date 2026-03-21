@@ -209,10 +209,13 @@ export default function AccountInformation({
                       Keep it brief.
                     </p>
                     <p
-                      className={`font-space font-bold text-[10px] uppercase tracking-widest ${MAX_BIO_LENGTH - profileInformationData.short_bio.length <= 20
-                        ? "text-red-500"
-                        : "text-gray-500"
-                        }`}
+                      className={`font-space font-bold text-[10px] uppercase tracking-widest ${
+                        MAX_BIO_LENGTH -
+                          profileInformationData.short_bio.length <=
+                        20
+                          ? "text-red-500"
+                          : "text-gray-500"
+                      }`}
                     >
                       {profileInformationData.short_bio.length}/{MAX_BIO_LENGTH}
                     </p>
@@ -268,8 +271,8 @@ export default function AccountInformation({
                   Auto-repackage on code change
                 </h3>
                 <p className="font-space text-sm text-gray-600 dark:text-gray-400">
-                  Automatically repackage your listed projects when you push code
-                  changes to GitHub.
+                  Automatically repackage your listed projects when you push
+                  code changes to GitHub.
                 </p>
               </div>
               {isInitialLoading ? (
@@ -298,7 +301,12 @@ export default function AccountInformation({
                   Danger Zone
                 </h3>
                 <p className="font-space text-sm lg:text-[15px] font-medium leading-relaxed text-gray-700 dark:text-gray-300">
-                  Proceeding will permanently delete your DevsDistro account, wipe all personal profile data, and unlist any active repositories from the marketplace. <strong className="text-red-500 dark:text-red-400">This action is irreversible.</strong>
+                  Proceeding will permanently delete your DevsDistro account,
+                  wipe all personal profile data, and unlist any active
+                  repositories from the marketplace.{" "}
+                  <strong className="text-red-500 dark:text-red-400">
+                    This action is irreversible.
+                  </strong>
                 </p>
               </div>
 
@@ -318,7 +326,6 @@ export default function AccountInformation({
                 )}
               </div>
             </div>
-
           </div>
         </div>
       </div>

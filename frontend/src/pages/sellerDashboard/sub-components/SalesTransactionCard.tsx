@@ -26,7 +26,10 @@ export default function SalesTransactionCard({
               {title}
             </h3>
             {title !== transaction.project_snapshot.title && (
-              <span className="font-space text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1 line-clamp-1" title={transaction.project_snapshot.title}>
+              <span
+                className="font-space text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1 line-clamp-1"
+                title={transaction.project_snapshot.title}
+              >
                 At sale: {transaction.project_snapshot.title}
               </span>
             )}

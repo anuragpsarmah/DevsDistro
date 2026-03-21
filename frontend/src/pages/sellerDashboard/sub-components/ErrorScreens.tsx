@@ -23,7 +23,9 @@ export const ErrorScreenListedProjects: React.FC = () => {
               [Error: Failed to Load Projects]
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300">
-              We encountered a critical issue retrieving your project data. Please verify your connection status or re-initialize the dashboard later.
+              We encountered a critical issue retrieving your project data.
+              Please verify your connection status or re-initialize the
+              dashboard later.
             </p>
           </div>
         </div>
@@ -53,7 +55,9 @@ export const ErrorScreenConnectToWallet: React.FC = () => {
             [Error: Node Initialization Failed]
           </p>
           <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300">
-            We encountered a critical issue securing your wallet bridge layer. Please verify your provider extension connection or refresh the dashboard.
+            We encountered a critical issue securing your wallet bridge layer.
+            Please verify your provider extension connection or refresh the
+            dashboard.
           </p>
         </div>
       </div>

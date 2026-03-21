@@ -5,13 +5,20 @@ import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
-  const { data: purchases, isLoading, isError } = useGetPurchasedProjectsQuery({ logout });
+  const {
+    data: purchases,
+    isLoading,
+    isError,
+  } = useGetPurchasedProjectsQuery({ logout });
 
   const truncateTx = (sig: string) => `${sig.slice(0, 8)}...${sig.slice(-8)}`;
 
-  const network = import.meta.env.VITE_SOLANA_NETWORK?.toLowerCase() || "devnet";
+  const network =
+    import.meta.env.VITE_SOLANA_NETWORK?.toLowerCase() || "devnet";
   const clusterParam =
-    network === "mainnet" || network === "mainnet-beta" ? "" : `?cluster=${network}`;
+    network === "mainnet" || network === "mainnet-beta"
+      ? ""
+      : `?cluster=${network}`;
 
   return (
     <AnimatedLoadWrapper>
@@ -76,7 +83,10 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
                 <div className="mb-6">
                   <div className="w-14 h-14 bg-red-500/10 flex items-center justify-center border-2 border-red-500 animate-[pulse_1s_steps(2,start)_infinite]">
-                    <AlertTriangle className="h-7 w-7 text-red-500" strokeWidth={2} />
+                    <AlertTriangle
+                      className="h-7 w-7 text-red-500"
+                      strokeWidth={2}
+                    />
                   </div>
                 </div>
                 <h2 className="text-xl lg:text-2xl font-syne uppercase tracking-widest font-black text-red-500 mb-4 transition-colors duration-300">
@@ -87,7 +97,8 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                     [Error: Failed to Load Purchase Transactions]
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300">
-                    We couldn't retrieve your purchase history. Please check your connection and reload.
+                    We couldn't retrieve your purchase history. Please check
+                    your connection and reload.
                   </p>
                 </div>
               </div>
@@ -99,7 +110,10 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
               <div className="w-full max-w-2xl border-2 border-black dark:border-white bg-white dark:bg-[#050505] p-8 lg:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center transition-colors duration-300">
                 <div className="mb-8">
                   <div className="w-16 h-16 bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-black dark:border-white">
-                    <Activity className="h-8 w-8 text-black dark:text-white" strokeWidth={2} />
+                    <Activity
+                      className="h-8 w-8 text-black dark:text-white"
+                      strokeWidth={2}
+                    />
                   </div>
                 </div>
                 <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-black dark:text-white mb-6 transition-colors duration-300">
@@ -110,7 +124,8 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                     [Status: No Transactions Found]
                   </p>
                   <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300 uppercase tracking-wider">
-                    No confirmed acquisitions on record. Browse the marketplace to get started.
+                    No confirmed acquisitions on record. Browse the marketplace
+                    to get started.
                   </p>
                 </div>
               </div>
@@ -120,8 +135,11 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
           {!isLoading && !isError && purchases && purchases.length > 0 && (
             <div className="space-y-6 lg:space-y-8">
               {purchases.map((purchase) => {
-                const title = purchase.projectId?.title ?? purchase.project_snapshot.title;
-                const projectType = purchase.projectId?.project_type ?? purchase.project_snapshot.project_type;
+                const title =
+                  purchase.projectId?.title ?? purchase.project_snapshot.title;
+                const projectType =
+                  purchase.projectId?.project_type ??
+                  purchase.project_snapshot.project_type;
                 const sellerName = purchase.seller_snapshot.name;
                 const sellerUsername = purchase.seller_snapshot.username;
                 const isDeleted = purchase.projectId === null;
@@ -134,7 +152,6 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                     <div className="p-6 lg:p-8 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
                       {/* Data Grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 w-full xl:w-auto flex-1">
-
                         {/* Project Name block */}
                         <div className="flex flex-col">
                           <span className="font-space text-[10px] text-gray-500 uppercase tracking-widest mb-2 border-b-2 border-black/10 dark:border-white/10 pb-1">
@@ -202,17 +219,19 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                                 .replace(/,/g, "")}
                             </span>
                             <span className="block font-space text-[10px] text-red-500 uppercase tracking-widest mt-1">
-                              {new Date(purchase.createdAt).toLocaleTimeString("en-US", {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                                timeZone: "UTC",
-                              })}{" "}
+                              {new Date(purchase.createdAt).toLocaleTimeString(
+                                "en-US",
+                                {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  hour12: false,
+                                  timeZone: "UTC",
+                                }
+                              )}{" "}
                               UTC
                             </span>
                           </div>
                         </div>
-
                       </div>
 
                       {/* Action Region */}
@@ -225,13 +244,14 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                         >
                           <span className="relative z-10 flex items-center gap-2 group-hover/btn:text-white transition-colors">
                             <span className="hidden sm:inline">Inspect TX</span>
-                            <span className="sm:hidden">TX: {truncateTx(purchase.tx_signature)}</span>
+                            <span className="sm:hidden">
+                              TX: {truncateTx(purchase.tx_signature)}
+                            </span>
                             <ExternalLink className="w-4 h-4" />
                           </span>
                           <div className="absolute inset-0 bg-red-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
                         </a>
                       </div>
-
                     </div>
                   </div>
                 );

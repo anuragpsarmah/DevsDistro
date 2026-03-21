@@ -40,7 +40,10 @@ describe("response util", () => {
     expect(res.cookie).toHaveBeenCalledWith(
       "refresh_token",
       "my-refresh-token",
-      expect.objectContaining({ ...cookieOptions, maxAge: REFRESH_TOKEN_DURATION_MS })
+      expect.objectContaining({
+        ...cookieOptions,
+        maxAge: REFRESH_TOKEN_DURATION_MS,
+      })
     );
   });
 

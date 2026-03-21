@@ -40,7 +40,9 @@ export default function MarketplaceProjectCard({
       className="relative group h-full cursor-pointer"
       onClick={() => onProjectClick?.(project._id)}
     >
-      <div className={`relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white transition-shadow duration-300 ease-in-out flex flex-col ${!noHoverEffect ? "hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0_0_rgba(255,255,255,1)]" : ""}`}>
+      <div
+        className={`relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white transition-shadow duration-300 ease-in-out flex flex-col ${!noHoverEffect ? "hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0_0_rgba(255,255,255,1)]" : ""}`}
+      >
         <div className="relative z-10 border-b-2 border-black dark:border-white">
           <div className="w-full aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
             {project.project_images && !imageError ? (
@@ -52,7 +54,9 @@ export default function MarketplaceProjectCard({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <span className="font-space font-bold uppercase tracking-wider text-gray-500 text-sm">No preview</span>
+                <span className="font-space font-bold uppercase tracking-wider text-gray-500 text-sm">
+                  No preview
+                </span>
               </div>
             )}
           </div>
@@ -62,10 +66,11 @@ export default function MarketplaceProjectCard({
               <button
                 onClick={handleWishlistToggle}
                 disabled={toggleWishlist.isPending}
-                className={`w-9 h-9 flex items-center justify-center border-2 transition-all duration-200 disabled:opacity-50 ${isWishlisted
-                  ? "bg-red-500 border-black dark:border-white text-white hover:bg-black dark:hover:bg-white hover:text-red-500"
-                  : "bg-white dark:bg-[#050505] border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
-                  }`}
+                className={`w-9 h-9 flex items-center justify-center border-2 transition-all duration-200 disabled:opacity-50 ${
+                  isWishlisted
+                    ? "bg-red-500 border-black dark:border-white text-white hover:bg-black dark:hover:bg-white hover:text-red-500"
+                    : "bg-white dark:bg-[#050505] border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                }`}
               >
                 {toggleWishlist.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -158,7 +163,10 @@ export default function MarketplaceProjectCard({
           </div>
         </div>
         {footerContent && (
-          <div className="border-t-2 border-black dark:border-white" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="border-t-2 border-black dark:border-white"
+            onClick={(e) => e.stopPropagation()}
+          >
             {footerContent}
           </div>
         )}

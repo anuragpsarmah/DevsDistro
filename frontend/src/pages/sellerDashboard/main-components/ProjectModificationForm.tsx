@@ -1,7 +1,12 @@
 import { useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Undo2 } from "lucide-react";
-import { ImageItem, ImageCropResult, ProjectModificationFormProps, ProjectType } from "../utils/types";
+import {
+  ImageItem,
+  ImageCropResult,
+  ProjectModificationFormProps,
+  ProjectType,
+} from "../utils/types";
 import { useProjectSubmission } from "../hooks/useProjectSubmission";
 import { projectListingFormDataValidation } from "../utils/projectListingFormValidation";
 import { errorToast } from "@/components/ui/customToast";
@@ -22,8 +27,9 @@ export default function ProjectModificationForm({
 }: ProjectModificationFormProps) {
   const title = useRef<HTMLInputElement | null>(null);
   const [description, setDescription] = useState(formProps.description || "");
-  const [projectType, setProjectType] =
-    useState<ProjectType>((formProps.project_type as ProjectType) || "Web Application");
+  const [projectType, setProjectType] = useState<ProjectType>(
+    (formProps.project_type as ProjectType) || "Web Application"
+  );
   const [techStack, setTechStack] = useState<string[]>(formProps.tech_stack);
   const [techInput, setTechInput] = useState("");
   const [liveLink, setLiveLink] = useState(formProps.live_link || "");
@@ -40,7 +46,10 @@ export default function ProjectModificationForm({
 
   const detailUrlMap = useMemo(() => {
     const map = new Map<string, string | undefined>();
-    if (formProps.project_images_detail && formProps.project_images_detail.length > 0) {
+    if (
+      formProps.project_images_detail &&
+      formProps.project_images_detail.length > 0
+    ) {
       formProps.project_images.forEach((url, i) => {
         map.set(url, formProps.project_images_detail?.[i]);
       });

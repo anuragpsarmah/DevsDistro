@@ -190,7 +190,9 @@ describe("performProjectHardDelete", () => {
 
     await performProjectHardDelete(mockProject());
 
-    expect(Review.deleteMany).toHaveBeenCalledWith({ projectId: "proj_abc123" });
+    expect(Review.deleteMany).toHaveBeenCalledWith({
+      projectId: "proj_abc123",
+    });
   });
 
   it("continues to delete document even if Review.deleteMany throws", async () => {
@@ -198,7 +200,9 @@ describe("performProjectHardDelete", () => {
     vi.mocked(Review.deleteMany).mockRejectedValue(new Error("DB error"));
     vi.mocked(Project.deleteOne).mockResolvedValue({ deletedCount: 1 } as any);
 
-    await expect(performProjectHardDelete(mockProject())).resolves.toBeUndefined();
+    await expect(
+      performProjectHardDelete(mockProject())
+    ).resolves.toBeUndefined();
 
     expect(Project.deleteOne).toHaveBeenCalled();
   });
@@ -234,9 +238,7 @@ describe("performProjectHardDelete", () => {
 
     const project = mockProject({ repo_zip_s3_key: "zips/proj.zip" });
 
-    await expect(
-      performProjectHardDelete(project)
-    ).resolves.toBeUndefined();
+    await expect(performProjectHardDelete(project)).resolves.toBeUndefined();
 
     expect(Project.deleteOne).toHaveBeenCalled();
   });
@@ -276,7 +278,7 @@ describe("startScheduledDeletionJob", () => {
       select: vi.fn().mockReturnValue({
         lean: vi.fn().mockResolvedValue(results),
       }),
-    } as any);
+    }) as any;
 
   it("queries projects with scheduled_deletion_at <= now at startup (10s delay)", async () => {
     vi.mocked(Project.find).mockReturnValue(mockFindChain([]));
@@ -331,7 +333,9 @@ describe("startScheduledDeletionJob", () => {
     // Second run at 1h + 10s: 1 overdue project
     vi.mocked(Project.find)
       .mockReturnValueOnce(mockFindChain([]))
-      .mockReturnValueOnce(mockFindChain([mockProject({ _id: "late_project" })]));
+      .mockReturnValueOnce(
+        mockFindChain([mockProject({ _id: "late_project" })])
+      );
 
     vi.mocked(User.updateMany).mockResolvedValue({} as any);
     vi.mocked(Project.deleteOne).mockResolvedValue({ deletedCount: 1 } as any);

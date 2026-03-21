@@ -48,7 +48,11 @@ projectRouter
   );
 projectRouter
   .route("/validateMediaUploadAndStoreProject")
-  .put(validateProjectListingLimiter, sessionValidation, validateMediaUploadAndStoreProject);
+  .put(
+    validateProjectListingLimiter,
+    sessionValidation,
+    validateMediaUploadAndStoreProject
+  );
 projectRouter
   .route("/getTotalListedProjects")
   .get(generalAuthReadLimiter, sessionValidation, getTotalListedProjects);
@@ -76,7 +80,9 @@ projectRouter
 projectRouter
   .route("/refreshRepoZip")
   .post(refreshRepoZipLimiter, sessionValidation, refreshRepoZip);
-projectRouter.route("/search").post(heavyReadLimiter, sessionValidation, searchProject);
+projectRouter
+  .route("/search")
+  .post(heavyReadLimiter, sessionValidation, searchProject);
 projectRouter
   .route("/getMarketplaceProjectDetail")
   .get(generalAuthReadLimiter, sessionValidation, getMarketplaceProjectDetail);

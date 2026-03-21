@@ -28,10 +28,9 @@ export interface SolanaRateResult {
 // ── Internal: try a single oracle URL, return rate or throw ──────────────────
 
 async function fetchFromCoinGecko(): Promise<number> {
-  const response = await axios.get<{ solana: { usd: number } }>(
-    COINGECKO_URL,
-    { timeout: 5000 }
-  );
+  const response = await axios.get<{ solana: { usd: number } }>(COINGECKO_URL, {
+    timeout: 5000,
+  });
   const rate = response.data?.solana?.usd;
   if (!rate || typeof rate !== "number" || rate <= 0) {
     throw new Error("Invalid rate from CoinGecko");
@@ -83,7 +82,10 @@ export async function getSolanaUsdRate(): Promise<SolanaRateResult> {
     rate = await fetchFromCoinGecko();
     source = "CoinGecko";
   } catch (cgErr) {
-    logger.warn("CoinGecko SOL/USD fetch failed, trying Binance fallback", cgErr);
+    logger.warn(
+      "CoinGecko SOL/USD fetch failed, trying Binance fallback",
+      cgErr
+    );
   }
 
   // ── 3. Binance (fallback oracle) ──────────────────────────────────────────
@@ -105,7 +107,8 @@ export async function getSolanaUsdRate(): Promise<SolanaRateResult> {
       const staleStr = await redisClient.get(staleKey);
       if (staleStr) {
         const stale = JSON.parse(staleStr);
-        const ageSeconds = (Date.now() - new Date(stale.fetched_at).getTime()) / 1000;
+        const ageSeconds =
+          (Date.now() - new Date(stale.fetched_at).getTime()) / 1000;
         if (ageSeconds <= STALE_CACHE_MAX_AGE_SECONDS && stale.rate > 0) {
           logger.warn(
             `All live oracles unavailable — serving stale SOL/USD rate (age: ${Math.round(ageSeconds)}s)`,

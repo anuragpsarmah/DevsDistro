@@ -33,7 +33,10 @@ export default function SalesLedger({
         <div className="w-full max-w-2xl border-2 border-black dark:border-white bg-white dark:bg-[#050505] p-8 lg:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center transition-colors duration-300">
           <div className="mb-8">
             <div className="w-16 h-16 bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-black dark:border-white">
-              <Activity className="h-8 w-8 text-black dark:text-white" strokeWidth={2} />
+              <Activity
+                className="h-8 w-8 text-black dark:text-white"
+                strokeWidth={2}
+              />
             </div>
           </div>
 

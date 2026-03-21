@@ -236,7 +236,9 @@ export default function ReviewSection({
   const isLoading = isListLoading || (isPurchased && isMyReviewLoading);
   const isSavingReview = submitMutation.isPending || updateMutation.isPending;
 
-  const getAuthorId = (review: ProjectReview | null | undefined): string | undefined => {
+  const getAuthorId = (
+    review: ProjectReview | null | undefined
+  ): string | undefined => {
     if (!review) return undefined;
     if (typeof review.userId === "string") return review.userId;
     return review.userId?._id;

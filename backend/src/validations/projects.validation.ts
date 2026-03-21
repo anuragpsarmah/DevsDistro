@@ -42,42 +42,44 @@ export const projectFormDataSchema = z.object({
 });
 
 export const fileMetadataSchema = z.array(
-  z.object({
-    originalName: z
-      .string({
-        required_error: "Original file name is required",
-      })
-      .min(2, "Original file name is required")
-      .max(100, "Name can be at most 100 characters long"),
-    fileType: z.enum(FILE_TYPE_ENUM, {
-      errorMap: () => ({
-        message: `Invalid file type was provided. Expected one of: ${FILE_TYPE_ENUM.join(
-          ", "
-        )}`,
+  z
+    .object({
+      originalName: z
+        .string({
+          required_error: "Original file name is required",
+        })
+        .min(2, "Original file name is required")
+        .max(100, "Name can be at most 100 characters long"),
+      fileType: z.enum(FILE_TYPE_ENUM, {
+        errorMap: () => ({
+          message: `Invalid file type was provided. Expected one of: ${FILE_TYPE_ENUM.join(
+            ", "
+          )}`,
+        }),
       }),
-    }),
-    fileSize: z.number({
-      required_error: "File size is required",
-    }),
-  }).superRefine((data, ctx) => {
-    if (data.fileType === "video/mp4") {
-      if (data.fileSize > 52428800) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Video size cannot exceed 50MB",
-          path: ["fileSize"],
-        });
+      fileSize: z.number({
+        required_error: "File size is required",
+      }),
+    })
+    .superRefine((data, ctx) => {
+      if (data.fileType === "video/mp4") {
+        if (data.fileSize > 52428800) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Video size cannot exceed 50MB",
+            path: ["fileSize"],
+          });
+        }
+      } else {
+        if (data.fileSize > 2097152) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Image size cannot exceed 2MB",
+            path: ["fileSize"],
+          });
+        }
       }
-    } else {
-      if (data.fileSize > 2097152) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Image size cannot exceed 2MB",
-          path: ["fileSize"],
-        });
-      }
-    }
-  })
+    })
 );
 
 export const githubRepoIdSchema = z.object({
@@ -126,5 +128,8 @@ export const searchProjectSchema = z
       }
       return true;
     },
-    { message: "minPrice must be less than or equal to maxPrice", path: ["minPrice"] }
+    {
+      message: "minPrice must be less than or equal to maxPrice",
+      path: ["minPrice"],
+    }
   );

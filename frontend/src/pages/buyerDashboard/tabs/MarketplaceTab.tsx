@@ -15,7 +15,9 @@ export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedSort, setSelectedSort] = useState("newest");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null
+  );
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -114,7 +116,8 @@ export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
             </div>
             {!isInitialLoading && totalCount > 0 && (
               <span className="hidden md:block text-sm font-space text-black dark:text-white font-bold uppercase tracking-widest border-2 border-black dark:border-white px-4 py-2 bg-white dark:bg-[#050505] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,1)]">
-                {totalCount.toLocaleString()} project{totalCount !== 1 ? "s" : ""} found
+                {totalCount.toLocaleString()} project
+                {totalCount !== 1 ? "s" : ""} found
               </span>
             )}
           </div>
@@ -143,7 +146,8 @@ export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
               <SearchX className="w-8 h-8 text-white" />
             </div>
             <p className="font-space font-bold uppercase tracking-widest text-black dark:text-white text-center max-w-md">
-              Something went wrong while fetching projects. Please try again later.
+              Something went wrong while fetching projects. Please try again
+              later.
             </p>
           </div>
         )}
@@ -154,9 +158,15 @@ export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
               <div className="mb-8">
                 <div className="w-16 h-16 bg-black/5 dark:bg-white/5 flex items-center justify-center border-2 border-black dark:border-white">
                   {hasActiveFilters ? (
-                    <SearchX className="h-8 w-8 text-black dark:text-white" strokeWidth={2} />
+                    <SearchX
+                      className="h-8 w-8 text-black dark:text-white"
+                      strokeWidth={2}
+                    />
                   ) : (
-                    <Store className="h-8 w-8 text-black dark:text-white" strokeWidth={2} />
+                    <Store
+                      className="h-8 w-8 text-black dark:text-white"
+                      strokeWidth={2}
+                    />
                   )}
                 </div>
               </div>

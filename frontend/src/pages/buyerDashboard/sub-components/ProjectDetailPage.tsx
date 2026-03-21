@@ -20,8 +20,16 @@ import {
   Video,
 } from "lucide-react";
 import XIcon from "@/assets/icons/XIcon";
-import { useProjectDetailQuery, useGetWishlistQuery, useGetPurchasedProjectsQuery } from "@/hooks/apiQueries";
-import { useToggleWishlistMutation, useDownloadProjectMutation, useDownloadReceiptMutation } from "@/hooks/apiMutations";
+import {
+  useProjectDetailQuery,
+  useGetWishlistQuery,
+  useGetPurchasedProjectsQuery,
+} from "@/hooks/apiQueries";
+import {
+  useToggleWishlistMutation,
+  useDownloadProjectMutation,
+  useDownloadReceiptMutation,
+} from "@/hooks/apiMutations";
 import FileTree from "./FileTree";
 import PurchaseModal from "./PurchaseModal";
 import ReviewSection from "./ReviewSection";
@@ -32,21 +40,26 @@ export default function ProjectDetailPage({
   projectId,
   onBack,
   logout,
-  backLabel = "Back to Marketplace"
+  backLabel = "Back to Marketplace",
 }: ProjectDetailPageProps) {
   const [imageIndex, setImageIndex] = useState(0);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [mediaTab, setMediaTab] = useState<"images" | "video">("images");
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { data: project, isLoading, isError } = useProjectDetailQuery(projectId, { logout });
+  const {
+    data: project,
+    isLoading,
+    isError,
+  } = useProjectDetailQuery(projectId, { logout });
   const { data: wishlist } = useGetWishlistQuery({ logout });
   const { data: purchases } = useGetPurchasedProjectsQuery({ logout });
   const toggleWishlist = useToggleWishlistMutation({ logout });
   const downloadMutation = useDownloadProjectMutation({ logout });
   const receiptMutation = useDownloadReceiptMutation({ logout });
 
-  const isPurchased = purchases?.some((p) => p.projectId?._id === projectId) ?? false;
+  const isPurchased =
+    purchases?.some((p) => p.projectId?._id === projectId) ?? false;
   const purchaseRecord = purchases?.find((p) => p.projectId?._id === projectId);
   const isWishlisted = wishlist?.some((p) => p._id === projectId) ?? false;
 
@@ -54,7 +67,10 @@ export default function ProjectDetailPage({
     setIsPurchaseModalOpen(false);
   }, []);
 
-  const purchaseFlow = usePurchaseFlow({ logout, onSuccess: handlePurchaseSuccess });
+  const purchaseFlow = usePurchaseFlow({
+    logout,
+    onSuccess: handlePurchaseSuccess,
+  });
 
   const handleOpenPurchaseModal = useCallback(() => {
     setIsPurchaseModalOpen(true);
@@ -106,7 +122,8 @@ export default function ProjectDetailPage({
             System Error: Project Not Found
           </p>
           <p className="font-space font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider text-center max-w-lg">
-            This project may have been removed, restricted, or simply does not exist. Return to the marketplace to browse available listings.
+            This project may have been removed, restricted, or simply does not
+            exist. Return to the marketplace to browse available listings.
           </p>
         </div>
       </div>
@@ -158,10 +175,11 @@ export default function ProjectDetailPage({
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
-                className={`w-4 h-4 ${star <= Math.round(project.avgRating)
-                  ? "text-red-500 fill-red-500"
-                  : "text-gray-300 dark:text-gray-700"
-                  }`}
+                className={`w-4 h-4 ${
+                  star <= Math.round(project.avgRating)
+                    ? "text-red-500 fill-red-500"
+                    : "text-gray-300 dark:text-gray-700"
+                }`}
               />
             ))}
             <span className="font-space font-bold text-black dark:text-white text-sm ml-2">
@@ -195,7 +213,10 @@ export default function ProjectDetailPage({
               Images
             </button>
             <button
-              onClick={() => { setMediaTab("video"); videoRef.current?.pause(); }}
+              onClick={() => {
+                setMediaTab("video");
+                videoRef.current?.pause();
+              }}
               className={`flex items-center gap-2 px-6 py-3 font-space font-bold uppercase tracking-[0.2em] text-[10px] transition-colors ${
                 mediaTab === "video"
                   ? "bg-black dark:bg-white text-white dark:text-black"
@@ -269,7 +290,6 @@ export default function ProjectDetailPage({
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-12 mb-16">
-
         <div className="xl:col-span-3 relative">
           <div className="xl:absolute xl:inset-0 border-2 border-black dark:border-white bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] flex flex-col overflow-hidden">
             <div className="p-8 lg:p-12 flex-[65] flex flex-col min-h-0">
@@ -314,7 +334,6 @@ export default function ProjectDetailPage({
 
         <div className="xl:col-span-2 h-full flex flex-col">
           <div className="h-full flex flex-col border-2 border-black dark:border-white bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
-
             <div className="p-8 lg:p-10 flex-1 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-transparent hover:[&::-webkit-scrollbar-thumb]:bg-black/20 dark:hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-[2px] bg-red-500"></div>
@@ -381,7 +400,9 @@ export default function ProjectDetailPage({
                       </p>
                     )}
 
-                    {(seller?.location || seller?.website_url || seller?.x_username) && (
+                    {(seller?.location ||
+                      seller?.website_url ||
+                      seller?.x_username) && (
                       <div className="flex flex-col gap-3 mt-2 border-t-2 border-black/10 dark:border-white/10 pt-6">
                         {seller?.location && (
                           <div className="flex items-center gap-3">
@@ -400,7 +421,9 @@ export default function ProjectDetailPage({
                           >
                             <Globe className="w-4 h-4 text-red-500 flex-shrink-0 group-hover:text-black dark:group-hover:text-white transition-colors" />
                             <span className="font-space font-bold text-xs text-black dark:text-white uppercase tracking-widest group-hover:text-red-500 transition-colors truncate">
-                              {seller.website_url.replace(/^https?:\/\//, "").toUpperCase()}
+                              {seller.website_url
+                                .replace(/^https?:\/\//, "")
+                                .toUpperCase()}
                             </span>
                           </a>
                         )}
@@ -442,7 +465,11 @@ export default function ProjectDetailPage({
                 <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-green-50 dark:bg-green-950/20 border-2 border-green-500">
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                   <span className="font-space text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-widest">
-                    Purchased {new Date(purchaseRecord.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    Purchased{" "}
+                    {new Date(purchaseRecord.createdAt).toLocaleDateString(
+                      "en-US",
+                      { month: "short", day: "numeric", year: "numeric" }
+                    )}
                   </span>
                 </div>
               )}
@@ -458,7 +485,9 @@ export default function ProjectDetailPage({
                       <p className="font-space text-xs text-amber-700 dark:text-amber-300 mt-1">
                         This project will be permanently deleted on{" "}
                         <span className="font-bold">
-                          {new Date(project.scheduled_deletion_at).toLocaleDateString("en-US", {
+                          {new Date(
+                            project.scheduled_deletion_at
+                          ).toLocaleDateString("en-US", {
                             month: "long",
                             day: "numeric",
                             year: "numeric",
@@ -488,7 +517,9 @@ export default function ProjectDetailPage({
                     </button>
                     {purchaseRecord && (
                       <button
-                        onClick={() => receiptMutation.mutate(purchaseRecord._id)}
+                        onClick={() =>
+                          receiptMutation.mutate(purchaseRecord._id)
+                        }
                         disabled={receiptMutation.isPending}
                         className="flex-1 relative group px-6 py-5 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
                       >
@@ -536,19 +567,27 @@ export default function ProjectDetailPage({
                   <button
                     onClick={() => toggleWishlist.mutate(projectId)}
                     disabled={toggleWishlist.isPending}
-                    className={`w-full relative group px-8 py-5 border-2 pb-5 font-space font-bold uppercase tracking-widest text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden ${isWishlisted
-                      ? "bg-red-500 text-white border-red-500"
-                      : "bg-white dark:bg-[#050505] text-black dark:text-white border-black dark:border-white hover:border-red-500"
-                      }`}
+                    className={`w-full relative group px-8 py-5 border-2 pb-5 font-space font-bold uppercase tracking-widest text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden ${
+                      isWishlisted
+                        ? "bg-red-500 text-white border-red-500"
+                        : "bg-white dark:bg-[#050505] text-black dark:text-white border-black dark:border-white hover:border-red-500"
+                    }`}
                   >
-                    <div className={`absolute inset-0 bg-red-500 transform translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0 ${isWishlisted ? 'hidden' : 'block'}`} />
-                    <span className={`relative z-10 flex items-center justify-center gap-3 ${!isWishlisted ? 'group-hover:text-white' : ''}`}>
+                    <div
+                      className={`absolute inset-0 bg-red-500 transform translate-y-full transition-transform duration-300 ease-out group-hover:translate-y-0 ${isWishlisted ? "hidden" : "block"}`}
+                    />
+                    <span
+                      className={`relative z-10 flex items-center justify-center gap-3 ${!isWishlisted ? "group-hover:text-white" : ""}`}
+                    >
                       {toggleWishlist.isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
                         <Heart
-                          className={`w-4 h-4 transition-colors ${isWishlisted ? "fill-white" : "group-hover:fill-white"
-                            }`}
+                          className={`w-4 h-4 transition-colors ${
+                            isWishlisted
+                              ? "fill-white"
+                              : "group-hover:fill-white"
+                          }`}
                         />
                       )}
                       {isWishlisted ? "Saved to Wishlist" : "Add to Wishlist"}

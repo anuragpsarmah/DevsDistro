@@ -148,7 +148,9 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
     await refreshRepoZipMutate(github_repo_id);
   };
 
-  const handleRefreshRepoZipStatus = async (index: number): Promise<string | null> => {
+  const handleRefreshRepoZipStatus = async (
+    index: number
+  ): Promise<string | null> => {
     const github_repo_id = initialData?.data?.[index]?.github_repo_id;
     if (!github_repo_id) return null;
 

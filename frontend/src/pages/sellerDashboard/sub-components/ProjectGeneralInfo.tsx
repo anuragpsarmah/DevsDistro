@@ -10,7 +10,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { ChangeEvent, KeyboardEvent } from "react";
-import { MAX_DESCRIPTION_LENGTH, MAX_TECH_STACK, PROJECT_TYPES } from "../utils/constants";
+import {
+  MAX_DESCRIPTION_LENGTH,
+  MAX_TECH_STACK,
+  PROJECT_TYPES,
+} from "../utils/constants";
 import { ProjectGeneralInfoProps, ProjectType } from "../utils/types";
 
 export default function ProjectGeneralInfo({
@@ -57,7 +61,10 @@ export default function ProjectGeneralInfo({
   return (
     <div className="space-y-10">
       <div>
-        <Label htmlFor="title" className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block">
+        <Label
+          htmlFor="title"
+          className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block"
+        >
           Project Title<span className="text-red-500 ml-1">*</span>
         </Label>
         <Input
@@ -71,7 +78,10 @@ export default function ProjectGeneralInfo({
       </div>
 
       <div>
-        <Label htmlFor="description" className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block">
+        <Label
+          htmlFor="description"
+          className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block"
+        >
           Project Description<span className="text-red-500 ml-1">*</span>
         </Label>
         <Textarea
@@ -91,7 +101,10 @@ export default function ProjectGeneralInfo({
       </div>
 
       <div>
-        <Label htmlFor="projectType" className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block">
+        <Label
+          htmlFor="projectType"
+          className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block"
+        >
           Project Type<span className="text-red-500 ml-1">*</span>
         </Label>
         <Select
@@ -117,10 +130,15 @@ export default function ProjectGeneralInfo({
 
       <div>
         <div className="flex items-center justify-between mb-3">
-          <Label htmlFor="techStack" className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400">
+          <Label
+            htmlFor="techStack"
+            className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400"
+          >
             Tech Stack<span className="text-red-500 ml-1">*</span>
           </Label>
-          <p className={`font-space text-xs font-bold tracking-widest uppercase ${atTechLimit ? "text-red-500" : "text-gray-500"}`}>
+          <p
+            className={`font-space text-xs font-bold tracking-widest uppercase ${atTechLimit ? "text-red-500" : "text-gray-500"}`}
+          >
             {techStack.length} / {MAX_TECH_STACK}
           </p>
         </div>
@@ -131,7 +149,11 @@ export default function ProjectGeneralInfo({
           onKeyDown={handleTechInputKeyDown}
           disabled={atTechLimit}
           className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-          placeholder={atTechLimit ? "Limit reached (15/15)" : "e.g., React, Node.js, MongoDB (Press Enter to add)"}
+          placeholder={
+            atTechLimit
+              ? "Limit reached (15/15)"
+              : "e.g., React, Node.js, MongoDB (Press Enter to add)"
+          }
         />
         <p className="font-space text-xs text-gray-500 mt-2 uppercase tracking-wider font-bold">
           Add all major technologies and frameworks used
@@ -162,7 +184,9 @@ export default function ProjectGeneralInfo({
           className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-3 block flex items-center"
         >
           Live Link
-          <span className="text-[10px] text-gray-400 ml-2 tracking-widest">(OPTIONAL)</span>
+          <span className="text-[10px] text-gray-400 ml-2 tracking-widest">
+            (OPTIONAL)
+          </span>
         </Label>
         <Input
           id="liveLink"

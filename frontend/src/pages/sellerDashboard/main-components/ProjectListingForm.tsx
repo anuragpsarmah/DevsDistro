@@ -1,7 +1,12 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Import } from "lucide-react";
-import { ImageItem, ImageCropResult, ProjectListingFormProps, ProjectType } from "../utils/types";
+import {
+  ImageItem,
+  ImageCropResult,
+  ProjectListingFormProps,
+  ProjectType,
+} from "../utils/types";
 import { useProjectSubmission } from "../hooks/useProjectSubmission";
 import { projectListingFormDataValidation } from "../utils/projectListingFormValidation";
 import { errorToast } from "@/components/ui/customToast";

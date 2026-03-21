@@ -8,8 +8,14 @@ interface TheClimaxProps {
 
 export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
   return (
-    <section className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative" id="the-climax">
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style={{ backgroundImage: `url(${noiseUrl})` }}></div>
+    <section
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
+      id="the-climax"
+    >
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
+        style={{ backgroundImage: `url(${noiseUrl})` }}
+      ></div>
 
       <div className="max-w-5xl mx-auto text-center relative z-10">
         <motion.div
@@ -21,16 +27,21 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
         >
           <div className="flex items-center gap-3 mb-6 justify-center">
             <div className="w-8 h-[2px] bg-black dark:bg-white transition-colors"></div>
-            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-black dark:text-white transition-colors">The Climax</span>
+            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-black dark:text-white transition-colors">
+              The Climax
+            </span>
             <div className="w-8 h-[2px] bg-black dark:bg-white transition-colors"></div>
           </div>
 
           <h2 className="font-syne text-4xl md:text-7xl font-black uppercase leading-none mb-8 text-black dark:text-black transition-colors">
-            Stop giving your<br />margin to the middleman.
+            Stop giving your
+            <br />
+            margin to the middleman.
           </h2>
 
           <p className="font-space text-xl md:text-2xl text-black dark:text-black font-medium mb-10 max-w-2xl mx-auto transition-colors">
-            Take control of your codebase economics today. Open source is great, but securing your financial upside is better.
+            Take control of your codebase economics today. Open source is great,
+            but securing your financial upside is better.
           </p>
 
           <button

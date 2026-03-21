@@ -36,7 +36,9 @@ export default function BuyerDashboardPage({
         {activeTab === "Marketplace" && <MarketplaceTab logout={logout} />}
         {activeTab === "Wishlist" && <WishlistTab logout={logout} />}
         {activeTab === "Purchases" && <OrdersTab logout={logout} />}
-        {activeTab === "Purchase Ledger" && <PurchaseLedgerTab logout={logout} />}
+        {activeTab === "Purchase Ledger" && (
+          <PurchaseLedgerTab logout={logout} />
+        )}
       </main>
     </div>
   );

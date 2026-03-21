@@ -63,12 +63,13 @@ export const WALLET_LINKS: Record<string, string> = {
   Solflare: "https://solflare.com/",
 };
 
-export const DATE_PRESET_OPTIONS: Array<{ value: DatePreset; label: string }> = [
-  { value: "all", label: "All Time" },
-  { value: "7d", label: "Last 7 Days" },
-  { value: "30d", label: "Last 30 Days" },
-  { value: "thisYear", label: "This Year" },
-];
+export const DATE_PRESET_OPTIONS: Array<{ value: DatePreset; label: string }> =
+  [
+    { value: "all", label: "All Time" },
+    { value: "7d", label: "Last 7 Days" },
+    { value: "30d", label: "Last 30 Days" },
+    { value: "thisYear", label: "This Year" },
+  ];
 
 export const MAX_TECH_STACK = 15;
 export const MAX_REVIEW_LENGTH = 200;

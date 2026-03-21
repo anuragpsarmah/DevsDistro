@@ -98,10 +98,15 @@ function SidebarContent({
         </div>
         <div className="flex items-center gap-3">
           <div className="w-8 h-[2px] bg-red-500"></div>
-          <span className="font-space font-bold uppercase tracking-[0.2em] text-[10px] text-red-500">Seller Dashboard</span>
+          <span className="font-space font-bold uppercase tracking-[0.2em] text-[10px] text-red-500">
+            Seller Dashboard
+          </span>
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto px-6 py-4" onMouseLeave={() => setHoveredTab(null)}>
+      <nav
+        className="flex-1 overflow-y-auto px-6 py-4"
+        onMouseLeave={() => setHoveredTab(null)}
+      >
         <ul className="space-y-4">
           {sidebarItems.map((item, index) => (
             <SidebarItem
@@ -124,7 +129,11 @@ function SidebarContent({
           onClick={toggleTheme}
         >
           <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
-          {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {isDarkMode ? (
+            <Sun className="h-4 w-4" />
+          ) : (
+            <Moon className="h-4 w-4" />
+          )}
         </button>
         <button
           className="w-full px-6 py-4 flex items-center justify-center gap-3 bg-white text-black dark:bg-[#050505] dark:text-white border-2 border-black dark:border-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black group"
@@ -173,7 +182,12 @@ function SidebarItem({
         {isHovered && (
           <motion.div
             layoutId="seller-sidebar-hover"
-            className={cn("absolute inset-0 border-2 z-0", isActive ? "border-black/50 dark:border-white/50 bg-black/10 dark:bg-white/10" : "border-black/20 dark:border-white/20 bg-black/[0.02] dark:bg-white/[0.02]")}
+            className={cn(
+              "absolute inset-0 border-2 z-0",
+              isActive
+                ? "border-black/50 dark:border-white/50 bg-black/10 dark:bg-white/10"
+                : "border-black/20 dark:border-white/20 bg-black/[0.02] dark:bg-white/[0.02]"
+            )}
             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
           />
         )}
@@ -184,7 +198,9 @@ function SidebarItem({
         <ChevronRight
           className={cn(
             "relative z-10 h-4 w-4 ml-auto flex-shrink-0 transition-all duration-300",
-            isActive ? "text-red-500 opacity-100 translate-x-0" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
+            isActive
+              ? "text-red-500 opacity-100 translate-x-0"
+              : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
           )}
         />
       </button>

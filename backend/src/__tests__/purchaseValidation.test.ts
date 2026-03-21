@@ -16,37 +16,49 @@ import {
 
 // ─── Valid fixtures (taken directly from the real test purchase) ──────────────
 const VALID_PROJECT_ID = "69a44a399d0009cde58723cb"; // 24-char MongoDB ObjectId (hex)
-const VALID_REFERENCE  = "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078"; // 64-char lowercase hex
-const VALID_TX_SIG     = "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr"; // 88 base58 chars
-const VALID_WALLET     = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK"; // 44-char base58
+const VALID_REFERENCE =
+  "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078"; // 64-char lowercase hex
+const VALID_TX_SIG =
+  "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr"; // 88 base58 chars
+const VALID_WALLET = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK"; // 44-char base58
 
 // ─── initiatePurchaseSchema ──────────────────────────────────────────────────
 
 describe("initiatePurchaseSchema", () => {
   it("accepts a valid 24-char hex MongoDB ObjectId", () => {
-    const result = initiatePurchaseSchema.safeParse({ project_id: VALID_PROJECT_ID });
+    const result = initiatePurchaseSchema.safeParse({
+      project_id: VALID_PROJECT_ID,
+    });
     expect(result.success).toBe(true);
   });
 
   it("rejects a project_id that is too short (< 24 chars)", () => {
-    const result = initiatePurchaseSchema.safeParse({ project_id: "69a44a399d0009cde58723" });
+    const result = initiatePurchaseSchema.safeParse({
+      project_id: "69a44a399d0009cde58723",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects a project_id that is too long (> 24 chars)", () => {
-    const result = initiatePurchaseSchema.safeParse({ project_id: "69a44a399d0009cde58723cbff" });
+    const result = initiatePurchaseSchema.safeParse({
+      project_id: "69a44a399d0009cde58723cbff",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects a project_id containing non-hex characters", () => {
     // 'z' is not a valid hex character
-    const result = initiatePurchaseSchema.safeParse({ project_id: "69a44a399d0009cde58723cz" });
+    const result = initiatePurchaseSchema.safeParse({
+      project_id: "69a44a399d0009cde58723cz",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects a project_id with uppercase hex (schema requires lowercase-compatible hex only)", () => {
     // The regex /^[0-9a-fA-F]{24}$/ does allow uppercase — just confirming valid case
-    const result = initiatePurchaseSchema.safeParse({ project_id: "69A44A399D0009CDE58723CB" });
+    const result = initiatePurchaseSchema.safeParse({
+      project_id: "69A44A399D0009CDE58723CB",
+    });
     expect(result.success).toBe(true); // uppercase hex IS allowed by the regex
   });
 
@@ -71,8 +83,8 @@ describe("initiatePurchaseSchema", () => {
 describe("confirmPurchaseSchema", () => {
   const VALID_PAYLOAD = {
     purchase_reference: VALID_REFERENCE,
-    tx_signature:       VALID_TX_SIG,
-    buyer_wallet:       VALID_WALLET,
+    tx_signature: VALID_TX_SIG,
+    buyer_wallet: VALID_WALLET,
   };
 
   it("accepts a valid confirm payload", () => {

@@ -55,7 +55,11 @@ export const MonthlySalesSkeleton = () => (
 export const ChartSkeleton = () => (
   <div className="flex items-end justify-between h-full gap-2 pt-4">
     {[...Array(12)].map((_, i) => (
-      <Skeleton key={i} className="w-full bg-black/10 dark:bg-white/10 rounded-none" style={{ height: `${Math.random() * 60 + 30}%` }} />
+      <Skeleton
+        key={i}
+        className="w-full bg-black/10 dark:bg-white/10 rounded-none"
+        style={{ height: `${Math.random() * 60 + 30}%` }}
+      />
     ))}
   </div>
 );
@@ -92,12 +96,16 @@ export const ProfileHeaderSkeleton = () => (
       <Skeleton className="h-12 w-3/4 max-w-sm bg-black/10 dark:bg-white/10 mx-auto md:mx-0 rounded-none mb-6" />
       <div className="space-y-4 w-full flex flex-col items-center md:items-start">
         <div className="flex items-center gap-3">
-          <span className="text-red-500 opacity-50 font-bold font-space">/</span>
+          <span className="text-red-500 opacity-50 font-bold font-space">
+            /
+          </span>
           <Skeleton className="w-4 h-4 rounded-none bg-black/10 dark:bg-white/10" />
           <Skeleton className="h-3 w-32 rounded-none bg-black/10 dark:bg-white/10" />
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-red-500 opacity-50 font-bold font-space">/</span>
+          <span className="text-red-500 opacity-50 font-bold font-space">
+            /
+          </span>
           <Skeleton className="w-4 h-4 rounded-none bg-black/10 dark:bg-white/10" />
           <Skeleton className="h-3 w-40 rounded-none bg-black/10 dark:bg-white/10" />
         </div>
@@ -130,7 +138,10 @@ export const ReviewSectionSkeleton = () => (
       <Skeleton className="h-3 w-32 bg-black/10 dark:bg-white/10 rounded-none mb-4" />
       <div className="flex items-center space-x-4">
         {[1, 2, 3, 4, 5].map((star) => (
-          <Skeleton key={star} className="w-10 h-10 rounded-none bg-black/10 dark:bg-white/10" />
+          <Skeleton
+            key={star}
+            className="w-10 h-10 rounded-none bg-black/10 dark:bg-white/10"
+          />
         ))}
       </div>
     </div>

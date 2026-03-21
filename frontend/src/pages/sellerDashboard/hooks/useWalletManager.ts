@@ -51,9 +51,9 @@ export const useWalletManager = ({
   const hasWalletMismatch = useMemo(() => {
     return Boolean(
       walletAddress &&
-      publicKeyString &&
-      connected &&
-      publicKeyString !== walletAddress
+        publicKeyString &&
+        connected &&
+        publicKeyString !== walletAddress
     );
   }, [walletAddress, publicKeyString, connected]);
 
@@ -167,7 +167,9 @@ export const useWalletManager = ({
     }
   };
 
-  const handleSelectWallet = async (selectedWallet: WalletAdapter): Promise<void> => {
+  const handleSelectWallet = async (
+    selectedWallet: WalletAdapter
+  ): Promise<void> => {
     if (isLoading || localProcessing) return;
     select(selectedWallet.adapter.name as WalletName);
   };
@@ -179,9 +181,10 @@ export const useWalletManager = ({
   const viewOnExplorer = () => {
     if (displayAddress) {
       const network = import.meta.env.VITE_SOLANA_NETWORK?.toLowerCase();
-      const clusterParam = network === "mainnet" || network === "mainnet-beta"
-        ? ""
-        : `?cluster=${network || "devnet"}`;
+      const clusterParam =
+        network === "mainnet" || network === "mainnet-beta"
+          ? ""
+          : `?cluster=${network || "devnet"}`;
       window.open(
         `https://explorer.solana.com/address/${displayAddress}${clusterParam}`,
         "_blank"
@@ -206,4 +209,3 @@ export const useWalletManager = ({
     viewOnExplorer,
   };
 };
-

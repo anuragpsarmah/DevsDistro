@@ -35,4 +35,3 @@ export const redisInitialization = async () => {
 
   return client;
 };
-

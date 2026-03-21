@@ -113,7 +113,8 @@ import {
 } from "../utils/authToken.util";
 import { encrypt } from "../utils/encryption.util";
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeRes = () => {
   const res: any = {};
@@ -155,13 +156,19 @@ describe("auth.controller", () => {
     expect(res.cookie).toHaveBeenCalledWith(
       "oauth_state",
       expect.stringMatching(/^[a-f0-9]{48}$/),
-      expect.objectContaining({ httpOnly: true, secure: true, sameSite: "none" })
+      expect.objectContaining({
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
     );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          authorize_url: expect.stringContaining("https://github.com/login/oauth/authorize?"),
+          authorize_url: expect.stringContaining(
+            "https://github.com/login/oauth/authorize?"
+          ),
         }),
       })
     );
@@ -241,7 +248,10 @@ describe("auth.controller", () => {
     await flushPromises();
 
     expect(existingUser.save).toHaveBeenCalled();
-    expect(addRefreshToken).toHaveBeenCalledWith(existingUser._id, "f".repeat(80));
+    expect(addRefreshToken).toHaveBeenCalledWith(
+      existingUser._id,
+      "f".repeat(80)
+    );
     expect(res.clearCookie).toHaveBeenCalledWith(
       "oauth_state",
       expect.objectContaining({ sameSite: "none" })
@@ -284,8 +294,14 @@ describe("auth.controller", () => {
     refreshTokenHandler(req, res, next);
     await flushPromises();
 
-    expect(res.clearCookie).toHaveBeenCalledWith("session_token", expect.any(Object));
-    expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", expect.any(Object));
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "session_token",
+      expect.any(Object)
+    );
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "refresh_token",
+      expect.any(Object)
+    );
     expect(res.status).toHaveBeenCalledWith(401);
   });
 
@@ -332,17 +348,25 @@ describe("auth.controller", () => {
     await flushPromises();
 
     expect(revokeRefreshToken).toHaveBeenCalledWith("a".repeat(80));
-    expect(res.clearCookie).toHaveBeenCalledWith("session_token", expect.any(Object));
-    expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", expect.any(Object));
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "session_token",
+      expect.any(Object)
+    );
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "refresh_token",
+      expect.any(Object)
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
   it("refreshTokenHandler blocks untrusted Origin", async () => {
     const req = makeReq({
       cookies: { refresh_token: "a".repeat(80) },
-      get: vi.fn().mockImplementation((header: string) =>
-        header.toLowerCase() === "origin" ? "https://evil.example" : undefined
-      ),
+      get: vi
+        .fn()
+        .mockImplementation((header: string) =>
+          header.toLowerCase() === "origin" ? "https://evil.example" : undefined
+        ),
     });
     const res = makeRes();
 
@@ -378,7 +402,9 @@ describe("auth.controller", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: expect.stringContaining("validation") })
+      expect.objectContaining({
+        message: expect.stringContaining("validation"),
+      })
     );
   });
 
@@ -398,7 +424,10 @@ describe("auth.controller", () => {
     githubLogin(req, res, next);
     await flushPromises();
 
-    expect(res.clearCookie).toHaveBeenCalledWith("oauth_state", expect.any(Object));
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "oauth_state",
+      expect.any(Object)
+    );
     expect(res.status).toHaveBeenCalledWith(401);
   });
 
@@ -432,7 +461,12 @@ describe("auth.controller", () => {
       headers: {},
     } as any);
     vi.mocked(axios.get).mockResolvedValue({
-      data: { id: 123, login: "user", name: "User", avatar_url: "https://img.example/u.png" },
+      data: {
+        id: 123,
+        login: "user",
+        name: "User",
+        avatar_url: "https://img.example/u.png",
+      },
     } as any);
     vi.mocked(encrypt).mockImplementation(() => {
       throw new Error("encrypt failed");
@@ -486,7 +520,12 @@ describe("auth.controller", () => {
       headers: {},
     } as any);
     vi.mocked(axios.get).mockResolvedValue({
-      data: { id: 999, login: "new-user", name: "New User", avatar_url: "https://img.example/new.png" },
+      data: {
+        id: 999,
+        login: "new-user",
+        name: "New User",
+        avatar_url: "https://img.example/new.png",
+      },
     } as any);
     vi.mocked(encrypt).mockReturnValue("encrypted");
     vi.mocked(User.findOne).mockResolvedValue(null);
@@ -527,7 +566,12 @@ describe("auth.controller", () => {
       headers: {},
     } as any);
     vi.mocked(axios.get).mockResolvedValue({
-      data: { id: 123, login: "user", name: "User", avatar_url: "https://img.example/u.png" },
+      data: {
+        id: 123,
+        login: "user",
+        name: "User",
+        avatar_url: "https://img.example/u.png",
+      },
     } as any);
     vi.mocked(encrypt).mockReturnValue("encrypted");
     vi.mocked(User.findOne).mockRejectedValue(new Error("DB connection lost"));
@@ -559,7 +603,12 @@ describe("auth.controller", () => {
       headers: {},
     } as any);
     vi.mocked(axios.get).mockResolvedValue({
-      data: { id: 123, login: "user", name: "User", avatar_url: "https://img.example/u.png" },
+      data: {
+        id: 123,
+        login: "user",
+        name: "User",
+        avatar_url: "https://img.example/u.png",
+      },
     } as any);
     vi.mocked(encrypt).mockReturnValue("encrypted");
     vi.mocked(User.findOne).mockResolvedValue(existingUser as any);
@@ -591,7 +640,12 @@ describe("auth.controller", () => {
       headers: {},
     } as any);
     vi.mocked(axios.get).mockResolvedValue({
-      data: { id: 123, login: "user", name: "User", avatar_url: "https://img.example/u.png" },
+      data: {
+        id: 123,
+        login: "user",
+        name: "User",
+        avatar_url: "https://img.example/u.png",
+      },
     } as any);
     vi.mocked(encrypt).mockReturnValue("encrypted");
     vi.mocked(User.findOne).mockResolvedValue(existingUser as any);
@@ -614,8 +668,14 @@ describe("auth.controller", () => {
     await flushPromises();
 
     expect(revokeRefreshToken).not.toHaveBeenCalled();
-    expect(res.clearCookie).toHaveBeenCalledWith("session_token", expect.any(Object));
-    expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", expect.any(Object));
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "session_token",
+      expect.any(Object)
+    );
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "refresh_token",
+      expect.any(Object)
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
@@ -630,17 +690,25 @@ describe("auth.controller", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.clearCookie).toHaveBeenCalledWith("session_token", expect.any(Object));
-    expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", expect.any(Object));
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "session_token",
+      expect.any(Object)
+    );
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "refresh_token",
+      expect.any(Object)
+    );
   });
 
   // --- A14: githubLogout — untrusted origin ---
   it("githubLogout blocks untrusted Origin", async () => {
     const req = makeReq({
       cookies: { refresh_token: "a".repeat(80) },
-      get: vi.fn().mockImplementation((header: string) =>
-        header.toLowerCase() === "origin" ? "https://evil.example" : undefined
-      ),
+      get: vi
+        .fn()
+        .mockImplementation((header: string) =>
+          header.toLowerCase() === "origin" ? "https://evil.example" : undefined
+        ),
     });
     const res = makeRes();
 
@@ -663,8 +731,14 @@ describe("auth.controller", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.clearCookie).toHaveBeenCalledWith("session_token", expect.any(Object));
-    expect(res.clearCookie).toHaveBeenCalledWith("refresh_token", expect.any(Object));
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "session_token",
+      expect.any(Object)
+    );
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "refresh_token",
+      expect.any(Object)
+    );
   });
 
   // --- A16: refreshTokenHandler — rotateRefreshToken throws ---

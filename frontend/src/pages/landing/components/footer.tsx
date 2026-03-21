@@ -26,22 +26,41 @@ export default function Footer() {
               DevsDistro
             </h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-8 leading-relaxed transition-colors text-center md:text-left mx-auto md:mx-0">
-              A decentralized protocol for code monetization powered by Solana and GitHub.
+              A decentralized protocol for code monetization powered by Solana
+              and GitHub.
             </p>
             <div className="flex gap-4 justify-center md:justify-start">
-              <a href="https://github.com/anuragpsarmah/DevsDistro" target="_blank" rel="noopener noreferrer" className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center">
+              <a
+                href="https://github.com/anuragpsarmah/DevsDistro"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center"
+              >
                 <Github size={20} />
               </a>
-              <a href="https://x.com/anuragpsarmah" target="_blank" rel="noopener noreferrer" className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center">
+              <a
+                href="https://x.com/anuragpsarmah"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center"
+              >
                 <XIcon />
               </a>
             </div>
           </div>
 
           <div>
-            <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-gray-500 dark:text-gray-500 transition-colors text-center md:text-left">Navigation</h4>
+            <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-gray-500 dark:text-gray-500 transition-colors text-center md:text-left">
+              Navigation
+            </h4>
             <ul className="space-y-4 text-center md:text-left">
-              {["DevsDistro", "The Revelation", "The Mechanics", "Validations", "Query Log"].map((item) => {
+              {[
+                "DevsDistro",
+                "The Revelation",
+                "The Mechanics",
+                "Validations",
+                "Query Log",
+              ].map((item) => {
                 let id = item.toLowerCase().replace(" ", "-");
                 if (id === "devsdistro") id = "the-introduction";
                 return (
@@ -60,10 +79,28 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-gray-500 dark:text-gray-500 transition-colors text-center md:text-left">Legal</h4>
+            <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-gray-500 dark:text-gray-500 transition-colors text-center md:text-left">
+              Legal
+            </h4>
             <ul className="space-y-4 text-center md:text-left">
-              <li><Link to="/privacy" onClick={() => window.scrollTo(0, 0)} className="hover:text-black dark:hover:text-white text-gray-600 dark:text-gray-400 transition-all">Privacy Policy</Link></li>
-              <li><Link to="/terms" onClick={() => window.scrollTo(0, 0)} className="hover:text-black dark:hover:text-white text-gray-600 dark:text-gray-400 transition-all">Terms of Service</Link></li>
+              <li>
+                <Link
+                  to="/privacy"
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="hover:text-black dark:hover:text-white text-gray-600 dark:text-gray-400 transition-all"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  onClick={() => window.scrollTo(0, 0)}
+                  className="hover:text-black dark:hover:text-white text-gray-600 dark:text-gray-400 transition-all"
+                >
+                  Terms of Service
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -71,7 +108,12 @@ export default function Footer() {
         <div className="pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-gray-600 uppercase tracking-widest transition-colors">
           <p>© {new Date().getFullYear()} DevsDistro. All rights reserved.</p>
           <div className="flex gap-8 border border-black/10 dark:border-white/10 px-4 py-2 transition-colors">
-            <span>Status: <span className="text-green-600 dark:text-green-500">Operational</span></span>
+            <span>
+              Status:{" "}
+              <span className="text-green-600 dark:text-green-500">
+                Operational
+              </span>
+            </span>
           </div>
         </div>
       </div>

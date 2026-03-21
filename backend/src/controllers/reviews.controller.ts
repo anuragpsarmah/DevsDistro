@@ -39,7 +39,10 @@ const getFeaturedReviews = asyncHandler(async (req: Request, res: Response) => {
   const id3 = new mongoose.Types.ObjectId(FEATURED_REVIEW_ID3);
 
   enrichContext({
-    entity: { type: "reviews", ids: [id1.toString(), id2.toString(), id3.toString()] }
+    entity: {
+      type: "reviews",
+      ids: [id1.toString(), id2.toString(), id3.toString()],
+    },
   });
 
   const dbStartTime = performance.now();
@@ -53,7 +56,11 @@ const getFeaturedReviews = asyncHandler(async (req: Request, res: Response) => {
   if (error) {
     enrichContext({
       outcome: "error",
-      error: { name: "DatabaseError", message: error instanceof Error ? error.message : "Database query failed" },
+      error: {
+        name: "DatabaseError",
+        message:
+          error instanceof Error ? error.message : "Database query failed",
+      },
     });
     logger.error("Failed to fetch featured reviews", error);
     throw new ApiError("Something went wrong", 500);
@@ -70,210 +77,244 @@ const getFeaturedReviews = asyncHandler(async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // POST /api/reviews/project
 // ─────────────────────────────────────────────────────────────────────────────
-const submitProjectReview = asyncHandler(async (req: Request, res: Response) => {
-  enrichContext({ action: "submit_project_review" });
+const submitProjectReview = asyncHandler(
+  async (req: Request, res: Response) => {
+    enrichContext({ action: "submit_project_review" });
 
-  if (!req.user) {
-    enrichContext({ outcome: "unauthorized" });
-    throw new ApiError("Unauthorized Access", 401);
-  }
+    if (!req.user) {
+      enrichContext({ outcome: "unauthorized" });
+      throw new ApiError("Unauthorized Access", 401);
+    }
 
-  const parseResult = submitReviewSchema.safeParse(req.body);
-  if (!parseResult.success) {
-    enrichContext({ outcome: "validation_failed" });
-    response(res, 400, parseResult.error.errors[0].message);
-    return;
-  }
-
-  const { project_id, rating, review } = parseResult.data;
-  const userId = new mongoose.Types.ObjectId(req.user._id);
-  const projectObjectId = new mongoose.Types.ObjectId(project_id);
-
-  enrichContext({ entity: { type: "review", project_id } });
-
-  const dbStart = performance.now();
-  const [project, projectError] = await tryCatch(
-    Project.findById(projectObjectId).select("_id userid isActive").lean()
-  );
-  enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
-
-  if (projectError) {
-    logger.error("Failed to fetch project for review", projectError);
-    response(res, 500, "Failed to submit review. Try again later.");
-    return;
-  }
-
-  if (!project) {
-    enrichContext({ outcome: "not_found" });
-    response(res, 404, "Project not found");
-    return;
-  }
-
-  if ((project as any).userid.toString() === userId.toString()) {
-    enrichContext({ outcome: "validation_failed", reason: "self_review" });
-    response(res, 400, "You cannot review your own project");
-    return;
-  }
-
-  const [purchase, purchaseError] = await tryCatch(
-    Purchase.findOne({ buyerId: userId, projectId: projectObjectId, status: "CONFIRMED" })
-      .select("_id")
-      .lean()
-  );
-
-  if (purchaseError) {
-    logger.error("Failed to verify purchase for review", purchaseError);
-    response(res, 500, "Failed to submit review. Try again later.");
-    return;
-  }
-
-  if (!purchase) {
-    enrichContext({ outcome: "forbidden", reason: "not_purchased" });
-    response(res, 403, "You must purchase this project before leaving a review");
-    return;
-  }
-
-  const [savedReview, saveError] = await tryCatch(
-    Review.create({
-      userId,
-      projectId: projectObjectId,
-      rating,
-      review: review ?? "",
-    })
-  );
-
-  if (saveError || !savedReview) {
-    if ((saveError as any)?.code === 11000) {
-      enrichContext({ outcome: "validation_failed", reason: "review_exists_race" });
-      response(res, 409, "You have already submitted a review for this project");
+    const parseResult = submitReviewSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      enrichContext({ outcome: "validation_failed" });
+      response(res, 400, parseResult.error.errors[0].message);
       return;
     }
-    logger.error("Failed to save review", saveError);
-    response(res, 500, "Failed to save review. Try again later.");
-    return;
+
+    const { project_id, rating, review } = parseResult.data;
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+    const projectObjectId = new mongoose.Types.ObjectId(project_id);
+
+    enrichContext({ entity: { type: "review", project_id } });
+
+    const dbStart = performance.now();
+    const [project, projectError] = await tryCatch(
+      Project.findById(projectObjectId).select("_id userid isActive").lean()
+    );
+    enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
+
+    if (projectError) {
+      logger.error("Failed to fetch project for review", projectError);
+      response(res, 500, "Failed to submit review. Try again later.");
+      return;
+    }
+
+    if (!project) {
+      enrichContext({ outcome: "not_found" });
+      response(res, 404, "Project not found");
+      return;
+    }
+
+    if ((project as any).userid.toString() === userId.toString()) {
+      enrichContext({ outcome: "validation_failed", reason: "self_review" });
+      response(res, 400, "You cannot review your own project");
+      return;
+    }
+
+    const [purchase, purchaseError] = await tryCatch(
+      Purchase.findOne({
+        buyerId: userId,
+        projectId: projectObjectId,
+        status: "CONFIRMED",
+      })
+        .select("_id")
+        .lean()
+    );
+
+    if (purchaseError) {
+      logger.error("Failed to verify purchase for review", purchaseError);
+      response(res, 500, "Failed to submit review. Try again later.");
+      return;
+    }
+
+    if (!purchase) {
+      enrichContext({ outcome: "forbidden", reason: "not_purchased" });
+      response(
+        res,
+        403,
+        "You must purchase this project before leaving a review"
+      );
+      return;
+    }
+
+    const [savedReview, saveError] = await tryCatch(
+      Review.create({
+        userId,
+        projectId: projectObjectId,
+        rating,
+        review: review ?? "",
+      })
+    );
+
+    if (saveError || !savedReview) {
+      if ((saveError as any)?.code === 11000) {
+        enrichContext({
+          outcome: "validation_failed",
+          reason: "review_exists_race",
+        });
+        response(
+          res,
+          409,
+          "You have already submitted a review for this project"
+        );
+        return;
+      }
+      logger.error("Failed to save review", saveError);
+      response(res, 500, "Failed to save review. Try again later.");
+      return;
+    }
+
+    await recalculateProjectAggregates(projectObjectId);
+
+    enrichContext({ outcome: "success" });
+    response(res, 201, "Review submitted successfully", {
+      review: savedReview,
+    });
   }
-
-  await recalculateProjectAggregates(projectObjectId);
-
-  enrichContext({ outcome: "success" });
-  response(res, 201, "Review submitted successfully", { review: savedReview });
-});
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PUT /api/reviews/project
 // ─────────────────────────────────────────────────────────────────────────────
-const updateProjectReview = asyncHandler(async (req: Request, res: Response) => {
-  enrichContext({ action: "update_project_review" });
+const updateProjectReview = asyncHandler(
+  async (req: Request, res: Response) => {
+    enrichContext({ action: "update_project_review" });
 
-  if (!req.user) {
-    enrichContext({ outcome: "unauthorized" });
-    throw new ApiError("Unauthorized Access", 401);
+    if (!req.user) {
+      enrichContext({ outcome: "unauthorized" });
+      throw new ApiError("Unauthorized Access", 401);
+    }
+
+    const parseResult = updateReviewSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      enrichContext({ outcome: "validation_failed" });
+      response(res, 400, parseResult.error.errors[0].message);
+      return;
+    }
+
+    const { project_id, rating, review } = parseResult.data;
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+    const projectObjectId = new mongoose.Types.ObjectId(project_id);
+
+    enrichContext({ entity: { type: "review", project_id } });
+
+    const [purchase, purchaseError] = await tryCatch(
+      Purchase.findOne({
+        buyerId: userId,
+        projectId: projectObjectId,
+        status: "CONFIRMED",
+      })
+        .select("_id")
+        .lean()
+    );
+
+    if (purchaseError) {
+      logger.error(
+        "Failed to verify purchase for review update",
+        purchaseError
+      );
+      response(res, 500, "Failed to update review. Try again later.");
+      return;
+    }
+
+    if (!purchase) {
+      enrichContext({ outcome: "forbidden", reason: "not_purchased" });
+      response(
+        res,
+        403,
+        "You must purchase this project before updating a review"
+      );
+      return;
+    }
+
+    const [savedReview, saveError] = await tryCatch(
+      Review.findOneAndUpdate(
+        { userId, projectId: projectObjectId },
+        { $set: { rating, review: review ?? "" } },
+        { new: true, runValidators: true }
+      ).lean()
+    );
+
+    if (saveError) {
+      logger.error("Failed to update review", saveError);
+      response(res, 500, "Failed to update review. Try again later.");
+      return;
+    }
+
+    if (!savedReview) {
+      enrichContext({ outcome: "not_found", reason: "review_missing" });
+      response(res, 404, "No existing review found for this project");
+      return;
+    }
+
+    await recalculateProjectAggregates(projectObjectId);
+
+    enrichContext({ outcome: "success" });
+    response(res, 200, "Review updated successfully", { review: savedReview });
   }
-
-  const parseResult = updateReviewSchema.safeParse(req.body);
-  if (!parseResult.success) {
-    enrichContext({ outcome: "validation_failed" });
-    response(res, 400, parseResult.error.errors[0].message);
-    return;
-  }
-
-  const { project_id, rating, review } = parseResult.data;
-  const userId = new mongoose.Types.ObjectId(req.user._id);
-  const projectObjectId = new mongoose.Types.ObjectId(project_id);
-
-  enrichContext({ entity: { type: "review", project_id } });
-
-  const [purchase, purchaseError] = await tryCatch(
-    Purchase.findOne({ buyerId: userId, projectId: projectObjectId, status: "CONFIRMED" })
-      .select("_id")
-      .lean()
-  );
-
-  if (purchaseError) {
-    logger.error("Failed to verify purchase for review update", purchaseError);
-    response(res, 500, "Failed to update review. Try again later.");
-    return;
-  }
-
-  if (!purchase) {
-    enrichContext({ outcome: "forbidden", reason: "not_purchased" });
-    response(res, 403, "You must purchase this project before updating a review");
-    return;
-  }
-
-  const [savedReview, saveError] = await tryCatch(
-    Review.findOneAndUpdate(
-      { userId, projectId: projectObjectId },
-      { $set: { rating, review: review ?? "" } },
-      { new: true, runValidators: true }
-    ).lean()
-  );
-
-  if (saveError) {
-    logger.error("Failed to update review", saveError);
-    response(res, 500, "Failed to update review. Try again later.");
-    return;
-  }
-
-  if (!savedReview) {
-    enrichContext({ outcome: "not_found", reason: "review_missing" });
-    response(res, 404, "No existing review found for this project");
-    return;
-  }
-
-  await recalculateProjectAggregates(projectObjectId);
-
-  enrichContext({ outcome: "success" });
-  response(res, 200, "Review updated successfully", { review: savedReview });
-});
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/reviews/project
 // ─────────────────────────────────────────────────────────────────────────────
-const deleteProjectReview = asyncHandler(async (req: Request, res: Response) => {
-  enrichContext({ action: "delete_project_review" });
+const deleteProjectReview = asyncHandler(
+  async (req: Request, res: Response) => {
+    enrichContext({ action: "delete_project_review" });
 
-  if (!req.user) {
-    enrichContext({ outcome: "unauthorized" });
-    throw new ApiError("Unauthorized Access", 401);
+    if (!req.user) {
+      enrichContext({ outcome: "unauthorized" });
+      throw new ApiError("Unauthorized Access", 401);
+    }
+
+    const parseResult = deleteReviewSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      enrichContext({ outcome: "validation_failed" });
+      response(res, 400, parseResult.error.errors[0].message);
+      return;
+    }
+
+    const { project_id } = parseResult.data;
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+    const projectObjectId = new mongoose.Types.ObjectId(project_id);
+
+    enrichContext({ entity: { type: "review", project_id } });
+
+    const dbStart = performance.now();
+    const [deletedReview, deleteError] = await tryCatch(
+      Review.findOneAndDelete({ userId, projectId: projectObjectId }).lean()
+    );
+    enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
+
+    if (deleteError) {
+      logger.error("Failed to delete review", deleteError);
+      response(res, 500, "Failed to delete review. Try again later.");
+      return;
+    }
+
+    if (!deletedReview) {
+      enrichContext({ outcome: "not_found" });
+      response(res, 404, "Review not found");
+      return;
+    }
+
+    await recalculateProjectAggregates(projectObjectId);
+
+    enrichContext({ outcome: "success" });
+    response(res, 200, "Review deleted successfully");
   }
-
-  const parseResult = deleteReviewSchema.safeParse(req.body);
-  if (!parseResult.success) {
-    enrichContext({ outcome: "validation_failed" });
-    response(res, 400, parseResult.error.errors[0].message);
-    return;
-  }
-
-  const { project_id } = parseResult.data;
-  const userId = new mongoose.Types.ObjectId(req.user._id);
-  const projectObjectId = new mongoose.Types.ObjectId(project_id);
-
-  enrichContext({ entity: { type: "review", project_id } });
-
-  const dbStart = performance.now();
-  const [deletedReview, deleteError] = await tryCatch(
-    Review.findOneAndDelete({ userId, projectId: projectObjectId }).lean()
-  );
-  enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
-
-  if (deleteError) {
-    logger.error("Failed to delete review", deleteError);
-    response(res, 500, "Failed to delete review. Try again later.");
-    return;
-  }
-
-  if (!deletedReview) {
-    enrichContext({ outcome: "not_found" });
-    response(res, 404, "Review not found");
-    return;
-  }
-
-  await recalculateProjectAggregates(projectObjectId);
-
-  enrichContext({ outcome: "success" });
-  response(res, 200, "Review deleted successfully");
-});
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GET /api/reviews/project  (public — no auth required)
@@ -294,17 +335,22 @@ const getProjectReviews = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ entity: { type: "review", project_id } });
 
   const dbStart = performance.now();
-  const [[reviews, reviewsError], [totalCount, countError]] = await Promise.all([
-    tryCatch(
-      Review.find({ projectId: projectObjectId })
-        .populate({ path: "userId", select: "username name profile_image_url" })
-        .sort({ createdAt: -1 })
-        .skip(offset)
-        .limit(limit)
-        .lean()
-    ),
-    tryCatch(Review.countDocuments({ projectId: projectObjectId })),
-  ]);
+  const [[reviews, reviewsError], [totalCount, countError]] = await Promise.all(
+    [
+      tryCatch(
+        Review.find({ projectId: projectObjectId })
+          .populate({
+            path: "userId",
+            select: "username name profile_image_url",
+          })
+          .sort({ createdAt: -1 })
+          .skip(offset)
+          .limit(limit)
+          .lean()
+      ),
+      tryCatch(Review.countDocuments({ projectId: projectObjectId })),
+    ]
+  );
   enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
 
   if (reviewsError || countError) {

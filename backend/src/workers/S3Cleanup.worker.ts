@@ -20,7 +20,9 @@ export default class S3CleanupService {
 
       for (const key of expiredKeys) {
         try {
-          const actualS3Key = key.startsWith("s3upload_") ? key.slice("s3upload_".length) : key;
+          const actualS3Key = key.startsWith("s3upload_")
+            ? key.slice("s3upload_".length)
+            : key;
           await s3Service.deleteObject(actualS3Key);
           await redisClient.zrem("media-cleanup-schedule", key);
           cleanupItems.push(key);
@@ -28,7 +30,10 @@ export default class S3CleanupService {
           failedItems.push(key);
           logger.error("Failed to cleanup S3 object", {
             s3_key: key,
-            error: deleteError instanceof Error ? deleteError.message : "Unknown error",
+            error:
+              deleteError instanceof Error
+                ? deleteError.message
+                : "Unknown error",
           });
         }
       }

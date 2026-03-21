@@ -1,4 +1,3 @@
-
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ErrorScreenConnectToWallet } from "../sub-components/ErrorScreens";
 import { WalletConnect } from "../sub-components/WalletConnect";

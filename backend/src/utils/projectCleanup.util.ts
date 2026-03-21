@@ -27,7 +27,10 @@ export async function performProjectHardDelete(project: {
     )
   );
   if (wishlistError) {
-    logger.error("Failed to remove project from wishlists during hard delete", wishlistError);
+    logger.error(
+      "Failed to remove project from wishlists during hard delete",
+      wishlistError
+    );
   }
 
   // 2. Queue project media for S3 cleanup
@@ -50,7 +53,11 @@ export async function performProjectHardDelete(project: {
   // 3. Queue repo ZIP for S3 cleanup
   if (project.repo_zip_s3_key) {
     const [, zipError] = await tryCatch(
-      redisClient.zadd("media-cleanup-schedule", Date.now(), project.repo_zip_s3_key)
+      redisClient.zadd(
+        "media-cleanup-schedule",
+        Date.now(),
+        project.repo_zip_s3_key
+      )
     );
     if (zipError) {
       logger.error("Failed to queue repo ZIP for cleanup", zipError);
@@ -73,7 +80,10 @@ export async function performProjectHardDelete(project: {
     Project.deleteOne({ _id: project._id })
   );
   if (deleteError) {
-    logger.error("Failed to delete project document during hard delete", deleteError);
+    logger.error(
+      "Failed to delete project document during hard delete",
+      deleteError
+    );
   }
 }
 
@@ -87,18 +97,25 @@ export function startScheduledDeletionJob(): void {
   const runJob = async () => {
     const [dueProjects, queryError] = await tryCatch(
       Project.find({ scheduled_deletion_at: { $lte: new Date() } })
-        .select("project_images project_images_detail project_video repo_zip_s3_key _id")
+        .select(
+          "project_images project_images_detail project_video repo_zip_s3_key _id"
+        )
         .lean()
     );
 
     if (queryError) {
-      logger.error("Scheduled deletion job: failed to query due projects", queryError);
+      logger.error(
+        "Scheduled deletion job: failed to query due projects",
+        queryError
+      );
       return;
     }
 
     if (!dueProjects || dueProjects.length === 0) return;
 
-    logger.info(`Scheduled deletion job: hard-deleting ${dueProjects.length} project(s)`);
+    logger.info(
+      `Scheduled deletion job: hard-deleting ${dueProjects.length} project(s)`
+    );
 
     for (const project of dueProjects) {
       await performProjectHardDelete(project as any);

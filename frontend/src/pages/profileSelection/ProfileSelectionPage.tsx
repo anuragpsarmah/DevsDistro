@@ -20,9 +20,11 @@ export default function ProfileSelectionPage() {
             linear-gradient(to right, rgba(0,0,0,1) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(0,0,0,1) 1px, transparent 1px)
           `,
-          backgroundSize: '4rem 4rem',
-          maskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)'
+          backgroundSize: "4rem 4rem",
+          maskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
         }}
       ></div>
       <div
@@ -32,24 +34,35 @@ export default function ProfileSelectionPage() {
             linear-gradient(to right, rgba(255,255,255,1) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255,255,255,1) 1px, transparent 1px)
           `,
-          backgroundSize: '4rem 4rem',
-          maskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)'
+          backgroundSize: "4rem 4rem",
+          maskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
         }}
       ></div>
 
       <main className="relative z-10 w-full max-w-7xl mx-auto px-4 py-32 flex flex-col items-center">
         <div className="flex items-center justify-center mb-12 w-full text-center">
-          <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">- Profile Init -</span>
+          <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
+            - Profile Init -
+          </span>
         </div>
 
         <div className="text-left md:text-center w-full max-w-4xl mb-24">
           <h1 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-widest leading-none font-syne mb-8 break-words hyphens-auto">
             SELECT <br className="hidden md:block" />
-            <span className="text-black dark:text-white" style={{ WebkitTextStroke: "1px rgba(128,128,128,0.2)" }}>YOUR</span> PROFILE
+            <span
+              className="text-black dark:text-white"
+              style={{ WebkitTextStroke: "1px rgba(128,128,128,0.2)" }}
+            >
+              YOUR
+            </span>{" "}
+            PROFILE
           </h1>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-space max-w-2xl md:mx-auto border-l-2 md:border-l-0 md:border-t-2 border-black/10 dark:border-white/10 pl-6 md:pl-0 pt-0 md:pt-8 md:text-center">
-            SPECIFY HOW YOU WANT TO OPERATE. YOU CAN SWITCH BETWEEN PROFILES ANYTIME DURING YOUR SESSION.
+            SPECIFY HOW YOU WANT TO OPERATE. YOU CAN SWITCH BETWEEN PROFILES
+            ANYTIME DURING YOUR SESSION.
           </p>
         </div>
 
@@ -58,7 +71,11 @@ export default function ProfileSelectionPage() {
             title="Buyer"
             description="BROWSE AND ACQUIRE BATTLE-TESTED REPOSITORIES FROM TOP DEVELOPERS."
             icon={<ShoppingBag className="w-8 h-8" strokeWidth={1.5} />}
-            features={["SECURE TRANSACTIONS", "INSTANT ACCESS ON PURCHASE", "VERIFIED REPOSITORIES"]}
+            features={[
+              "SECURE TRANSACTIONS",
+              "INSTANT ACCESS ON PURCHASE",
+              "VERIFIED REPOSITORIES",
+            ]}
             onClick={() => navigate("/buyer-marketplace")}
             isHovered={hoveredProfile === "buyer"}
             setHovered={() => setHoveredProfile("buyer")}
@@ -68,7 +85,11 @@ export default function ProfileSelectionPage() {
             title="Seller"
             description="MONETIZE YOUR EXISTING GITHUB REPOSITORIES. KEEP 99% OF YOUR EARNINGS."
             icon={<Store className="w-8 h-8" strokeWidth={1.5} />}
-            features={["EASY REPO INTEGRATION", "SOLANA PAYMENTS", "GLOBAL DISTRIBUTION"]}
+            features={[
+              "EASY REPO INTEGRATION",
+              "SOLANA PAYMENTS",
+              "GLOBAL DISTRIBUTION",
+            ]}
             onClick={() => navigate("/seller-dashboard")}
             isHovered={hoveredProfile === "seller"}
             setHovered={() => setHoveredProfile("seller")}
@@ -79,4 +100,3 @@ export default function ProfileSelectionPage() {
     </div>
   );
 }
-

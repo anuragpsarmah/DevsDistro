@@ -21,7 +21,9 @@ import MarketplaceProjectCard from "@/pages/buyerDashboard/sub-components/Market
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const makeProject = (overrides: Partial<MarketplaceProject> = {}): MarketplaceProject => ({
+const makeProject = (
+  overrides: Partial<MarketplaceProject> = {}
+): MarketplaceProject => ({
   _id: "project123",
   title: "Test Project",
   description: "A wonderful test project with many features for buyers",
@@ -75,7 +77,11 @@ describe("MarketplaceProjectCard", () => {
   // F3 ────────────────────────────────────────────────────────────────────────
 
   it("F3: shows New label when avgRating is 0", () => {
-    render(<MarketplaceProjectCard project={makeProject({ avgRating: 0, totalReviews: 0 })} />);
+    render(
+      <MarketplaceProjectCard
+        project={makeProject({ avgRating: 0, totalReviews: 0 })}
+      />
+    );
 
     expect(screen.getByText("New")).toBeInTheDocument();
   });
@@ -83,7 +89,9 @@ describe("MarketplaceProjectCard", () => {
   // F4 ────────────────────────────────────────────────────────────────────────
 
   it("F4: renders numeric star rating when avgRating is greater than 0", () => {
-    render(<MarketplaceProjectCard project={makeProject({ avgRating: 4.5 })} />);
+    render(
+      <MarketplaceProjectCard project={makeProject({ avgRating: 4.5 })} />
+    );
 
     expect(screen.getByText("4.5")).toBeInTheDocument();
     expect(screen.queryByText("New")).not.toBeInTheDocument();
@@ -101,7 +109,9 @@ describe("MarketplaceProjectCard", () => {
     fireEvent.error(img);
 
     await waitFor(() => {
-      expect(screen.queryByRole("img", { name: "Test Project" })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("img", { name: "Test Project" })
+      ).not.toBeInTheDocument();
       expect(screen.getByText("No preview")).toBeInTheDocument();
     });
   });

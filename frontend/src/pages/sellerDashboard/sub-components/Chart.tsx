@@ -21,22 +21,39 @@ export default function Chart({ chartData, isLoading = false }: ChartProps) {
   }
 
   return (
-    <ChartContainer config={chartConfig} className="h-full w-full [aspect-ratio:unset]">
-      <BarChart data={chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="currentColor" className="opacity-10 dark:opacity-20" strokeDasharray="3 3" />
+    <ChartContainer
+      config={chartConfig}
+      className="h-full w-full [aspect-ratio:unset]"
+    >
+      <BarChart
+        data={chartData}
+        margin={{ top: 10, right: 0, left: -20, bottom: 0 }}
+      >
+        <CartesianGrid
+          vertical={false}
+          stroke="currentColor"
+          className="opacity-10 dark:opacity-20"
+          strokeDasharray="3 3"
+        />
         <XAxis
           dataKey="month"
           tickLine={false}
           tickMargin={12}
           axisLine={false}
           tickFormatter={(value) => value.slice(0, 3).toUpperCase()}
-          tick={{ fill: 'currentColor', className: 'opacity-50 font-space text-[10px] tracking-widest' }}
+          tick={{
+            fill: "currentColor",
+            className: "opacity-50 font-space text-[10px] tracking-widest",
+          }}
         />
         <YAxis
           tickLine={false}
           axisLine={false}
           tickMargin={12}
-          tick={{ fill: 'currentColor', className: 'opacity-50 font-space text-[10px] tracking-widest' }}
+          tick={{
+            fill: "currentColor",
+            className: "opacity-50 font-space text-[10px] tracking-widest",
+          }}
           width={60}
         />
         <ChartTooltip

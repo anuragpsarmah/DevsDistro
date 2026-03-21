@@ -31,26 +31,33 @@ export default function Header({
       className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
     >
       <nav className="w-full flex justify-between items-center px-6 py-4">
-        <Link to="/" className="flex items-center gap-3 text-xl font-syne font-black tracking-widest text-black dark:text-white uppercase transition-colors group">
+        <Link
+          to="/"
+          className="flex items-center gap-3 text-xl font-syne font-black tracking-widest text-black dark:text-white uppercase transition-colors group"
+        >
           <LogoIcon className="w-8 h-8 group-hover:scale-110 transition-transform duration-300" />
-          <span className="group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">DevsDistro</span>
+          <span className="group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
+            DevsDistro
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8 lg:gap-12 font-space text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-          {["The Revelation", "The Mechanics", "Validations", "Query Log"].map((item) => {
-            const id = item.toLowerCase().replace(" ", "-");
-            return (
-              <Link
-                key={item}
-                to={isHome ? `#${id}` : `/#${id}`}
-                onClick={() => handleScroll(id)}
-                className="hover:text-black dark:hover:text-white transition-colors duration-200 relative group text-xs md:text-sm"
-              >
-                <span>{item}</span>
-                <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-red-500 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            );
-          })}
+          {["The Revelation", "The Mechanics", "Validations", "Query Log"].map(
+            (item) => {
+              const id = item.toLowerCase().replace(" ", "-");
+              return (
+                <Link
+                  key={item}
+                  to={isHome ? `#${id}` : `/#${id}`}
+                  onClick={() => handleScroll(id)}
+                  className="hover:text-black dark:hover:text-white transition-colors duration-200 relative group text-xs md:text-sm"
+                >
+                  <span>{item}</span>
+                  <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-red-500 transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              );
+            }
+          )}
         </div>
 
         <div className="hidden md:flex items-center gap-6">

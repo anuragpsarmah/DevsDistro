@@ -10,7 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DATE_PRESET_OPTIONS, DEFAULT_PROJECT_OPTIONS } from "../utils/constants";
+import {
+  DATE_PRESET_OPTIONS,
+  DEFAULT_PROJECT_OPTIONS,
+} from "../utils/constants";
 import { DatePreset } from "../utils/types";
 
 export default function SalesTab({ logout }: SalesTabProps) {

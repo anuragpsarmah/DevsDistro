@@ -100,7 +100,8 @@ const VALID_USER_ID = "507f1f77bcf86cd799439011";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (bodyOverrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },

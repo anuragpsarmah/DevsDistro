@@ -27,9 +27,12 @@ import {
   addRefreshToken,
   rotateRefreshToken,
   revokeRefreshToken,
-  createSessionToken
+  createSessionToken,
 } from "../utils/authToken.util";
-import { OAUTH_STATE_MAX_AGE_MS, authCookieOptions } from "../config/auth.config";
+import {
+  OAUTH_STATE_MAX_AGE_MS,
+  authCookieOptions,
+} from "../config/auth.config";
 import { isTrustedOrigin } from "../utils/trustedOrigin.util";
 
 const githubLoginStart = asyncHandler(async (_req: Request, res: Response) => {
@@ -126,22 +129,32 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       }
     )
   );
-  enrichContext({ external_api_latency_ms: Math.round(performance.now() - tokenStartTime) });
+  enrichContext({
+    external_api_latency_ms: Math.round(performance.now() - tokenStartTime),
+  });
 
   if (tokenError) {
-    const isClientError = axios.isAxiosError(tokenError) && tokenError.response?.status && tokenError.response.status < 500;
+    const isClientError =
+      axios.isAxiosError(tokenError) &&
+      tokenError.response?.status &&
+      tokenError.response.status < 500;
 
     enrichContext({
       outcome: isClientError ? "unauthorized" : "error",
       error: {
         name: "GitHubTokenError",
-        message: tokenError instanceof Error ? tokenError.message : "Failed to get access token",
-        code: axios.isAxiosError(tokenError) ? tokenError.code : undefined
-      }
+        message:
+          tokenError instanceof Error
+            ? tokenError.message
+            : "Failed to get access token",
+        code: axios.isAxiosError(tokenError) ? tokenError.code : undefined,
+      },
     });
 
     if (isClientError) {
-      logger.warn("GitHub OAuth token exchange rejected (client error)", { status: tokenError.response?.status });
+      logger.warn("GitHub OAuth token exchange rejected (client error)", {
+        status: tokenError.response?.status,
+      });
       res.clearCookie("oauth_state", authCookieOptions);
       response(res, 401, "Authentication failed");
       return;
@@ -155,14 +168,15 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
   enrichContext({
     github_scopes: scope,
-    github_rate_limit_remaining: accessTokenResponse.headers["x-ratelimit-remaining"],
-    github_rate_limit_reset: accessTokenResponse.headers["x-ratelimit-reset"]
+    github_rate_limit_remaining:
+      accessTokenResponse.headers["x-ratelimit-remaining"],
+    github_rate_limit_reset: accessTokenResponse.headers["x-ratelimit-reset"],
   });
 
   if (error) {
     enrichContext({
       outcome: "unauthorized",
-      error: { name: "GitHubOAuthError", message: error }
+      error: { name: "GitHubOAuthError", message: error },
     });
     logger.error("GitHub OAuth error response", { github_error: error });
     res.clearCookie("oauth_state", authCookieOptions);
@@ -177,7 +191,13 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   if (encryptError) {
     enrichContext({
       outcome: "error",
-      error: { name: "EncryptionError", message: encryptError instanceof Error ? encryptError.message : "Encryption failed" }
+      error: {
+        name: "EncryptionError",
+        message:
+          encryptError instanceof Error
+            ? encryptError.message
+            : "Encryption failed",
+      },
     });
     logger.error("Access token encryption failed", encryptError);
     throw new ApiError("Internal Server Error", 500);
@@ -207,11 +227,19 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
     enrichContext({
       outcome: isClientError ? "unauthorized" : "error",
-      error: { name: "GitHubAPIError", message: userGHError instanceof Error ? userGHError.message : "Failed to fetch user" }
+      error: {
+        name: "GitHubAPIError",
+        message:
+          userGHError instanceof Error
+            ? userGHError.message
+            : "Failed to fetch user",
+      },
     });
 
     if (isClientError) {
-      logger.warn("GitHub User Profile fetch rejected", { status: responseStatus });
+      logger.warn("GitHub User Profile fetch rejected", {
+        status: responseStatus,
+      });
       res.clearCookie("oauth_state", authCookieOptions);
       response(res, 401, "Authentication failed");
       return;
@@ -241,7 +269,13 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   if (findError) {
     enrichContext({
       outcome: "error",
-      error: { name: "DatabaseError", message: findError instanceof Error ? findError.message : "Database query failed" }
+      error: {
+        name: "DatabaseError",
+        message:
+          findError instanceof Error
+            ? findError.message
+            : "Database query failed",
+      },
     });
     logger.error("Failed to find user in database", findError);
     throw new ApiError("Internal Server Error", 500);
@@ -270,21 +304,34 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
     const saveStartTime = performance.now();
     const [, saveError] = await tryCatch(existingUser.save());
-    enrichContext({ db_write_latency_ms: Math.round(performance.now() - saveStartTime) });
+    enrichContext({
+      db_write_latency_ms: Math.round(performance.now() - saveStartTime),
+    });
 
     if (saveError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: saveError instanceof Error ? saveError.message : "Failed to save user" }
+        error: {
+          name: "DatabaseError",
+          message:
+            saveError instanceof Error
+              ? saveError.message
+              : "Failed to save user",
+        },
       });
       logger.error("Failed to update existing user", saveError);
       throw new ApiError("Internal Server Error", 500);
     }
 
     const rawRefreshToken = generateRefreshToken();
-    const [, rtSaveError] = await tryCatch(addRefreshToken(existingUser._id, rawRefreshToken));
+    const [, rtSaveError] = await tryCatch(
+      addRefreshToken(existingUser._id, rawRefreshToken)
+    );
     if (rtSaveError) {
-      logger.error("Failed to save refresh token for existing user", rtSaveError);
+      logger.error(
+        "Failed to save refresh token for existing user",
+        rtSaveError
+      );
       throw new ApiError("Internal Server Error", 500);
     }
 
@@ -321,9 +368,16 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         day: "numeric",
         timeZone: "UTC",
       });
-      enrichContext({ outcome: "forbidden", reason: "account_deletion_cooldown" });
+      enrichContext({
+        outcome: "forbidden",
+        reason: "account_deletion_cooldown",
+      });
       res.clearCookie("oauth_state", authCookieOptions);
-      response(res, 403, `This GitHub account was recently deleted. You can create a new account after ${formattedDate}.`);
+      response(
+        res,
+        403,
+        `This GitHub account was recently deleted. You can create a new account after ${formattedDate}.`
+      );
       return;
     }
 
@@ -335,15 +389,26 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         username,
         profile_image_url: profile_image_url,
         github_user_token: encryptedAccessToken,
-        project_listing_limit: parseInt(process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2", 10),
+        project_listing_limit: parseInt(
+          process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2",
+          10
+        ),
       })
     );
-    enrichContext({ db_write_latency_ms: Math.round(performance.now() - createStartTime) });
+    enrichContext({
+      db_write_latency_ms: Math.round(performance.now() - createStartTime),
+    });
 
     if (createError) {
       enrichContext({
         outcome: "error",
-        error: { name: "DatabaseError", message: createError instanceof Error ? createError.message : "Failed to create user" }
+        error: {
+          name: "DatabaseError",
+          message:
+            createError instanceof Error
+              ? createError.message
+              : "Failed to create user",
+        },
       });
       logger.error("Failed to create new user", createError);
       throw new ApiError("Internal Server Error", 500);
@@ -364,7 +429,9 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     );
 
     const rawRefreshToken = generateRefreshToken();
-    const [, rtSaveError] = await tryCatch(addRefreshToken(newUser._id, rawRefreshToken));
+    const [, rtSaveError] = await tryCatch(
+      addRefreshToken(newUser._id, rawRefreshToken)
+    );
     if (rtSaveError) {
       logger.error("Failed to save refresh token for new user", rtSaveError);
       throw new ApiError("Internal Server Error", 500);
@@ -428,72 +495,89 @@ const githubLogout = asyncHandler(async (req: Request, res: Response) => {
   }
 
   enrichContext({ outcome: "success" });
-  response(res, 200, "User Logged out successfully", {}, {}, true, "", "", true);
-});
-
-const refreshTokenHandler = asyncHandler(async (req: Request, res: Response) => {
-  enrichContext({ action: "token_refresh" });
-  if (!isTrustedOrigin(req)) {
-    enrichContext({ outcome: "forbidden" });
-    response(res, 403, "Forbidden");
-    return;
-  }
-
-  const cookieValidation = refreshTokenCookieSchema.safeParse(req.cookies);
-  if (!cookieValidation.success) {
-    enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
-    response(res, 401, "Unauthorized Access");
-    return;
-  }
-
-  const rawRefreshToken = cookieValidation.data.refresh_token;
-  const newRawRefreshToken = generateRefreshToken();
-
-  const [result, rotateError] = await tryCatch(
-    rotateRefreshToken(rawRefreshToken, newRawRefreshToken)
-  );
-
-  if (rotateError) {
-    logger.error("Failed to rotate refresh token", rotateError);
-    throw new ApiError("Internal Server Error", 500);
-  }
-
-  if (result === "REUSE_DETECTED") {
-    enrichContext({ outcome: "unauthorized", auth_status: "token_reuse_detected" });
-    logger.warn("Refresh token reuse detected — all sessions revoked for user");
-    response(res, 401, "Unauthorized Access", {}, {}, true, "", "", true);
-    return;
-  }
-
-  if (!result) {
-    enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
-    response(res, 401, "Unauthorized Access", {}, {}, true, "", "", true);
-    return;
-  }
-
-  enrichContext({
-    entity: { type: "user", id: result._id.toString() },
-  });
-
-  const newSessionToken = createSessionToken(
-    result._id,
-    result.username,
-    result.name,
-    result.profile_image_url
-  );
-
-  enrichContext({ outcome: "success" });
   response(
     res,
     200,
-    "Token refreshed successfully",
+    "User Logged out successfully",
     {},
     {},
-    false,
-    newSessionToken,
-    newRawRefreshToken
+    true,
+    "",
+    "",
+    true
   );
 });
+
+const refreshTokenHandler = asyncHandler(
+  async (req: Request, res: Response) => {
+    enrichContext({ action: "token_refresh" });
+    if (!isTrustedOrigin(req)) {
+      enrichContext({ outcome: "forbidden" });
+      response(res, 403, "Forbidden");
+      return;
+    }
+
+    const cookieValidation = refreshTokenCookieSchema.safeParse(req.cookies);
+    if (!cookieValidation.success) {
+      enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
+      response(res, 401, "Unauthorized Access");
+      return;
+    }
+
+    const rawRefreshToken = cookieValidation.data.refresh_token;
+    const newRawRefreshToken = generateRefreshToken();
+
+    const [result, rotateError] = await tryCatch(
+      rotateRefreshToken(rawRefreshToken, newRawRefreshToken)
+    );
+
+    if (rotateError) {
+      logger.error("Failed to rotate refresh token", rotateError);
+      throw new ApiError("Internal Server Error", 500);
+    }
+
+    if (result === "REUSE_DETECTED") {
+      enrichContext({
+        outcome: "unauthorized",
+        auth_status: "token_reuse_detected",
+      });
+      logger.warn(
+        "Refresh token reuse detected — all sessions revoked for user"
+      );
+      response(res, 401, "Unauthorized Access", {}, {}, true, "", "", true);
+      return;
+    }
+
+    if (!result) {
+      enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
+      response(res, 401, "Unauthorized Access", {}, {}, true, "", "", true);
+      return;
+    }
+
+    enrichContext({
+      entity: { type: "user", id: result._id.toString() },
+    });
+
+    const newSessionToken = createSessionToken(
+      result._id,
+      result.username,
+      result.name,
+      result.profile_image_url
+    );
+
+    enrichContext({ outcome: "success" });
+    response(
+      res,
+      200,
+      "Token refreshed successfully",
+      {},
+      {},
+      false,
+      newSessionToken,
+      newRawRefreshToken
+    );
+  }
+);
 
 const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "delete_account" });
@@ -531,7 +615,9 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
   // Step 2: Fetch ALL seller's projects (including already-scheduled ones)
   const [projects, projectsFetchError] = await tryCatch(
     Project.find({ userid: userId })
-      .select("_id project_images project_images_detail project_video repo_zip_s3_key scheduled_deletion_at")
+      .select(
+        "_id project_images project_images_detail project_video repo_zip_s3_key scheduled_deletion_at"
+      )
       .lean()
   );
 
@@ -548,7 +634,10 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
       Review.deleteMany({ projectId: { $in: allProjectIds } })
     );
     if (bulkReviewsDeleteError) {
-      logger.error("deleteAccount: failed to bulk delete project reviews", bulkReviewsDeleteError);
+      logger.error(
+        "deleteAccount: failed to bulk delete project reviews",
+        bulkReviewsDeleteError
+      );
     }
   }
 
@@ -578,7 +667,9 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
           { _id: project._id },
           {
             isActive: false,
-            scheduled_deletion_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            scheduled_deletion_at: new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000
+            ),
           }
         )
       );
@@ -610,7 +701,10 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
   // Step 5: Delete Sales document
   const [, salesDeleteError] = await tryCatch(Sales.deleteOne({ userId }));
   if (salesDeleteError) {
-    logger.error("deleteAccount: failed to delete Sales document", salesDeleteError);
+    logger.error(
+      "deleteAccount: failed to delete Sales document",
+      salesDeleteError
+    );
   }
 
   // Step 6: Delete GitHubAppInstallation records
@@ -618,7 +712,10 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     GitHubAppInstallation.deleteMany({ user_id: userId })
   );
   if (ghInstallDeleteError) {
-    logger.error("deleteAccount: failed to delete GitHubAppInstallation records", ghInstallDeleteError);
+    logger.error(
+      "deleteAccount: failed to delete GitHubAppInstallation records",
+      ghInstallDeleteError
+    );
   }
 
   // Step 7: Delete reviews this user left on OTHERS' projects + recalculate aggregates
@@ -627,19 +724,29 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
   );
 
   if (reviewsFetchError) {
-    logger.error("deleteAccount: failed to fetch user's reviews on others' projects", reviewsFetchError);
+    logger.error(
+      "deleteAccount: failed to fetch user's reviews on others' projects",
+      reviewsFetchError
+    );
   } else {
     const affectedProjectIds = [
       ...new Set((userReviews ?? []).map((r: any) => r.projectId.toString())),
     ];
 
-    const [, reviewsDeleteError] = await tryCatch(Review.deleteMany({ userId }));
+    const [, reviewsDeleteError] = await tryCatch(
+      Review.deleteMany({ userId })
+    );
     if (reviewsDeleteError) {
-      logger.error("deleteAccount: failed to delete user's reviews", reviewsDeleteError);
+      logger.error(
+        "deleteAccount: failed to delete user's reviews",
+        reviewsDeleteError
+      );
     } else {
       for (const projectIdStr of affectedProjectIds) {
         const [, recalcError] = await tryCatch(
-          recalculateProjectAggregates(new mongoose.Types.ObjectId(projectIdStr))
+          recalculateProjectAggregates(
+            new mongoose.Types.ObjectId(projectIdStr)
+          )
         );
         if (recalcError) {
           logger.error("deleteAccount: aggregate recalculation failed", {
@@ -656,29 +763,58 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     SiteReview.deleteMany({ username: (user as any).username })
   );
   if (siteReviewDeleteError) {
-    logger.error("deleteAccount: failed to delete SiteReview", siteReviewDeleteError);
+    logger.error(
+      "deleteAccount: failed to delete SiteReview",
+      siteReviewDeleteError
+    );
   }
 
   // Step 9: Delete the User document — point of no return
   const [, userDeleteError] = await tryCatch(User.deleteOne({ _id: userId }));
   if (userDeleteError) {
-    logger.error("deleteAccount: CRITICAL — failed to delete user document", userDeleteError);
+    logger.error(
+      "deleteAccount: CRITICAL — failed to delete user document",
+      userDeleteError
+    );
     response(res, 500, "Account deletion failed. Please contact support.");
     return;
   }
 
   // Step 10a: Record deletion for re-registration cooldown (non-fatal)
   const [, deletedUserCreateError] = await tryCatch(
-    DeletedUser.create({ github_id: (user as any).github_id, deleted_at: new Date() })
+    DeletedUser.create({
+      github_id: (user as any).github_id,
+      deleted_at: new Date(),
+    })
   );
   if (deletedUserCreateError) {
-    logger.error("deleteAccount: failed to record DeletedUser for cooldown", deletedUserCreateError);
+    logger.error(
+      "deleteAccount: failed to record DeletedUser for cooldown",
+      deletedUserCreateError
+    );
   }
 
   enrichContext({ outcome: "success" });
 
   // Step 10b: Clear both auth cookies (same pattern as githubLogout)
-  response(res, 200, "Account deleted successfully", {}, {}, true, "", "", true);
+  response(
+    res,
+    200,
+    "Account deleted successfully",
+    {},
+    {},
+    true,
+    "",
+    "",
+    true
+  );
 });
 
-export { githubLoginStart, githubLogin, authValidation, githubLogout, refreshTokenHandler, deleteAccount };
+export {
+  githubLoginStart,
+  githubLogin,
+  authValidation,
+  githubLogout,
+  refreshTokenHandler,
+  deleteAccount,
+};

@@ -41,7 +41,9 @@ export default function Reviews() {
       return (
         <div className="border-t-2 border-l-2 border-black/20 dark:border-white/20 transition-colors">
           <div className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-16 flex flex-col items-center justify-center text-center min-h-[240px]">
-            <div className="text-red-500 font-syne text-6xl font-black opacity-20 leading-none mb-6">"</div>
+            <div className="text-red-500 font-syne text-6xl font-black opacity-20 leading-none mb-6">
+              "
+            </div>
             <p className="font-space text-base text-gray-500 dark:text-gray-500 max-w-md">
               No reviews at the moment. Be the first to share yours.
             </p>
@@ -62,7 +64,9 @@ export default function Reviews() {
             className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 flex flex-col justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group"
           >
             <div className="mb-12">
-              <div className="text-red-500 font-syne text-6xl font-black opacity-30 group-hover:opacity-100 transition-opacity leading-none mb-4">"</div>
+              <div className="text-red-500 font-syne text-6xl font-black opacity-30 group-hover:opacity-100 transition-opacity leading-none mb-4">
+                "
+              </div>
               <p className="font-space text-lg font-medium leading-relaxed text-gray-700 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white transition-colors">
                 {review.review_description}
               </p>
@@ -77,7 +81,9 @@ export default function Reviews() {
                     className="w-8 h-8 rounded-full object-cover border border-black/10 dark:border-white/10"
                   />
                 )}
-                <div className="font-syne text-xl font-bold uppercase">{review.username}</div>
+                <div className="font-syne text-xl font-bold uppercase">
+                  {review.username}
+                </div>
               </div>
               <div className="font-space text-sm text-gray-600 dark:text-gray-500 group-hover:text-black dark:group-hover:text-gray-400 mb-4 transition-colors">
                 {review.job_role}
@@ -94,11 +100,16 @@ export default function Reviews() {
   };
 
   return (
-    <section className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white border-y border-black/10 dark:border-white/10 transition-colors duration-300 overflow-hidden" id="validations">
+    <section
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white border-y border-black/10 dark:border-white/10 transition-colors duration-300 overflow-hidden"
+      id="validations"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center md:justify-between mb-20 border-b-4 border-black/20 dark:border-white/20 pb-6 transition-colors">
           <div className="flex items-center gap-3">
-            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">Validations</span>
+            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">
+              Validations
+            </span>
           </div>
           <div className="hidden md:flex gap-4 font-space text-xs font-bold uppercase tracking-widest text-red-500">
             <span>Ping: 12ms</span>

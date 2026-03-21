@@ -100,7 +100,8 @@ const INSTALLATION_ID = 12345;
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -253,7 +254,10 @@ describe("getPrivateRepos", () => {
       mockInstallation as any
     );
     vi.mocked(githubAppService.getInstallationRepos).mockResolvedValue({
-      repos: [makePrivateRepo(), makePrivateRepo({ id: 11223344, name: "second-repo" })],
+      repos: [
+        makePrivateRepo(),
+        makePrivateRepo({ id: 11223344, name: "second-repo" }),
+      ],
       totalCount: 15,
       perPage: 10,
     } as any);
@@ -308,7 +312,11 @@ describe("getPrivateRepos", () => {
   });
 
   it("formats repos correctly with github_repo_id as string and installation_id", async () => {
-    const rawRepo = makePrivateRepo({ id: 12345678, name: "my-repo", language: "Go" });
+    const rawRepo = makePrivateRepo({
+      id: 12345678,
+      name: "my-repo",
+      language: "Go",
+    });
     vi.mocked(GitHubAppInstallation.findOne).mockResolvedValue(
       mockInstallation as any
     );

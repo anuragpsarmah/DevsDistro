@@ -183,7 +183,8 @@ describe("authToken util", () => {
 
     await addRefreshToken(userId, "c".repeat(80));
 
-    const [filter, pipeline] = vi.mocked(User.updateOne).mock.calls[0] as unknown as any[];
+    const [filter, pipeline] = vi.mocked(User.updateOne).mock
+      .calls[0] as unknown as any[];
     expect(filter).toEqual({ _id: userId });
     expect(Array.isArray(pipeline)).toBe(true);
     expect((pipeline as any[]).length).toBe(3);

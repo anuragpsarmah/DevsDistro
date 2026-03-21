@@ -143,14 +143,23 @@ export interface PurchaseIntent {
 
 export interface PurchasedProject {
   _id: string;
-  projectId: (MarketplaceProject & { repo_zip_status: string; scheduled_deletion_at?: string | null }) | null;
+  projectId:
+    | (MarketplaceProject & {
+        repo_zip_status: string;
+        scheduled_deletion_at?: string | null;
+      })
+    | null;
   price_usd: number;
   price_sol_total: number;
   buyer_wallet: string;
   tx_signature: string;
   createdAt: string;
   project_snapshot: { title: string; project_type: string };
-  seller_snapshot: { name: string; username: string; profile_image_url: string };
+  seller_snapshot: {
+    name: string;
+    username: string;
+    profile_image_url: string;
+  };
 }
 
 interface SellerSalesTransaction {

@@ -108,7 +108,8 @@ const CDN_URL = "https://cdn.example.com";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const flushPromises = () => new Promise<void>((resolve) => setImmediate(resolve));
+const flushPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
 
 const makeReq = (overrides: Record<string, any> = {}) => ({
   user: { _id: VALID_USER_ID },
@@ -345,7 +346,9 @@ describe("getSpecificProjectData", () => {
 
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Invalid Repo ID. No such records found." })
+      expect.objectContaining({
+        message: "Invalid Repo ID. No such records found.",
+      })
     );
   });
 

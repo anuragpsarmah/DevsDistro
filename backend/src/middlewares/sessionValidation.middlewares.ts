@@ -31,7 +31,9 @@ export const sessionValidation = asyncHandler(
     }
 
     try {
-      const decoded = jwt.verify(session_token, jwtSecret, { algorithms: ["HS256"] }) as JwtPayload;
+      const decoded = jwt.verify(session_token, jwtSecret, {
+        algorithms: ["HS256"],
+      }) as JwtPayload;
       req.user = decoded as any;
       enrichContext({
         auth_status: "authenticated",
@@ -43,7 +45,8 @@ export const sessionValidation = asyncHandler(
       next();
     } catch (err: any) {
       enrichContext({
-        auth_status: err.name === "TokenExpiredError" ? "token_expired" : "token_invalid",
+        auth_status:
+          err.name === "TokenExpiredError" ? "token_expired" : "token_invalid",
         outcome: "unauthorized",
         error: {
           name: err.name,
