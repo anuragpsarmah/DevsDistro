@@ -15,6 +15,7 @@ const {
   GITHUB_WEBHOOK_SECRET,
   ENCRYPTION_KEY_32,
   JWT_SECRET,
+  GITHUB_INSTALLATION_URL
 } = process.env;
 
 const INSTALL_STATE_EXPIRY_SECONDS = 10 * 60;
@@ -329,7 +330,7 @@ class GitHubAppService {
       .digest("hex");
 
     const state = `${payload}.${signature}`;
-    return `https://github.com/apps/devsdistro/installations/new?state=${encodeURIComponent(state)}`;
+    return `${GITHUB_INSTALLATION_URL}/installations/new?state=${encodeURIComponent(state)}`;
   }
 
   async reactivateProjectsWithRestoredAccess(
