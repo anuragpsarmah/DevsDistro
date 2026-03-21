@@ -83,7 +83,7 @@ export default function DashboardOverviewTab({
           )}
         </div>
 
-        <div className="flex-1 min-h-0 w-full">
+        <div className="flex-1 min-h-0 w-full overflow-y-auto hide-scrollbar-if-needed">
           {yearlyError && !yearlyLoading ? (
             <ErrorScreenDashboardSection
               title="Monthly Sales Unavailable"
