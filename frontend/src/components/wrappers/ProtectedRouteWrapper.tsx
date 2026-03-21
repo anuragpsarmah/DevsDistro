@@ -9,7 +9,7 @@ import {
   useUserCurrencyQuery,
 } from "@/hooks/apiQueries";
 import { tryCatch } from "@/utils/tryCatch.util";
-import BackgroundDots from "../ui/backgroundDots";
+import LoadingPage from "@/pages/loading/loading";
 
 interface AuthValidatorProps {
   children: ReactNode;
@@ -124,11 +124,7 @@ export default function ProtectedRouteWrapper({
   ]);
 
   if (isUserDataLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
-        <BackgroundDots />
-      </div>
-    );
+    return <LoadingPage />;
   }
 
   return isValidElement(children)

@@ -11,7 +11,7 @@ export default function GitHubAppInstallPrompt({
 
   return (
     <div className="h-full flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-2xl">
         <div className="relative bg-white dark:bg-[#050505] p-10 border-2 border-black dark:border-white transition-colors duration-300">
           <div className="relative z-10 flex flex-col items-center text-center">
             <div className="w-16 h-16 border-2 border-black dark:border-white flex items-center justify-center mb-6 transition-colors duration-300">

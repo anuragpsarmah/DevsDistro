@@ -1,11 +1,8 @@
 import { motion } from "framer-motion";
-import BackgroundDots from "@/components/ui/backgroundDots";
 
 export default function LoadingPage() {
   return (
     <div className="min-h-screen flex items-center justify-center text-black dark:text-white p-4 relative overflow-hidden bg-white dark:bg-[#050505] selection:bg-red-500 selection:text-white transition-colors duration-300">
-      <BackgroundDots />
-
       <div className="z-10 text-center flex flex-col items-center">
         <motion.div
           className="mb-12 w-24 h-24 border-4 border-black dark:border-white bg-transparent relative flex items-center justify-center"

@@ -43,7 +43,7 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar hide-scrollbar-if-needed pr-2">
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar hide-scrollbar-if-needed pr-2 flex flex-col">
           {isLoading && (
             <div className="space-y-6">
               {[...Array(4)].map((_, i) => (
