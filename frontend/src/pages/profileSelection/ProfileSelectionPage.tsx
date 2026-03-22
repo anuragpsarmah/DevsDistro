@@ -1,11 +1,22 @@
 import { useState, useEffect } from "react";
 import { ShoppingBag, Store } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ProfileCard } from "./main-components/ProfileCard";
+import { isSafeRelativePath } from "@/utils/navigation";
 
 export default function ProfileSelectionPage() {
   const [hoveredProfile, setHoveredProfile] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const nextParam = searchParams.get("next");
+  const validNext = isSafeRelativePath(nextParam) ? nextParam : null;
+
+  useEffect(() => {
+    if (validNext) {
+      navigate(validNext, { replace: true });
+    }
+  }, [validNext, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -76,7 +87,9 @@ export default function ProfileSelectionPage() {
               "INSTANT ACCESS ON PURCHASE",
               "VERIFIED REPOSITORIES",
             ]}
-            onClick={() => navigate("/buyer-marketplace")}
+            onClick={() =>
+              validNext ? navigate(validNext) : navigate("/buyer-marketplace")
+            }
             isHovered={hoveredProfile === "buyer"}
             setHovered={() => setHoveredProfile("buyer")}
             setNotHovered={() => setHoveredProfile(null)}

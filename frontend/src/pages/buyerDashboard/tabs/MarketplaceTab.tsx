@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { isMongoObjectId } from "@/utils/navigation";
 import { Loader2, SearchX, Store } from "lucide-react";
 import SearchBar from "../main-components/Searchbar";
 import MarketplaceProjectCard from "../sub-components/MarketplaceProjectCard";
@@ -10,7 +11,7 @@ import ProjectDetailPage from "../sub-components/ProjectDetailPage";
 import { MarketplaceTabProps } from "../utils/types";
 import { DEBOUNCE_MS } from "../utils/constants";
 
-export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
+export default function MarketplaceTab({ logout, initialProjectId }: MarketplaceTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedSort, setSelectedSort] = useState("newest");
@@ -18,6 +19,12 @@ export default function MarketplaceTab({ logout }: MarketplaceTabProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null
   );
+
+  useEffect(() => {
+    if (initialProjectId && isMongoObjectId(initialProjectId)) {
+      setSelectedProjectId(initialProjectId);
+    }
+  }, [initialProjectId]);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import BrutalistBackground from "@/components/ui/brutalistBackground";
 import Sidebar from "./main-components/Sidebar";
 import { BuyerDashboardTabTypes } from "./utils/types";
@@ -7,6 +7,7 @@ import MarketplaceTab from "./tabs/MarketplaceTab";
 import WishlistTab from "./tabs/WishlistTab";
 import OrdersTab from "./tabs/OrdersTab";
 import PurchaseLedgerTab from "./tabs/PurchaseLedgerTab";
+import { isMongoObjectId } from "@/utils/navigation";
 
 interface BuyerDashboardPageProps {
   logout?: () => Promise<void>;
@@ -18,7 +19,26 @@ export default function BuyerDashboardPage({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] =
     useState<BuyerDashboardTabTypes>("Marketplace");
+  const [initialProjectId, setInitialProjectId] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const lastProcessedOpenProjectRef = useRef<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const openProject = searchParams.get("openProject");
+    if (
+      openProject &&
+      isMongoObjectId(openProject) &&
+      openProject !== lastProcessedOpenProjectRef.current
+    ) {
+      setActiveTab("Marketplace");
+      setInitialProjectId(openProject);
+      lastProcessedOpenProjectRef.current = openProject;
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete("openProject");
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   return (
     <div className="h-screen flex transition-colors duration-300 relative overflow-hidden bg-white text-black dark:text-white dark:bg-[#050505]">
@@ -33,7 +53,9 @@ export default function BuyerDashboardPage({
       />
 
       <main className="flex-1 p-8 overflow-auto relative z-10">
-        {activeTab === "Marketplace" && <MarketplaceTab logout={logout} />}
+        {activeTab === "Marketplace" && (
+          <MarketplaceTab logout={logout} initialProjectId={initialProjectId} />
+        )}
         {activeTab === "Wishlist" && <WishlistTab logout={logout} />}
         {activeTab === "Purchases" && <OrdersTab logout={logout} />}
         {activeTab === "Purchase Ledger" && (

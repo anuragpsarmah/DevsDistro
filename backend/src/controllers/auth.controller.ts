@@ -35,7 +35,7 @@ import {
 } from "../config/auth.config";
 import { isTrustedOrigin } from "../utils/trustedOrigin.util";
 
-const githubLoginStart = asyncHandler(async (_req: Request, res: Response) => {
+const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "github_login_start" });
 
   const oauthState = crypto.randomBytes(24).toString("hex");
@@ -66,6 +66,20 @@ const githubLoginStart = asyncHandler(async (_req: Request, res: Response) => {
     ...authCookieOptions,
     maxAge: OAUTH_STATE_MAX_AGE_MS,
   });
+
+  const nextParam = req.query.next;
+  if (
+    typeof nextParam === "string" &&
+    nextParam.startsWith("/") &&
+    !nextParam.startsWith("//") &&
+    !nextParam.includes("://")
+  ) {
+    res.cookie("oauth_next", decodeURIComponent(nextParam), {
+      ...authCookieOptions,
+      maxAge: OAUTH_STATE_MAX_AGE_MS,
+    });
+  }
+
   response(res, 200, "GitHub OAuth URL generated", {
     authorize_url,
   });
@@ -95,9 +109,19 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   ) {
     enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
     res.clearCookie("oauth_state", authCookieOptions);
+    res.clearCookie("oauth_next", authCookieOptions);
     response(res, 401, "Unauthorized Access");
     return;
   }
+
+  const oauthNextRaw = req.cookies.oauth_next;
+  const oauthNext =
+    typeof oauthNextRaw === "string" &&
+    oauthNextRaw.startsWith("/") &&
+    !oauthNextRaw.startsWith("//") &&
+    !oauthNextRaw.includes("://")
+      ? oauthNextRaw
+      : null;
 
   const {
     GITHUB_CLIENT_ID,
@@ -156,6 +180,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         status: tokenError.response?.status,
       });
       res.clearCookie("oauth_state", authCookieOptions);
+      res.clearCookie("oauth_next", authCookieOptions);
       response(res, 401, "Authentication failed");
       return;
     }
@@ -180,6 +205,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     });
     logger.error("GitHub OAuth error response", { github_error: error });
     res.clearCookie("oauth_state", authCookieOptions);
+    res.clearCookie("oauth_next", authCookieOptions);
     response(res, 401, "Unauthorized Access");
     return;
   }
@@ -241,6 +267,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         status: responseStatus,
       });
       res.clearCookie("oauth_state", authCookieOptions);
+      res.clearCookie("oauth_next", authCookieOptions);
       response(res, 401, "Authentication failed");
       return;
     }
@@ -337,15 +364,19 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
     enrichContext({ outcome: "success" });
     res.clearCookie("oauth_state", authCookieOptions);
+    res.clearCookie("oauth_next", authCookieOptions);
     response(
       res,
       200,
       "User login successful",
       {
-        id: existingUser.id,
-        username,
-        name,
-        profile_image_url,
+        user: {
+          _id: existingUser.id,
+          username,
+          name,
+          profile_image_url,
+        },
+        next: oauthNext,
       },
       {},
       false,
@@ -373,6 +404,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         reason: "account_deletion_cooldown",
       });
       res.clearCookie("oauth_state", authCookieOptions);
+      res.clearCookie("oauth_next", authCookieOptions);
       response(
         res,
         403,
@@ -438,15 +470,19 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     }
 
     res.clearCookie("oauth_state", authCookieOptions);
+    res.clearCookie("oauth_next", authCookieOptions);
     response(
       res,
       200,
       "User login successful. New User created.",
       {
-        id: newUser.id,
-        username,
-        name,
-        profile_image_url,
+        user: {
+          _id: newUser.id,
+          username,
+          name,
+          profile_image_url,
+        },
+        next: oauthNext,
       },
       {},
       false,

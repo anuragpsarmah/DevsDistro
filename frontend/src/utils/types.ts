@@ -123,6 +123,33 @@ export interface ProjectDetail {
   } | null;
 }
 
+export interface PublicProjectDetail {
+  _id: string;
+  title: string;
+  description: string;
+  project_type: string;
+  tech_stack: string[];
+  price: number;
+  avgRating: number;
+  totalReviews: number;
+  live_link?: string;
+  createdAt: string;
+  project_images: string[];
+  project_images_detail?: string[];
+  project_video?: string;
+  userid: {
+    username: string;
+    name: string;
+    profile_image_url: string;
+    profile_visibility?: boolean;
+    short_bio?: string;
+    job_role?: string;
+    location?: string;
+    website_url?: string;
+    x_username?: string;
+  } | null;
+}
+
 export interface PurchaseIntent {
   purchase_reference: string;
   price_usd: number;

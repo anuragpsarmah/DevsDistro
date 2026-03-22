@@ -11,6 +11,7 @@ export interface SidebarContentProps {
 
 export interface MarketplaceTabProps {
   logout?: () => Promise<void>;
+  initialProjectId?: string | null;
 }
 
 export interface OrdersTabProps {

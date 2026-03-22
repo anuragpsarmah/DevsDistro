@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import { GithubIcon, Code2, ArrowRight } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuthValidationQuery } from "@/hooks/apiQueries";
 import { apiClient } from "@/lib/axiosInstance";
+import { isSafeRelativePath } from "@/utils/navigation";
 import Header from "@/pages/landing/components/header";
 import MobileMenu from "@/pages/landing/components/mobileMenu";
 import Footer from "@/pages/landing/components/footer";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { data, isLoading, isError } = useAuthValidationQuery();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const nextParam = searchParams.get("next");
+  const validNext = isSafeRelativePath(nextParam) ? nextParam : null;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -19,12 +24,16 @@ export default function AuthPage() {
   useEffect(() => {
     const handleAuthValidation = async () => {
       if (!isLoading && !isError && data) {
-        navigate("/profile-selection");
+        if (validNext) {
+          navigate(`/profile-selection?next=${encodeURIComponent(validNext)}`);
+        } else {
+          navigate("/profile-selection");
+        }
       }
     };
 
     handleAuthValidation();
-  }, [isError, isLoading, data, navigate]);
+  }, [isError, isLoading, data, navigate, validNext]);
 
   useEffect(() => {
     const handleResize = () => setIsMenuOpen(false);
@@ -33,8 +42,11 @@ export default function AuthPage() {
   }, []);
 
   const handleLoginClick = () => {
+    const url = validNext
+      ? `/auth/githubLoginStart?next=${encodeURIComponent(validNext)}`
+      : "/auth/githubLoginStart";
     apiClient
-      .get<{ data: { authorize_url: string } }>("/auth/githubLoginStart")
+      .get<{ data: { authorize_url: string } }>(url)
       .then((res) => {
         window.location.href = res.data.data.authorize_url;
       });

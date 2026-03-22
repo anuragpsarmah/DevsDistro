@@ -1841,6 +1841,21 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Refresh initiated");
 });
 
+const PUBLIC_DETAIL_SELECT = {
+  title: 1,
+  description: 1,
+  project_type: 1,
+  tech_stack: 1,
+  price: 1,
+  avgRating: 1,
+  totalReviews: 1,
+  live_link: 1,
+  createdAt: 1,
+  project_images: 1,
+  project_images_detail: 1,
+  project_video: 1,
+} as const;
+
 const DETAIL_SELECT = {
   title: 1,
   description: 1,
@@ -1943,6 +1958,64 @@ const getMarketplaceProjectDetail = asyncHandler(
   }
 );
 
+const getPublicProjectDetail = asyncHandler(
+  async (req: Request, res: Response) => {
+    enrichContext({ action: "get_public_project_detail" });
+
+    const projectId = req.params.projectId as string;
+
+    if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+      enrichContext({
+        outcome: "validation_failed",
+        reason: "invalid_project_id",
+      });
+      response(res, 400, "Valid projectId is required");
+      return;
+    }
+
+    enrichContext({ entity: { type: "project", id: projectId } });
+
+    const projectObjectId = new mongoose.Types.ObjectId(projectId);
+
+    const [projectData, projectError] = await tryCatch(
+      Project.findOne({
+        _id: projectObjectId,
+        isActive: true,
+        github_access_revoked: false,
+        repo_zip_status: "SUCCESS",
+      })
+        .select(PUBLIC_DETAIL_SELECT)
+        .populate(DETAIL_SELLER_POPULATE)
+        .lean()
+    );
+
+    if (projectError) {
+      enrichContext({ outcome: "error", error: { name: "DatabaseError" } });
+      logger.error("Failed to fetch public project detail", projectError);
+      response(res, 500, "Failed to fetch project data. Try again later.");
+      return;
+    }
+
+    if (!projectData) {
+      enrichContext({ outcome: "not_found" });
+      response(res, 404, "Project not found");
+      return;
+    }
+
+    if (
+      projectData.userid &&
+      (projectData.userid as any).profile_visibility === false
+    ) {
+      const { short_bio, location, website_url, x_username, ...publicFields } =
+        projectData.userid as any;
+      projectData.userid = { ...publicFields, profile_visibility: false };
+    }
+
+    enrichContext({ outcome: "success" });
+    response(res, 200, "Public project detail fetched successfully", projectData);
+  }
+);
+
 export {
   getPrivateRepos,
   getPreSignedUrlForProjectMediaUpload,
@@ -1958,4 +2031,5 @@ export {
   retryRepoZipUpload,
   refreshRepoZip,
   getMarketplaceProjectDetail,
+  getPublicProjectDetail,
 };

@@ -5,12 +5,13 @@ import AppInstallCallbackPage from "@/pages/auth/AppInstallCallbackPage";
 import ProfileSelectionPage from "@/pages/profileSelection/ProfileSelectionPage";
 import ErrorPage from "@/pages/error/ErrorPage";
 import LandingPage from "@/pages/landing/LandingPage";
-import ProtectedRouteWrapper from "./components/wrappers/ProtectedRouteWrapper";
+import ProtectedRouteWrapper from "@/components/wrappers/ProtectedRouteWrapper";
 import SellerDashboardPage from "@/pages/sellerDashboard/SellerDashboardPage";
 import BuyerDashboardPage from "./pages/buyerDashboard/BuyerDashboardPage";
 import TermsOfService from "@/pages/legal/TermsOfService";
 import PrivacyPolicy from "@/pages/legal/PrivacyPolicy";
 import SmoothTransitionWrapper from "@/components/wrappers/SmoothTransitionWrapper";
+import SharedProjectPage from "@/pages/share/SharedProjectPage";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <LandingPage />,
+      },
+      {
+        path: "/p/:projectId",
+        element: <SharedProjectPage />,
       },
       {
         path: "/authentication",

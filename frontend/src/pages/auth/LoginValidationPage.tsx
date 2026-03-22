@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { user } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { errorToast } from "@/components/ui/customToast";
+import { isSafeRelativePath } from "@/utils/navigation";
 
 export default function LoginValidationPage() {
   const [, setActiveUser] = useRecoilState(user);
@@ -37,8 +38,14 @@ export default function LoginValidationPage() {
         }
         navigate("/authentication");
       } else {
-        setActiveUser(response.data.data);
-        navigate("/profile-selection");
+        const { user: userData, next } = response.data.data;
+        setActiveUser(userData);
+        const validNext = isSafeRelativePath(next) ? next : null;
+        if (validNext) {
+          navigate(`/profile-selection?next=${encodeURIComponent(validNext)}`);
+        } else {
+          navigate("/profile-selection");
+        }
       }
     };
 

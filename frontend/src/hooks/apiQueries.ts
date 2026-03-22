@@ -14,6 +14,7 @@ import {
   MarketplaceSearchParams,
   MarketplaceSearchResponse,
   ProjectDetail,
+  PublicProjectDetail,
   MarketplaceProject,
   PurchasedProject,
   ProjectReview,
@@ -647,6 +648,24 @@ const useGetSellerSalesTransactionsInfiniteQuery = (
   });
 };
 
+const usePublicProjectDetailQuery = (
+  projectId: string,
+  options: { enabled: boolean }
+) => {
+  return useQuery({
+    queryKey: ["publicProjectDetail", projectId],
+    queryFn: async () => {
+      const response = await apiClient.get<{ data: PublicProjectDetail }>(
+        `/projects/public/${projectId}`
+      );
+      return response.data.data;
+    },
+    enabled: options.enabled,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+};
+
 export {
   useAuthValidationQuery,
   useLogoutQuery,
@@ -672,4 +691,5 @@ export {
   useGetProjectReviewsQuery,
   useGetMyProjectReviewQuery,
   useGetSellerSalesTransactionsInfiniteQuery,
+  usePublicProjectDetailQuery,
 };

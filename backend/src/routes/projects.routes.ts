@@ -15,6 +15,7 @@ import {
   refreshRepoZip,
   searchProject,
   getMarketplaceProjectDetail,
+  getPublicProjectDetail,
 } from "../controllers/projects.controller";
 import { getPrivateReposFromCache } from "../cache/projects.cache";
 import {
@@ -86,3 +87,6 @@ projectRouter
 projectRouter
   .route("/getMarketplaceProjectDetail")
   .get(generalAuthReadLimiter, sessionValidation, getMarketplaceProjectDetail);
+projectRouter
+  .route("/public/:projectId")
+  .get(heavyReadLimiter, getPublicProjectDetail);

@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   Image,
   Video,
+  Share2,
 } from "lucide-react";
 import XIcon from "@/assets/icons/XIcon";
 import {
@@ -33,6 +34,7 @@ import {
 import FileTree from "./FileTree";
 import PurchaseModal from "./PurchaseModal";
 import ReviewSection from "./ReviewSection";
+import { successToast, errorToast } from "@/components/ui/customToast";
 import { usePurchaseFlow } from "../hooks/usePurchaseFlow";
 import { ProjectDetailPageProps } from "../utils/types";
 
@@ -138,15 +140,34 @@ export default function ProjectDetailPage({
     day: "numeric",
   });
 
+  const handleShareProject = async () => {
+    const shareUrl = `${window.location.origin}/p/${projectId}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      successToast("Share link copied to clipboard");
+    } catch {
+      errorToast("Failed to copy share link");
+    }
+  };
+
   return (
     <div className="mt-6 lg:mt-0 pb-32 max-w-7xl mx-auto selection:bg-red-500 selection:text-white">
-      <button
-        onClick={onBack}
-        className="group flex items-center gap-2 font-space font-bold uppercase tracking-widest text-xs text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors mb-12"
-      >
-        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        {backLabel}
-      </button>
+      <div className="flex items-center justify-between mb-12">
+        <button
+          onClick={onBack}
+          className="group flex items-center gap-2 font-space font-bold uppercase tracking-widest text-xs text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          {backLabel}
+        </button>
+        <button
+          onClick={handleShareProject}
+          className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white font-space font-bold uppercase tracking-widest text-xs hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+        >
+          <Share2 className="w-3 h-3" />
+          Share
+        </button>
+      </div>
 
       <div className="mb-12 space-y-6">
         <div className="flex items-center gap-4 flex-wrap">
