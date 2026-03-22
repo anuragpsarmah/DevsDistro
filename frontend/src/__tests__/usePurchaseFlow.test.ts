@@ -89,8 +89,11 @@ const BUYER_WALLET = "BZMkpMcJYbsu2UZdHaGquTWsvXAuX3G9mcJHA5TsDqXK";
 const TX_SIG =
   "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
 const PROJECT_ID = "507f1f77bcf86cd799439033";
+const PROJECT_ID_2 = "507f1f77bcf86cd799439044";
 const PURCHASE_REF =
   "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
+const PURCHASE_REF_2 =
+  "d77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98079";
 
 const MOCK_INTENT = {
   purchase_reference: PURCHASE_REF,
@@ -107,6 +110,9 @@ const MOCK_INTENT = {
   exchange_rate_fetched_at: new Date().toISOString(),
   expires_in: 600,
 };
+
+const makePendingConfirmKey = (purchaseReference: string) =>
+  `devsdistro_pending_confirm:${purchaseReference}`;
 
 // ─── Setup helpers ─────────────────────────────────────────────────────────────
 
@@ -156,6 +162,7 @@ describe("usePurchaseFlow", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.useFakeTimers();
+    localStorage.clear();
 
     mockSendTransaction.mockResolvedValue(TX_SIG);
     mockGetLatestBlockhash.mockResolvedValue({
@@ -306,6 +313,90 @@ describe("usePurchaseFlow", () => {
       });
       expect(result.current.error).toBeNull();
     });
+
+    it("restores a pending confirmation from localStorage for the same project", async () => {
+      localStorage.setItem(
+        makePendingConfirmKey(PURCHASE_REF),
+        JSON.stringify({
+          txSignature: TX_SIG,
+          purchaseReference: PURCHASE_REF,
+          buyerWallet: BUYER_WALLET,
+          projectId: PROJECT_ID,
+          expiresAt: Date.now() + 60_000,
+        })
+      );
+
+      const initiateMutateAsync = vi.fn();
+      setupMutations({ initiateMutateAsync });
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+
+      expect(initiateMutateAsync).not.toHaveBeenCalled();
+      expect(result.current.flowState).toBe("FAILED");
+      expect(result.current.failedAfterOnChain).toBe(true);
+      expect(result.current.error).toMatch(/previous payment was sent/i);
+    });
+
+    it("does not restore an expired pending confirmation", async () => {
+      localStorage.setItem(
+        makePendingConfirmKey(PURCHASE_REF),
+        JSON.stringify({
+          txSignature: TX_SIG,
+          purchaseReference: PURCHASE_REF,
+          buyerWallet: BUYER_WALLET,
+          projectId: PROJECT_ID,
+          expiresAt: Date.now() - 1,
+        })
+      );
+
+      const initiateMutateAsync = vi.fn().mockResolvedValue(MOCK_INTENT);
+      setupMutations({ initiateMutateAsync });
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+
+      expect(initiateMutateAsync).toHaveBeenCalledWith(PROJECT_ID);
+      expect(result.current.flowState).toBe("AWAITING_WALLET");
+      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
+    });
+
+    it("ignores pending confirmations for other projects", async () => {
+      localStorage.setItem(
+        makePendingConfirmKey(PURCHASE_REF),
+        JSON.stringify({
+          txSignature: TX_SIG,
+          purchaseReference: PURCHASE_REF,
+          buyerWallet: BUYER_WALLET,
+          projectId: PROJECT_ID_2,
+          expiresAt: Date.now() + 60_000,
+        })
+      );
+
+      const initiateMutateAsync = vi.fn().mockResolvedValue(MOCK_INTENT);
+      setupMutations({ initiateMutateAsync });
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+
+      expect(initiateMutateAsync).toHaveBeenCalledWith(PROJECT_ID);
+      expect(result.current.flowState).toBe("AWAITING_WALLET");
+    });
   });
 
   // ── executePurchase() ────────────────────────────────────────────────────────
@@ -409,6 +500,17 @@ describe("usePurchaseFlow", () => {
       expect(result.current.flowState).toBe("FAILED");
       expect(result.current.failedAfterOnChain).toBe(true);
       expect(result.current.error).toMatch(/Purchase session expired/i);
+      const stored = JSON.parse(
+        localStorage.getItem(makePendingConfirmKey(PURCHASE_REF)) || "null"
+      );
+      expect(stored).toMatchObject({
+        txSignature: TX_SIG,
+        purchaseReference: PURCHASE_REF,
+        buyerWallet: BUYER_WALLET,
+        projectId: PROJECT_ID,
+      });
+      expect(stored.expiresAt).toBeGreaterThan(Date.now());
+      expect(stored.expiresAt).toBeLessThanOrEqual(Date.now() + 600_000);
     });
 
     it("goes to FAILED (without failedAfterOnChain) when confirmTransaction resolves with value.err set", async () => {
@@ -580,6 +682,7 @@ describe("usePurchaseFlow", () => {
       });
       expect(result.current.flowState).toBe("SUCCESS");
       expect(onSuccess).toHaveBeenCalledWith(PROJECT_ID);
+      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
     });
 
     it("keeps failedAfterOnChain = true when retryConfirm also fails", async () => {
@@ -610,6 +713,45 @@ describe("usePurchaseFlow", () => {
       // Still failed, still shows "Retry Confirmation" (not "Try Again")
       expect(result.current.flowState).toBe("FAILED");
       expect(result.current.failedAfterOnChain).toBe(true);
+    });
+
+    it("clears persisted retry state and falls back to Try Again on 410", async () => {
+      const confirmMutateAsync = vi.fn().mockRejectedValue({
+        response: {
+          status: 410,
+          data: { message: "Purchase session expired. Please start a new purchase." },
+        },
+      });
+      setupMutations({ confirmMutateAsync });
+
+      localStorage.setItem(
+        makePendingConfirmKey(PURCHASE_REF),
+        JSON.stringify({
+          txSignature: TX_SIG,
+          purchaseReference: PURCHASE_REF,
+          buyerWallet: BUYER_WALLET,
+          projectId: PROJECT_ID,
+          expiresAt: Date.now() + 60_000,
+        })
+      );
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+
+      expect(result.current.failedAfterOnChain).toBe(true);
+
+      await act(async () => {
+        await result.current.retryConfirm();
+      });
+
+      expect(result.current.flowState).toBe("FAILED");
+      expect(result.current.failedAfterOnChain).toBe(false);
+      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
     });
 
     it("does nothing when called without a pending on-chain TX (pendingConfirmRef is null)", async () => {
@@ -658,6 +800,34 @@ describe("usePurchaseFlow", () => {
         firstPayload.purchase_reference
       );
       expect(retryPayload.buyer_wallet).toBe(firstPayload.buyer_wallet);
+    });
+
+    it("preserves unrelated pending confirmations when one purchase succeeds", async () => {
+      localStorage.setItem(
+        makePendingConfirmKey(PURCHASE_REF_2),
+        JSON.stringify({
+          txSignature: `${TX_SIG}2`,
+          purchaseReference: PURCHASE_REF_2,
+          buyerWallet: BUYER_WALLET,
+          projectId: PROJECT_ID_2,
+          expiresAt: Date.now() + 60_000,
+        })
+      );
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
+
+      expect(result.current.flowState).toBe("SUCCESS");
+      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
+      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF_2))).not.toBeNull();
     });
   });
 

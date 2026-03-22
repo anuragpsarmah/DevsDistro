@@ -25,12 +25,57 @@ export type PurchaseFlowState =
 
 const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
+const PENDING_CONFIRM_KEY_PREFIX = "devsdistro_pending_confirm:";
+
 // Stored after on-chain confirmation so a backend failure can be retried
 // without re-sending an on-chain payment.
 interface PendingConfirm {
   txSignature: string;
   purchaseReference: string;
   buyerWallet: string;
+}
+
+// Persisted to localStorage so the retry survives page refresh and browser close.
+interface StoredPendingConfirm extends PendingConfirm {
+  projectId: string;
+  expiresAt: number;
+}
+
+function getPendingConfirmStorageKey(purchaseReference: string): string {
+  return `${PENDING_CONFIRM_KEY_PREFIX}${purchaseReference}`;
+}
+
+function listPendingConfirmStorageKeys(): string[] {
+  const keys: string[] = [];
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (key?.startsWith(PENDING_CONFIRM_KEY_PREFIX)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+}
+
+function readStoredPendingConfirm(key: string): StoredPendingConfirm | null {
+  const storedStr = localStorage.getItem(key);
+  if (!storedStr) return null;
+
+  try {
+    return JSON.parse(storedStr) as StoredPendingConfirm;
+  } catch {
+    localStorage.removeItem(key);
+    return null;
+  }
+}
+
+function cleanupExpiredPendingConfirms(now = Date.now()): void {
+  for (const key of listPendingConfirmStorageKeys()) {
+    const stored = readStoredPendingConfirm(key);
+    if (!stored) continue;
+    if (stored.expiresAt <= now) {
+      localStorage.removeItem(key);
+    }
+  }
 }
 
 interface UsePurchaseFlowParams {
@@ -49,6 +94,9 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Persists the on-chain data so the backend confirm can be retried independently.
   const pendingConfirmRef = useRef<PendingConfirm | null>(null);
+  const pendingConfirmStorageKeyRef = useRef<string | null>(null);
+  // Captures the projectId from initiate() so executePurchase() can persist the recovery record.
+  const projectIdRef = useRef<string | null>(null);
 
   const { connection } = useConnection();
   const wallet = useWallet();
@@ -79,10 +127,38 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
 
   const initiate = useCallback(
     async (projectId: string) => {
+      projectIdRef.current = projectId;
+      cleanupExpiredPendingConfirms();
+
+      // Check localStorage for unresolved pending confirms for this project.
+      // If one exists and the backend confirm window is still open, restore the retry
+      // state instead of prompting a second payment.
+      for (const key of listPendingConfirmStorageKeys()) {
+        const stored = readStoredPendingConfirm(key);
+        if (!stored) continue;
+        if (stored.projectId === projectId) {
+          pendingConfirmRef.current = {
+            txSignature: stored.txSignature,
+            purchaseReference: stored.purchaseReference,
+            buyerWallet: stored.buyerWallet,
+          };
+          pendingConfirmStorageKeyRef.current = key;
+          setIntent(null);
+          setCountdown(0);
+          setFailedAfterOnChain(true);
+          setError(
+            "A previous payment was sent but not confirmed. Retry confirmation below."
+          );
+          setFlowState("FAILED");
+          return;
+        }
+      }
+
       setFlowState("INITIATING");
       setError(null);
       setFailedAfterOnChain(false);
       pendingConfirmRef.current = null;
+      pendingConfirmStorageKeyRef.current = null;
       try {
         const result = await initiateMutation.mutateAsync(projectId);
         setIntent(result);
@@ -124,7 +200,11 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
         buyer_wallet: pending.buyerWallet,
       });
       if (countdownRef.current) clearInterval(countdownRef.current);
+      if (pendingConfirmStorageKeyRef.current) {
+        localStorage.removeItem(pendingConfirmStorageKeyRef.current);
+      }
       pendingConfirmRef.current = null;
+      pendingConfirmStorageKeyRef.current = null;
       setFlowState("SUCCESS");
       onSuccess?.(result.projectId);
     } catch (err: any) {
@@ -133,7 +213,19 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
         err?.message ||
         "Confirmation failed. Please try again.";
       setError(msg);
-      setFailedAfterOnChain(true);
+      // 410 means the backend intent has permanently expired — there is no recovery
+      // path through /confirm. Clear localStorage so the retry button does not
+      // reappear and mislead the user on future visits.
+      if (err?.response?.status === 410) {
+        if (pendingConfirmStorageKeyRef.current) {
+          localStorage.removeItem(pendingConfirmStorageKeyRef.current);
+        }
+        pendingConfirmRef.current = null;
+        pendingConfirmStorageKeyRef.current = null;
+        setFailedAfterOnChain(false);
+      } else {
+        setFailedAfterOnChain(true);
+      }
       setFlowState("FAILED");
     }
   }, [confirmMutation, onSuccess]);
@@ -235,13 +327,30 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
       }
 
       // TX is finalized on-chain. Persist these details so that if the backend call
-      // fails, the user can retry confirmation without re-sending the payment.
+      // fails, the user can retry confirmation without re-sending the payment —
+      // even after a page refresh or browser close.
       const buyerWallet = buyerPubkey.toBase58();
-      pendingConfirmRef.current = {
+      const pendingConfirm: PendingConfirm = {
         txSignature,
         purchaseReference: intent.purchase_reference,
         buyerWallet,
       };
+      pendingConfirmRef.current = pendingConfirm;
+      const pendingConfirmStorageKey = getPendingConfirmStorageKey(
+        pendingConfirm.purchaseReference
+      );
+      pendingConfirmStorageKeyRef.current = pendingConfirmStorageKey;
+      localStorage.setItem(
+        pendingConfirmStorageKey,
+        JSON.stringify({
+          ...pendingConfirm,
+          projectId: projectIdRef.current ?? "",
+          // The backend confirm window is tied to the original purchase intent TTL,
+          // so persist the remaining time from the client countdown rather than a new
+          // arbitrary client-side TTL.
+          expiresAt: Date.now() + Math.max(countdown, 0) * 1000,
+        } satisfies StoredPendingConfirm)
+      );
 
       // Confirm with our backend
       setFlowState("CONFIRMING_BACKEND");
@@ -252,7 +361,11 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
       });
 
       if (countdownRef.current) clearInterval(countdownRef.current);
+      if (pendingConfirmStorageKeyRef.current) {
+        localStorage.removeItem(pendingConfirmStorageKeyRef.current);
+      }
       pendingConfirmRef.current = null;
+      pendingConfirmStorageKeyRef.current = null;
       setFlowState("SUCCESS");
       onSuccess?.(result.projectId);
     } catch (err: any) {
@@ -278,6 +391,7 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
     setError(null);
     setFailedAfterOnChain(false);
     pendingConfirmRef.current = null;
+    pendingConfirmStorageKeyRef.current = null;
   }, []);
 
   return {
