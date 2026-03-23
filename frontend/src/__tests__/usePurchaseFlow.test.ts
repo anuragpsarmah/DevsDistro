@@ -649,6 +649,31 @@ describe("usePurchaseFlow", () => {
       const treasuryTransfer = transferSpy.mock.calls[1][0] as any;
       expect(treasuryTransfer.lamports).toBe(MOCK_INTENT.treasury_lamports);
     });
+
+    it("encodes the purchase reference memo as UTF-8 bytes without relying on Buffer", async () => {
+      const { TransactionInstruction } = await import("@solana/web3.js");
+      const instructionSpy = vi.mocked(TransactionInstruction);
+      instructionSpy.mockClear();
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+      await act(async () => {
+        await result.current.executePurchase();
+      });
+
+      expect(result.current.flowState).toBe("SUCCESS");
+      expect(instructionSpy).toHaveBeenCalled();
+
+      const memoInstruction = instructionSpy.mock.calls[0][0] as any;
+      expect(Array.from(memoInstruction.data)).toEqual(
+        Array.from(new TextEncoder().encode(PURCHASE_REF))
+      );
+    });
   });
 
   // ── retryConfirm() ──────────────────────────────────────────────────────────

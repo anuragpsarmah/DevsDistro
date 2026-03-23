@@ -24,6 +24,7 @@ export type PurchaseFlowState =
   | "FAILED";
 
 const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
+const textEncoder = new TextEncoder();
 
 const PENDING_CONFIRM_KEY_PREFIX = "devsdistro_pending_confirm:";
 
@@ -297,7 +298,9 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
         new TransactionInstruction({
           keys: [{ pubkey: buyerPubkey, isSigner: true, isWritable: false }],
           programId: new PublicKey(MEMO_PROGRAM_ID),
-          data: Buffer.from(intent.purchase_reference, "utf-8"),
+          // web3.js accepts byte arrays at runtime, but this version's TS types
+          // still narrow instruction data to Buffer.
+          data: textEncoder.encode(intent.purchase_reference) as Buffer,
         })
       );
 
