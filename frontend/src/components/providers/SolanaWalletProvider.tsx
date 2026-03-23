@@ -35,7 +35,10 @@ export const SolanaWalletProvider: FC<SolanaWalletProviderProps> = ({
   children,
 }) => {
   const network = getNetwork();
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  const endpoint = useMemo(
+    () => import.meta.env.VITE_SOLANA_RPC_URL || clusterApiUrl(network),
+    [network]
+  );
 
   const wallets = useMemo(() => {
     const adapters = [
