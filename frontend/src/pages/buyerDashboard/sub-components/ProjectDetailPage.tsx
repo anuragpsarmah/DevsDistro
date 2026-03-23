@@ -63,7 +63,8 @@ export default function ProjectDetailPage({
   const isPurchased =
     purchases?.some((p) => p.projectId?._id === projectId) ?? false;
   const isFreeProject = !!project && project.price <= 0;
-  const canReview = isPurchased || isFreeProject;
+  const canWriteReview = isPurchased || isFreeProject;
+  const canFetchOwnReview = true;
   const purchaseRecord = purchases?.find((p) => p.projectId?._id === projectId);
   const isWishlisted = wishlist?.some((p) => p._id === projectId) ?? false;
 
@@ -675,7 +676,8 @@ export default function ProjectDetailPage({
 
       <ReviewSection
         projectId={projectId}
-        isPurchased={canReview}
+        canWriteReview={canWriteReview}
+        canFetchOwnReview={canFetchOwnReview}
         logout={logout}
       />
 

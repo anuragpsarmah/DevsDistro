@@ -45,11 +45,9 @@ export default function AuthPage() {
     const url = validNext
       ? `/auth/githubLoginStart?next=${encodeURIComponent(validNext)}`
       : "/auth/githubLoginStart";
-    apiClient
-      .get<{ data: { authorize_url: string } }>(url)
-      .then((res) => {
-        window.location.href = res.data.data.authorize_url;
-      });
+    apiClient.get<{ data: { authorize_url: string } }>(url).then((res) => {
+      window.location.href = res.data.data.authorize_url;
+    });
   };
 
   const handleAuthNavigate = () => {

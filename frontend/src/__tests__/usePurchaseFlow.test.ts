@@ -368,7 +368,9 @@ describe("usePurchaseFlow", () => {
 
       expect(initiateMutateAsync).toHaveBeenCalledWith(PROJECT_ID);
       expect(result.current.flowState).toBe("AWAITING_WALLET");
-      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
+      expect(
+        localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))
+      ).toBeNull();
     });
 
     it("ignores pending confirmations for other projects", async () => {
@@ -682,7 +684,9 @@ describe("usePurchaseFlow", () => {
       });
       expect(result.current.flowState).toBe("SUCCESS");
       expect(onSuccess).toHaveBeenCalledWith(PROJECT_ID);
-      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
+      expect(
+        localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))
+      ).toBeNull();
     });
 
     it("keeps failedAfterOnChain = true when retryConfirm also fails", async () => {
@@ -719,7 +723,9 @@ describe("usePurchaseFlow", () => {
       const confirmMutateAsync = vi.fn().mockRejectedValue({
         response: {
           status: 410,
-          data: { message: "Purchase session expired. Please start a new purchase." },
+          data: {
+            message: "Purchase session expired. Please start a new purchase.",
+          },
         },
       });
       setupMutations({ confirmMutateAsync });
@@ -751,7 +757,9 @@ describe("usePurchaseFlow", () => {
 
       expect(result.current.flowState).toBe("FAILED");
       expect(result.current.failedAfterOnChain).toBe(false);
-      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
+      expect(
+        localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))
+      ).toBeNull();
     });
 
     it("does nothing when called without a pending on-chain TX (pendingConfirmRef is null)", async () => {
@@ -826,8 +834,12 @@ describe("usePurchaseFlow", () => {
       });
 
       expect(result.current.flowState).toBe("SUCCESS");
-      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))).toBeNull();
-      expect(localStorage.getItem(makePendingConfirmKey(PURCHASE_REF_2))).not.toBeNull();
+      expect(
+        localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))
+      ).toBeNull();
+      expect(
+        localStorage.getItem(makePendingConfirmKey(PURCHASE_REF_2))
+      ).not.toBeNull();
     });
   });
 

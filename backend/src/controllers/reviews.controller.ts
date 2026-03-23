@@ -101,7 +101,9 @@ const submitProjectReview = asyncHandler(
 
     const dbStart = performance.now();
     const [project, projectError] = await tryCatch(
-      Project.findById(projectObjectId).select("_id userid isActive price").lean()
+      Project.findById(projectObjectId)
+        .select("_id userid isActive price")
+        .lean()
     );
     enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
 
@@ -219,7 +221,10 @@ const updateProjectReview = asyncHandler(
     );
 
     if (projectForUpdateError) {
-      logger.error("Failed to fetch project for review update", projectForUpdateError);
+      logger.error(
+        "Failed to fetch project for review update",
+        projectForUpdateError
+      );
       response(res, 500, "Failed to update review. Try again later.");
       return;
     }

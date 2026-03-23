@@ -22,7 +22,8 @@ import type { ProjectReview } from "@/utils/types";
 
 interface ReviewSectionProps {
   projectId: string;
-  isPurchased: boolean;
+  canWriteReview: boolean;
+  canFetchOwnReview: boolean;
   logout?: () => Promise<void>;
 }
 
@@ -161,7 +162,8 @@ function ReviewCard({
 
 export default function ReviewSection({
   projectId,
-  isPurchased,
+  canWriteReview,
+  canFetchOwnReview,
   logout,
 }: ReviewSectionProps) {
   const LIMIT = 10;
@@ -172,7 +174,7 @@ export default function ReviewSection({
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const { data: myReview, isLoading: isMyReviewLoading } =
-    useGetMyProjectReviewQuery(projectId, isPurchased, { logout });
+    useGetMyProjectReviewQuery(projectId, canFetchOwnReview, { logout });
 
   const {
     data: reviewsData,
@@ -233,8 +235,10 @@ export default function ReviewSection({
 
   const reviews = reviewsData?.reviews ?? [];
   const pagination = reviewsData?.pagination;
-  const isLoading = isListLoading || (isPurchased && isMyReviewLoading);
+  const isLoading = isListLoading || (canFetchOwnReview && isMyReviewLoading);
   const isSavingReview = submitMutation.isPending || updateMutation.isPending;
+  const canEditOwnReview = canWriteReview;
+  const canDeleteOwnReview = !!myReview;
 
   const getAuthorId = (
     review: ProjectReview | null | undefined
@@ -265,11 +269,11 @@ export default function ReviewSection({
         )}
       </div>
 
-      {/* ── Purchaser: Review form or existing review actions ── */}
-      {isPurchased && (
+      {/* ── Buyer review controls ── */}
+      {(canWriteReview || myReview) && (
         <div className="mb-8">
           {/* No review yet + not editing: show "Leave a Review" trigger */}
-          {!isEditing && !myReview && !isMyReviewLoading && (
+          {!isEditing && !myReview && !isMyReviewLoading && canWriteReview && (
             <button
               onClick={handleStartEdit}
               className="w-full flex items-center justify-center gap-3 py-5 border-2 border-dashed border-black/30 dark:border-white/30 hover:border-black dark:hover:border-white font-space font-bold uppercase tracking-widest text-xs text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-all"
@@ -284,14 +288,16 @@ export default function ReviewSection({
             <div className="mb-6">
               <ReviewCard review={myReview} isOwn />
               <div className="flex gap-3 mt-3">
-                <button
-                  onClick={handleStartEdit}
-                  className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-                >
-                  <Pencil className="w-3 h-3" />
-                  Edit
-                </button>
-                {confirmDelete ? (
+                {canEditOwnReview && (
+                  <button
+                    onClick={handleStartEdit}
+                    className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+                  >
+                    <Pencil className="w-3 h-3" />
+                    Edit
+                  </button>
+                )}
+                {canDeleteOwnReview && confirmDelete ? (
                   <div className="flex items-center gap-2">
                     <button
                       onClick={handleDelete}
@@ -313,7 +319,7 @@ export default function ReviewSection({
                       Cancel
                     </button>
                   </div>
-                ) : (
+                ) : canDeleteOwnReview ? (
                   <button
                     onClick={() => setConfirmDelete(true)}
                     className="flex items-center gap-2 px-4 py-2 border-2 border-red-500 text-red-500 font-space font-bold uppercase tracking-widest text-[10px] hover:bg-red-500 hover:text-white transition-colors"
@@ -321,13 +327,13 @@ export default function ReviewSection({
                     <Trash2 className="w-3 h-3" />
                     Delete
                   </button>
-                )}
+                ) : null}
               </div>
             </div>
           )}
 
           {/* Edit form */}
-          {isEditing && (
+          {isEditing && canEditOwnReview && (
             <div className="border-2 border-black dark:border-white p-6 mb-6 bg-gray-50 dark:bg-[#0a0a0a]">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-[2px] bg-red-500" />
@@ -412,7 +418,7 @@ export default function ReviewSection({
           <p className="font-space font-bold uppercase tracking-widest text-xs text-gray-400 dark:text-gray-600">
             No reviews yet
           </p>
-          {!isPurchased && (
+          {!canWriteReview && (
             <p className="font-space text-[10px] text-gray-400 dark:text-gray-600 mt-1">
               Purchase this project to leave the first review
             </p>

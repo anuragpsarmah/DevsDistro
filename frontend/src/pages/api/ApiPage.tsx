@@ -49,7 +49,8 @@ export default function ApiPage() {
         </h1>
 
         <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-8">
-          A free, public REST API for fast trie based look up for cities around the world . No authentication required.
+          A free, public REST API for fast trie based look up for cities around
+          the world . No authentication required.
         </p>
 
         <div className="space-y-16 border-l-2 border-black/10 dark:border-white/10 pl-6 md:pl-10">
@@ -57,7 +58,9 @@ export default function ApiPage() {
             <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
               01. Base URL
             </h2>
-            <pre className={blockCodeClassName}>https://cities.devsdistro.com</pre>
+            <pre className={blockCodeClassName}>
+              https://cities.devsdistro.com
+            </pre>
           </section>
 
           <section>
@@ -122,8 +125,9 @@ export default function ApiPage() {
   "limit": 10
 }`}</pre>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
-              Each entry in <code className={codeClassName}>filteredResults</code>{" "}
-              is formatted as{" "}
+              Each entry in{" "}
+              <code className={codeClassName}>filteredResults</code> is
+              formatted as{" "}
               <code className={codeClassName}>"City Name, ISO2"</code>.
             </p>
           </section>
@@ -173,7 +177,9 @@ const data = await res.json();
             <h3 className="font-syne text-base font-bold text-black dark:text-white mb-3 mt-10 uppercase tracking-wider">
               React Query
             </h3>
-            <pre className={blockCodeClassName}>{`import { useQuery } from "@tanstack/react-query";
+            <pre
+              className={blockCodeClassName}
+            >{`import { useQuery } from "@tanstack/react-query";
 
 const { data, isLoading } = useQuery({
   queryKey: ["cities", query],
@@ -216,9 +222,8 @@ const { data, isLoading } = useQuery({
                   </strong>
                 </div>
                 <div className="flex-1">
-                  Requests are rate-limited per IP address to prevent abuse.
-                  For high-volume use cases, consider caching results
-                  client-side.
+                  Requests are rate-limited per IP address to prevent abuse. For
+                  high-volume use cases, consider caching results client-side.
                 </div>
               </li>
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">

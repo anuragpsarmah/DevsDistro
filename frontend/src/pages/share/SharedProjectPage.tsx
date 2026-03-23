@@ -12,7 +12,10 @@ import {
   Link as LinkIcon,
 } from "lucide-react";
 import XIcon from "@/assets/icons/XIcon";
-import { usePublicProjectDetailQuery, useAuthValidationQuery } from "@/hooks/apiQueries";
+import {
+  usePublicProjectDetailQuery,
+  useAuthValidationQuery,
+} from "@/hooks/apiQueries";
 import { isMongoObjectId } from "@/utils/navigation";
 import { successToast, errorToast } from "@/components/ui/customToast";
 
@@ -22,10 +25,11 @@ export default function SharedProjectPage() {
 
   const isValidId = isMongoObjectId(projectId);
 
-  const { data: project, isLoading, isError } = usePublicProjectDetailQuery(
-    projectId ?? "",
-    { enabled: isValidId }
-  );
+  const {
+    data: project,
+    isLoading,
+    isError,
+  } = usePublicProjectDetailQuery(projectId ?? "", { enabled: isValidId });
 
   const { data: authData, isLoading: authLoading } = useAuthValidationQuery();
   const isAuthenticated = !authLoading && !!authData;
@@ -44,9 +48,7 @@ export default function SharedProjectPage() {
     if (isAuthenticated) {
       navigate(marketplaceUrl);
     } else {
-      navigate(
-        `/authentication?next=${encodeURIComponent(marketplaceUrl)}`
-      );
+      navigate(`/authentication?next=${encodeURIComponent(marketplaceUrl)}`);
     }
   };
 
@@ -161,7 +163,8 @@ export default function SharedProjectPage() {
                   {project.avgRating.toFixed(1)}
                 </span>
                 <span className="text-gray-500 text-sm">
-                  ({project.totalReviews} review{project.totalReviews !== 1 ? "s" : ""})
+                  ({project.totalReviews} review
+                  {project.totalReviews !== 1 ? "s" : ""})
                 </span>
               </div>
             )}
@@ -235,8 +238,7 @@ export default function SharedProjectPage() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-500 transition-colors"
                           >
-                            <XIcon className="w-3 h-3" />
-                            @{seller.x_username}
+                            <XIcon className="w-3 h-3" />@{seller.x_username}
                           </a>
                         )}
                       </div>

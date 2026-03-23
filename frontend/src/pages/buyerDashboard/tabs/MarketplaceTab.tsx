@@ -11,7 +11,10 @@ import ProjectDetailPage from "../sub-components/ProjectDetailPage";
 import { MarketplaceTabProps } from "../utils/types";
 import { DEBOUNCE_MS } from "../utils/constants";
 
-export default function MarketplaceTab({ logout, initialProjectId }: MarketplaceTabProps) {
+export default function MarketplaceTab({
+  logout,
+  initialProjectId,
+}: MarketplaceTabProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [selectedSort, setSelectedSort] = useState("newest");

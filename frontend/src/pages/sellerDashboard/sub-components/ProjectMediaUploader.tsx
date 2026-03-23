@@ -46,14 +46,12 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
     const files = Array.from(e.target.files || []);
     const available = MAX_IMAGES - imageItems.length;
     if (available <= 0) return;
-    const toAdd: ImageItem[] = files
-      .slice(0, available)
-      .map((file) => ({
-        type: "new" as const,
-        file,
-        id: nextIdRef.current++,
-        objectUrl: URL.createObjectURL(file),
-      }));
+    const toAdd: ImageItem[] = files.slice(0, available).map((file) => ({
+      type: "new" as const,
+      file,
+      id: nextIdRef.current++,
+      objectUrl: URL.createObjectURL(file),
+    }));
     setImageItems((prev) => [...prev, ...toAdd]);
     e.target.value = "";
   };

@@ -21,6 +21,7 @@ import {
   PackageCheck,
   CalendarX,
   ExternalLink,
+  MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorScreenListedProjects } from "../sub-components/ErrorScreens";
@@ -40,6 +41,7 @@ const ListedProjects = ({
   handleRefreshRepoZipStatus,
   handleRefreshRepoZip,
   setFormProps,
+  onViewReviews,
 }: ListedProjectsProps) => {
   const queryClient = useQueryClient();
   const [projectStatuses, setProjectStatuses] = useState<Array<boolean>>([]);
@@ -265,6 +267,27 @@ const ListedProjects = ({
                         </TooltipContent>
                       </Tooltip>
                     )}
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            onViewReviews(project._id, project.title)
+                          }
+                          className="bg-white dark:bg-[#050505] border-black dark:border-white text-black dark:text-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,1)] hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black rounded-none border-2 transition-all duration-200 p-2"
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white rounded-none font-space font-bold uppercase tracking-widest text-[10px]"
+                      >
+                        View Reviews
+                      </TooltipContent>
+                    </Tooltip>
 
                     {!project.github_access_revoked &&
                       getEffectiveZipStatus(idx) === "SUCCESS" && (

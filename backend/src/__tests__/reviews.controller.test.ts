@@ -206,6 +206,25 @@ describe("reviews.controller", () => {
       expect(res.status).toHaveBeenCalledWith(403);
     });
 
+    it("blocks owner from reviewing their own free project (self-review still enforced)", async () => {
+      mockProjectFindById({
+        _id: VALID_PROJECT_ID,
+        userid: VALID_USER_ID, // same as the requester
+        isActive: true,
+        price: 0,
+      });
+
+      const req = makeReq({
+        body: { project_id: VALID_PROJECT_ID, rating: 5 },
+      });
+      submitProjectReview(req, res, next);
+      await flushPromises();
+
+      expect(Purchase.findOne).not.toHaveBeenCalled();
+      expect(Review.create).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(400);
+    });
+
     it("allows submitting a review for a free project without a purchase", async () => {
       mockProjectFindById({
         _id: VALID_PROJECT_ID,
@@ -289,6 +308,18 @@ describe("reviews.controller", () => {
   });
 
   describe("updateProjectReview (PUT /reviews/project)", () => {
+    it("returns 404 when project is not found", async () => {
+      mockProjectFindById(null);
+      const req = makeReq({
+        body: { project_id: VALID_PROJECT_ID, rating: 3, review: "test" },
+      });
+      updateProjectReview(req, res, next);
+      await flushPromises();
+
+      expect(Purchase.findOne).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+
     it("returns 403 if user did not purchase project in confirmed state", async () => {
       mockProjectFindById({
         _id: VALID_PROJECT_ID,
@@ -406,6 +437,20 @@ describe("reviews.controller", () => {
       await flushPromises();
 
       expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+    it("allows deleting an existing review on a now-paid project without purchase validation", async () => {
+      vi.mocked(Review.findOneAndDelete).mockReturnValue({
+        lean: vi.fn().mockResolvedValue({ _id: VALID_REVIEW_ID }),
+      } as any);
+
+      const req = makeReq({ body: { project_id: VALID_PROJECT_ID } });
+      deleteProjectReview(req, res, next);
+      await flushPromises();
+
+      expect(Purchase.findOne).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(Review.aggregate).toHaveBeenCalled();
     });
 
     it("deletes review and recomputes aggregates", async () => {

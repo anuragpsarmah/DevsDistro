@@ -60,9 +60,7 @@ describe("toggleWishlist", () => {
     vi.mocked(User.findById).mockReturnValue(
       mockSelectLean({ wishlist: [] }) as any
     );
-    vi.mocked(Purchase.findOne).mockReturnValue(
-      mockSelectLean(null) as any
-    );
+    vi.mocked(Purchase.findOne).mockReturnValue(mockSelectLean(null) as any);
     vi.mocked(User.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
   });
 

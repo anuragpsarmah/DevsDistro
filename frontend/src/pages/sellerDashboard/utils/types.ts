@@ -344,6 +344,7 @@ export interface ProjectMediaUploaderProps {
 }
 
 export interface InitialProjectData {
+  _id: string;
   github_repo_id: string;
   isActive: boolean;
   github_access_revoked?: boolean;
@@ -368,6 +369,7 @@ export interface ListedProjectsProps {
   isLoading: boolean;
   isError: boolean;
   setFormProps: React.Dispatch<React.SetStateAction<formPropsType>>;
+  onViewReviews: (projectId: string, projectTitle: string) => void;
 }
 
 export interface formPropsType {

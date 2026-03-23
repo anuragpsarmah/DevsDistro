@@ -2012,7 +2012,12 @@ const getPublicProjectDetail = asyncHandler(
     }
 
     enrichContext({ outcome: "success" });
-    response(res, 200, "Public project detail fetched successfully", projectData);
+    response(
+      res,
+      200,
+      "Public project detail fetched successfully",
+      projectData
+    );
   }
 );
 

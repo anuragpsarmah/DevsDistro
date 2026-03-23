@@ -8,6 +8,7 @@ import {
   useRepoZipStatusQuery,
 } from "@/hooks/apiQueries";
 import ListedProjects from "../main-components/ListedProjects";
+import SellerProjectReviewsView from "../main-components/SellerProjectReviewsView";
 import {
   useDeleteProjectListingMutation,
   usePreSignedUrlForProjectMediaUploadMutation,
@@ -25,10 +26,16 @@ import {
 } from "../utils/types";
 import { ManageProjectsTabProps } from "@/utils/types";
 
+type ManageView = "projects" | "form" | "reviews";
+
 export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
   const queryClient = useQueryClient();
   const [componentIdentifier, setComponenetIdentifier] =
-    useState<boolean>(true);
+    useState<ManageView>("projects");
+  const [reviewsProject, setReviewsProject] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [formProps, setFormProps] = useState<formPropsType>({
     github_repo_id: "",
@@ -94,15 +101,19 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
     repo_id: string = ""
   ) => {
     setIsTransitioning(true);
-    if (identifier == "projects") {
+    if (identifier === "projects") {
       await new Promise((resolve) => setTimeout(resolve, 100));
-      setComponenetIdentifier(true);
-    } else setComponenetIdentifier(false);
-    if (identifier == "form") {
+      setComponenetIdentifier("projects");
+    } else if (identifier === "reviews") {
+      setComponenetIdentifier("reviews");
+    } else {
+      setComponenetIdentifier("form");
+    }
+    if (identifier === "form") {
       const [data, error] = await tryCatch(() => getData(repo_id || ""));
 
       if (error) {
-        setComponenetIdentifier(true);
+        setComponenetIdentifier("projects");
       } else {
         setFormProps((prev) => {
           return { ...prev, ...data?.data };
@@ -110,6 +121,11 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
       }
     }
     setIsTransitioning(false);
+  };
+
+  const handleViewReviews = (projectId: string, projectTitle: string) => {
+    setReviewsProject({ id: projectId, title: projectTitle });
+    handleUIStateChange("reviews");
   };
 
   const handleGetPreSignedUrls = async (
@@ -185,10 +201,10 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
         <div className="flex-1 min-h-0 relative overflow-hidden transition-colors duration-300">
           <TransitionWrapper
             isTransitioning={isTransitioning}
-            identifier={componentIdentifier ? "projects" : "form"}
+            identifier={componentIdentifier}
             className="h-full"
           >
-            {componentIdentifier ? (
+            {componentIdentifier === "projects" ? (
               <div className="h-full overflow-y-auto custom-scrollbar">
                 <ListedProjects
                   initialProjectData={initialData?.data}
@@ -201,7 +217,18 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
                   handleRefreshRepoZipStatus={handleRefreshRepoZipStatus}
                   handleRefreshRepoZip={handleRefreshRepoZip}
                   setFormProps={setFormProps}
+                  onViewReviews={handleViewReviews}
                 />
+              </div>
+            ) : componentIdentifier === "reviews" ? (
+              <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
+                <div className="relative z-10 h-full overflow-y-auto custom-scrollbar p-6 lg:p-10">
+                  <SellerProjectReviewsView
+                    projectId={reviewsProject!.id}
+                    projectTitle={reviewsProject!.title}
+                    onBack={() => handleUIStateChange("projects")}
+                  />
+                </div>
               </div>
             ) : (
               <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white overflow-hidden flex flex-col transition-colors duration-300">

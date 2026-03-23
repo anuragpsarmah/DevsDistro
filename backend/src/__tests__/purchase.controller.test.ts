@@ -1412,7 +1412,10 @@ describe("downloadProject", () => {
     );
 
     const req = makeReq({
-      query: { project_id: PROJECT_ID, repo_zip_s3_key: "zips/paid-secret.zip" },
+      query: {
+        project_id: PROJECT_ID,
+        repo_zip_s3_key: "zips/paid-secret.zip",
+      },
     });
     const res = makeRes();
 
