@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+run_step() {
+  project_dir="$1"
+  script_name="$2"
+
+  printf '\n[pre-push] Running %s in %s...\n' "$script_name" "$project_dir"
+  npm --prefix "$project_dir" run "$script_name"
+}
+
+run_step "frontend" "format:check"
+run_step "backend" "format:check"
+run_step "frontend" "test"
+run_step "backend" "test"
+
+printf '\n[pre-push] Frontend and backend format checks and tests passed.\n'

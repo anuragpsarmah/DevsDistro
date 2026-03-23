@@ -1101,7 +1101,7 @@ const getInitialProjectData = asyncHandler(
     const [projectData, projectError] = await tryCatch(
       Project.find({ userid })
         .select({
-          _id: 0,
+          _id: 1,
           github_repo_id: 1,
           title: 1,
           description: 1,

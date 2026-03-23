@@ -278,6 +278,36 @@ describe("getInitialProjectData", () => {
     expect(callArg.data[0].project_images).toBe(`${CDN_URL}/img1.jpg`);
   });
 
+  it("includes _id in the response so sellers can look up reviews by project id", async () => {
+    const VALID_OBJECT_ID = "507f191e810c19729de860ea";
+    const rawProjects = [
+      {
+        _id: VALID_OBJECT_ID,
+        github_repo_id: VALID_REPO_ID,
+        title: "My Project",
+        description: "desc",
+        tech_stack: [],
+        isActive: true,
+        price: 0,
+        project_images: [`${CDN_URL}/img.jpg`],
+      },
+    ];
+
+    vi.mocked(Project.find).mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        lean: vi.fn().mockResolvedValue(rawProjects),
+      }),
+    } as any);
+
+    const req = makeReq();
+    getInitialProjectData(req as any, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    const callArg = res.json.mock.calls[0][0];
+    expect(callArg.data[0]._id).toBe(VALID_OBJECT_ID);
+  });
+
   it("returns empty string for project_images when project has no images", async () => {
     const rawProjects = [
       {
