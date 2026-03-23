@@ -56,7 +56,30 @@ export async function verifySolanaTransaction(
     }
   }
 
-  const tx = rpcResponse.data?.result;
+  let tx = rpcResponse.data?.result;
+
+  // If the RPC returns null, the transaction may not be indexed yet even though
+  // confirmTransaction already returned "finalized". Retry up to 3 times with a
+  // 2-second delay before giving up — this closes the propagation race window.
+  if (!tx) {
+    const activeRpcUrl = fallbackRpcUrl ?? rpcUrl;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      try {
+        const retryResponse = await axios.post(activeRpcUrl, rpcBody, {
+          timeout: 15000,
+        });
+        tx = retryResponse.data?.result;
+        if (tx) break;
+        logger.warn(
+          `getTransaction returned null on retry ${attempt}/3`,
+          txSignature
+        );
+      } catch (retryErr) {
+        logger.warn(`getTransaction retry ${attempt}/3 failed`, retryErr);
+      }
+    }
+  }
 
   if (!tx) {
     return {
