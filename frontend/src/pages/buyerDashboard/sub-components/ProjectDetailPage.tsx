@@ -479,7 +479,7 @@ export default function ProjectDetailPage({
                 <span className="font-space font-bold text-xs text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em] mb-1">
                   System Cost
                 </span>
-                <span className="font-syne font-black text-black dark:text-white text-4xl lg:text-5xl uppercase tracking-tighter leading-none">
+                <span className="font-syne font-black text-black dark:text-white text-4xl lg:text-5xl uppercase tracking-wide leading-none">
                   {project.price === 0 ? "FREE" : `$ ${project.price}`}
                 </span>
               </div>
