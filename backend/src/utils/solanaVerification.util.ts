@@ -62,21 +62,20 @@ export async function verifySolanaTransaction(
   // confirmTransaction already returned "finalized". Retry up to 3 times with a
   // 2-second delay before giving up — this closes the propagation race window.
   if (!tx) {
-    const activeRpcUrl = fallbackRpcUrl ?? rpcUrl;
     for (let attempt = 1; attempt <= 10; attempt++) {
       await new Promise((resolve) => setTimeout(resolve, 3000));
       try {
-        const retryResponse = await axios.post(activeRpcUrl, rpcBody, {
+        const retryResponse = await axios.post(rpcUrl, rpcBody, {
           timeout: 15000,
         });
         tx = retryResponse.data?.result;
         if (tx) break;
         logger.warn(
-          `getTransaction returned null on retry ${attempt}/3`,
+          `getTransaction returned null on retry ${attempt}/10`,
           txSignature
         );
       } catch (retryErr) {
-        logger.warn(`getTransaction retry ${attempt}/3 failed`, retryErr);
+        logger.warn(`getTransaction retry ${attempt}/10 failed`, retryErr);
       }
     }
   }
