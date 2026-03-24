@@ -143,11 +143,23 @@ describe("verifySolanaTransaction", () => {
     expect(result.error).toBe("Failed to reach Solana network");
   });
 
-  it("returns valid: false when the transaction is not found (null result)", async () => {
+  it("returns valid: false when the transaction is not found (null result after retries)", async () => {
+    vi.useFakeTimers();
+    // 1 initial call + 3 retries = 4 total axios.post calls, all returning null
     mockPost.mockResolvedValueOnce({ data: { result: null } });
-    const result = await verifySolanaTransaction(BASE_PARAMS);
+    mockPost.mockResolvedValueOnce({ data: { result: null } });
+    mockPost.mockResolvedValueOnce({ data: { result: null } });
+    mockPost.mockResolvedValueOnce({ data: { result: null } });
+
+    const resultPromise = verifySolanaTransaction(BASE_PARAMS);
+    // Advance through all retry delays (3 × 2000 ms) without real waiting
+    await vi.runAllTimersAsync();
+    const result = await resultPromise;
+
+    vi.useRealTimers();
     expect(result.valid).toBe(false);
     expect(result.error).toMatch(/not found/i);
+    expect(mockPost).toHaveBeenCalledTimes(4);
   });
 
   // ── On-chain failure ────────────────────────────────────────────────────────
