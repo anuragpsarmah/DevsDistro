@@ -44,7 +44,7 @@ export default function ApiPage() {
           </span>
         </div>
 
-        <h1 className="font-syne text-5xl md:text-7xl font-black leading-none text-black dark:text-white uppercase tracking-widest mb-6 break-words hyphens-auto">
+        <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-black dark:text-white uppercase tracking-widest mb-6 break-words hyphens-auto">
           World Cities API
         </h1>
 
@@ -84,29 +84,72 @@ export default function ApiPage() {
               Query Parameters
             </h3>
             <div className="border border-black/10 dark:border-white/10 overflow-hidden mb-8">
-              <div className="grid grid-cols-4 bg-black/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+              {/* Header — hidden on mobile */}
+              <div className="hidden md:grid md:grid-cols-4 bg-black/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
                 <span>Parameter</span>
                 <span>Type</span>
                 <span>Required</span>
                 <span>Description</span>
               </div>
-              <div className="grid grid-cols-4 px-4 py-4 border-t border-black/10 dark:border-white/10 text-sm items-start gap-2">
-                <code className="text-red-500 font-mono">q</code>
-                <span className="text-gray-500">string</span>
-                <span className="text-green-600 dark:text-green-400 font-bold">
-                  Yes
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  Search term. Minimum 2 characters.
-                </span>
+              {/* Row 1 */}
+              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                    Param
+                  </span>
+                  <code className="text-red-500 font-mono">q</code>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                    Type
+                  </span>
+                  <span className="text-gray-500">string</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                    Required
+                  </span>
+                  <span className="text-green-600 dark:text-green-400 font-bold">
+                    Yes
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0 mt-0.5">
+                    Desc
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Search term. Minimum 2 characters.
+                  </span>
+                </div>
               </div>
-              <div className="grid grid-cols-4 px-4 py-4 border-t border-black/10 dark:border-white/10 text-sm items-start gap-2">
-                <code className="text-red-500 font-mono">limit</code>
-                <span className="text-gray-500">number</span>
-                <span className="text-gray-500">No</span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  Max results to return. Default: 10. Max: 1000.
-                </span>
+              {/* Row 2 */}
+              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                    Param
+                  </span>
+                  <code className="text-red-500 font-mono">limit</code>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                    Type
+                  </span>
+                  <span className="text-gray-500">number</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                    Required
+                  </span>
+                  <span className="text-gray-500">No</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0 mt-0.5">
+                    Desc
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Max results to return. Default: 10. Max: 1000.
+                  </span>
+                </div>
               </div>
             </div>
           </section>
@@ -137,25 +180,60 @@ export default function ApiPage() {
               04. Error Codes
             </h2>
             <div className="border border-black/10 dark:border-white/10 overflow-hidden">
-              <div className="grid grid-cols-3 bg-black/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+              {/* Header — hidden on mobile */}
+              <div className="hidden md:grid md:grid-cols-3 bg-black/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
                 <span>Status</span>
                 <span>Code</span>
                 <span>Reason</span>
               </div>
-              <div className="grid grid-cols-3 px-4 py-4 border-t border-black/10 dark:border-white/10 text-sm items-start gap-2">
-                <code className="text-yellow-500 font-mono font-bold">400</code>
-                <span className="text-gray-500">Bad Request</span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  Query is shorter than 2 characters or{" "}
-                  <code className={codeClassName}>limit</code> is invalid.
-                </span>
+              {/* Row 1 */}
+              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                    Status
+                  </span>
+                  <code className="text-yellow-500 font-mono font-bold">
+                    400
+                  </code>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                    Code
+                  </span>
+                  <span className="text-gray-500">Bad Request</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-0.5">
+                    Reason
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Query is shorter than 2 characters or{" "}
+                    <code className={codeClassName}>limit</code> is invalid.
+                  </span>
+                </div>
               </div>
-              <div className="grid grid-cols-3 px-4 py-4 border-t border-black/10 dark:border-white/10 text-sm items-start gap-2">
-                <code className="text-red-500 font-mono font-bold">429</code>
-                <span className="text-gray-500">Too Many Requests</span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  Per-IP rate limit exceeded. Back off and retry.
-                </span>
+              {/* Row 2 */}
+              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                    Status
+                  </span>
+                  <code className="text-red-500 font-mono font-bold">429</code>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                    Code
+                  </span>
+                  <span className="text-gray-500">Too Many Requests</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-0.5">
+                    Reason
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Per-IP rate limit exceeded. Back off and retry.
+                  </span>
+                </div>
               </div>
             </div>
           </section>
