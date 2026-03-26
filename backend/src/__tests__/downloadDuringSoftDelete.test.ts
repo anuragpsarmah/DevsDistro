@@ -1,14 +1,16 @@
 /**
  * Tests for downloadProject controller (purchase.controller.ts)
  *
- * Critical scenario: buyers should be able to download a project DURING the
- * 7-day soft-delete window (project still exists, zip is still SUCCESS).
+ * Critical scenario: confirmed buyers should still be able to download a
+ * project DURING the 7-day soft-delete window, while non-purchased access
+ * should follow marketplace visibility rules.
  * After hard-delete (project document gone), download returns 404.
  *
  * Covers:
  * - No purchase record → 403
  * - Purchase exists, project hard-deleted (findById returns null) → 404
  * - Purchase exists, project soft-deleted within 7-day window → 200 (download works)
+ * - No purchase, free project soft-deleted within 7-day window → 403
  * - Purchase exists, project zip PROCESSING → 400
  * - Purchase exists, project zip SUCCESS but s3_key missing → 400
  * - Purchase exists, S3 signed URL generation fails → 500
@@ -162,8 +164,11 @@ const mockPurchaseRecord = () => ({ _id: "purchase_abc" });
 const mockProjectDoc = (overrides: Record<string, any> = {}) => ({
   _id: VALID_PROJECT_ID,
   title: "My Awesome Project",
+  isActive: true,
+  github_access_revoked: false,
   repo_zip_status: "SUCCESS",
   repo_zip_s3_key: VALID_S3_KEY,
+  scheduled_deletion_at: null,
   price: 99,
   ...overrides,
 });
@@ -274,15 +279,11 @@ describe("downloadProject", () => {
   // ── CRITICAL: Download works during soft-delete window ────────────────────
 
   it("returns 200 download URL when project is within the 7-day soft-delete window", async () => {
-    // During the window: project still exists with SUCCESS zip
-    // scheduled_deletion_at is set but the download controller only checks
-    // repo_zip_status and repo_zip_s3_key — not scheduled_deletion_at.
-    // Buyers who purchased should always be able to download during the window.
+    // Buyers who already purchased should always be able to download during
+    // the soft-delete window, even though the project is no longer
+    // marketplace-visible to new viewers/downloaders.
     const softDeletedProject = mockProjectDoc({
-      repo_zip_status: "SUCCESS",
-      repo_zip_s3_key: VALID_S3_KEY,
-      // scheduled_deletion_at would be set on the full document,
-      // but the select only fetches "repo_zip_status repo_zip_s3_key title"
+      scheduled_deletion_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
     });
     stubPurchaseFindOne(mockPurchaseRecord());
     stubProjectFindById(softDeletedProject);
@@ -304,6 +305,30 @@ describe("downloadProject", () => {
       expect.objectContaining({
         message: "Download URL generated",
         data: expect.objectContaining({ download_url: PRESIGNED_URL }),
+      })
+    );
+  });
+
+  it("returns 403 for a free project during soft-delete when there is no purchase override", async () => {
+    const softDeletedFreeProject = mockProjectDoc({
+      price: 0,
+      scheduled_deletion_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    });
+    stubProjectFindById(softDeletedFreeProject);
+    vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(
+      PRESIGNED_URL
+    );
+
+    const req = makeReq();
+    downloadProject(req as any, res, next);
+    await flushPromises();
+
+    expect(Purchase.findOne).not.toHaveBeenCalled();
+    expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "This project is not currently available for download",
       })
     );
   });

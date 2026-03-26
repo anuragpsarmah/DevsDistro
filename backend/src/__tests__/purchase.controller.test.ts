@@ -205,6 +205,7 @@ const MOCK_PROJECT = {
   github_access_revoked: false,
   repo_zip_status: "SUCCESS",
   repo_zip_s3_key: "zips/project-abc.zip",
+  scheduled_deletion_at: null,
   title: "Test Project",
   project_type: "Web App",
   github_installation_id: "inst-123",
@@ -1270,6 +1271,9 @@ describe("downloadProject", () => {
     // Project has a ready zip
     vi.mocked(Project.findById).mockReturnValue(
       mockSelectLean({
+        isActive: true,
+        github_access_revoked: false,
+        scheduled_deletion_at: null,
         repo_zip_status: "SUCCESS",
         repo_zip_s3_key: "zips/project-abc.zip",
         title: "Test Project",
@@ -1379,6 +1383,9 @@ describe("downloadProject", () => {
   it("allows a free project download without requiring any purchase record", async () => {
     vi.mocked(Project.findById).mockReturnValue(
       mockSelectLean({
+        isActive: true,
+        github_access_revoked: false,
+        scheduled_deletion_at: null,
         repo_zip_status: "SUCCESS",
         repo_zip_s3_key: "zips/free-project.zip",
         title: "Free Project",
@@ -1401,9 +1408,39 @@ describe("downloadProject", () => {
     );
   });
 
+  it("blocks a free project download when the project is no longer marketplace-visible", async () => {
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean({
+        isActive: false,
+        github_access_revoked: false,
+        scheduled_deletion_at: null,
+        repo_zip_status: "SUCCESS",
+        repo_zip_s3_key: "zips/free-project.zip",
+        title: "Free Project",
+        price: 0,
+      }) as any
+    );
+
+    const req = makeReq({ query: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not currently available for download/i
+    );
+    expect(Purchase.findOne).not.toHaveBeenCalled();
+    expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
+  });
+
   it("treats free-project downloads as project-specific and does not let the frontend override which file is signed", async () => {
     vi.mocked(Project.findById).mockReturnValue(
       mockSelectLean({
+        isActive: true,
+        github_access_revoked: false,
+        scheduled_deletion_at: null,
         repo_zip_status: "SUCCESS",
         repo_zip_s3_key: "zips/free-catalog-item.zip",
         title: "Free Catalog Item",
@@ -1433,6 +1470,9 @@ describe("downloadProject", () => {
   it("still blocks free-project downloads when the zip is unavailable", async () => {
     vi.mocked(Project.findById).mockReturnValue(
       mockSelectLean({
+        isActive: true,
+        github_access_revoked: false,
+        scheduled_deletion_at: null,
         repo_zip_status: "PROCESSING",
         repo_zip_s3_key: null,
         title: "Free Project",
@@ -1449,6 +1489,57 @@ describe("downloadProject", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(Purchase.findOne).not.toHaveBeenCalled();
     expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
+  });
+
+  it("blocks a paid project download when it is no longer marketplace-visible and not purchased", async () => {
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean({
+        isActive: true,
+        github_access_revoked: false,
+        scheduled_deletion_at: new Date("2026-03-27T00:00:00.000Z"),
+        repo_zip_status: "SUCCESS",
+        repo_zip_s3_key: "zips/project-abc.zip",
+        title: "Test Project",
+        price: 99,
+      }) as any
+    );
+    vi.mocked(Purchase.findOne).mockReturnValue(mockSelectLean(null) as any);
+
+    const req = makeReq({ query: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not currently available for download/i
+    );
+    expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
+  });
+
+  it("allows a paid project download for an already purchased project even when it is no longer marketplace-visible", async () => {
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean({
+        isActive: false,
+        github_access_revoked: false,
+        scheduled_deletion_at: new Date("2026-03-27T00:00:00.000Z"),
+        repo_zip_status: "SUCCESS",
+        repo_zip_s3_key: "zips/project-abc.zip",
+        title: "Test Project",
+        price: 99,
+      }) as any
+    );
+
+    const req = makeReq({ query: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(Purchase.findOne).toHaveBeenCalledTimes(1);
+    expect(s3Service.createSignedDownloadUrl).toHaveBeenCalledTimes(1);
   });
 
   it("returns 404 when the project has been deleted after purchase", async () => {

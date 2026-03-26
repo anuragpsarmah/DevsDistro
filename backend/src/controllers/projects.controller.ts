@@ -29,6 +29,7 @@ import { tryCatch } from "../utils/tryCatch.util";
 import { enrichContext } from "../utils/asyncContext";
 import { Purchase } from "../models/purchase.model";
 import { performProjectHardDelete } from "../utils/projectCleanup.util";
+import { MARKETPLACE_VISIBLE_FILTER } from "../utils/projectVisibility.util";
 
 function generateProjectSlug(title: string): string {
   const base = title
@@ -54,14 +55,6 @@ const MARKETPLACE_SELECT = {
   live_link: 1,
   createdAt: 1,
   project_images: { $slice: 1 },
-} as const;
-
-// Projects that count against the listing quota: visible on the marketplace.
-const MARKETPLACE_VISIBLE_FILTER = {
-  isActive: true,
-  github_access_revoked: false,
-  repo_zip_status: "SUCCESS",
-  scheduled_deletion_at: null,
 } as const;
 
 const SELLER_POPULATE = {

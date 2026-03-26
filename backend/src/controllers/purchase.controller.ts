@@ -23,6 +23,7 @@ import {
   computeLamportSplit,
 } from "../utils/solanaPrice.util";
 import { verifySolanaTransaction } from "../utils/solanaVerification.util";
+import { isProjectMarketplaceVisible } from "../utils/projectVisibility.util";
 
 const PURCHASE_INTENT_TTL = 600; // 10 minutes
 
@@ -770,7 +771,9 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   // Fetch project info first (price determines whether a purchase record is required)
   const [project, projectError] = await tryCatch(
     Project.findById(projectObjectId)
-      .select("repo_zip_status repo_zip_s3_key title price")
+      .select(
+        "isActive github_access_revoked scheduled_deletion_at repo_zip_status repo_zip_s3_key title price"
+      )
       .lean()
   );
 
@@ -778,6 +781,21 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     response(res, 404, "Project not found");
     return;
   }
+
+  if (project.repo_zip_status !== "SUCCESS" || !project.repo_zip_s3_key) {
+    enrichContext({
+      outcome: "validation_failed",
+      reason: "zip_not_available",
+    });
+    response(
+      res,
+      400,
+      "Project files are not available for download at this time"
+    );
+    return;
+  }
+
+  let hasConfirmedPurchase = false;
 
   // For paid projects, verify the buyer has purchased this project
   if (project.price > 0) {
@@ -797,23 +815,21 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
       return;
     }
 
-    if (!purchase) {
-      enrichContext({ outcome: "forbidden", reason: "not_purchased" });
-      response(res, 403, "You have not purchased this project");
-      return;
-    }
+    hasConfirmedPurchase = Boolean(purchase);
   }
 
-  if (project.repo_zip_status !== "SUCCESS" || !project.repo_zip_s3_key) {
+  if (!hasConfirmedPurchase && !isProjectMarketplaceVisible(project)) {
     enrichContext({
-      outcome: "validation_failed",
-      reason: "zip_not_available",
+      outcome: "forbidden",
+      reason: "project_not_marketplace_visible",
     });
-    response(
-      res,
-      400,
-      "Project files are not available for download at this time"
-    );
+    response(res, 403, "This project is not currently available for download");
+    return;
+  }
+
+  if (project.price > 0 && !hasConfirmedPurchase) {
+    enrichContext({ outcome: "forbidden", reason: "not_purchased" });
+    response(res, 403, "You have not purchased this project");
     return;
   }
 
