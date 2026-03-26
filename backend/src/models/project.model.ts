@@ -78,6 +78,12 @@ const projectSchema = new Schema(
       type: String,
       default: null,
     },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+    },
     repo_tree_status: {
       type: String,
       enum: ["PROCESSING", "SUCCESS", "FAILED"],

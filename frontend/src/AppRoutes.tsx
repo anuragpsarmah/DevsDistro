@@ -28,7 +28,7 @@ export const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/p/:projectId",
+        path: "/p/:slug",
         element: <SharedProjectPage />,
       },
       {

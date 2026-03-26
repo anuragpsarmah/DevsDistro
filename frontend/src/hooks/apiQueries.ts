@@ -649,14 +649,14 @@ const useGetSellerSalesTransactionsInfiniteQuery = (
 };
 
 const usePublicProjectDetailQuery = (
-  projectId: string,
+  identifier: string,
   options: { enabled: boolean }
 ) => {
   return useQuery({
-    queryKey: ["publicProjectDetail", projectId],
+    queryKey: ["publicProjectDetail", identifier],
     queryFn: async () => {
       const response = await apiClient.get<{ data: PublicProjectDetail }>(
-        `/projects/public/${projectId}`
+        `/projects/public/${identifier}`
       );
       return response.data.data;
     },

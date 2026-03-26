@@ -30,6 +30,19 @@ import { enrichContext } from "../utils/asyncContext";
 import { Purchase } from "../models/purchase.model";
 import { performProjectHardDelete } from "../utils/projectCleanup.util";
 
+function generateProjectSlug(title: string): string {
+  const base = title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 50)
+    .replace(/-+$/, "");
+  const suffix = Math.random().toString(36).slice(2, 8).padEnd(6, "0");
+  return base ? `${base}-${suffix}` : `project-${suffix}`;
+}
+
 const MARKETPLACE_SELECT = {
   title: 1,
   description: 1,
@@ -943,8 +956,9 @@ const validateMediaUploadAndStoreProject = asyncHandler(
     };
 
     if (modificationType === "new") {
+      const slug = generateProjectSlug(result.data.title);
       const [newProject, createError] = await tryCatch(
-        Project.create(filteredProjectData)
+        Project.create({ ...filteredProjectData, slug })
       );
 
       if (createError || !newProject) {
@@ -1854,6 +1868,7 @@ const PUBLIC_DETAIL_SELECT = {
   project_images: 1,
   project_images_detail: 1,
   project_video: 1,
+  slug: 1,
 } as const;
 
 const DETAIL_SELECT = {
@@ -1872,6 +1887,7 @@ const DETAIL_SELECT = {
   repo_tree: 1,
   repo_tree_status: 1,
   scheduled_deletion_at: 1,
+  slug: 1,
 } as const;
 
 const DETAIL_SELLER_POPULATE = {
@@ -1962,28 +1978,34 @@ const getPublicProjectDetail = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_public_project_detail" });
 
-    const projectId = req.params.projectId as string;
+    const identifier = req.params.identifier as string;
 
-    if (!projectId || !mongoose.Types.ObjectId.isValid(projectId)) {
+    if (!identifier || identifier.length < 3 || identifier.length > 200) {
       enrichContext({
         outcome: "validation_failed",
-        reason: "invalid_project_id",
+        reason: "invalid_identifier",
       });
-      response(res, 400, "Valid projectId is required");
+      response(res, 400, "Valid project identifier is required");
       return;
     }
 
-    enrichContext({ entity: { type: "project", id: projectId } });
+    // Detect whether the identifier is a legacy MongoDB ObjectId or a new slug
+    const isObjectId = /^[0-9a-f]{24}$/i.test(identifier);
+    const projectQuery: Record<string, unknown> = {
+      isActive: true,
+      github_access_revoked: false,
+      repo_zip_status: "SUCCESS",
+    };
+    if (isObjectId) {
+      projectQuery._id = new mongoose.Types.ObjectId(identifier);
+    } else {
+      projectQuery.slug = identifier;
+    }
 
-    const projectObjectId = new mongoose.Types.ObjectId(projectId);
+    enrichContext({ entity: { type: "project", id: identifier } });
 
     const [projectData, projectError] = await tryCatch(
-      Project.findOne({
-        _id: projectObjectId,
-        isActive: true,
-        github_access_revoked: false,
-        repo_zip_status: "SUCCESS",
-      })
+      Project.findOne(projectQuery)
         .select(PUBLIC_DETAIL_SELECT)
         .populate(DETAIL_SELLER_POPULATE)
         .lean()
@@ -2000,6 +2022,19 @@ const getPublicProjectDetail = asyncHandler(
       enrichContext({ outcome: "not_found" });
       response(res, 404, "Project not found");
       return;
+    }
+
+    // Lazy backfill: generate and persist a slug for projects created before
+    // the slug feature was introduced. Fire-and-forget — the response proceeds
+    // immediately. A race between two concurrent requests is harmless: the
+    // $exists:false filter makes the second update a no-op.
+    if (!(projectData as any).slug) {
+      const backfillSlug = generateProjectSlug((projectData as any).title as string);
+      Project.updateOne(
+        { _id: (projectData as any)._id, slug: { $exists: false } },
+        { $set: { slug: backfillSlug } }
+      ).catch((err) => logger.error("Failed to backfill project slug", err));
+      (projectData as any).slug = backfillSlug;
     }
 
     if (

@@ -88,5 +88,5 @@ projectRouter
   .route("/getMarketplaceProjectDetail")
   .get(generalAuthReadLimiter, sessionValidation, getMarketplaceProjectDetail);
 projectRouter
-  .route("/public/:projectId")
+  .route("/public/:identifier")
   .get(heavyReadLimiter, getPublicProjectDetail);

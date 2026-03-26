@@ -110,6 +110,7 @@ export interface ProjectDetail {
   repo_tree?: TreeNode;
   repo_tree_status?: string;
   scheduled_deletion_at?: string | null;
+  slug?: string;
   userid: {
     username: string;
     name: string;
@@ -137,6 +138,7 @@ export interface PublicProjectDetail {
   project_images: string[];
   project_images_detail?: string[];
   project_video?: string;
+  slug?: string;
   userid: {
     username: string;
     name: string;

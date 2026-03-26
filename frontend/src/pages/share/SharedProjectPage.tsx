@@ -16,20 +16,28 @@ import {
   usePublicProjectDetailQuery,
   useAuthValidationQuery,
 } from "@/hooks/apiQueries";
-import { isMongoObjectId } from "@/utils/navigation";
 import { successToast, errorToast } from "@/components/ui/customToast";
 
+function isValidProjectIdentifier(value: string | null | undefined): value is string {
+  return (
+    typeof value === "string" &&
+    value.length >= 3 &&
+    value.length <= 200 &&
+    /^[a-z0-9-]+$/i.test(value)
+  );
+}
+
 export default function SharedProjectPage() {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
 
-  const isValidId = isMongoObjectId(projectId);
+  const isValid = isValidProjectIdentifier(slug);
 
   const {
     data: project,
     isLoading,
     isError,
-  } = usePublicProjectDetailQuery(projectId ?? "", { enabled: isValidId });
+  } = usePublicProjectDetailQuery(slug ?? "", { enabled: isValid });
 
   const { data: authData, isLoading: authLoading } = useAuthValidationQuery();
   const isAuthenticated = !authLoading && !!authData;
@@ -44,7 +52,9 @@ export default function SharedProjectPage() {
   };
 
   const handleCTA = () => {
-    const marketplaceUrl = `/buyer-marketplace?openProject=${projectId}`;
+    // Always use the MongoDB _id for the marketplace deep-link since
+    // BuyerDashboardPage validates openProject as a MongoObjectId.
+    const marketplaceUrl = `/buyer-marketplace?openProject=${project!._id}`;
     if (isAuthenticated) {
       navigate(marketplaceUrl);
     } else {
@@ -52,7 +62,7 @@ export default function SharedProjectPage() {
     }
   };
 
-  if (!isValidId) {
+  if (!isValid) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space flex items-center justify-center p-4">
         <div className="border-2 border-black dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
@@ -134,8 +144,8 @@ export default function SharedProjectPage() {
 
           <div className="p-8 lg:p-12">
             {/* Type badge + title */}
-            <div className="flex items-start gap-4 mb-6 flex-wrap">
-              <span className="px-3 py-1 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest bg-black dark:bg-white text-white dark:text-black flex-shrink-0">
+            <div className="flex items-center gap-3 mb-6 flex-wrap">
+              <span className="inline-flex items-center px-3 py-1.5 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest bg-black dark:bg-white text-white dark:text-black flex-shrink-0">
                 {project.project_type}
               </span>
               {project.live_link && (
@@ -143,7 +153,7 @@ export default function SharedProjectPage() {
                   href={project.live_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-red-500 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex-shrink-0"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Live Demo
@@ -158,13 +168,12 @@ export default function SharedProjectPage() {
             {/* Rating */}
             {project.totalReviews > 0 && (
               <div className="flex items-center gap-2 mb-6">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <Star className="w-4 h-4 fill-red-500 text-red-500" />
                 <span className="font-bold text-sm">
                   {project.avgRating.toFixed(1)}
                 </span>
-                <span className="text-gray-500 text-sm">
-                  ({project.totalReviews} review
-                  {project.totalReviews !== 1 ? "s" : ""})
+                <span className="text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">
+                  ({project.totalReviews} review{project.totalReviews !== 1 ? "s" : ""})
                 </span>
               </div>
             )}
@@ -200,18 +209,18 @@ export default function SharedProjectPage() {
                     <img
                       src={seller.profile_image_url}
                       alt={seller.name}
-                      className="w-12 h-12 rounded-none border-2 border-black dark:border-white object-cover"
+                      className="w-12 h-12 flex-shrink-0 rounded-none border-2 border-black dark:border-white object-cover"
                     />
                   ) : (
-                    <div className="w-12 h-12 border-2 border-black dark:border-white flex items-center justify-center bg-gray-100 dark:bg-[#0a0a0a]">
+                    <div className="w-12 h-12 flex-shrink-0 border-2 border-black dark:border-white flex items-center justify-center bg-gray-100 dark:bg-[#0a0a0a]">
                       <User className="w-6 h-6 text-black dark:text-white" />
                     </div>
                   )}
-                  <div>
-                    <p className="font-bold text-sm uppercase tracking-widest">
+                  <div className="min-w-0">
+                    <p className="font-syne font-black text-sm uppercase tracking-widest truncate">
                       {seller.name || seller.username}
                     </p>
-                    <p className="text-gray-500 text-xs">@{seller.username}</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-xs font-space font-bold tracking-wider mt-0.5">{seller.username?.startsWith('@') ? seller.username : `@${seller.username}`}</p>
                     {seller.profile_visibility !== false && (
                       <div className="flex items-center gap-3 mt-1">
                         {seller.location && (
@@ -238,7 +247,7 @@ export default function SharedProjectPage() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-500 transition-colors"
                           >
-                            <XIcon className="w-3 h-3" />@{seller.x_username}
+                            <XIcon className="w-3 h-3" />{seller.x_username?.startsWith('@') ? seller.x_username : `@${seller.x_username}`}
                           </a>
                         )}
                       </div>
@@ -249,11 +258,11 @@ export default function SharedProjectPage() {
 
               {/* Price + CTA */}
               <div className="flex flex-col items-start lg:items-end gap-4 w-full lg:w-auto">
-                <div className="text-right">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-1">
+                <div className="lg:text-right">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 mb-2">
                     Price
                   </p>
-                  <p className="font-syne font-black text-3xl uppercase tracking-tighter">
+                  <p className="font-syne font-black text-4xl lg:text-5xl uppercase leading-none">
                     {project.price === 0 ? "FREE" : `$${project.price}`}
                   </p>
                 </div>
