@@ -488,9 +488,21 @@ const ListedProjects = ({
                     {RenderTechStack(project.tech_stack)}
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {(project.downloadCount ?? 0) > 0 && (
-                        <span className="px-3 py-1.5 bg-red-500 text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-red-500">
-                          {formatCompactDownloadCount(project.downloadCount)}
-                        </span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="px-3 py-1.5 bg-red-500 text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-red-500 cursor-default">
+                              {formatCompactDownloadCount(
+                                project.downloadCount
+                              )}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white rounded-none font-space font-bold uppercase tracking-widest text-[10px]"
+                          >
+                            Total Downloads
+                          </TooltipContent>
+                        </Tooltip>
                       )}
                       <span className="px-3 py-1.5 bg-white dark:bg-black text-black dark:text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-black dark:border-white">
                         {project.price === 0 ? "Free" : `$ ${project.price}`}
