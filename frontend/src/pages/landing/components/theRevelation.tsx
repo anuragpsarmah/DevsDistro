@@ -29,20 +29,11 @@ export default function TheShift() {
             transition={{ duration: 0.8 }}
             className="order-1 lg:order-2"
           >
-            <h2 className="font-syne text-5xl md:text-6xl lg:text-7xl font-black text-black dark:text-white uppercase leading-[1.1] md:leading-none tracking-tight mb-8 transition-colors">
-              A DIRECT <br />
-              PIPELINE FROM <br />
-              <span
-                className="text-black dark:text-white"
-                style={{
-                  WebkitTextFillColor: "transparent",
-                  WebkitTextStroke: "2px currentColor",
-                }}
-              >
-                COMMIT
-              </span>{" "}
-              TO <br />
-              <span className="inline-block text-white dark:text-black bg-black dark:bg-white px-4 py-1 leading-none transition-colors mt-3 mb-1 lg:mt-2 lg:mb-0">
+            <h2 className="font-syne text-4xl md:text-6xl font-bold text-black dark:text-white uppercase leading-snug mb-8 transition-colors">
+              A Direct Pipeline from{" "}
+              <span className="text-black/40 dark:text-white/40">Commit</span>{" "}
+              to{" "}
+              <span className="inline-block text-white dark:text-black bg-black dark:bg-white px-2 py-0.5 leading-none transition-colors">
                 PAYOUT
               </span>
               .
