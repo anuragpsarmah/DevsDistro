@@ -1,0 +1,42 @@
+#!/bin/sh
+set -eu
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+frontend_list=$(mktemp)
+backend_list=$(mktemp)
+
+cleanup() {
+  rm -f "$frontend_list" "$backend_list"
+}
+
+trap cleanup EXIT INT TERM HUP
+
+collect_staged_files() {
+  output_file="$1"
+  shift
+  git diff --cached --name-only -z --diff-filter=ACMR -- "$@" > "$output_file"
+}
+
+format_and_stage() {
+  project_dir="$1"
+  list_file="$2"
+  label="$3"
+
+  if [ ! -s "$list_file" ]; then
+    return
+  fi
+
+  printf '\n[pre-commit] Formatting staged %s files...\n' "$label"
+  xargs -0 npm --prefix "$project_dir" exec -- prettier --write --ignore-unknown -- < "$list_file"
+  xargs -0 git add -- < "$list_file"
+}
+
+collect_staged_files "$frontend_list" frontend/src
+collect_staged_files "$backend_list" backend/src
+
+format_and_stage "frontend" "$frontend_list" "frontend"
+format_and_stage "backend" "$backend_list" "backend"
+
+printf '\n[pre-commit] Staged source files formatted and re-staged.\n'

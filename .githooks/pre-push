@@ -12,9 +12,7 @@ run_step() {
   npm --prefix "$project_dir" run "$script_name"
 }
 
-run_step "frontend" "format"
-run_step "backend" "format"
 run_step "frontend" "test"
 run_step "backend" "test"
 
-printf '\n[pre-push] Frontend and backend formatting and tests passed.\n'
+printf '\n[pre-push] Frontend and backend tests passed.\n'
