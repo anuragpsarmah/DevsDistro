@@ -3,6 +3,24 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/pages/landing/components/header";
 import MobileMenu from "@/pages/landing/components/mobileMenu";
 import Footer from "@/pages/landing/components/footer";
+import SEO from "@/components/seo/SEO";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const termsDescription =
+  "Review the DevsDistro terms of service for marketplace usage, GitHub app access, source code ownership, Solana payments, and delivery terms.";
+
+const termsStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Terms of Service",
+  url: `${SITE_URL}/terms`,
+  description: termsDescription,
+  isPartOf: {
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+  },
+};
 
 export default function TermsOfService() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,6 +36,12 @@ export default function TermsOfService() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative">
+      <SEO
+        title="Terms of Service"
+        description={termsDescription}
+        path="/terms"
+        structuredData={termsStructuredData}
+      />
       <Header
         handleAuthNavigate={handleAuthNavigate}
         isMenuOpen={isMenuOpen}

@@ -9,6 +9,7 @@ import ManageProjectsTab from "./tabs/ManageProjectsTab";
 import BillingAndPaymentsTab from "./tabs/BillingAndPayments";
 import SalesTab from "./tabs/SalesTab";
 import { SellerDashboardTabTypes } from "./utils/types";
+import SEO from "@/components/seo/SEO";
 
 interface SellerDashboardPageProps {
   logout?: () => Promise<void>;
@@ -28,6 +29,12 @@ export default function SellerDashboardPage({
 
   return (
     <div className="h-screen flex transition-colors duration-300 relative overflow-hidden bg-white text-black dark:text-white dark:bg-[#050505]">
+      <SEO
+        title="Seller Dashboard"
+        description="Manage DevsDistro listings, sales, payouts, and account settings."
+        path="/seller-dashboard"
+        robots="noindex, nofollow"
+      />
       <BrutalistBackground />
       <Sidebar
         isSidebarOpen={isSidebarOpen}

@@ -38,6 +38,7 @@ export default function MobileMenu({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
+          id="mobile-navigation"
           className="fixed inset-0 z-40 bg-white dark:bg-[#0a0a0a] pt-24 px-6 md:hidden overflow-y-auto transition-colors duration-300"
         >
           <div className="flex flex-col gap-8 h-full">
@@ -99,14 +100,15 @@ export default function MobileMenu({
             </div>
 
             <div className="mt-auto pb-12 opacity-10 dark:opacity-30 pointer-events-none overflow-hidden">
-              <h2
+              <div
+                aria-hidden="true"
                 className="font-syne text-2xl font-black text-transparent text-center w-full"
                 style={{
                   WebkitTextStroke: isDarkMode ? "1px white" : "1px black",
                 }}
               >
                 DEVS_DISTRO
-              </h2>
+              </div>
             </div>
           </div>
         </motion.div>

@@ -3,6 +3,39 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/pages/landing/components/header";
 import MobileMenu from "@/pages/landing/components/mobileMenu";
 import Footer from "@/pages/landing/components/footer";
+import SEO from "@/components/seo/SEO";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const apiPageDescription =
+  "Explore the DevsDistro World Cities API documentation. Search cities by prefix with a fast public REST endpoint designed for browser-based developer tooling.";
+
+const apiStructuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "World Cities API",
+    url: `${SITE_URL}/api`,
+    description: apiPageDescription,
+    isPartOf: {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebAPI",
+    name: "World Cities API",
+    url: `${SITE_URL}/api`,
+    documentation: `${SITE_URL}/api`,
+    provider: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    description: apiPageDescription,
+  },
+];
 
 export default function ApiPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,6 +57,12 @@ export default function ApiPage() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative">
+      <SEO
+        title="World Cities API"
+        description={apiPageDescription}
+        path="/api"
+        structuredData={apiStructuredData}
+      />
       <Header
         handleAuthNavigate={handleAuthNavigate}
         isMenuOpen={isMenuOpen}

@@ -3,6 +3,7 @@ import { ShoppingBag, Store } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ProfileCard } from "./main-components/ProfileCard";
 import { isSafeRelativePath } from "@/utils/navigation";
+import SEO from "@/components/seo/SEO";
 
 export default function ProfileSelectionPage() {
   const [hoveredProfile, setHoveredProfile] = useState<string | null>(null);
@@ -24,6 +25,12 @@ export default function ProfileSelectionPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative">
+      <SEO
+        title="Profile Selection"
+        description="Choose your DevsDistro operating profile."
+        path="/profile-selection"
+        robots="noindex, nofollow"
+      />
       <div
         className="absolute inset-0 pointer-events-none z-0 opacity-[0.10] dark:hidden"
         style={{

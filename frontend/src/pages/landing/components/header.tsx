@@ -34,6 +34,7 @@ export default function Header({
         <Link
           to="/"
           className="flex items-center gap-3 text-xl font-syne font-black tracking-widest text-black dark:text-white uppercase transition-colors group"
+          aria-label="Go to DevsDistro home page"
         >
           <LogoIcon className="w-8 h-8 group-hover:scale-110 transition-transform duration-300" />
           <span className="group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
@@ -87,6 +88,11 @@ export default function Header({
           <button
             className="text-black dark:text-white hover:text-red-500 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={
+              isMenuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>

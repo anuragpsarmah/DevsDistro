@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import SEO from "@/components/seo/SEO";
 
 export default function ErrorPage() {
   const navigate = useNavigate();
@@ -10,6 +11,12 @@ export default function ErrorPage() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex items-center justify-center p-4">
+      <SEO
+        title="404"
+        description="The requested DevsDistro page could not be found."
+        path={window.location.pathname}
+        robots="noindex, nofollow"
+      />
       <div className="z-10 text-center max-w-4xl w-full flex flex-col items-center justify-center border-2 border-black dark:border-white py-16 px-6 md:p-24 relative bg-white dark:bg-[#050505] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-shadow duration-300">
         <div className="flex items-center gap-3 mb-8 self-start">
           <div className="w-12 h-[2px] bg-red-500"></div>

@@ -77,7 +77,9 @@ export default function Reviews() {
                 {review.profile_image_url && (
                   <img
                     src={review.profile_image_url}
-                    alt={review.username}
+                    alt={`Profile picture of ${review.username}`}
+                    loading="lazy"
+                    decoding="async"
                     className="w-8 h-8 rounded-full object-cover border border-black/10 dark:border-white/10"
                   />
                 )}
@@ -103,11 +105,15 @@ export default function Reviews() {
     <section
       className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white border-y border-black/10 dark:border-white/10 transition-colors duration-300 overflow-hidden"
       id="validations"
+      aria-labelledby="reviews-heading"
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center md:justify-between mb-20 border-b-4 border-black/20 dark:border-white/20 pb-6 transition-colors">
           <div className="flex items-center gap-3">
-            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">
+            <span
+              id="reviews-heading"
+              className="font-space font-bold uppercase tracking-[0.2em] text-xs"
+            >
               Validations
             </span>
           </div>

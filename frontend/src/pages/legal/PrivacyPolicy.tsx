@@ -3,6 +3,24 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/pages/landing/components/header";
 import MobileMenu from "@/pages/landing/components/mobileMenu";
 import Footer from "@/pages/landing/components/footer";
+import SEO from "@/components/seo/SEO";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const privacyDescription =
+  "Read the DevsDistro privacy policy covering GitHub OAuth data, repository metadata, wallet information, and how marketplace account data is handled.";
+
+const privacyStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Privacy Policy",
+  url: `${SITE_URL}/privacy`,
+  description: privacyDescription,
+  isPartOf: {
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+  },
+};
 
 export default function PrivacyPolicy() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -18,6 +36,12 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative">
+      <SEO
+        title="Privacy Policy"
+        description={privacyDescription}
+        path="/privacy"
+        structuredData={privacyStructuredData}
+      />
       <Header
         handleAuthNavigate={handleAuthNavigate}
         isMenuOpen={isMenuOpen}

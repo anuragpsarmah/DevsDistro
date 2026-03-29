@@ -4,6 +4,7 @@ import { apiClient } from "@/lib/axiosInstance";
 import { tryCatch } from "@/utils/tryCatch.util";
 import { useNavigate } from "react-router-dom";
 import { errorToast, successToast } from "@/components/ui/customToast";
+import SEO from "@/components/seo/SEO";
 
 export default function AppInstallCallbackPage() {
   const navigate = useNavigate();
@@ -43,6 +44,12 @@ export default function AppInstallCallbackPage() {
 
   return (
     <div className="min-h-screen overflow-hidden w-full bg-white dark:bg-[#050505] text-black dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex items-center justify-center p-4">
+      <SEO
+        title="Configuring Access"
+        description="Completing the DevsDistro GitHub App installation flow."
+        path="/app-install-callback"
+        robots="noindex, nofollow"
+      />
       <div className="z-10 text-center max-w-4xl mx-auto w-full flex flex-col items-center justify-center border-2 border-black dark:border-white py-12 px-6 md:p-24 relative bg-white dark:bg-[#050505] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-shadow duration-300">
         <div className="flex items-center gap-3 mb-8 self-start">
           <div className="w-12 h-[2px] bg-red-500"></div>

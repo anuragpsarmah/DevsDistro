@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /authentication
+Disallow: /loginValidation
+Disallow: /app-install-callback
+Disallow: /profile-selection
+Disallow: /seller-dashboard
+Disallow: /buyer-marketplace
+
+Sitemap: https://devsdistro.com/sitemap.xml

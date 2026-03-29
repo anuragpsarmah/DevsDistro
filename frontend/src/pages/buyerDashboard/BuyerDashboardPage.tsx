@@ -8,6 +8,7 @@ import WishlistTab from "./tabs/WishlistTab";
 import OrdersTab from "./tabs/OrdersTab";
 import PurchaseLedgerTab from "./tabs/PurchaseLedgerTab";
 import { isMongoObjectId } from "@/utils/navigation";
+import SEO from "@/components/seo/SEO";
 
 interface BuyerDashboardPageProps {
   logout?: () => Promise<void>;
@@ -42,6 +43,12 @@ export default function BuyerDashboardPage({
 
   return (
     <div className="h-screen flex transition-colors duration-300 relative overflow-hidden bg-white text-black dark:text-white dark:bg-[#050505]">
+      <SEO
+        title="Buyer Marketplace"
+        description="Browse DevsDistro marketplace listings, orders, and purchase history."
+        path="/buyer-marketplace"
+        robots="noindex, nofollow"
+      />
       <BrutalistBackground />
       <Sidebar
         isSidebarOpen={isSidebarOpen}

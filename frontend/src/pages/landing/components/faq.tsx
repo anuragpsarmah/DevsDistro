@@ -11,6 +11,7 @@ export default function FAQ() {
     <section
       className="py-32 px-6 md:px-12 bg-gray-50 dark:bg-[#0a0a0a] text-black dark:text-white border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
       id="query-log"
+      aria-labelledby="faq-heading"
     >
       <div className="max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row gap-16">
@@ -22,7 +23,10 @@ export default function FAQ() {
               </span>
               <div className="w-12 h-[2px] bg-red-500"></div>
             </div>
-            <h2 className="font-syne text-4xl md:text-5xl font-black uppercase leading-tight mb-6 transition-colors text-center md:text-left">
+            <h2
+              id="faq-heading"
+              className="font-syne text-4xl md:text-5xl font-black uppercase leading-tight mb-6 transition-colors text-center md:text-left"
+            >
               Frequently
               <br />
               <span className="text-black/40 dark:text-white/40">Asked.</span>
@@ -42,8 +46,13 @@ export default function FAQ() {
                 <button
                   onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
                   className="w-full text-left py-8 flex justify-between items-center bg-transparent group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors duration-200 px-4"
+                  aria-expanded={openIndex === idx}
+                  aria-controls={`faq-panel-${idx}`}
                 >
-                  <span className="font-syne text-xl md:text-2xl font-bold uppercase pr-8 transition-colors">
+                  <span
+                    id={`faq-question-${idx}`}
+                    className="font-syne text-xl md:text-2xl font-bold uppercase pr-8 transition-colors"
+                  >
                     {faq.question}
                   </span>
                   <div className="text-red-500 shrink-0">
@@ -62,6 +71,8 @@ export default function FAQ() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                       className="px-4 pb-8 overflow-hidden"
+                      id={`faq-panel-${idx}`}
+                      aria-labelledby={`faq-question-${idx}`}
                     >
                       <p className="font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors">
                         {faq.answer}

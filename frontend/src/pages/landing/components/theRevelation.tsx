@@ -6,10 +6,13 @@ export default function TheShift() {
       className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] transition-colors duration-300 relative overflow-hidden"
       id="the-revelation"
     >
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden hidden md:flex items-center justify-center">
-        <h2 className="font-syne text-[20vw] font-black text-black dark:text-white whitespace-nowrap opacity-[0.03] dark:opacity-5 transform -rotate-12 transition-colors">
+      <div
+        className="absolute inset-0 pointer-events-none select-none overflow-hidden hidden md:flex items-center justify-center"
+        aria-hidden="true"
+      >
+        <div className="font-syne text-[20vw] font-black text-black dark:text-white whitespace-nowrap opacity-[0.03] dark:opacity-5 transform -rotate-12 transition-colors">
           REVELATION
-        </h2>
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">

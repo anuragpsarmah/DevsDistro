@@ -17,6 +17,8 @@ import {
   useAuthValidationQuery,
 } from "@/hooks/apiQueries";
 import { successToast, errorToast } from "@/components/ui/customToast";
+import SEO from "@/components/seo/SEO";
+import { SITE_NAME, SITE_URL, truncateDescription } from "@/lib/seo";
 
 function isValidProjectIdentifier(
   value: string | null | undefined
@@ -67,6 +69,12 @@ export default function SharedProjectPage() {
   if (!isValid) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space flex items-center justify-center p-4">
+        <SEO
+          title="Invalid Project Link"
+          description="This DevsDistro project share link is invalid."
+          path={window.location.pathname}
+          robots="noindex, nofollow"
+        />
         <div className="border-2 border-black dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
           <div className="w-16 h-16 bg-red-500 flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-8 h-8 text-white" />
@@ -85,6 +93,11 @@ export default function SharedProjectPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505] flex items-center justify-center">
+        <SEO
+          title="Project Preview"
+          description="Loading a shared DevsDistro project preview."
+          path={window.location.pathname}
+        />
         <Loader2 className="w-10 h-10 animate-spin text-red-500" />
       </div>
     );
@@ -93,6 +106,12 @@ export default function SharedProjectPage() {
   if (isError || !project) {
     return (
       <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space flex items-center justify-center p-4">
+        <SEO
+          title="Project Not Found"
+          description="This DevsDistro project is unavailable or has been removed."
+          path={window.location.pathname}
+          robots="noindex, nofollow"
+        />
         <div className="border-2 border-black dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
           <div className="w-16 h-16 bg-black dark:bg-white flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-8 h-8 text-white dark:text-black" />
@@ -111,9 +130,57 @@ export default function SharedProjectPage() {
   const seller = project.userid;
   const images = project.project_images ?? [];
   const coverImage = images[0];
+  const sellerName = seller?.name || seller?.username || "Anonymous seller";
+  const sharePath = `/p/${slug}`;
+  const projectDescription = truncateDescription(project.description);
+  const projectStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: project.title,
+    description: project.description,
+    category: project.project_type,
+    url: `${SITE_URL}${sharePath}`,
+    image: images,
+    brand: {
+      "@type": "Brand",
+      name: SITE_NAME,
+    },
+    seller:
+      seller?.profile_visibility === false
+        ? undefined
+        : {
+            "@type": "Person",
+            name: sellerName,
+            sameAs: seller?.website_url || undefined,
+          },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: project.price.toString(),
+      availability: "https://schema.org/InStock",
+      url: `${SITE_URL}${sharePath}`,
+    },
+    aggregateRating:
+      project.totalReviews > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: project.avgRating.toFixed(1),
+            reviewCount: project.totalReviews,
+          }
+        : undefined,
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300">
+      <SEO
+        title={`${project.title} by ${sellerName}`}
+        description={projectDescription}
+        path={sharePath}
+        image={coverImage || undefined}
+        imageAlt={`${project.title} preview image`}
+        type="product"
+        structuredData={projectStructuredData}
+      />
       <div className="max-w-5xl mx-auto px-4 py-12">
         {/* Header bar */}
         <div className="flex items-center justify-between mb-10">
@@ -138,7 +205,9 @@ export default function SharedProjectPage() {
             <div className="w-full aspect-video bg-gray-100 dark:bg-[#0a0a0a] overflow-hidden border-b-2 border-black dark:border-white">
               <img
                 src={coverImage}
-                alt={project.title}
+                alt={`${project.title} project cover image`}
+                loading="eager"
+                decoding="async"
                 className="w-full h-full object-cover object-top"
               />
             </div>
@@ -211,7 +280,9 @@ export default function SharedProjectPage() {
                   {seller.profile_image_url ? (
                     <img
                       src={seller.profile_image_url}
-                      alt={seller.name}
+                      alt={`Profile picture of ${sellerName}`}
+                      loading="lazy"
+                      decoding="async"
                       className="w-12 h-12 flex-shrink-0 rounded-none border-2 border-black dark:border-white object-cover"
                     />
                   ) : (

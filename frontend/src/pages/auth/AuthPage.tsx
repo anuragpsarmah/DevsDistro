@@ -7,6 +7,7 @@ import { isSafeRelativePath } from "@/utils/navigation";
 import Header from "@/pages/landing/components/header";
 import MobileMenu from "@/pages/landing/components/mobileMenu";
 import Footer from "@/pages/landing/components/footer";
+import SEO from "@/components/seo/SEO";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -56,6 +57,12 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex flex-col">
+      <SEO
+        title="Authentication"
+        description="Sign in to DevsDistro with GitHub to buy or sell source code."
+        path="/authentication"
+        robots="noindex, nofollow"
+      />
       <Header
         handleAuthNavigate={handleAuthNavigate}
         isMenuOpen={isMenuOpen}
