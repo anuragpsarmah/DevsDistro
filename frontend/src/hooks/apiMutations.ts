@@ -7,6 +7,7 @@ import {
   ProfileUpdateData,
   projectListingValidatedFormData,
   ProjectMediaMetadata,
+  ProjectDetail,
   WalletUpdatePayload,
   PurchaseIntent,
   PurchaseConfirmPayload,
@@ -431,10 +432,16 @@ const useDownloadProjectMutation = ({ logout }: mutationParameter) => {
       return response.data.data;
     },
     onSuccess: (data, project_id) => {
-      queryClient.invalidateQueries({
-        queryKey: ["projectDetail", project_id],
-      });
-      queryClient.invalidateQueries({ queryKey: ["initialProjectDataQuery"] });
+      queryClient.setQueryData<ProjectDetail | undefined>(
+        ["projectDetail", project_id],
+        (existingProject) =>
+          existingProject
+            ? {
+                ...existingProject,
+                downloadCount: (existingProject.downloadCount ?? 0) + 1,
+              }
+            : existingProject
+      );
       const a = document.createElement("a");
       a.href = data.download_url;
       a.download = "";

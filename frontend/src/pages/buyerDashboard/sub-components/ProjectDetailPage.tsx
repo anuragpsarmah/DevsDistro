@@ -111,7 +111,7 @@ export default function ProjectDetailPage({
     );
   }
 
-  if (isError || !project) {
+  if (!project) {
     return (
       <div className="space-y-6 mt-6 max-w-7xl mx-auto">
         <button
@@ -124,11 +124,14 @@ export default function ProjectDetailPage({
         <div className="flex flex-col items-center justify-center py-32 space-y-6 border-2 border-black dark:border-white p-8 bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
           <AlertCircle className="w-16 h-16 text-red-500" />
           <p className="font-syne font-black uppercase tracking-widest text-black dark:text-white text-3xl text-center leading-none">
-            System Error: Project Not Found
+            {isError
+              ? "System Error: Project Unavailable"
+              : "System Error: Project Not Found"}
           </p>
           <p className="font-space font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider text-center max-w-lg">
-            This project may have been removed, restricted, or simply does not
-            exist. Return to the marketplace to browse available listings.
+            {isError
+              ? "We could not refresh this project right now. Please try again in a moment or return to the marketplace."
+              : "This project may have been removed, restricted, or simply does not exist. Return to the marketplace to browse available listings."}
           </p>
         </div>
       </div>
