@@ -128,7 +128,7 @@ const ListedProjects = ({
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
 
-  const formatCompactDownloadCount = (count: number) => `${count}↓`;
+  const formatCompactDownloadCount = (count: number) => `${count} ↓`;
 
   const handleEditProject = (idx: number) => {
     const { project_images, ...other_props } = initialProjectData[idx];
@@ -351,18 +351,18 @@ const ListedProjects = ({
                   {(!!project.scheduled_deletion_at ||
                     !projectStatuses[idx] ||
                     project.github_access_revoked) && (
-                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 dark:bg-white/10 backdrop-blur-[2px] overflow-hidden">
-                      <div
-                        className={`${project.scheduled_deletion_at ? "bg-amber-500" : "bg-red-500"} text-white font-syne font-black uppercase text-xl md:text-2xl tracking-[0.3em] py-2 px-0 border-y-4 border-black dark:border-white w-[120%] text-center transform -rotate-6 shadow-2xl`}
-                      >
-                        {project.scheduled_deletion_at
-                          ? "DELETING"
-                          : project.github_access_revoked
-                            ? "REVOKED"
-                            : "INACTIVE"}
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 dark:bg-white/10 backdrop-blur-[2px] overflow-hidden">
+                        <div
+                          className={`${project.scheduled_deletion_at ? "bg-amber-500" : "bg-red-500"} text-white font-syne font-black uppercase text-xl md:text-2xl tracking-[0.3em] py-2 px-0 border-y-4 border-black dark:border-white w-[120%] text-center transform -rotate-6 shadow-2xl`}
+                        >
+                          {project.scheduled_deletion_at
+                            ? "DELETING"
+                            : project.github_access_revoked
+                              ? "REVOKED"
+                              : "INACTIVE"}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-black/90 backdrop-blur-md border-t-2 border-black dark:border-white p-3">
                   <h2 className="text-sm font-space font-bold uppercase tracking-widest truncate text-black dark:text-white">

@@ -2,6 +2,7 @@
 */node_modules
 
 */logs
+/logs/
 */dist
 
 */tsconfig.app.tsbuildinfo

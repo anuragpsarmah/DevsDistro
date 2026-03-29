@@ -1,4 +1,5 @@
 import axios from "axios";
+import crypto from "crypto";
 import { redisClient, s3Service } from "..";
 import { githubAppService } from "./githubApp.service";
 import { Project } from "../models/project.model";
@@ -10,6 +11,11 @@ import { LOCK_TTL_SECONDS, MAX_REPO_SIZE_BYTES } from "../types/constants";
 export default class RepoZipUploadService {
   private getLockKey(projectId: string): string {
     return `repo-zip-lock:${projectId}`;
+  }
+
+  private buildRepoZipS3Key(projectId: string): string {
+    const version = `${Date.now()}-${crypto.randomBytes(6).toString("hex")}`;
+    return `repoZips/${projectId}/${version}.zip`;
   }
 
   private async fetchAndStoreRepoTree(
@@ -200,7 +206,7 @@ export default class RepoZipUploadService {
         }
       });
 
-      const s3Key = `repoZips/${projectId}.zip`;
+      const s3Key = this.buildRepoZipS3Key(projectId);
 
       const [, uploadError] = await tryCatch(
         s3Service.uploadStream(s3Key, sizeEnforcedStream, "application/zip")

@@ -68,6 +68,7 @@ vi.mock("..", () => ({
     del: vi.fn(),
   },
   s3Service: {
+    objectExists: vi.fn(),
     createSignedDownloadUrl: vi.fn(),
   },
 }));
@@ -182,6 +183,7 @@ describe("downloadProject", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     res = makeRes();
+    vi.mocked(s3Service.objectExists).mockResolvedValue(true);
   });
 
   // ── Auth guard ────────────────────────────────────────────────────────────

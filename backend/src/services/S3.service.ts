@@ -47,6 +47,26 @@ export default class S3Service {
     return `${this.REDIS_UPLOAD_KEY_PREFIX}${s3Key}`;
   }
 
+  private isMissingObjectError(error: unknown): boolean {
+    if (!error || typeof error !== "object") return false;
+
+    const candidate = error as {
+      name?: string;
+      Code?: string;
+      code?: string;
+      $metadata?: { httpStatusCode?: number };
+    };
+
+    return (
+      candidate.name === "NotFound" ||
+      candidate.Code === "NotFound" ||
+      candidate.Code === "NoSuchKey" ||
+      candidate.code === "NotFound" ||
+      candidate.code === "NoSuchKey" ||
+      candidate.$metadata?.httpStatusCode === 404
+    );
+  }
+
   async createPreSignedUploadUrl(fileMetaData: FileMetaData) {
     const { originalName, fileType, fileSize } = fileMetaData;
 
@@ -198,6 +218,24 @@ export default class S3Service {
       expiresIn,
     });
     return signedUrl;
+  }
+
+  async objectExists(key: string): Promise<boolean> {
+    try {
+      const headCommand = new HeadObjectCommand({
+        Bucket: process.env.S3_BUCKET as string,
+        Key: key,
+      });
+
+      await this.s3Client.send(headCommand);
+      return true;
+    } catch (error) {
+      if (this.isMissingObjectError(error)) {
+        return false;
+      }
+
+      throw error;
+    }
   }
 
   async deleteObject(key: string) {

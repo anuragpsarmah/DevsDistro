@@ -42,6 +42,7 @@ vi.mock("..", () => ({
     set: vi.fn(),
   },
   s3Service: {
+    objectExists: vi.fn(),
     createSignedDownloadUrl: vi.fn(),
   },
 }));
@@ -1295,6 +1296,7 @@ describe("downloadProject", () => {
     } as any);
 
     // S3 URL generated successfully
+    vi.mocked(s3Service.objectExists).mockResolvedValue(true);
     vi.mocked(s3Service.createSignedDownloadUrl).mockResolvedValue(
       "https://s3.example.com/bucket/zips/project-abc.zip?X-Amz-Signature=xxx"
     );
@@ -1338,6 +1340,36 @@ describe("downloadProject", () => {
       900,
       "test-project.zip" // title lowercased, spaces→hyphens, .zip appended
     );
+  });
+
+  it("returns 400 when the repo ZIP metadata exists but the S3 object is missing", async () => {
+    vi.mocked(s3Service.objectExists).mockResolvedValue(false);
+
+    const req = makeReq({ query: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
+    expect(ProjectDownload.updateOne).not.toHaveBeenCalled();
+  });
+
+  it("returns 500 when S3 object existence verification fails", async () => {
+    vi.mocked(s3Service.objectExists).mockRejectedValue(
+      new Error("head object failed")
+    );
+
+    const req = makeReq({ query: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
+    expect(ProjectDownload.updateOne).not.toHaveBeenCalled();
   });
 
   it("returns 400 when project_id query param is absent", async () => {

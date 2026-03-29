@@ -796,6 +796,40 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
+  const [zipExists, zipExistsError] = await tryCatch(
+    s3Service.objectExists(project.repo_zip_s3_key as string)
+  );
+
+  if (zipExistsError) {
+    logger.error("Failed to verify repo ZIP existence before download", {
+      projectId: project_id,
+      s3Key: project.repo_zip_s3_key,
+      error:
+        zipExistsError instanceof Error
+          ? zipExistsError.message
+          : "Unknown error",
+    });
+    response(res, 500, "Failed to generate download link. Try again later.");
+    return;
+  }
+
+  if (!zipExists) {
+    enrichContext({
+      outcome: "validation_failed",
+      reason: "zip_missing_from_storage",
+    });
+    logger.warn("Project repo ZIP missing from storage during download", {
+      projectId: project_id,
+      s3Key: project.repo_zip_s3_key,
+    });
+    response(
+      res,
+      400,
+      "Project files are not available for download at this time"
+    );
+    return;
+  }
+
   let hasConfirmedPurchase = false;
 
   // For paid projects, verify the buyer has purchased this project
