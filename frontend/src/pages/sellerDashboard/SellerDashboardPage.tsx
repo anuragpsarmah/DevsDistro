@@ -44,7 +44,9 @@ export default function SellerDashboardPage({
         {activeTab === "List Project" && (
           <ListNewProjectTab logout={logout} setActiveTab={setActiveTab} />
         )}
-        {activeTab === "My Projects" && <ManageProjectsTab logout={logout} />}
+        {activeTab === "My Projects" && (
+          <ManageProjectsTab logout={logout} setActiveTab={setActiveTab} />
+        )}
         {activeTab === "Sales" && <SalesTab logout={logout} />}
         {activeTab === "Wallet" && <BillingAndPaymentsTab logout={logout} />}
       </main>

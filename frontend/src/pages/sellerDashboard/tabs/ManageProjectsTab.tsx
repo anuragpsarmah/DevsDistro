@@ -4,6 +4,7 @@ import { TransitionWrapper } from "../sub-components/TransitionWrapper";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import {
   useInitialProjectDataQuery,
+  useGetWalletAddress,
   useSpecificProjectDataQuery,
   useRepoZipStatusQuery,
 } from "@/hooks/apiQueries";
@@ -23,12 +24,20 @@ import { formPropsType } from "../utils/types";
 import {
   projectListingValidatedFormData,
   ProjectMediaMetadata,
+  SellerDashboardTabTypes,
 } from "../utils/types";
 import { ManageProjectsTabProps } from "@/utils/types";
 
 type ManageView = "projects" | "form" | "reviews";
 
-export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
+interface ManageProjectsTabViewProps extends ManageProjectsTabProps {
+  setActiveTab: (tab: SellerDashboardTabTypes) => void;
+}
+
+export default function ManageProjectsTab({
+  logout,
+  setActiveTab,
+}: ManageProjectsTabViewProps) {
   const queryClient = useQueryClient();
   const [componentIdentifier, setComponenetIdentifier] =
     useState<ManageView>("projects");
@@ -55,6 +64,11 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
     isLoading: initialDataLoading,
     isError: initialDataError,
   } = useInitialProjectDataQuery({ logout });
+  const {
+    data: walletData,
+    isLoading: walletAddressLoading,
+    isError: walletAddressError,
+  } = useGetWalletAddress({ logout });
 
   const getData = useSpecificProjectDataQuery({ logout });
 
@@ -178,6 +192,13 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
     return status;
   };
 
+  const existingWalletAddress = walletData?.data?.wallet_address;
+  const showWalletConnectionNotice =
+    Boolean(initialData?.data?.length) &&
+    !walletAddressLoading &&
+    !walletAddressError &&
+    !existingWalletAddress;
+
   return (
     <AnimatedLoadWrapper>
       <div className="flex flex-col h-[calc(100vh-3rem)] lg:h-[calc(100vh-4rem)] mt-10 lg:mt-0 md:mt-0 pb-4 lg:pb-6">
@@ -210,6 +231,8 @@ export default function ManageProjectsTab({ logout }: ManageProjectsTabProps) {
                   initialProjectData={initialData?.data}
                   isLoading={initialDataLoading}
                   isError={initialDataError}
+                  showWalletConnectionNotice={showWalletConnectionNotice}
+                  onNavigateToWallet={() => setActiveTab("Wallet")}
                   handleToggleProjectListing={handleToggleProjectListing}
                   handleDeleteProjectListing={handleDeleteProjectListing}
                   handleUIStateChange={handleUIStateChange}

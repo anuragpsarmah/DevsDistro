@@ -361,6 +361,8 @@ export interface InitialProjectData {
 
 export interface ListedProjectsProps {
   initialProjectData: Array<InitialProjectData>;
+  showWalletConnectionNotice?: boolean;
+  onNavigateToWallet?: () => void;
   handleToggleProjectListing: (title: string) => Promise<unknown>;
   handleDeleteProjectListing: (title: string) => Promise<unknown>;
   handleUIStateChange: (identifier: string, title: string) => void;
