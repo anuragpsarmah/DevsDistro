@@ -1183,6 +1183,9 @@ describe("getPurchasedProjects", () => {
         projectId: {
           title: "Test Project",
           project_images: ["img1.jpg", "img2.jpg"],
+          repo_zip_status: "SUCCESS",
+          latest_package_commit_sha: "fedcba0987654321",
+          repackage_status: "IDLE",
         },
         price_usd: 10,
         price_sol_total: 0.1,
@@ -1190,6 +1193,11 @@ describe("getPurchasedProjects", () => {
         tx_signature: TX_SIG,
         createdAt: new Date(),
         project_snapshot: { title: "Test Project", project_type: "Web App" },
+        package_snapshot: {
+          commit_sha: "abcdef1234567890",
+          packaged_at: new Date("2024-06-15T12:00:00.000Z"),
+          s3_key: "repoZips/pkg-a.zip",
+        },
         seller_snapshot: {
           name: "Seller",
           username: "seller",
@@ -1213,8 +1221,18 @@ describe("getPurchasedProjects", () => {
     mockPurchaseFind([
       {
         _id: PURCHASE_ID,
-        projectId: { project_images: ["first.jpg", "second.jpg", "third.jpg"] },
+        projectId: {
+          project_images: ["first.jpg", "second.jpg", "third.jpg"],
+          repo_zip_status: "SUCCESS",
+          latest_package_commit_sha: "fedcba0987654321",
+          repackage_status: "IDLE",
+        },
         price_usd: 10,
+        package_snapshot: {
+          commit_sha: "abcdef1234567890",
+          packaged_at: new Date("2024-06-15T12:00:00.000Z"),
+          s3_key: "repoZips/pkg-a.zip",
+        },
         project_snapshot: { title: "P", project_type: "Web" },
         seller_snapshot: { name: "S", username: "s", profile_image_url: "" },
         createdAt: new Date(),
@@ -1229,6 +1247,96 @@ describe("getPurchasedProjects", () => {
 
     const { purchases } = vi.mocked(res.json).mock.calls[0][0].data;
     expect(purchases[0].projectId.project_images).toBe("first.jpg");
+  });
+
+  it("does not expose latest download when the latest commit matches the purchased commit", async () => {
+    mockPurchaseFind([
+      {
+        _id: PURCHASE_ID,
+        projectId: {
+          _id: PROJECT_ID,
+          title: "Same Commit Project",
+          project_images: ["img1.jpg"],
+          repo_zip_status: "SUCCESS",
+          latest_package_commit_sha: "abcdef1234567890",
+          repackage_status: "IDLE",
+        },
+        price_usd: 10,
+        price_sol_total: 0.1,
+        buyer_wallet: BUYER_WALLET,
+        tx_signature: TX_SIG,
+        createdAt: new Date(),
+        project_snapshot: {
+          title: "Same Commit Project",
+          project_type: "Web App",
+        },
+        package_snapshot: {
+          commit_sha: "abcdef1234567890",
+          packaged_at: new Date("2024-06-15T12:00:00.000Z"),
+          s3_key: "repoZips/pkg-a.zip",
+        },
+        seller_snapshot: {
+          name: "Seller",
+          username: "seller",
+          profile_image_url: "",
+        },
+      },
+    ]);
+
+    const req = makeReq();
+    const res = makeRes();
+
+    getPurchasedProjects(req, res, next);
+    await flushPromises();
+
+    const { purchases } = vi.mocked(res.json).mock.calls[0][0].data;
+    expect(purchases[0].can_download_purchased).toBe(true);
+    expect(purchases[0].can_download_latest).toBe(false);
+  });
+
+  it("exposes latest download only when the live latest commit differs from the purchased commit", async () => {
+    mockPurchaseFind([
+      {
+        _id: PURCHASE_ID,
+        projectId: {
+          _id: PROJECT_ID,
+          title: "Updated Project",
+          project_images: ["img1.jpg"],
+          repo_zip_status: "SUCCESS",
+          latest_package_commit_sha: "fedcba0987654321",
+          repackage_status: "IDLE",
+        },
+        price_usd: 10,
+        price_sol_total: 0.1,
+        buyer_wallet: BUYER_WALLET,
+        tx_signature: TX_SIG,
+        createdAt: new Date(),
+        project_snapshot: {
+          title: "Updated Project",
+          project_type: "Web App",
+        },
+        package_snapshot: {
+          commit_sha: "abcdef1234567890",
+          packaged_at: new Date("2024-06-15T12:00:00.000Z"),
+          s3_key: "repoZips/pkg-a.zip",
+        },
+        seller_snapshot: {
+          name: "Seller",
+          username: "seller",
+          profile_image_url: "",
+        },
+      },
+    ]);
+
+    const req = makeReq();
+    const res = makeRes();
+
+    getPurchasedProjects(req, res, next);
+    await flushPromises();
+
+    const { purchases } = vi.mocked(res.json).mock.calls[0][0].data;
+    expect(purchases[0].can_download_latest).toBe(true);
+    expect(purchases[0].latest_package.commit_sha).toBe("fedcba0987654321");
   });
 
   it("returns projectId as null for hard-deleted projects (snapshot still present)", async () => {
@@ -1784,6 +1892,7 @@ const MOCK_PURCHASE_FULL = {
   buyerId: BUYER_ID,
   sellerId: SELLER_ID,
   projectId: PROJECT_ID,
+  purchased_package_id: PACKAGE_ID,
   price_usd: 10,
   price_sol_total: 0.1,
   price_sol_seller: 0.099,
@@ -1803,6 +1912,11 @@ const MOCK_PURCHASE_FULL = {
     name: "Test Seller",
     username: "testseller",
     profile_image_url: "",
+  },
+  package_snapshot: {
+    commit_sha: PACKAGE_COMMIT_SHA,
+    s3_key: "repoZips/pkg-a.zip",
+    packaged_at: new Date("2024-06-14T10:30:00Z"),
   },
   createdAt: new Date("2024-06-15T12:00:00Z"),
 };
@@ -1909,6 +2023,49 @@ describe("downloadReceipt", () => {
 
     // snapshot title should appear — receipt is still valid after deletion
     expect(allText).toContain("Test Project");
+  });
+
+  it("includes purchased package identifiers and commit details in the receipt", async () => {
+    const PDFDocument = (await import("pdfkit")).default as any;
+    PDFDocument.mockClear();
+
+    const req = makeReq({ query: { purchase_id: PURCHASE_ID } });
+    const res = makeRes();
+    res.setHeader = vi.fn();
+
+    downloadReceipt(req, res, next);
+    await flushPromises();
+
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const allText = pdfInstance._texts.join(" ");
+
+    expect(allText).toContain("PACKAGE DETAILS");
+    expect(allText).toContain(PACKAGE_ID);
+    expect(allText).toContain(PACKAGE_COMMIT_SHA);
+    expect(allText).toContain("2024-06-14T10:30:00.000Z");
+  });
+
+  it("uses receipt legal language aligned with the published Terms of Service themes", async () => {
+    const PDFDocument = (await import("pdfkit")).default as any;
+    PDFDocument.mockClear();
+
+    const req = makeReq({ query: { purchase_id: PURCHASE_ID } });
+    const res = makeRes();
+    res.setHeader = vi.fn();
+
+    downloadReceipt(req, res, next);
+    await flushPromises();
+
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const allText = pdfInstance._texts.join(" ");
+
+    expect(allText).toContain("devsdistro.com/terms");
+    expect(allText).toContain(
+      "sellers remain responsible for repository ownership"
+    );
+    expect(allText).toContain("settled via the Solana blockchain");
   });
 
   it("returns 400 when purchase_id is absent", async () => {

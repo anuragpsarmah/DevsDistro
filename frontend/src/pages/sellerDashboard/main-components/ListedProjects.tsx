@@ -267,9 +267,9 @@ const ListedProjects = ({
           {initialProjectData.map((project, idx) => (
             <div
               key={project.github_repo_id}
-              className="relative group bg-white dark:bg-[#050505] border-2 border-black dark:border-white p-4 lg:p-6 flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+              className="relative group bg-white dark:bg-[#050505] border-2 border-black dark:border-white p-4 lg:p-6 flex flex-col overflow-hidden transition-all duration-300 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
             >
-              <div className="relative z-10 flex flex-col h-full">
+              <div className="relative z-10 flex flex-col flex-1">
                 <div className="relative mb-6 border-2 border-black dark:border-white">
                   {!project.scheduled_deletion_at && (
                     <div className="absolute top-2 right-2 z-20 flex items-center space-x-2">

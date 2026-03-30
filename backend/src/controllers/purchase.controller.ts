@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import crypto from "crypto";
 import mongoose from "mongoose";
-import PDFDocument from "pdfkit";
 import asyncHandler from "../utils/asyncHandler.util";
 import ApiError from "../utils/ApiError.util";
 import response from "../utils/response.util";
@@ -27,6 +26,7 @@ import {
 import { verifySolanaTransaction } from "../utils/solanaVerification.util";
 import { isProjectMarketplaceVisible } from "../utils/projectVisibility.util";
 import { DownloadVersion } from "../types/types";
+import { renderPurchaseReceiptPdf } from "../utils/purchaseReceiptPdf.util";
 
 const PURCHASE_INTENT_TTL = 600; // 10 minutes
 
@@ -754,38 +754,48 @@ const getPurchasedProjects = asyncHandler(
 
     const baseQuery = { buyerId, status: "CONFIRMED" };
 
-    const mapPurchase = (p: any) => ({
-      _id: p._id,
-      projectId: p.projectId
-        ? {
-            ...p.projectId,
-            project_images: p.projectId.project_images?.[0] ?? "",
-          }
-        : null,
-      price_usd: p.price_usd,
-      price_sol_total: p.price_sol_total,
-      buyer_wallet: p.buyer_wallet,
-      tx_signature: p.tx_signature,
-      createdAt: p.createdAt,
-      project_snapshot: p.project_snapshot,
-      seller_snapshot: p.seller_snapshot,
-      purchased_package: p.package_snapshot
-        ? {
-            commit_sha: p.package_snapshot.commit_sha,
-            packaged_at: p.package_snapshot.packaged_at,
-          }
-        : null,
-      latest_package: p.projectId
-        ? {
-            commit_sha: p.projectId.latest_package_commit_sha || null,
-            repackage_status: p.projectId.repackage_status || "IDLE",
-          }
-        : null,
-      can_download_purchased: Boolean(p.package_snapshot?.s3_key),
-      can_download_latest: Boolean(
-        p.projectId?.repo_zip_status === "SUCCESS" && p.projectId?._id
-      ),
-    });
+    const mapPurchase = (p: any) => {
+      const latestCommitSha = p.projectId?.latest_package_commit_sha || null;
+      const purchasedCommitSha = p.package_snapshot?.commit_sha || null;
+      const hasDistinctLatestVersion = Boolean(
+        p.projectId?._id &&
+        p.projectId?.repo_zip_status === "SUCCESS" &&
+        latestCommitSha &&
+        purchasedCommitSha &&
+        latestCommitSha !== purchasedCommitSha
+      );
+
+      return {
+        _id: p._id,
+        projectId: p.projectId
+          ? {
+              ...p.projectId,
+              project_images: p.projectId.project_images?.[0] ?? "",
+            }
+          : null,
+        price_usd: p.price_usd,
+        price_sol_total: p.price_sol_total,
+        buyer_wallet: p.buyer_wallet,
+        tx_signature: p.tx_signature,
+        createdAt: p.createdAt,
+        project_snapshot: p.project_snapshot,
+        seller_snapshot: p.seller_snapshot,
+        purchased_package: p.package_snapshot
+          ? {
+              commit_sha: p.package_snapshot.commit_sha,
+              packaged_at: p.package_snapshot.packaged_at,
+            }
+          : null,
+        latest_package: p.projectId
+          ? {
+              commit_sha: latestCommitSha,
+              repackage_status: p.projectId.repackage_status || "IDLE",
+            }
+          : null,
+        can_download_purchased: Boolean(p.package_snapshot?.s3_key),
+        can_download_latest: hasDistinctLatestVersion,
+      };
+    };
 
     if (limit !== null) {
       // Paginated path
@@ -1234,55 +1244,14 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
   const projectPrice = project
     ? `$${project.price} USD`
     : `$${(purchase.price_usd as number).toFixed(2)} USD (at time of purchase)`;
-
-  const doc = new PDFDocument({ margin: 50, size: "A4" });
-
-  const safeRef = (purchase.purchase_reference as string)
-    .slice(0, 16)
-    .toUpperCase();
-  const filename = `devsdistro-receipt-${safeRef}.pdf`;
-
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-  doc.pipe(res);
-
-  // Helper: draw the DevsDistro "D" logo in two-tone (black top-left / red bottom-right)
-  const drawDevsDistroLogo = (lx: number, ly: number, size: number): void => {
-    const s = size / 100;
-    // Builds the D-shape path (outer hexagon minus inner rectangle) at an offset
-    const buildDPath = (offsetX: number, offsetY: number): string => {
-      const px = (v: number) => (lx + offsetX + v * s).toFixed(2);
-      const py = (v: number) => (ly + offsetY + v * s).toFixed(2);
-      return [
-        `M ${px(20)} ${py(15)}`,
-        `L ${px(60)} ${py(15)}`,
-        `L ${px(80)} ${py(35)}`,
-        `L ${px(80)} ${py(65)}`,
-        `L ${px(60)} ${py(85)}`,
-        `L ${px(20)} ${py(85)}`,
-        `Z`,
-        `M ${px(42)} ${py(37)}`,
-        `L ${px(58)} ${py(37)}`,
-        `L ${px(58)} ${py(63)}`,
-        `L ${px(42)} ${py(63)}`,
-        `Z`,
-      ].join(" ");
-    };
-    // Diagonal clip: split at the anti-diagonal (top-right → bottom-left)
-    const r = (n: number) => n.toFixed(2);
-    const clipTop = `M ${r(lx)} ${r(ly)} L ${r(lx + size)} ${r(ly)} L ${r(lx)} ${r(ly + size)} Z`;
-    const clipBottom = `M ${r(lx + size)} ${r(ly)} L ${r(lx + size)} ${r(ly + size)} L ${r(lx)} ${r(ly + size)} Z`;
-    // Black top-left portion
-    doc.save();
-    doc.path(clipTop).clip();
-    doc.path(buildDPath(0, 0)).fill("#1a1a1a", "even-odd");
-    doc.restore();
-    // Red bottom-right portion (offset -6, +6 matching the SVG source)
-    doc.save();
-    doc.path(clipBottom).clip();
-    doc.path(buildDPath(-6 * s, 6 * s)).fill("#FF3333", "even-odd");
-    doc.restore();
-  };
+  const purchasedPackageId =
+    (purchase as any).purchased_package_id?.toString?.() || "N/A";
+  const purchasedCommitSha =
+    (purchase as any).package_snapshot?.commit_sha || "N/A";
+  const packagedAtRaw = (purchase as any).package_snapshot?.packaged_at;
+  const packagedAt = packagedAtRaw
+    ? new Date(packagedAtRaw).toISOString()
+    : "N/A";
 
   const purchaseDate = new Date(purchase.createdAt as Date).toLocaleString(
     "en-US",
@@ -1295,263 +1264,43 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
       timeZoneName: "short",
     }
   );
-  const generatedAt = new Date().toLocaleString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZoneName: "short",
+  renderPurchaseReceiptPdf(res, {
+    purchaseReference: purchase.purchase_reference as string,
+    transactionSignature: purchase.tx_signature as string,
+    purchaseDate,
+    projectTitle,
+    projectType,
+    projectTechStack,
+    projectPrice,
+    purchasedPackageId,
+    purchasedCommitSha,
+    packagedAt,
+    amountPaidUsd: `$${(purchase.price_usd as number).toFixed(2)}`,
+    amountPaidSol: `${purchase.price_sol_total} SOL`,
+    sellerReceivedLabel: `Seller Received (${100 - (purchase.platform_fee_percent as number)}%):`,
+    sellerReceivedValue: `${purchase.price_sol_seller} SOL`,
+    platformFeeLabel: `Platform Fee (${purchase.platform_fee_percent}%):`,
+    platformFeeValue: `${purchase.price_sol_platform} SOL`,
+    solUsdRate: `$${purchase.sol_usd_rate} per SOL`,
+    rateSource: (purchase.exchange_rate_source as string) || "CoinGecko",
+    rateTimestamp: new Date(
+      purchase.exchange_rate_fetched_at as Date
+    ).toISOString(),
+    buyerDisplayName: (buyer.name as string) || (buyer.username as string),
+    buyerUsername: buyer.username as string,
+    buyerWallet: purchase.buyer_wallet as string,
+    sellerDisplayName: (seller.name as string) || (seller.username as string),
+    sellerUsername: seller.username as string,
+    sellerWallet: purchase.seller_wallet as string,
+    generatedAt: new Date().toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZoneName: "short",
+    }),
   });
-
-  const pageWidth = doc.page.width - 100; // accounting for margins
-
-  // ── HEADER ──
-  drawDevsDistroLogo(50, 46, 28); // 28×28pt logo
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(22)
-    .fillColor("#000000")
-    .text("DEVSDISTRO", 84, 50);
-
-  doc
-    .font("Helvetica")
-    .fontSize(11)
-    .fillColor("#666666")
-    .text("A repository marketplace powered by Solana and GitHub.", 84, 78);
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(16)
-    .fillColor("#000000")
-    .text("PURCHASE RECEIPT", 50, 110);
-
-  doc
-    .moveTo(50, 135)
-    .lineTo(doc.page.width - 50, 135)
-    .lineWidth(2)
-    .stroke("#000000");
-
-  // ── TRANSACTION INFO ──
-  doc.moveDown(1);
-  let y = 150;
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .fillColor("#CC0000")
-    .text("TRANSACTION DETAILS", 50, y);
-  y += 18;
-  doc
-    .moveTo(50, y)
-    .lineTo(doc.page.width - 50, y)
-    .lineWidth(0.5)
-    .stroke("#CCCCCC");
-  y += 10;
-
-  // Guards against content overflowing the A4 page (841pt height, 50pt margin).
-  // Called before rendering each section header.
-  const PAGE_BOTTOM_MARGIN = 100; // leave room for footer
-  const ensurePageRoom = (currentY: number, needed = 60): number => {
-    if (currentY + needed > doc.page.height - PAGE_BOTTOM_MARGIN) {
-      doc.addPage();
-      return 50;
-    }
-    return currentY;
-  };
-
-  const row = (label: string, value: string, yPos: number): number => {
-    const safeY = ensurePageRoom(yPos, 20);
-    doc
-      .font("Helvetica-Bold")
-      .fontSize(9)
-      .fillColor("#333333")
-      .text(label, 50, safeY, { width: 160, lineGap: 2 });
-    const labelEndY = doc.y;
-    doc
-      .font("Helvetica")
-      .fontSize(9)
-      .fillColor("#000000")
-      .text(value, 215, safeY, { width: pageWidth - 165, lineGap: 2 });
-    const valueEndY = doc.y;
-    return Math.max(labelEndY, valueEndY) + 6;
-  };
-
-  y = row("Purchase Reference:", purchase.purchase_reference as string, y);
-  y = row("Transaction Signature:", purchase.tx_signature as string, y);
-  y = row("Purchase Date:", purchaseDate, y);
-  y = row("Status:", "CONFIRMED", y);
-  y += 12;
-
-  // ── PROJECT INFO ──
-  y = ensurePageRoom(y);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .fillColor("#CC0000")
-    .text("PROJECT", 50, y);
-  y += 18;
-  doc
-    .moveTo(50, y)
-    .lineTo(doc.page.width - 50, y)
-    .lineWidth(0.5)
-    .stroke("#CCCCCC");
-  y += 10;
-
-  y = row("Title:", projectTitle, y);
-  y = row("Type:", projectType, y);
-  y = row("Tech Stack:", projectTechStack.join(", ") || "N/A", y);
-  y = row("Listed Price:", projectPrice, y);
-  y += 12;
-
-  // ── FINANCIAL SUMMARY ──
-  y = ensurePageRoom(y);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .fillColor("#CC0000")
-    .text("FINANCIAL SUMMARY", 50, y);
-  y += 18;
-  doc
-    .moveTo(50, y)
-    .lineTo(doc.page.width - 50, y)
-    .lineWidth(0.5)
-    .stroke("#CCCCCC");
-  y += 10;
-
-  y = row(
-    "Amount Paid (USD):",
-    `$${(purchase.price_usd as number).toFixed(2)}`,
-    y
-  );
-  y = row("Amount Paid (SOL):", `${purchase.price_sol_total} SOL`, y);
-  y = row(
-    `Seller Received (${100 - (purchase.platform_fee_percent as number)}%):`,
-    `${purchase.price_sol_seller} SOL`,
-    y
-  );
-  y = row(
-    `Platform Fee (${purchase.platform_fee_percent}%):`,
-    `${purchase.price_sol_platform} SOL`,
-    y
-  );
-  y = row("SOL/USD Rate at Purchase:", `$${purchase.sol_usd_rate} per SOL`, y);
-  y = row(
-    "Rate Source:",
-    (purchase.exchange_rate_source as string) || "CoinGecko",
-    y
-  );
-  y = row(
-    "Rate Timestamp:",
-    new Date(purchase.exchange_rate_fetched_at as Date).toISOString(),
-    y
-  );
-  y += 12;
-
-  // ── PARTIES ──
-  y = ensurePageRoom(y, 100);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .fillColor("#CC0000")
-    .text("PARTIES", 50, y);
-  y += 18;
-  doc
-    .moveTo(50, y)
-    .lineTo(doc.page.width - 50, y)
-    .lineWidth(0.5)
-    .stroke("#CCCCCC");
-  y += 10;
-
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(9)
-    .fillColor("#333333")
-    .text("BUYER", 50, y);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(9)
-    .fillColor("#333333")
-    .text("SELLER", doc.page.width / 2, y);
-  y += 14;
-
-  const halfWidth = pageWidth / 2 - 10;
-  doc.font("Helvetica").fontSize(9).fillColor("#000000");
-  doc.text(
-    `Name: ${(buyer.name as string) || (buyer.username as string)}`,
-    50,
-    y,
-    { width: halfWidth }
-  );
-  doc.text(
-    `Name: ${(seller.name as string) || (seller.username as string)}`,
-    doc.page.width / 2,
-    y,
-    { width: halfWidth }
-  );
-  y += 14;
-  doc.text(`@${buyer.username}`, 50, y, { width: halfWidth });
-  doc.text(`@${seller.username}`, doc.page.width / 2, y, { width: halfWidth });
-  y += 14;
-  doc.font("Helvetica").fontSize(8).fillColor("#555555");
-  doc.text(`Wallet: ${purchase.buyer_wallet}`, 50, y, { width: halfWidth });
-  doc.text(`Wallet: ${purchase.seller_wallet}`, doc.page.width / 2, y, {
-    width: halfWidth,
-  });
-  y += 20;
-  doc
-    .moveTo(50, y)
-    .lineTo(doc.page.width - 50, y)
-    .lineWidth(0.5)
-    .stroke("#CCCCCC");
-  y += 14;
-
-  // ── LEGAL TERMS ──
-  y = ensurePageRoom(y, 120);
-  doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .fillColor("#CC0000")
-    .text("TERMS & CONDITIONS", 50, y);
-  y += 18;
-
-  const terms = [
-    "1. This receipt confirms that the above purchase was executed on the DevsDistro platform and that payment was transferred via the Solana blockchain as indicated by the transaction signature above.",
-    "2. This purchase grants the buyer a non-exclusive, non-transferable license to use the acquired source code for personal or commercial projects. Resale or redistribution of the source code as-is is prohibited unless separately agreed in writing with the seller.",
-    "3. Intellectual property rights, including copyright, remain with the original seller unless a separate written agreement explicitly transfers such rights.",
-    "4. This sale is final. No refunds will be issued once payment has been confirmed on-chain.",
-    "5. DevsDistro acts solely as a marketplace facilitator and is not liable for the quality, functionality, security, or fitness for purpose of any project sold through the platform.",
-    "6. In the event of a dispute, buyers should contact DevsDistro support with the Purchase Reference above. DevsDistro will make reasonable efforts to assist but cannot guarantee resolution.",
-    "7. This document serves as proof of purchase for the transaction described herein. It is generated automatically by DevsDistro and is valid without a physical signature.",
-  ];
-
-  doc.font("Helvetica").fontSize(8.5).fillColor("#222222");
-  for (const term of terms) {
-    y = ensurePageRoom(y, 40);
-    doc.text(term, 50, y, { width: pageWidth, lineGap: 2 });
-    y = doc.y + 8;
-  }
-
-  y += 10;
-  doc
-    .moveTo(50, y)
-    .lineTo(doc.page.width - 50, y)
-    .lineWidth(2)
-    .stroke("#000000");
-  y += 12;
-
-  // ── FOOTER ──
-  doc
-    .font("Helvetica")
-    .fontSize(8)
-    .fillColor("#888888")
-    .text(`Generated by DevsDistro · ${generatedAt}`, 50, y, {
-      width: pageWidth,
-      align: "center",
-    });
-
-  doc.end();
 
   enrichContext({ outcome: "success", purchase_id });
 });
