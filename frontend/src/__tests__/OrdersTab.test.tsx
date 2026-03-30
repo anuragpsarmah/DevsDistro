@@ -107,6 +107,8 @@ const mockActivePurchase = {
     project_type: "Web App",
     project_images: "img1.jpg",
     repo_zip_status: "SUCCESS",
+    repackage_status: "IDLE",
+    latest_package_commit_sha: "abcdef1234567890",
     scheduled_deletion_at: null,
   },
   price_usd: 10,
@@ -121,6 +123,16 @@ const mockActivePurchase = {
     username: "seller",
     profile_image_url: "",
   },
+  purchased_package: {
+    commit_sha: "abcdef1234567890",
+    packaged_at: "2024-06-15T12:00:00Z",
+  },
+  latest_package: {
+    commit_sha: "fedcba0987654321",
+    repackage_status: "IDLE",
+  },
+  can_download_purchased: true,
+  can_download_latest: true,
 };
 
 const mockDeletedPurchase = {
@@ -217,7 +229,7 @@ describe("OrdersTab", () => {
     expect(screen.getByText(/something went wrong/i)).toBeInTheDocument();
   });
 
-  it("calls downloadMutation.mutate with the project _id when Download is clicked", () => {
+  it("calls downloadMutation.mutate with purchase payload when Purchased is clicked", () => {
     vi.mocked(useGetPurchasedProjectsInfiniteQuery).mockReturnValue({
       ...baseInfiniteReturn,
       data: makeInfiniteData([mockActivePurchase]),
@@ -226,9 +238,33 @@ describe("OrdersTab", () => {
     } as any);
 
     render(<OrdersTab logout={vi.fn()} />);
-    fireEvent.click(screen.getByText("Download"));
+    fireEvent.click(screen.getByText("Purchased"));
     expect(mockDownloadMutate).toHaveBeenCalledWith(
-      PROJECT_ID,
+      {
+        project_id: PROJECT_ID,
+        purchase_id: PURCHASE_ID,
+        version: "purchased",
+      },
+      expect.any(Object)
+    );
+  });
+
+  it("calls downloadMutation.mutate with latest payload when Latest is clicked", () => {
+    vi.mocked(useGetPurchasedProjectsInfiniteQuery).mockReturnValue({
+      ...baseInfiniteReturn,
+      data: makeInfiniteData([mockActivePurchase]),
+      isLoading: false,
+      isError: false,
+    } as any);
+
+    render(<OrdersTab logout={vi.fn()} />);
+    fireEvent.click(screen.getByText("Latest"));
+    expect(mockDownloadMutate).toHaveBeenCalledWith(
+      {
+        project_id: PROJECT_ID,
+        purchase_id: PURCHASE_ID,
+        version: "latest",
+      },
       expect.any(Object)
     );
   });

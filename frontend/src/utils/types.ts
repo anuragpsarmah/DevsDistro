@@ -172,11 +172,35 @@ export interface PurchaseIntent {
   expires_in: number;
 }
 
+export type RepoZipStatus = "PROCESSING" | "SUCCESS" | "FAILED";
+
+export type RepackageStatus = "IDLE" | "PROCESSING" | "FAILED";
+
+export type DownloadVersion = "latest" | "purchased";
+
+export interface DownloadProjectParams {
+  project_id?: string;
+  purchase_id?: string;
+  version?: DownloadVersion;
+}
+
+export interface PurchasedPackageMetadata {
+  commit_sha: string;
+  packaged_at: string;
+}
+
+export interface LatestPackageMetadata {
+  commit_sha: string | null;
+  repackage_status: RepackageStatus;
+}
+
 export interface PurchasedProject {
   _id: string;
   projectId:
     | (MarketplaceProject & {
-        repo_zip_status: string;
+        repo_zip_status: RepoZipStatus;
+        latest_package_commit_sha?: string | null;
+        repackage_status?: RepackageStatus;
         scheduled_deletion_at?: string | null;
       })
     | null;
@@ -191,6 +215,10 @@ export interface PurchasedProject {
     username: string;
     profile_image_url: string;
   };
+  purchased_package: PurchasedPackageMetadata | null;
+  latest_package: LatestPackageMetadata | null;
+  can_download_purchased: boolean;
+  can_download_latest: boolean;
 }
 
 interface SellerSalesTransaction {

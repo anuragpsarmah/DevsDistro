@@ -15,6 +15,7 @@ import { GitHubAppInstallation } from "../models/githubAppInstallation.model";
 import { Purchase } from "../models/purchase.model";
 import { ProjectDownload } from "../models/projectDownload.model";
 import { Sales } from "../models/sales.model";
+import { ProjectPackage } from "../models/projectPackage.model";
 import {
   initiatePurchaseSchema,
   confirmPurchaseSchema,
@@ -25,15 +26,71 @@ import {
 } from "../utils/solanaPrice.util";
 import { verifySolanaTransaction } from "../utils/solanaVerification.util";
 import { isProjectMarketplaceVisible } from "../utils/projectVisibility.util";
+import { DownloadVersion } from "../types/types";
 
 const PURCHASE_INTENT_TTL = 600; // 10 minutes
 
 const PURCHASED_PROJECT_SELECT =
-  "title description project_type tech_stack price avgRating totalReviews live_link createdAt project_images repo_zip_status scheduled_deletion_at";
+  "title description project_type tech_stack price avgRating totalReviews live_link createdAt project_images repo_zip_status scheduled_deletion_at latest_package_commit_sha repackage_status";
 
 const PURCHASED_SELLER_POPULATE = {
   path: "userid",
   select: "username name profile_image_url -_id",
+};
+
+const buildSafeDownloadFilename = (
+  title: string | null | undefined
+): string => {
+  const safeTitle = (title || "project")
+    .replace(/[^a-zA-Z0-9_\- ]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .toLowerCase()
+    .slice(0, 80);
+
+  return `${safeTitle || "project"}.zip`;
+};
+
+const recordProjectDownload = async ({
+  projectId,
+  sellerId,
+  buyerId,
+}: {
+  projectId: mongoose.Types.ObjectId | null | undefined;
+  sellerId: mongoose.Types.ObjectId | null | undefined;
+  buyerId: mongoose.Types.ObjectId;
+}): Promise<void> => {
+  if (!projectId || !sellerId || sellerId.toString() === buyerId.toString()) {
+    return;
+  }
+
+  const [, projectDownloadError] = await tryCatch(
+    ProjectDownload.updateOne(
+      {
+        projectId,
+        userId: buyerId,
+      },
+      {
+        $setOnInsert: {
+          projectId,
+          userId: buyerId,
+          sellerId,
+        },
+      },
+      { upsert: true }
+    )
+  );
+
+  if (projectDownloadError) {
+    logger.error("Failed to record unique project download", {
+      projectId: projectId.toString(),
+      buyerId: buyerId.toString(),
+      error:
+        projectDownloadError instanceof Error
+          ? projectDownloadError.message
+          : "Unknown error",
+    });
+  }
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -444,7 +501,11 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   // Fetch project and seller snapshots (non-fatal — fall back to placeholders)
   const [[projectSnap], [sellerSnap]] = await Promise.all([
     tryCatch(
-      Project.findById(projectObjectId).select("title project_type").lean()
+      Project.findById(projectObjectId)
+        .select(
+          "title project_type latest_package_id latest_package_commit_sha repo_zip_s3_key"
+        )
+        .lean()
     ),
     tryCatch(
       User.findById(new mongoose.Types.ObjectId(intent.sellerId))
@@ -452,6 +513,49 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
         .lean()
     ),
   ]);
+
+  if (
+    !projectSnap?.latest_package_id ||
+    !projectSnap?.latest_package_commit_sha ||
+    !projectSnap?.repo_zip_s3_key
+  ) {
+    logger.error("Purchase confirm missing latest package metadata", {
+      projectId: projectObjectId.toString(),
+    });
+    response(
+      res,
+      503,
+      "Project package metadata is not ready yet. Please try again shortly."
+    );
+    return;
+  }
+
+  const [latestPackage, latestPackageError] = await tryCatch(
+    ProjectPackage.findById(projectSnap.latest_package_id)
+      .select("createdAt s3_key commit_sha")
+      .lean()
+  );
+
+  if (
+    latestPackageError ||
+    !latestPackage ||
+    latestPackage.s3_key !== projectSnap.repo_zip_s3_key ||
+    latestPackage.commit_sha !== projectSnap.latest_package_commit_sha
+  ) {
+    logger.error("Purchase confirm failed to resolve retained package", {
+      projectId: projectObjectId.toString(),
+      error:
+        latestPackageError instanceof Error
+          ? latestPackageError.message
+          : "Package missing or mismatched",
+    });
+    response(
+      res,
+      503,
+      "Project package metadata is not ready yet. Please try again shortly."
+    );
+    return;
+  }
 
   const [newPurchase, saveError] = await tryCatch(
     Purchase.create({
@@ -472,6 +576,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       tx_signature,
       purchase_reference,
       status: "CONFIRMED",
+      purchased_package_id: projectSnap.latest_package_id,
       project_snapshot: {
         title: (projectSnap?.title as string) || "Unknown Project",
         project_type: (projectSnap?.project_type as string) || "Unknown",
@@ -483,6 +588,11 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
           "Unknown",
         username: (sellerSnap?.username as string) || "",
         profile_image_url: (sellerSnap?.profile_image_url as string) || "",
+      },
+      package_snapshot: {
+        commit_sha: latestPackage.commit_sha,
+        s3_key: latestPackage.s3_key,
+        packaged_at: latestPackage.createdAt,
       },
     })
   );
@@ -659,6 +769,22 @@ const getPurchasedProjects = asyncHandler(
       createdAt: p.createdAt,
       project_snapshot: p.project_snapshot,
       seller_snapshot: p.seller_snapshot,
+      purchased_package: p.package_snapshot
+        ? {
+            commit_sha: p.package_snapshot.commit_sha,
+            packaged_at: p.package_snapshot.packaged_at,
+          }
+        : null,
+      latest_package: p.projectId
+        ? {
+            commit_sha: p.projectId.latest_package_commit_sha || null,
+            repackage_status: p.projectId.repackage_status || "IDLE",
+          }
+        : null,
+      can_download_purchased: Boolean(p.package_snapshot?.s3_key),
+      can_download_latest: Boolean(
+        p.projectId?.repo_zip_status === "SUCCESS" && p.projectId?._id
+      ),
     });
 
     if (limit !== null) {
@@ -755,21 +881,150 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { project_id } = req.query;
+  const purchase_id = req.query.purchase_id;
+  const versionRaw = req.query.version;
+  const version: DownloadVersion =
+    typeof versionRaw === "string" && versionRaw === "purchased"
+      ? "purchased"
+      : "latest";
 
   if (
-    !project_id ||
-    typeof project_id !== "string" ||
-    !mongoose.Types.ObjectId.isValid(project_id)
+    (!project_id && !purchase_id) ||
+    (project_id &&
+      (typeof project_id !== "string" ||
+        !mongoose.Types.ObjectId.isValid(project_id))) ||
+    (purchase_id &&
+      (typeof purchase_id !== "string" ||
+        !mongoose.Types.ObjectId.isValid(purchase_id))) ||
+    (versionRaw &&
+      typeof versionRaw === "string" &&
+      versionRaw !== "latest" &&
+      versionRaw !== "purchased")
   ) {
     enrichContext({ outcome: "validation_failed" });
-    response(res, 400, "Valid project_id is required");
+    response(
+      res,
+      400,
+      "Valid project_id or purchase_id is required, and version must be latest or purchased"
+    );
     return;
   }
 
   const buyerId = new mongoose.Types.ObjectId(req.user._id);
-  const projectObjectId = new mongoose.Types.ObjectId(project_id);
+  const purchaseObjectId =
+    typeof purchase_id === "string" &&
+    mongoose.Types.ObjectId.isValid(purchase_id)
+      ? new mongoose.Types.ObjectId(purchase_id)
+      : null;
+  const projectObjectId =
+    typeof project_id === "string" &&
+    mongoose.Types.ObjectId.isValid(project_id)
+      ? new mongoose.Types.ObjectId(project_id)
+      : null;
 
-  // Fetch project info first (price determines whether a purchase record is required)
+  let confirmedPurchase: any = null;
+
+  if (purchaseObjectId || version === "purchased") {
+    const purchaseQuery: Record<string, unknown> = {
+      buyerId,
+      status: "CONFIRMED",
+    };
+
+    if (purchaseObjectId) {
+      purchaseQuery._id = purchaseObjectId;
+    } else if (projectObjectId) {
+      purchaseQuery.projectId = projectObjectId;
+    }
+
+    const [purchase, purchaseError] = await tryCatch(
+      Purchase.findOne(purchaseQuery)
+        .select(
+          "_id projectId sellerId project_snapshot package_snapshot createdAt"
+        )
+        .lean()
+    );
+
+    if (purchaseError) {
+      logger.error("Failed to verify purchase for download", purchaseError);
+      response(res, 500, "Failed to process download. Try again later.");
+      return;
+    }
+
+    confirmedPurchase = purchase;
+  }
+
+  if (version === "purchased") {
+    if (!confirmedPurchase?.package_snapshot?.s3_key) {
+      enrichContext({ outcome: "forbidden", reason: "not_purchased" });
+      response(res, 403, "You have not purchased this project");
+      return;
+    }
+
+    const s3Key = confirmedPurchase.package_snapshot.s3_key as string;
+    const [zipExists, zipExistsError] = await tryCatch(
+      s3Service.objectExists(s3Key)
+    );
+
+    if (zipExistsError) {
+      logger.error("Failed to verify purchased repo ZIP existence", {
+        purchaseId: confirmedPurchase._id?.toString?.(),
+        s3Key,
+        error:
+          zipExistsError instanceof Error
+            ? zipExistsError.message
+            : "Unknown error",
+      });
+      response(res, 500, "Failed to generate download link. Try again later.");
+      return;
+    }
+
+    if (!zipExists) {
+      response(
+        res,
+        400,
+        "Project files are not available for download at this time"
+      );
+      return;
+    }
+
+    const [downloadUrl, downloadError] = await tryCatch(
+      s3Service.createSignedDownloadUrl(
+        s3Key,
+        900,
+        buildSafeDownloadFilename(confirmedPurchase.project_snapshot?.title)
+      )
+    );
+
+    if (downloadError || !downloadUrl) {
+      logger.error("Failed to generate purchased-version download URL", {
+        purchaseId: confirmedPurchase._id?.toString?.(),
+        error: downloadError,
+      });
+      response(res, 500, "Failed to generate download link. Try again later.");
+      return;
+    }
+
+    await recordProjectDownload({
+      projectId: projectObjectId,
+      sellerId: confirmedPurchase.sellerId ?? null,
+      buyerId,
+    });
+
+    enrichContext({
+      outcome: "success",
+      project_id: confirmedPurchase.projectId?.toString?.(),
+      purchase_id: confirmedPurchase._id?.toString?.(),
+      version,
+    });
+    response(res, 200, "Download URL generated", { download_url: downloadUrl });
+    return;
+  }
+
+  if (!projectObjectId) {
+    response(res, 400, "Valid project_id is required for latest downloads");
+    return;
+  }
+
   const [project, projectError] = await tryCatch(
     Project.findById(projectObjectId)
       .select(
@@ -830,10 +1085,9 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  let hasConfirmedPurchase = false;
+  let hasConfirmedPurchase = Boolean(confirmedPurchase);
 
-  // For paid projects, verify the buyer has purchased this project
-  if (project.price > 0) {
+  if (project.price > 0 && !hasConfirmedPurchase) {
     const [purchase, purchaseError] = await tryCatch(
       Purchase.findOne({
         buyerId,
@@ -845,7 +1099,10 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     );
 
     if (purchaseError) {
-      logger.error("Failed to verify purchase for download", purchaseError);
+      logger.error(
+        "Failed to verify purchase for latest download",
+        purchaseError
+      );
       response(res, 500, "Failed to process download. Try again later.");
       return;
     }
@@ -868,65 +1125,30 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Build a clean filename from the project title (strip characters unsafe in filenames)
-  const safeTitle = ((project.title as string) || "project")
-    .replace(/[^a-zA-Z0-9_\- ]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .toLowerCase()
-    .slice(0, 80);
-  const downloadFilename = `${safeTitle}.zip`;
-
-  // Generate presigned download URL (15 minutes)
   const [downloadUrl, downloadError] = await tryCatch(
     s3Service.createSignedDownloadUrl(
       project.repo_zip_s3_key as string,
       900,
-      downloadFilename
+      buildSafeDownloadFilename(project.title as string)
     )
   );
 
   if (downloadError || !downloadUrl) {
-    logger.error("Failed to generate download URL", downloadError);
+    logger.error(
+      "Failed to generate latest-version download URL",
+      downloadError
+    );
     response(res, 500, "Failed to generate download link. Try again later.");
     return;
   }
 
-  const sellerId = (project.userid as mongoose.Types.ObjectId | undefined)
-    ?.toString?.()
-    ?.trim();
+  await recordProjectDownload({
+    projectId: projectObjectId,
+    sellerId: (project.userid as mongoose.Types.ObjectId | undefined) ?? null,
+    buyerId,
+  });
 
-  if (sellerId && sellerId !== buyerId.toString()) {
-    const [, projectDownloadError] = await tryCatch(
-      ProjectDownload.updateOne(
-        {
-          projectId: projectObjectId,
-          userId: buyerId,
-        },
-        {
-          $setOnInsert: {
-            projectId: projectObjectId,
-            userId: buyerId,
-            sellerId: new mongoose.Types.ObjectId(sellerId),
-          },
-        },
-        { upsert: true }
-      )
-    );
-
-    if (projectDownloadError) {
-      logger.error("Failed to record unique project download", {
-        projectId: project_id,
-        buyerId: buyerId.toString(),
-        error:
-          projectDownloadError instanceof Error
-            ? projectDownloadError.message
-            : "Unknown error",
-      });
-    }
-  }
-
-  enrichContext({ outcome: "success", project_id });
+  enrichContext({ outcome: "success", project_id, version });
   response(res, 200, "Download URL generated", { download_url: downloadUrl });
 });
 

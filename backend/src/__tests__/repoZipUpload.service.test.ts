@@ -24,6 +24,19 @@ vi.mock("../models/project.model", () => ({
   },
 }));
 
+vi.mock("../models/projectPackage.model", () => ({
+  ProjectPackage: {
+    create: vi.fn(),
+    deleteOne: vi.fn(),
+  },
+}));
+
+vi.mock("../utils/projectPackageRetention.util", () => ({
+  isRepoZipKeyRetained: vi.fn().mockResolvedValue(false),
+  queueRepoZipKeyForCleanup: vi.fn().mockResolvedValue(undefined),
+  reconcileProjectPackageRetention: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("../logger/logger", () => ({
   default: {
     info: vi.fn(),
@@ -42,6 +55,7 @@ import axios from "axios";
 import { redisClient, s3Service } from "..";
 import { githubAppService } from "../services/githubApp.service";
 import { Project } from "../models/project.model";
+import { ProjectPackage } from "../models/projectPackage.model";
 import RepoZipUploadService from "../services/repoZipUpload.service";
 
 const PROJECT_ID = "507f191e810c19729de860ea";
@@ -66,23 +80,40 @@ describe("RepoZipUploadService", () => {
 
     vi.mocked(Project.findById).mockReturnValue({
       select: vi.fn().mockReturnValue({
-        lean: vi.fn().mockResolvedValue({ repo_zip_status: "PROCESSING" }),
+        lean: vi.fn().mockResolvedValue({
+          userid: "507f1f77bcf86cd799439022",
+          repo_zip_status: "PROCESSING",
+          repo_zip_s3_key: null,
+          latest_package_id: null,
+          latest_package_commit_sha: null,
+        }),
       }),
     } as any);
     vi.mocked(Project.findByIdAndUpdate).mockResolvedValue({} as any);
+    vi.mocked(ProjectPackage.create).mockResolvedValue({
+      _id: "507f1f77bcf86cd799439055",
+      createdAt: new Date("2024-01-01T00:00:00.000Z"),
+      s3_key: `repoZips/${PROJECT_ID}/generated.zip`,
+      commit_sha: "abcdef1234567890abcdef1234567890abcdef12",
+    } as any);
   });
 
   it("stores repo ZIPs under a versioned S3 key so cleanup cannot delete the current package", async () => {
     vi.mocked(axios.get)
       .mockResolvedValueOnce({
-        headers: { "content-length": "3" },
-        data: makeZipStream(),
-      } as any)
-      .mockResolvedValueOnce({
         data: {
           full_name: "anuragpsarmah/devsdistro-seller-repo",
           default_branch: "main",
         },
+      } as any)
+      .mockResolvedValueOnce({
+        data: {
+          sha: "abcdef1234567890abcdef1234567890abcdef12",
+        },
+      } as any)
+      .mockResolvedValueOnce({
+        headers: { "content-length": "3" },
+        data: makeZipStream(),
       } as any)
       .mockResolvedValueOnce({
         data: {

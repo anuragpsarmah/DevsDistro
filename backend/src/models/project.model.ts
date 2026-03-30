@@ -74,7 +74,25 @@ const projectSchema = new Schema(
       type: String,
       default: null,
     },
+    latest_package_id: {
+      type: Schema.Types.ObjectId,
+      ref: "ProjectPackage",
+      default: null,
+    },
+    latest_package_commit_sha: {
+      type: String,
+      default: null,
+    },
     repo_zip_error: {
+      type: String,
+      default: null,
+    },
+    repackage_status: {
+      type: String,
+      enum: ["IDLE", "PROCESSING", "FAILED"],
+      default: "IDLE",
+    },
+    repackage_error: {
       type: String,
       default: null,
     },

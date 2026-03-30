@@ -47,6 +47,12 @@ export const MAX_REPO_SIZE_BYTES = 500 * 1024 * 1024;
 
 export const LOCK_TTL_SECONDS = 600;
 
+export const PROJECT_PACKAGE_SOURCE_ENUM = [
+  "INITIAL_LISTING",
+  "MANUAL_REPACKAGE",
+  "AUTO_REPACKAGE",
+] as const;
+
 export const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 // Fixed lamport tolerance: both sides compute from the identical price_sol_total float

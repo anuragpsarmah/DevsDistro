@@ -14,7 +14,7 @@
  * - Active project + auto_repackage disabled → no repackage
  * - Active project + user not found → no repackage
  * - Active project + findOne DB error → early exit, no repackage
- * - ZIP queued for cleanup before re-upload
+ * - Current ZIP remains live while a new repackage is triggered
  * - Signature verification failure → 401
  *
  * NOTE: asyncHandler doesn't expose its Promise, so we use flushPromises()
@@ -76,6 +76,9 @@ vi.mock("../utils/asyncContext", () => ({
 vi.mock("../services/githubApp.service", () => ({
   githubAppService: {
     verifyWebhookSignature: vi.fn().mockReturnValue(true),
+    getRepository: vi
+      .fn()
+      .mockResolvedValue({ default_branch: "main", full_name: "user/my-repo" }),
     reactivateProjectsWithRestoredAccess: vi.fn(),
   },
 }));
@@ -253,26 +256,18 @@ describe("handlePushEvent — soft-delete guard", () => {
   it("triggers auto-repackage for active project when user has auto_repackage_on_push=true", async () => {
     stubPushProjectFindOne(mockProject());
     stubUserFindOne({ _id: VALID_USER_ID });
-    vi.mocked(redisClient.zadd).mockResolvedValue(1 as any);
     vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
 
     const req = makePushReq();
     handleWebhook(req as any, res, next);
     await flushPromises();
 
-    // Old ZIP queued for cleanup
-    expect(redisClient.zadd).toHaveBeenCalledWith(
-      "media-cleanup-schedule",
-      expect.any(Number),
-      "zips/proj.zip"
-    );
-
-    // Status reset to PROCESSING
+    expect(redisClient.zadd).not.toHaveBeenCalled();
     expect(Project.updateOne).toHaveBeenCalledWith(
       { _id: VALID_PROJECT_ID },
       {
-        repo_zip_status: "PROCESSING",
-        $unset: { repo_zip_s3_key: 1, repo_zip_error: 1 },
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
       }
     );
 
@@ -281,13 +276,14 @@ describe("handlePushEvent — soft-delete guard", () => {
     expect(mockProcessRepoZipUpload).toHaveBeenCalledWith(
       VALID_PROJECT_ID.toString(),
       GITHUB_REPO_ID,
-      12345
+      12345,
+      expect.objectContaining({ source: "AUTO_REPACKAGE" })
     );
 
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
-  it("does NOT queue ZIP for cleanup when project has no repo_zip_s3_key", async () => {
+  it("updates repackage state without touching the current ZIP key", async () => {
     stubPushProjectFindOne(mockProject({ repo_zip_s3_key: null }));
     stubUserFindOne({ _id: VALID_USER_ID });
     vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
@@ -297,7 +293,13 @@ describe("handlePushEvent — soft-delete guard", () => {
     await flushPromises();
 
     expect(redisClient.zadd).not.toHaveBeenCalled();
-    expect(Project.updateOne).toHaveBeenCalled();
+    expect(Project.updateOne).toHaveBeenCalledWith(
+      { _id: VALID_PROJECT_ID },
+      {
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
+      }
+    );
   });
 
   // ── Active project + auto_repackage disabled ─────────────────────────────

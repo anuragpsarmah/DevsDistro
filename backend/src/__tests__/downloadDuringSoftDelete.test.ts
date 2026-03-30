@@ -205,7 +205,10 @@ describe("downloadProject", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Valid project_id is required" })
+      expect.objectContaining({
+        message:
+          "Valid project_id or purchase_id is required, and version must be latest or purchased",
+      })
     );
     expect(Purchase.findOne).not.toHaveBeenCalled();
   });
@@ -217,7 +220,10 @@ describe("downloadProject", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Valid project_id is required" })
+      expect.objectContaining({
+        message:
+          "Valid project_id or purchase_id is required, and version must be latest or purchased",
+      })
     );
   });
 

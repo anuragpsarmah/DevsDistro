@@ -63,6 +63,10 @@ vi.mock("../models/purchase.model", () => ({
   Purchase: { findOne: vi.fn(), find: vi.fn(), create: vi.fn() },
 }));
 
+vi.mock("../models/projectPackage.model", () => ({
+  ProjectPackage: { findById: vi.fn() },
+}));
+
 vi.mock("../models/projectDownload.model", () => ({
   ProjectDownload: { updateOne: vi.fn() },
 }));
@@ -145,6 +149,7 @@ import { Project } from "../models/project.model";
 import { User } from "../models/user.model";
 import { GitHubAppInstallation } from "../models/githubAppInstallation.model";
 import { Purchase } from "../models/purchase.model";
+import { ProjectPackage } from "../models/projectPackage.model";
 import { ProjectDownload } from "../models/projectDownload.model";
 import { Sales } from "../models/sales.model";
 import {
@@ -202,6 +207,8 @@ const TX_SIG =
   "4CttUS628uKGA3tDSp45KrvoFDqckYaZkVmAEhWfMp6XxNwYF8ueq4xZyaFGVznoKDetwoLR8DnvQgUik4MhVgkr";
 const PURCHASE_REF =
   "c77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98078";
+const PACKAGE_ID = "507f1f77bcf86cd799439066";
+const PACKAGE_COMMIT_SHA = "abcdef1234567890abcdef1234567890abcdef12";
 
 const MOCK_PROJECT = {
   _id: PROJECT_ID,
@@ -211,6 +218,8 @@ const MOCK_PROJECT = {
   github_access_revoked: false,
   repo_zip_status: "SUCCESS",
   repo_zip_s3_key: "zips/project-abc.zip",
+  latest_package_id: PACKAGE_ID,
+  latest_package_commit_sha: PACKAGE_COMMIT_SHA,
   scheduled_deletion_at: null,
   title: "Test Project",
   project_type: "Web App",
@@ -618,13 +627,27 @@ describe("confirmPurchase", () => {
 
     // Snapshot lookups
     vi.mocked(Project.findById).mockReturnValue(
-      mockSelectLean({ title: "Test Project", project_type: "Web App" }) as any
+      mockSelectLean({
+        title: "Test Project",
+        project_type: "Web App",
+        latest_package_id: PACKAGE_ID,
+        latest_package_commit_sha: PACKAGE_COMMIT_SHA,
+        repo_zip_s3_key: "zips/project-abc.zip",
+      }) as any
     );
     vi.mocked(User.findById).mockReturnValue(
       mockSelectLean({
         name: "Test Seller",
         username: "testseller",
         profile_image_url: "",
+      }) as any
+    );
+    vi.mocked(ProjectPackage.findById).mockReturnValue(
+      mockSelectLean({
+        _id: PACKAGE_ID,
+        createdAt: new Date("2024-01-01T00:00:00.000Z"),
+        s3_key: "zips/project-abc.zip",
+        commit_sha: PACKAGE_COMMIT_SHA,
       }) as any
     );
 
@@ -669,8 +692,13 @@ describe("confirmPurchase", () => {
         status: "CONFIRMED",
         price_usd: MOCK_INTENT_OBJ.price_usd,
         price_sol_total: MOCK_INTENT_OBJ.price_sol_total,
+        purchased_package_id: PACKAGE_ID,
         project_snapshot: expect.objectContaining({ title: "Test Project" }),
         seller_snapshot: expect.objectContaining({ username: "testseller" }),
+        package_snapshot: expect.objectContaining({
+          commit_sha: PACKAGE_COMMIT_SHA,
+          s3_key: "zips/project-abc.zip",
+        }),
       })
     );
   });
@@ -988,7 +1016,13 @@ describe("confirmPurchase", () => {
     } as any);
 
     vi.mocked(Project.findById).mockReturnValue(
-      mockSelectLean({ title: "Test Project", project_type: "Web App" }) as any
+      mockSelectLean({
+        title: "Test Project",
+        project_type: "Web App",
+        latest_package_id: PACKAGE_ID,
+        latest_package_commit_sha: PACKAGE_COMMIT_SHA,
+        repo_zip_s3_key: "zips/project-abc.zip",
+      }) as any
     );
     vi.mocked(User.findById).mockReturnValue(
       mockSelectLean({
@@ -1318,11 +1352,11 @@ describe("downloadProject", () => {
         userId: expect.any(Object),
       },
       {
-        $setOnInsert: expect.objectContaining({
+        $setOnInsert: {
           projectId: expect.any(Object),
           userId: expect.any(Object),
-          sellerId: expect.any(Object),
-        }),
+          sellerId: SELLER_ID,
+        },
       },
       { upsert: true }
     );
@@ -1380,6 +1414,18 @@ describe("downloadProject", () => {
     await flushPromises();
 
     expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  it("returns 400 when version=purchased is requested without project_id or purchase_id", async () => {
+    const req = makeReq({ query: { version: "purchased" } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(Purchase.findOne).not.toHaveBeenCalled();
+    expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
   });
 
   it("returns 400 when project_id is not a valid MongoDB ObjectId", async () => {
@@ -1482,7 +1528,6 @@ describe("downloadProject", () => {
         price: 0,
       }) as any
     );
-
     const req = makeReq({ query: { project_id: PROJECT_ID } });
     const res = makeRes();
 
@@ -1542,7 +1587,6 @@ describe("downloadProject", () => {
         price: 0,
       }) as any
     );
-
     const req = makeReq({ query: { project_id: PROJECT_ID } });
     const res = makeRes();
 
@@ -1553,6 +1597,39 @@ describe("downloadProject", () => {
     expect(Purchase.findOne).not.toHaveBeenCalled();
     expect(s3Service.createSignedDownloadUrl).not.toHaveBeenCalled();
     expect(ProjectDownload.updateOne).not.toHaveBeenCalled();
+  });
+
+  it("does not let purchase lookup failures block free-project latest downloads", async () => {
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean({
+        isActive: true,
+        github_access_revoked: false,
+        scheduled_deletion_at: null,
+        repo_zip_status: "SUCCESS",
+        repo_zip_s3_key: "zips/free-project.zip",
+        title: "Free Project",
+        price: 0,
+      }) as any
+    );
+    vi.mocked(Purchase.findOne).mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        lean: vi.fn().mockRejectedValue(new Error("purchase lookup failed")),
+      }),
+    } as any);
+
+    const req = makeReq({ query: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    downloadProject(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(Purchase.findOne).not.toHaveBeenCalled();
+    expect(s3Service.createSignedDownloadUrl).toHaveBeenCalledWith(
+      "zips/free-project.zip",
+      900,
+      "free-project.zip"
+    );
   });
 
   it("blocks a paid project download when it is no longer marketplace-visible and not purchased", async () => {

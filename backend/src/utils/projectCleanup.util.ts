@@ -4,13 +4,18 @@ import { Review } from "../models/projectReview.model";
 import { redisClient } from "..";
 import logger from "../logger/logger";
 import { tryCatch } from "./tryCatch.util";
+import {
+  isRepoZipKeyRetained,
+  queueRepoZipKeyForCleanup,
+  reconcileProjectPackageRetention,
+} from "./projectPackageRetention.util";
 
 /**
  * Performs all cleanup steps required to hard-delete a project:
  * 1. Removes from all user wishlists
  * 2. Queues project media for S3 deletion
- * 3. Queues repo ZIP for S3 deletion
- * 4. Deletes the project document
+ * 3. Deletes the project document
+ * 4. Deletes only unretained package artifacts
  */
 export async function performProjectHardDelete(project: {
   _id: any;
@@ -50,21 +55,7 @@ export async function performProjectHardDelete(project: {
     }
   }
 
-  // 3. Queue repo ZIP for S3 cleanup
-  if (project.repo_zip_s3_key) {
-    const [, zipError] = await tryCatch(
-      redisClient.zadd(
-        "media-cleanup-schedule",
-        Date.now(),
-        project.repo_zip_s3_key
-      )
-    );
-    if (zipError) {
-      logger.error("Failed to queue repo ZIP for cleanup", zipError);
-    }
-  }
-
-  // 4. Delete all reviews for this project
+  // 3. Delete all reviews for this project
   const [, reviewsDeleteError] = await tryCatch(
     Review.deleteMany({ projectId: project._id })
   );
@@ -75,7 +66,7 @@ export async function performProjectHardDelete(project: {
     });
   }
 
-  // 5. Delete the project document
+  // 4. Delete the project document
   const [, deleteError] = await tryCatch(
     Project.deleteOne({ _id: project._id })
   );
@@ -84,6 +75,20 @@ export async function performProjectHardDelete(project: {
       "Failed to delete project document during hard delete",
       deleteError
     );
+    return;
+  }
+
+  await reconcileProjectPackageRetention(project._id, {
+    retainLatestPackage: false,
+  });
+
+  // Legacy safeguard: projects created before package backfill may still only
+  // have repo_zip_s3_key on the project record and no ProjectPackage row.
+  if (project.repo_zip_s3_key) {
+    const stillRetained = await isRepoZipKeyRetained(project.repo_zip_s3_key);
+    if (!stillRetained) {
+      await queueRepoZipKeyForCleanup(project.repo_zip_s3_key);
+    }
   }
 }
 

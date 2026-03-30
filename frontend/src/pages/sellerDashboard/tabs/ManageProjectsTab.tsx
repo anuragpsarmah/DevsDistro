@@ -20,7 +20,7 @@ import {
 } from "@/hooks/apiMutations";
 import { tryCatch } from "@/utils/tryCatch.util";
 import ProjectModificationForm from "../main-components/ProjectModificationForm";
-import { formPropsType } from "../utils/types";
+import { RepoZipStatusResponse, formPropsType } from "../utils/types";
 import {
   projectListingValidatedFormData,
   ProjectMediaMetadata,
@@ -180,15 +180,20 @@ export default function ManageProjectsTab({
 
   const handleRefreshRepoZipStatus = async (
     index: number
-  ): Promise<string | null> => {
+  ): Promise<RepoZipStatusResponse | null> => {
     const github_repo_id = initialData?.data?.[index]?.github_repo_id;
     if (!github_repo_id) return null;
 
     const result = await getRepoZipStatus(github_repo_id);
-    const status: string | null = result?.data?.repo_zip_status ?? null;
-    if (status === "SUCCESS") {
+    const status = result?.data ?? null;
+
+    if (
+      status?.repo_zip_status === "SUCCESS" &&
+      status?.repackage_status !== "PROCESSING"
+    ) {
       queryClient.invalidateQueries({ queryKey: ["initialProjectDataQuery"] });
     }
+
     return status;
   };
 

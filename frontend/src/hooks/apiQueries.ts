@@ -20,6 +20,8 @@ import {
   ProjectReview,
   ReviewsResponse,
   SellerSalesTransactionsResponse,
+  RepoZipStatus,
+  RepackageStatus,
 } from "@/utils/types";
 import { tryCatch } from "@/utils/tryCatch.util";
 
@@ -33,6 +35,16 @@ interface SellerSalesTransactionsParams {
   project_filter: string;
   cursor_created_at?: string;
   cursor_id?: string;
+}
+
+interface RepoZipStatusQueryResponse {
+  data: {
+    repo_zip_status: RepoZipStatus;
+    repo_zip_error?: string | null;
+    repackage_status?: RepackageStatus;
+    repackage_error?: string | null;
+    latest_package_commit_sha?: string | null;
+  };
 }
 
 type SellerSalesCursor = {
@@ -315,7 +327,7 @@ const useRepoZipStatusQuery = ({ logout }: queryParameter) => {
 
   const getStatus = async (github_repo_id: string) => {
     const [response, error] = await tryCatch(
-      apiClient.get(
+      apiClient.get<RepoZipStatusQueryResponse>(
         `/projects/getRepoZipStatus?github_repo_id=${github_repo_id}`
       )
     );

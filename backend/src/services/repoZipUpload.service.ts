@@ -3,10 +3,21 @@ import crypto from "crypto";
 import { redisClient, s3Service } from "..";
 import { githubAppService } from "./githubApp.service";
 import { Project } from "../models/project.model";
+import { ProjectPackage } from "../models/projectPackage.model";
 import logger from "../logger/logger";
 import { tryCatch } from "../utils/tryCatch.util";
-import { TreeNode } from "../types/types";
+import { ProjectPackageSource, TreeNode } from "../types/types";
 import { LOCK_TTL_SECONDS, MAX_REPO_SIZE_BYTES } from "../types/constants";
+import {
+  isRepoZipKeyRetained,
+  queueRepoZipKeyForCleanup,
+  reconcileProjectPackageRetention,
+} from "../utils/projectPackageRetention.util";
+
+type ProcessRepoZipUploadOptions = {
+  source?: ProjectPackageSource;
+  commitSha?: string;
+};
 
 export default class RepoZipUploadService {
   private getLockKey(projectId: string): string {
@@ -18,15 +29,10 @@ export default class RepoZipUploadService {
     return `repoZips/${projectId}/${version}.zip`;
   }
 
-  private async fetchAndStoreRepoTree(
-    projectId: string,
+  private async resolveRepoInfo(
     githubRepoId: string,
     installationToken: string
-  ): Promise<void> {
-    await tryCatch(
-      Project.findByIdAndUpdate(projectId, { repo_tree_status: "PROCESSING" })
-    );
-
+  ): Promise<{ full_name: string; default_branch: string }> {
     const [repoResponse, repoError] = await tryCatch(
       axios.get<{ full_name: string; default_branch: string }>(
         `https://api.github.com/repositories/${githubRepoId}`,
@@ -45,14 +51,51 @@ export default class RepoZipUploadService {
       );
     }
 
-    const { full_name, default_branch } = repoResponse.data;
+    return repoResponse.data;
+  }
+
+  private async resolveHeadCommitSha(
+    fullName: string,
+    defaultBranch: string,
+    installationToken: string
+  ): Promise<string> {
+    const [commitResponse, commitError] = await tryCatch(
+      axios.get<{ sha: string }>(
+        `https://api.github.com/repos/${fullName}/commits/${encodeURIComponent(defaultBranch)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${installationToken}`,
+            Accept: "application/vnd.github+json",
+          },
+        }
+      )
+    );
+
+    if (commitError || !commitResponse?.data?.sha) {
+      throw new Error(
+        `Failed to resolve head commit: ${commitError instanceof Error ? commitError.message : "Unknown error"}`
+      );
+    }
+
+    return commitResponse.data.sha;
+  }
+
+  private async fetchAndStoreRepoTree(
+    projectId: string,
+    fullName: string,
+    commitSha: string,
+    installationToken: string
+  ): Promise<void> {
+    await tryCatch(
+      Project.findByIdAndUpdate(projectId, { repo_tree_status: "PROCESSING" })
+    );
 
     const [treeResponse, treeError] = await tryCatch(
       axios.get<{
         tree: Array<{ path: string; type: string }>;
         truncated: boolean;
       }>(
-        `https://api.github.com/repos/${full_name}/git/trees/${default_branch}?recursive=1`,
+        `https://api.github.com/repos/${fullName}/git/trees/${commitSha}?recursive=1`,
         {
           headers: {
             Authorization: `Bearer ${installationToken}`,
@@ -111,9 +154,11 @@ export default class RepoZipUploadService {
   async processRepoZipUpload(
     projectId: string,
     githubRepoId: string,
-    installationId: number
+    installationId: number,
+    options: ProcessRepoZipUploadOptions = {}
   ): Promise<void> {
     const lockKey = this.getLockKey(projectId);
+    const source = options.source ?? "INITIAL_LISTING";
 
     const lockAcquired = await redisClient.set(
       lockKey,
@@ -128,9 +173,17 @@ export default class RepoZipUploadService {
       return;
     }
 
+    let uploadedS3Key: string | null = null;
+    let createdPackageId: string | null = null;
+    let hadLatestPackage = false;
+
     try {
       const [project, findError] = await tryCatch(
-        Project.findById(projectId).select("repo_zip_status").lean()
+        Project.findById(projectId)
+          .select(
+            "userid repo_zip_status repo_zip_s3_key latest_package_id latest_package_commit_sha"
+          )
+          .lean()
       );
 
       if (findError || !project) {
@@ -145,8 +198,12 @@ export default class RepoZipUploadService {
         return;
       }
 
-      if (project.repo_zip_status === "SUCCESS") {
-        logger.info("Repo ZIP already uploaded", { projectId });
+      hadLatestPackage =
+        project.repo_zip_status === "SUCCESS" &&
+        Boolean(project.repo_zip_s3_key);
+
+      if (source === "INITIAL_LISTING" && hadLatestPackage) {
+        logger.info("Repo ZIP already uploaded for project", { projectId });
         await redisClient.del(lockKey);
         return;
       }
@@ -161,9 +218,21 @@ export default class RepoZipUploadService {
         );
       }
 
+      const { full_name, default_branch } = await this.resolveRepoInfo(
+        githubRepoId,
+        installationToken
+      );
+      const commitSha =
+        options.commitSha ??
+        (await this.resolveHeadCommitSha(
+          full_name,
+          default_branch,
+          installationToken
+        ));
+
       const [zipResponse, downloadError] = await tryCatch(
         axios.get(
-          `https://api.github.com/repositories/${githubRepoId}/zipball`,
+          `https://api.github.com/repositories/${githubRepoId}/zipball/${commitSha}`,
           {
             headers: {
               Authorization: `Bearer ${installationToken}`,
@@ -206,10 +275,14 @@ export default class RepoZipUploadService {
         }
       });
 
-      const s3Key = this.buildRepoZipS3Key(projectId);
+      uploadedS3Key = this.buildRepoZipS3Key(projectId);
 
       const [, uploadError] = await tryCatch(
-        s3Service.uploadStream(s3Key, sizeEnforcedStream, "application/zip")
+        s3Service.uploadStream(
+          uploadedS3Key,
+          sizeEnforcedStream,
+          "application/zip"
+        )
       );
 
       if (uploadError) {
@@ -218,35 +291,61 @@ export default class RepoZipUploadService {
         );
       }
 
+      const [createdPackage, createPackageError] = await tryCatch(
+        ProjectPackage.create({
+          projectId,
+          sellerId: project.userid,
+          github_repo_id: githubRepoId,
+          commit_sha: commitSha,
+          s3_key: uploadedS3Key,
+          source,
+        })
+      );
+
+      if (createPackageError || !createdPackage) {
+        throw new Error(
+          `Failed to create project package record: ${createPackageError instanceof Error ? createPackageError.message : "Unknown error"}`
+        );
+      }
+
+      createdPackageId = createdPackage._id.toString();
+
+      const previousLatestPackageId =
+        project.latest_package_id?.toString() ?? null;
+
       const [, updateError] = await tryCatch(
         Project.findByIdAndUpdate(projectId, {
           repo_zip_status: "SUCCESS",
-          repo_zip_s3_key: s3Key,
+          repo_zip_s3_key: uploadedS3Key,
           repo_zip_error: null,
+          latest_package_id: createdPackage._id,
+          latest_package_commit_sha: commitSha,
+          repackage_status: "IDLE",
+          repackage_error: null,
         })
       );
 
       if (updateError) {
-        logger.error(
-          "Failed to update project status after successful upload",
-          {
-            projectId,
-            error:
-              updateError instanceof Error
-                ? updateError.message
-                : "Unknown error",
-          }
+        throw new Error(
+          `Failed to update project after successful upload: ${updateError instanceof Error ? updateError.message : "Unknown error"}`
         );
       }
 
       logger.info("Repo ZIP uploaded successfully", {
         projectId,
-        s3Key,
+        s3Key: uploadedS3Key,
+        commitSha,
+        source,
         sizeBytes: streamedBytes,
       });
 
       const [, treeError] = await tryCatch(
-        this.fetchAndStoreRepoTree(projectId, githubRepoId, installationToken)
+        this.fetchAndStoreRepoTree(
+          projectId,
+          full_name,
+          commitSha,
+          installationToken
+        )
       );
 
       if (treeError) {
@@ -266,14 +365,51 @@ export default class RepoZipUploadService {
       } else {
         logger.info("Repo tree fetched successfully", { projectId });
       }
+
+      if (
+        previousLatestPackageId &&
+        previousLatestPackageId !== createdPackageId
+      ) {
+        await reconcileProjectPackageRetention(projectId, {
+          retainLatestPackage: true,
+        });
+      } else if (
+        hadLatestPackage &&
+        project.repo_zip_s3_key &&
+        project.repo_zip_s3_key !== uploadedS3Key
+      ) {
+        const legacyKeyRetained = await isRepoZipKeyRetained(
+          project.repo_zip_s3_key
+        );
+        if (!legacyKeyRetained) {
+          await queueRepoZipKeyForCleanup(project.repo_zip_s3_key);
+        }
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
 
+      if (createdPackageId) {
+        await tryCatch(ProjectPackage.deleteOne({ _id: createdPackageId }));
+      }
+
+      if (uploadedS3Key) {
+        await tryCatch(s3Service.deleteObject(uploadedS3Key));
+      }
+
       const [, updateError] = await tryCatch(
         Project.findByIdAndUpdate(projectId, {
-          repo_zip_status: "FAILED",
-          repo_zip_error: errorMessage,
+          ...(hadLatestPackage
+            ? {
+                repackage_status: "FAILED",
+                repackage_error: errorMessage,
+              }
+            : {
+                repo_zip_status: "FAILED",
+                repo_zip_error: errorMessage,
+                repackage_status: "IDLE",
+                repackage_error: null,
+              }),
         })
       );
 

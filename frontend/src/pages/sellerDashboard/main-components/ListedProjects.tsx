@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ListedProjectsProps } from "../utils/types";
+import { ListedProjectsProps, RepoZipStatusResponse } from "../utils/types";
 import { Toggle } from "@/components/ui/toggle";
 import {
   Tooltip,
@@ -55,7 +55,9 @@ const ListedProjects = ({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<number | null>(null);
   const [isDeletingProject, setIsDeletingProject] = useState(false);
-  const [zipStatuses, setZipStatuses] = useState<Record<number, string>>({});
+  const [zipStatuses, setZipStatuses] = useState<
+    Record<number, RepoZipStatusResponse>
+  >({});
   const [refreshingIndices, setRefreshingIndices] = useState<Set<number>>(
     new Set()
   );
@@ -164,7 +166,15 @@ const ListedProjects = ({
     setRetryingIndices((prev) => new Set(prev).add(idx));
     try {
       await handleRetryRepoZipUpload(initialProjectData[idx].github_repo_id);
-      setZipStatuses((prev) => ({ ...prev, [idx]: "PROCESSING" }));
+      setZipStatuses((prev) => ({
+        ...prev,
+        [idx]: {
+          repo_zip_status: "PROCESSING",
+          repo_zip_error: null,
+          repackage_status: "IDLE",
+          repackage_error: null,
+        },
+      }));
     } finally {
       setRetryingIndices((prev) => {
         const next = new Set(prev);
@@ -174,8 +184,17 @@ const ListedProjects = ({
     }
   };
 
-  const getEffectiveZipStatus = (idx: number) => {
-    return zipStatuses[idx] || initialProjectData[idx].repo_zip_status;
+  const getEffectiveZipState = (idx: number): RepoZipStatusResponse => {
+    const initialProject = initialProjectData[idx];
+
+    return (
+      zipStatuses[idx] || {
+        repo_zip_status: initialProject.repo_zip_status ?? "PROCESSING",
+        repo_zip_error: initialProject.repo_zip_error ?? null,
+        repackage_status: initialProject.repackage_status ?? "IDLE",
+        repackage_error: initialProject.repackage_error ?? null,
+      }
+    );
   };
 
   const handleRefreshZip = async (idx: number) => {
@@ -183,7 +202,15 @@ const ListedProjects = ({
     setRefreshZipIndices((prev) => new Set(prev).add(idx));
     try {
       await handleRefreshRepoZip(initialProjectData[idx].github_repo_id);
-      setZipStatuses((prev) => ({ ...prev, [idx]: "PROCESSING" }));
+      setZipStatuses((prev) => ({
+        ...prev,
+        [idx]: {
+          ...getEffectiveZipState(idx),
+          repo_zip_status: "SUCCESS",
+          repackage_status: "PROCESSING",
+          repackage_error: null,
+        },
+      }));
     } finally {
       setRefreshZipIndices((prev) => {
         const next = new Set(prev);
@@ -323,7 +350,8 @@ const ListedProjects = ({
                       </Tooltip>
 
                       {!project.github_access_revoked &&
-                        getEffectiveZipStatus(idx) === "SUCCESS" && (
+                        getEffectiveZipState(idx).repo_zip_status ===
+                          "SUCCESS" && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -426,7 +454,8 @@ const ListedProjects = ({
                 )}
 
                 {!project.scheduled_deletion_at &&
-                  getEffectiveZipStatus(idx) === "PROCESSING" && (
+                  getEffectiveZipState(idx).repo_zip_status ===
+                    "PROCESSING" && (
                     <div className="flex items-center gap-3 p-4 border-2 border-black dark:border-white bg-black/5 dark:bg-white/5 mt-4 mb-2 transition-colors duration-300">
                       <Loader2 className="h-4 w-4 text-black dark:text-white animate-spin flex-shrink-0" />
                       <span className="text-[10px] uppercase font-bold tracking-wider font-space text-black dark:text-white flex-grow transition-colors duration-300">
@@ -455,7 +484,7 @@ const ListedProjects = ({
                   )}
 
                 {!project.scheduled_deletion_at &&
-                  getEffectiveZipStatus(idx) === "FAILED" && (
+                  getEffectiveZipState(idx).repo_zip_status === "FAILED" && (
                     <div className="flex items-center gap-3 p-4 border-2 border-red-500 bg-red-500/5 mt-4 mb-2">
                       <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
                       <span className="text-[10px] uppercase font-bold tracking-wider font-space text-red-600 dark:text-red-400 flex-grow">
@@ -486,6 +515,67 @@ const ListedProjects = ({
                             onClick={() => handleRefreshStatus(idx)}
                             disabled={refreshingIndices.has(idx)}
                             className="p-1.5 hover:bg-red-500/10 border-2 border-transparent transition-colors disabled:opacity-50 text-red-500"
+                          >
+                            <RefreshCw
+                              className={`h-4 w-4 ${refreshingIndices.has(idx) ? "animate-spin" : ""}`}
+                            />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white rounded-none font-space font-bold uppercase tracking-widest text-[10px]"
+                        >
+                          Refresh status
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  )}
+
+                {!project.scheduled_deletion_at &&
+                  getEffectiveZipState(idx).repo_zip_status === "SUCCESS" &&
+                  getEffectiveZipState(idx).repackage_status ===
+                    "PROCESSING" && (
+                    <div className="flex items-center gap-3 p-4 border-2 border-green-500 bg-green-500/5 mt-4 mb-2 transition-colors duration-300">
+                      <Loader2 className="h-4 w-4 text-green-600 dark:text-green-400 animate-spin flex-shrink-0" />
+                      <span className="text-[10px] uppercase font-bold tracking-wider font-space text-green-700 dark:text-green-300 flex-grow transition-colors duration-300">
+                        LATEST PACKAGE LIVE. BUILDING NEW REPACKAGE...
+                      </span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => handleRefreshStatus(idx)}
+                            disabled={refreshingIndices.has(idx)}
+                            className="p-1.5 hover:bg-green-500/10 border-2 border-transparent hover:border-green-500 transition-colors duration-300 disabled:opacity-50 text-green-600 dark:text-green-400"
+                          >
+                            <RefreshCw
+                              className={`h-4 w-4 ${refreshingIndices.has(idx) ? "animate-spin" : ""}`}
+                            />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                          side="bottom"
+                          className="bg-black dark:bg-white text-white dark:text-black border-2 border-black dark:border-white rounded-none font-space font-bold uppercase tracking-widest text-[10px]"
+                        >
+                          Refresh status
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  )}
+
+                {!project.scheduled_deletion_at &&
+                  getEffectiveZipState(idx).repo_zip_status === "SUCCESS" &&
+                  getEffectiveZipState(idx).repackage_status === "FAILED" && (
+                    <div className="flex items-center gap-3 p-4 border-2 border-amber-500 bg-amber-500/5 mt-4 mb-2 transition-colors duration-300">
+                      <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                      <span className="text-[10px] uppercase font-bold tracking-wider font-space text-amber-700 dark:text-amber-300 flex-grow transition-colors duration-300">
+                        LATEST PACKAGE STILL LIVE. LAST REPACKAGE FAILED.
+                      </span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => handleRefreshStatus(idx)}
+                            disabled={refreshingIndices.has(idx)}
+                            className="p-1.5 hover:bg-amber-500/10 border-2 border-transparent transition-colors disabled:opacity-50 text-amber-500"
                           >
                             <RefreshCw
                               className={`h-4 w-4 ${refreshingIndices.has(idx) ? "animate-spin" : ""}`}

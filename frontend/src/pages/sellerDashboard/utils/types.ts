@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { PROJECT_TYPES } from "./constants";
 import { PublicKey } from "@solana/web3.js";
+import type { RepoZipStatus, RepackageStatus } from "@/utils/types";
 
 export type ImageItem =
   | { type: "existing"; url: string }
@@ -353,10 +354,21 @@ export interface InitialProjectData {
   description: string;
   tech_stack: string[];
   project_images: string;
-  repo_zip_status?: "PROCESSING" | "SUCCESS" | "FAILED";
+  repo_zip_status?: RepoZipStatus;
+  repo_zip_error?: string | null;
+  repackage_status?: RepackageStatus;
+  repackage_error?: string | null;
   price: number;
   live_link?: string;
   downloadCount: number;
+}
+
+export interface RepoZipStatusResponse {
+  repo_zip_status: RepoZipStatus;
+  repo_zip_error?: string | null;
+  repackage_status?: RepackageStatus;
+  repackage_error?: string | null;
+  latest_package_commit_sha?: string | null;
 }
 
 export interface ListedProjectsProps {
@@ -367,7 +379,9 @@ export interface ListedProjectsProps {
   handleDeleteProjectListing: (title: string) => Promise<unknown>;
   handleUIStateChange: (identifier: string, title: string) => void;
   handleRetryRepoZipUpload: (github_repo_id: string) => Promise<void>;
-  handleRefreshRepoZipStatus: (index: number) => Promise<string | null>;
+  handleRefreshRepoZipStatus: (
+    index: number
+  ) => Promise<RepoZipStatusResponse | null>;
   handleRefreshRepoZip: (github_repo_id: string) => Promise<void>;
   isLoading: boolean;
   isError: boolean;

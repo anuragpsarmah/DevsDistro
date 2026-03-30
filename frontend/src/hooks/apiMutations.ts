@@ -12,6 +12,7 @@ import {
   PurchaseIntent,
   PurchaseConfirmPayload,
   SubmitReviewPayload,
+  DownloadProjectParams,
 } from "@/utils/types";
 import { user, userCurrency } from "@/utils/atom";
 import { useHandleError } from "./useHandleErrors";
@@ -417,10 +418,26 @@ const useDownloadProjectMutation = ({ logout }: mutationParameter) => {
   const { handleError } = useHandleError({ logout });
 
   return useMutation({
-    mutationFn: async (project_id: string) => {
+    mutationFn: async (input: string | DownloadProjectParams) => {
+      const payload: DownloadProjectParams =
+        typeof input === "string"
+          ? { project_id: input, version: "latest" }
+          : input;
+      const params = new URLSearchParams();
+
+      if (payload.project_id) {
+        params.set("project_id", payload.project_id);
+      }
+      if (payload.purchase_id) {
+        params.set("purchase_id", payload.purchase_id);
+      }
+      if (payload.version) {
+        params.set("version", payload.version);
+      }
+
       const [response, error] = await tryCatch(
         apiClient.get<{ data: { download_url: string } }>(
-          `/purchases/download?project_id=${project_id}`
+          `/purchases/download?${params.toString()}`
         )
       );
 
@@ -431,17 +448,23 @@ const useDownloadProjectMutation = ({ logout }: mutationParameter) => {
 
       return response.data.data;
     },
-    onSuccess: (data, project_id) => {
-      queryClient.setQueryData<ProjectDetail | undefined>(
-        ["projectDetail", project_id],
-        (existingProject) =>
-          existingProject
-            ? {
-                ...existingProject,
-                downloadCount: (existingProject.downloadCount ?? 0) + 1,
-              }
-            : existingProject
-      );
+    onSuccess: (data, input) => {
+      const projectId =
+        typeof input === "string" ? input : (input.project_id ?? null);
+
+      if (projectId) {
+        queryClient.setQueryData<ProjectDetail | undefined>(
+          ["projectDetail", projectId],
+          (existingProject) =>
+            existingProject
+              ? {
+                  ...existingProject,
+                  downloadCount: (existingProject.downloadCount ?? 0) + 1,
+                }
+              : existingProject
+        );
+      }
+
       const a = document.createElement("a");
       a.href = data.download_url;
       a.download = "";

@@ -417,12 +417,13 @@ describe("refreshRepoZip — full flow", () => {
     expect(Project.updateOne).not.toHaveBeenCalled();
   });
 
-  it("returns 400 when repo_zip_status is already PROCESSING", async () => {
+  it("returns 400 when a repackage is already processing", async () => {
     stubFindOne({
       _id: VALID_PROJECT_ID,
       scheduled_deletion_at: null,
-      repo_zip_status: "PROCESSING",
-      repo_zip_s3_key: null,
+      repo_zip_status: "SUCCESS",
+      repo_zip_s3_key: "zips/proj.zip",
+      repackage_status: "PROCESSING",
       github_repo_id: VALID_REPO_ID,
       github_installation_id: 12345,
     });
@@ -433,7 +434,9 @@ describe("refreshRepoZip — full flow", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Upload is already in progress" })
+      expect.objectContaining({
+        message: "A repository repackage is already in progress",
+      })
     );
     expect(Project.updateOne).not.toHaveBeenCalled();
   });
@@ -447,7 +450,6 @@ describe("refreshRepoZip — full flow", () => {
       github_repo_id: VALID_REPO_ID,
       github_installation_id: 12345,
     });
-    vi.mocked(redisClient.zadd).mockResolvedValue(1 as any);
     vi.mocked(Project.updateOne).mockRejectedValue(new Error("DB error"));
 
     const req = makeReq();
@@ -457,48 +459,12 @@ describe("refreshRepoZip — full flow", () => {
     expect(res.status).toHaveBeenCalledWith(500);
   });
 
-  it("returns 200, queues old ZIP key for cleanup, and resets status to PROCESSING", async () => {
+  it("returns 200 and starts a repackage without removing the current ZIP", async () => {
     stubFindOne({
       _id: VALID_PROJECT_ID,
       scheduled_deletion_at: null,
       repo_zip_status: "SUCCESS",
       repo_zip_s3_key: "zips/old-proj.zip",
-      github_repo_id: VALID_REPO_ID,
-      github_installation_id: 12345,
-    });
-    vi.mocked(redisClient.zadd).mockResolvedValue(1 as any);
-    vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
-
-    const req = makeReq();
-    refreshRepoZip(req as any, res, next);
-    await flushPromises();
-
-    // Old ZIP queued for cleanup
-    expect(redisClient.zadd).toHaveBeenCalledWith(
-      "media-cleanup-schedule",
-      expect.any(Number),
-      "zips/old-proj.zip"
-    );
-    // Status reset and key removed
-    expect(Project.updateOne).toHaveBeenCalledWith(
-      { _id: VALID_PROJECT_ID },
-      {
-        repo_zip_status: "PROCESSING",
-        $unset: { repo_zip_s3_key: 1, repo_zip_error: 1 },
-      }
-    );
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Refresh initiated" })
-    );
-  });
-
-  it("does NOT call redisClient.zadd when there is no old repo_zip_s3_key", async () => {
-    stubFindOne({
-      _id: VALID_PROJECT_ID,
-      scheduled_deletion_at: null,
-      repo_zip_status: "FAILED",
-      repo_zip_s3_key: null, // no old key
       github_repo_id: VALID_REPO_ID,
       github_installation_id: 12345,
     });
@@ -509,7 +475,42 @@ describe("refreshRepoZip — full flow", () => {
     await flushPromises();
 
     expect(redisClient.zadd).not.toHaveBeenCalled();
-    expect(Project.updateOne).toHaveBeenCalled();
+    expect(Project.updateOne).toHaveBeenCalledWith(
+      { _id: VALID_PROJECT_ID },
+      {
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
+      }
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "Refresh initiated" })
+    );
+  });
+
+  it("does not touch Redis cleanup when the latest ZIP remains live", async () => {
+    stubFindOne({
+      _id: VALID_PROJECT_ID,
+      scheduled_deletion_at: null,
+      repo_zip_status: "SUCCESS",
+      repo_zip_s3_key: "zips/proj.zip",
+      github_repo_id: VALID_REPO_ID,
+      github_installation_id: 12345,
+    });
+    vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
+
+    const req = makeReq();
+    refreshRepoZip(req as any, res, next);
+    await flushPromises();
+
+    expect(redisClient.zadd).not.toHaveBeenCalled();
+    expect(Project.updateOne).toHaveBeenCalledWith(
+      { _id: VALID_PROJECT_ID },
+      {
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
+      }
+    );
     expect(res.status).toHaveBeenCalledWith(200);
   });
 
@@ -522,7 +523,6 @@ describe("refreshRepoZip — full flow", () => {
       github_repo_id: VALID_REPO_ID,
       github_installation_id: 12345,
     });
-    vi.mocked(redisClient.zadd).mockResolvedValue(1 as any);
     vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
 
     const req = makeReq();
@@ -533,7 +533,8 @@ describe("refreshRepoZip — full flow", () => {
     expect(repoZipUploadService.processRepoZipUpload).toHaveBeenCalledWith(
       VALID_PROJECT_ID.toString(),
       VALID_REPO_ID,
-      12345
+      12345,
+      { source: "MANUAL_REPACKAGE" }
     );
   });
 });

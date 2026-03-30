@@ -14,12 +14,18 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
 vi.mock("@/hooks/apiQueries", () => ({
   useGetPurchasedProjectsQuery: vi.fn(),
+}));
+
+const mockDownloadMutate = vi.fn();
+
+vi.mock("@/hooks/apiMutations", () => ({
+  useDownloadProjectMutation: vi.fn(() => ({ mutate: mockDownloadMutate })),
 }));
 
 vi.mock("@/components/wrappers/AnimatedLoadWrapper", () => ({
@@ -60,6 +66,16 @@ const mockActivePurchase = {
     username: "alicedev",
     profile_image_url: "",
   },
+  purchased_package: {
+    commit_sha: "abcdef1234567890",
+    packaged_at: "2024-06-15T12:00:00Z",
+  },
+  latest_package: {
+    commit_sha: "fedcba0987654321",
+    repackage_status: "IDLE",
+  },
+  can_download_purchased: true,
+  can_download_latest: true,
 };
 
 const mockDeletedPurchase = {
@@ -242,6 +258,25 @@ describe("PurchaseLedgerTab", () => {
 
     render(<PurchaseLedgerTab logout={vi.fn()} />);
     expect(screen.getByText("Terminated")).toBeInTheDocument();
+  });
+
+  it("downloads the purchased version from the ledger", () => {
+    vi.mocked(useGetPurchasedProjectsQuery).mockReturnValue({
+      data: [mockActivePurchase],
+      isLoading: false,
+      isError: false,
+    } as any);
+
+    render(<PurchaseLedgerTab logout={vi.fn()} />);
+    fireEvent.click(screen.getByText(/Download Purchased Version/i));
+    expect(mockDownloadMutate).toHaveBeenCalledWith(
+      {
+        project_id: mockActivePurchase.projectId._id,
+        purchase_id: mockActivePurchase._id,
+        version: "purchased",
+      },
+      expect.any(Object)
+    );
   });
 
   // ── Inspect TX link ──────────────────────────────────────────────────────────

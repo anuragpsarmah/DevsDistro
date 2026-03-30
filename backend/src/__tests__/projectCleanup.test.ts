@@ -27,6 +27,23 @@ vi.mock("..", () => ({
   redisClient: { zadd: vi.fn() },
 }));
 
+vi.mock("../utils/projectPackageRetention.util", () => ({
+  isRepoZipKeyRetained: vi.fn().mockResolvedValue(false),
+  queueRepoZipKeyForCleanup: vi
+    .fn()
+    .mockImplementation(async (s3Key: string) => {
+      const { redisClient } = await import("..");
+      try {
+        await redisClient.zadd("media-cleanup-schedule", Date.now(), s3Key);
+      } catch {
+        return undefined;
+      }
+
+      return undefined;
+    }),
+  reconcileProjectPackageRetention: vi.fn().mockResolvedValue(undefined),
+}));
+
 vi.mock("../logger/logger", () => ({
   default: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
 }));
@@ -51,7 +68,7 @@ import { redisClient } from "..";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const mockProject = (overrides: object = {}) => ({
-  _id: "proj_abc123",
+  _id: "507f191e810c19729de860ea",
   project_images: [] as string[],
   project_images_detail: [] as string[],
   project_video: null as string | null,
@@ -76,8 +93,8 @@ describe("performProjectHardDelete", () => {
     await performProjectHardDelete(mockProject());
 
     expect(User.updateMany).toHaveBeenCalledWith(
-      { wishlist: "proj_abc123" },
-      { $pull: { wishlist: "proj_abc123" } }
+      { wishlist: "507f191e810c19729de860ea" },
+      { $pull: { wishlist: "507f191e810c19729de860ea" } }
     );
   });
 
@@ -191,7 +208,7 @@ describe("performProjectHardDelete", () => {
     await performProjectHardDelete(mockProject());
 
     expect(Review.deleteMany).toHaveBeenCalledWith({
-      projectId: "proj_abc123",
+      projectId: "507f191e810c19729de860ea",
     });
   });
 
@@ -215,7 +232,9 @@ describe("performProjectHardDelete", () => {
 
     await performProjectHardDelete(mockProject());
 
-    expect(Project.deleteOne).toHaveBeenCalledWith({ _id: "proj_abc123" });
+    expect(Project.deleteOne).toHaveBeenCalledWith({
+      _id: "507f191e810c19729de860ea",
+    });
   });
 
   // ── Error resilience ────────────────────────────────────────────────────────
@@ -314,7 +333,11 @@ describe("startScheduledDeletionJob", () => {
   });
 
   it("hard-deletes every overdue project in the batch", async () => {
-    const projects = ["p1", "p2", "p3"].map((id) => mockProject({ _id: id }));
+    const projects = [
+      "507f191e810c19729de860e1",
+      "507f191e810c19729de860e2",
+      "507f191e810c19729de860e3",
+    ].map((id) => mockProject({ _id: id }));
     vi.mocked(Project.find).mockReturnValue(mockFindChain(projects));
     vi.mocked(User.updateMany).mockResolvedValue({} as any);
     vi.mocked(Project.deleteOne).mockResolvedValue({ deletedCount: 1 } as any);
@@ -323,9 +346,15 @@ describe("startScheduledDeletionJob", () => {
     await vi.advanceTimersByTimeAsync(10_001);
 
     expect(Project.deleteOne).toHaveBeenCalledTimes(3);
-    expect(Project.deleteOne).toHaveBeenCalledWith({ _id: "p1" });
-    expect(Project.deleteOne).toHaveBeenCalledWith({ _id: "p2" });
-    expect(Project.deleteOne).toHaveBeenCalledWith({ _id: "p3" });
+    expect(Project.deleteOne).toHaveBeenCalledWith({
+      _id: "507f191e810c19729de860e1",
+    });
+    expect(Project.deleteOne).toHaveBeenCalledWith({
+      _id: "507f191e810c19729de860e2",
+    });
+    expect(Project.deleteOne).toHaveBeenCalledWith({
+      _id: "507f191e810c19729de860e3",
+    });
   });
 
   it("re-runs the job after 1 hour to catch newly overdue projects", async () => {

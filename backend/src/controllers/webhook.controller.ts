@@ -507,7 +507,7 @@ async function handlePushEvent(payload: WebhookPayload) {
       scheduled_deletion_at: null,
     })
       .select(
-        "_id userid github_repo_id github_installation_id repo_zip_s3_key"
+        "_id userid github_repo_id github_installation_id repo_zip_s3_key repackage_status"
       )
       .lean()
   );
@@ -521,6 +521,18 @@ async function handlePushEvent(payload: WebhookPayload) {
   }
 
   if (!project) return;
+
+  if ((project as any).repackage_status === "PROCESSING") return;
+
+  const repositoryDetails = await githubAppService.getRepository(
+    project.github_installation_id!,
+    Number(project.github_repo_id)
+  );
+
+  const defaultBranch = repositoryDetails?.default_branch;
+  if (defaultBranch && payload.ref !== `refs/heads/${defaultBranch}`) {
+    return;
+  }
 
   const [user, userFindError] = await tryCatch(
     User.findOne({ _id: project.userid, auto_repackage_on_push: true })
@@ -538,31 +550,12 @@ async function handlePushEvent(payload: WebhookPayload) {
 
   if (!user) return;
 
-  if (project.repo_zip_s3_key) {
-    const [, cleanupError] = await tryCatch(
-      redisClient.zadd(
-        "media-cleanup-schedule",
-        Date.now(),
-        project.repo_zip_s3_key
-      )
-    );
-    if (cleanupError) {
-      logger.error(
-        "Failed to queue old ZIP for cleanup during auto-repackage",
-        {
-          projectId: project._id,
-          cleanupError,
-        }
-      );
-    }
-  }
-
   const [, updateError] = await tryCatch(
     Project.updateOne(
       { _id: project._id },
       {
-        repo_zip_status: "PROCESSING",
-        $unset: { repo_zip_s3_key: 1, repo_zip_error: 1 },
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
       }
     )
   );
@@ -579,7 +572,14 @@ async function handlePushEvent(payload: WebhookPayload) {
     .processRepoZipUpload(
       project._id.toString(),
       project.github_repo_id,
-      project.github_installation_id!
+      project.github_installation_id!,
+      {
+        source: "AUTO_REPACKAGE",
+        commitSha:
+          payload.after && /^[0-9a-f]{40}$/i.test(payload.after)
+            ? payload.after
+            : undefined,
+      }
     )
     .catch((err) => {
       logger.error("Auto-repackage on push failed", {

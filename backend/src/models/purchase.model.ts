@@ -20,6 +20,12 @@ const purchaseSchema = new Schema(
       required: [true, "Project ID is required"],
       index: true,
     },
+    purchased_package_id: {
+      type: Schema.Types.ObjectId,
+      ref: "ProjectPackage",
+      required: [true, "Purchased package ID is required"],
+      index: true,
+    },
 
     // USD pricing
     price_usd: {
@@ -104,6 +110,11 @@ const purchaseSchema = new Schema(
       name: { type: String, required: true },
       username: { type: String, required: true },
       profile_image_url: { type: String, default: "" },
+    },
+    package_snapshot: {
+      commit_sha: { type: String, required: true },
+      s3_key: { type: String, required: true },
+      packaged_at: { type: Date, required: true },
     },
   },
   { timestamps: true }

@@ -67,6 +67,7 @@ export interface Repository {
   description: string | null;
   language: string | null;
   updated_at: string;
+  default_branch?: string;
 }
 
 export interface Installation {
@@ -97,3 +98,10 @@ export interface VerifyResult {
   valid: boolean;
   error?: string;
 }
+
+export type ProjectPackageSource =
+  | "INITIAL_LISTING"
+  | "MANUAL_REPACKAGE"
+  | "AUTO_REPACKAGE";
+
+export type DownloadVersion = "latest" | "purchased";

@@ -1117,6 +1117,8 @@ const getInitialProjectData = asyncHandler(
           isActive: 1,
           github_access_revoked: 1,
           repo_zip_status: 1,
+          repackage_status: 1,
+          repackage_error: 1,
           scheduled_deletion_at: 1,
           project_images: { $slice: 1 },
           price: 1,
@@ -1421,7 +1423,7 @@ const deleteProjectListing = asyncHandler(
         userid,
         github_repo_id: req.query.github_repo_id,
       }).select(
-        "project_images project_images_detail project_video repo_zip_s3_key repo_zip_status scheduled_deletion_at _id"
+        "project_images project_images_detail project_video repo_zip_s3_key repo_zip_status repackage_status scheduled_deletion_at _id"
       )
     );
 
@@ -1455,7 +1457,10 @@ const deleteProjectListing = asyncHandler(
       return;
     }
 
-    if (projectData.repo_zip_status === "PROCESSING") {
+    if (
+      projectData.repo_zip_status === "PROCESSING" ||
+      (projectData as any).repackage_status === "PROCESSING"
+    ) {
       enrichContext({
         outcome: "validation_failed",
         reason: "repo_zip_in_progress",
@@ -1637,7 +1642,9 @@ const getRepoZipStatus = asyncHandler(async (req: Request, res: Response) => {
       userid,
       github_repo_id: req.query.github_repo_id,
     })
-      .select("repo_zip_status repo_zip_error")
+      .select(
+        "repo_zip_status repo_zip_error repackage_status repackage_error latest_package_commit_sha"
+      )
       .lean()
   );
 
@@ -1657,6 +1664,9 @@ const getRepoZipStatus = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Repo ZIP status fetched", {
     repo_zip_status: project.repo_zip_status,
     repo_zip_error: project.repo_zip_error,
+    repackage_status: (project as any).repackage_status,
+    repackage_error: (project as any).repackage_error,
+    latest_package_commit_sha: (project as any).latest_package_commit_sha,
   });
 });
 
@@ -1792,7 +1802,7 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
       userid,
       github_repo_id: req.body.github_repo_id,
     }).select(
-      "github_repo_id github_installation_id github_access_revoked repo_zip_status repo_zip_s3_key scheduled_deletion_at"
+      "github_repo_id github_installation_id github_access_revoked repo_zip_status repo_zip_s3_key repackage_status scheduled_deletion_at"
     )
   );
 
@@ -1831,35 +1841,34 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  if (project.repo_zip_status === "PROCESSING") {
+  if (project.repo_zip_status !== "SUCCESS" || !project.repo_zip_s3_key) {
     enrichContext({
       outcome: "validation_failed",
-      reason: "already_processing",
+      reason: "latest_package_not_available",
     });
-    response(res, 400, "Upload is already in progress");
+    response(
+      res,
+      400,
+      "Can only refresh a project that already has a successful packaged version"
+    );
     return;
   }
 
-  if (project.repo_zip_s3_key) {
-    const [, cleanupError] = await tryCatch(
-      redisClient.zadd(
-        "media-cleanup-schedule",
-        Date.now(),
-        project.repo_zip_s3_key
-      )
-    );
-
-    if (cleanupError) {
-      logger.error("Failed to queue old repo ZIP for cleanup", cleanupError);
-    }
+  if ((project as any).repackage_status === "PROCESSING") {
+    enrichContext({
+      outcome: "validation_failed",
+      reason: "repackage_already_processing",
+    });
+    response(res, 400, "A repository repackage is already in progress");
+    return;
   }
 
   const [, updateError] = await tryCatch(
     Project.updateOne(
       { _id: project._id },
       {
-        repo_zip_status: "PROCESSING",
-        $unset: { repo_zip_s3_key: 1, repo_zip_error: 1 },
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
       }
     )
   );
@@ -1874,7 +1883,8 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
     .processRepoZipUpload(
       project._id.toString(),
       project.github_repo_id,
-      project.github_installation_id!
+      project.github_installation_id!,
+      { source: "MANUAL_REPACKAGE" }
     )
     .catch((err) => {
       logger.error("Refresh repo ZIP upload failed", {

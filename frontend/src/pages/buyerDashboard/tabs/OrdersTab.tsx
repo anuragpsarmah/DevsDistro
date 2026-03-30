@@ -22,7 +22,7 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null
   );
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadingKey, setDownloadingKey] = useState<string | null>(null);
   const [receiptingId, setReceiptingId] = useState<string | null>(null);
   const {
     data,
@@ -42,6 +42,11 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
 
   // Only show purchases where the project still exists in the DB
   const activePurchases = allPurchases.filter((p) => p.projectId !== null);
+
+  const getDownloadKey = (
+    purchaseId: string,
+    version: "latest" | "purchased"
+  ) => `${purchaseId}:${version}`;
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -253,21 +258,69 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                           </button>
                           <button
                             onClick={() => {
-                              const id = purchase.projectId!._id;
-                              setDownloadingId(id);
-                              downloadMutation.mutate(id, {
-                                onSettled: () => setDownloadingId(null),
-                              });
+                              const key = getDownloadKey(
+                                purchase._id,
+                                "purchased"
+                              );
+                              setDownloadingKey(key);
+                              downloadMutation.mutate(
+                                {
+                                  project_id: purchase.projectId!._id,
+                                  purchase_id: purchase._id,
+                                  version: "purchased",
+                                },
+                                {
+                                  onSettled: () => setDownloadingKey(null),
+                                }
+                              );
                             }}
-                            disabled={downloadingId === purchase.projectId!._id}
+                            disabled={
+                              downloadingKey ===
+                                getDownloadKey(purchase._id, "purchased") ||
+                              !purchase.can_download_purchased
+                            }
                             className="flex items-center gap-1.5 px-3 py-2 bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-[10px] border-2 border-black dark:border-white hover:bg-red-500 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
-                            {downloadingId === purchase.projectId!._id ? (
+                            {downloadingKey ===
+                            getDownloadKey(purchase._id, "purchased") ? (
                               <Loader2 className="w-3 h-3 animate-spin" />
                             ) : (
                               <Download className="w-3 h-3" />
                             )}
-                            Download
+                            Purchased
+                          </button>
+                          <button
+                            onClick={() => {
+                              const key = getDownloadKey(
+                                purchase._id,
+                                "latest"
+                              );
+                              setDownloadingKey(key);
+                              downloadMutation.mutate(
+                                {
+                                  project_id: purchase.projectId!._id,
+                                  purchase_id: purchase._id,
+                                  version: "latest",
+                                },
+                                {
+                                  onSettled: () => setDownloadingKey(null),
+                                }
+                              );
+                            }}
+                            disabled={
+                              downloadingKey ===
+                                getDownloadKey(purchase._id, "latest") ||
+                              !purchase.can_download_latest
+                            }
+                            className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          >
+                            {downloadingKey ===
+                            getDownloadKey(purchase._id, "latest") ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Download className="w-3 h-3" />
+                            )}
+                            Latest
                           </button>
                         </div>
                       </div>

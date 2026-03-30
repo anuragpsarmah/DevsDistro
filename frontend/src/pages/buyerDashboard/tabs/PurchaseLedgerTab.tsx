@@ -1,15 +1,27 @@
-import { AlertTriangle, ExternalLink, Activity } from "lucide-react";
+import {
+  AlertTriangle,
+  ExternalLink,
+  Activity,
+  Download,
+  Loader2,
+} from "lucide-react";
 import { useGetPurchasedProjectsQuery } from "@/hooks/apiQueries";
+import { useDownloadProjectMutation } from "@/hooks/apiMutations";
 import { PurchaseLedgerTabProps } from "../utils/types";
 import AnimatedLoadWrapper from "@/components/wrappers/AnimatedLoadWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 
 export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
+  const [downloadingPurchaseId, setDownloadingPurchaseId] = useState<
+    string | null
+  >(null);
   const {
     data: purchases,
     isLoading,
     isError,
   } = useGetPurchasedProjectsQuery({ logout });
+  const downloadMutation = useDownloadProjectMutation({ logout });
 
   const truncateTx = (sig: string) => `${sig.slice(0, 8)}...${sig.slice(-8)}`;
 
@@ -175,6 +187,14 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                             <span className="font-space text-[10px] bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 px-2 py-1 text-black dark:text-white uppercase tracking-widest transition-colors duration-300">
                               {projectType}
                             </span>
+                            {purchase.purchased_package?.commit_sha && (
+                              <span className="font-space text-[10px] bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 px-2 py-1 text-black dark:text-white uppercase tracking-widest transition-colors duration-300">
+                                {purchase.purchased_package.commit_sha.slice(
+                                  0,
+                                  7
+                                )}
+                              </span>
+                            )}
                             {isDeleted && (
                               <span className="font-space text-[10px] font-bold text-white uppercase tracking-widest bg-red-500 px-2 py-1">
                                 Terminated
@@ -246,12 +266,45 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                       </div>
 
                       {/* Action Region */}
-                      <div className="pt-6 xl:pt-0 border-t-2 xl:border-t-0 xl:border-l-2 border-black/10 dark:border-white/10 xl:pl-8 flex w-full xl:w-auto shrink-0 transition-colors duration-300">
+                      <div className="pt-6 xl:pt-0 border-t-2 xl:border-t-0 xl:border-l-2 border-black/10 dark:border-white/10 xl:pl-8 flex flex-col gap-3 w-full xl:w-auto shrink-0 transition-colors duration-300">
+                        <button
+                          onClick={() => {
+                            setDownloadingPurchaseId(purchase._id);
+                            downloadMutation.mutate(
+                              {
+                                project_id: purchase.projectId?._id,
+                                purchase_id: purchase._id,
+                                version: "purchased",
+                              },
+                              {
+                                onSettled: () => setDownloadingPurchaseId(null),
+                              }
+                            );
+                          }}
+                          disabled={
+                            downloadingPurchaseId === purchase._id ||
+                            !purchase.can_download_purchased
+                          }
+                          className="group/btn relative w-full xl:w-auto inline-flex items-center justify-center gap-3 bg-black dark:bg-white text-white dark:text-black px-6 lg:px-8 py-4 font-space font-bold uppercase tracking-widest text-xs transition-colors duration-300 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <span className="relative z-10 flex items-center gap-2 group-hover/btn:text-white transition-colors">
+                            {downloadingPurchaseId === purchase._id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Download className="w-4 h-4" />
+                            )}
+                            <span className="hidden sm:inline">
+                              Download Purchased Version
+                            </span>
+                            <span className="sm:hidden">Download</span>
+                          </span>
+                          <div className="absolute inset-0 bg-red-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
+                        </button>
                         <a
                           href={`https://solscan.io/tx/${purchase.tx_signature}${clusterParam}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group/btn relative w-full xl:w-auto inline-flex items-center justify-center gap-3 bg-black dark:bg-white text-white dark:text-black px-6 lg:px-8 py-4 font-space font-bold uppercase tracking-widest text-xs transition-colors duration-300 overflow-hidden"
+                          className="group/btn relative w-full xl:w-auto inline-flex items-center justify-center gap-3 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white px-6 lg:px-8 py-4 font-space font-bold uppercase tracking-widest text-xs transition-colors duration-300 overflow-hidden"
                         >
                           <span className="relative z-10 flex items-center gap-2 group-hover/btn:text-white transition-colors">
                             <span className="hidden sm:inline">Inspect TX</span>

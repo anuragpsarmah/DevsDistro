@@ -403,7 +403,7 @@ describe("refreshRepoZip — soft-delete guard", () => {
     );
   });
 
-  it("returns 400 when status is PROCESSING and NOT scheduled", async () => {
+  it("returns 400 when there is no successful latest package and the project is not scheduled", async () => {
     stubDirectFindOne({
       _id: VALID_PROJECT_ID,
       scheduled_deletion_at: null,
@@ -419,51 +419,20 @@ describe("refreshRepoZip — soft-delete guard", () => {
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Upload is already in progress" })
+      expect.objectContaining({
+        message:
+          "Can only refresh a project that already has a successful packaged version",
+      })
     );
   });
 
-  it("queues old ZIP for cleanup and returns 200 when NOT scheduled", async () => {
+  it("keeps the current ZIP live and starts a repackage when NOT scheduled", async () => {
     stubDirectFindOne({
       _id: VALID_PROJECT_ID,
       scheduled_deletion_at: null,
       repo_zip_status: "SUCCESS",
       repo_zip_s3_key: "zips/old.zip",
-      github_repo_id: VALID_REPO_ID,
-      github_installation_id: 12345,
-    });
-    vi.mocked(redisClient.zadd).mockResolvedValue(1 as any);
-    vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
-
-    const req = makeReq({ body: { github_repo_id: VALID_REPO_ID } });
-    refreshRepoZip(req as any, res, next);
-    await flushPromises();
-
-    // Old ZIP must be queued for cleanup
-    expect(redisClient.zadd).toHaveBeenCalledWith(
-      "media-cleanup-schedule",
-      expect.any(Number),
-      "zips/old.zip"
-    );
-    expect(Project.updateOne).toHaveBeenCalledWith(
-      { _id: VALID_PROJECT_ID },
-      {
-        repo_zip_status: "PROCESSING",
-        $unset: { repo_zip_s3_key: 1, repo_zip_error: 1 },
-      }
-    );
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Refresh initiated" })
-    );
-  });
-
-  it("does NOT queue old ZIP when there is no existing key", async () => {
-    stubDirectFindOne({
-      _id: VALID_PROJECT_ID,
-      scheduled_deletion_at: null,
-      repo_zip_status: "FAILED",
-      repo_zip_s3_key: null,
+      repackage_status: "IDLE",
       github_repo_id: VALID_REPO_ID,
       github_installation_id: 12345,
     });
@@ -474,7 +443,36 @@ describe("refreshRepoZip — soft-delete guard", () => {
     await flushPromises();
 
     expect(redisClient.zadd).not.toHaveBeenCalled();
+    expect(Project.updateOne).toHaveBeenCalledWith(
+      { _id: VALID_PROJECT_ID },
+      {
+        repackage_status: "PROCESSING",
+        $unset: { repackage_error: 1 },
+      }
+    );
     expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "Refresh initiated" })
+    );
+  });
+
+  it("returns 400 when the project has no currently downloadable latest ZIP", async () => {
+    stubDirectFindOne({
+      _id: VALID_PROJECT_ID,
+      scheduled_deletion_at: null,
+      repo_zip_status: "SUCCESS",
+      repo_zip_s3_key: null,
+      github_repo_id: VALID_REPO_ID,
+      github_installation_id: 12345,
+    });
+
+    const req = makeReq({ body: { github_repo_id: VALID_REPO_ID } });
+    refreshRepoZip(req as any, res, next);
+    await flushPromises();
+
+    expect(redisClient.zadd).not.toHaveBeenCalled();
+    expect(Project.updateOne).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(400);
   });
 });
 

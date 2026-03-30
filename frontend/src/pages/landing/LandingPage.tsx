@@ -92,7 +92,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen text-gray-900 bg-gray-50 dark:text-white relative dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300">
       <SEO
-        title="Marketplace for GitHub Repositories"
+        title={SITE_NAME}
         description={DEFAULT_DESCRIPTION}
         path="/"
         structuredData={landingStructuredData}

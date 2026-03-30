@@ -60,13 +60,14 @@ export default function ProjectDetailPage({
   const downloadMutation = useDownloadProjectMutation({ logout });
   const receiptMutation = useDownloadReceiptMutation({ logout });
 
-  const isPurchased =
-    purchases?.some((p) => p.projectId?._id === projectId) ?? false;
+  const purchaseRecord = purchases?.find((p) => p.projectId?._id === projectId);
+  const isPurchased = Boolean(purchaseRecord);
   const isFreeProject = !!project && project.price <= 0;
   const canWriteReview = isPurchased || isFreeProject;
   const canFetchOwnReview = true;
-  const purchaseRecord = purchases?.find((p) => p.projectId?._id === projectId);
   const isWishlisted = wishlist?.some((p) => p._id === projectId) ?? false;
+  const canDownloadPurchased = purchaseRecord?.can_download_purchased ?? false;
+  const canDownloadLatest = purchaseRecord?.can_download_latest ?? false;
 
   const handlePurchaseSuccess = useCallback(() => {
     setIsPurchaseModalOpen(false);
@@ -90,6 +91,20 @@ export default function ProjectDetailPage({
   const handleRefreshQuote = useCallback(() => {
     purchaseFlow.refreshQuote(projectId);
   }, [projectId, purchaseFlow]);
+
+  const handleDownloadLatest = useCallback(() => {
+    downloadMutation.mutate({ project_id: projectId, version: "latest" });
+  }, [downloadMutation, projectId]);
+
+  const handleDownloadPurchased = useCallback(() => {
+    if (!purchaseRecord) return;
+
+    downloadMutation.mutate({
+      project_id: projectId,
+      purchase_id: purchaseRecord._id,
+      version: "purchased",
+    });
+  }, [downloadMutation, projectId, purchaseRecord]);
 
   const images = project?.project_images ?? [];
   const detailImages =
@@ -536,18 +551,22 @@ export default function ProjectDetailPage({
                             year: "numeric",
                           })}
                         </span>
-                        . Download your copy before then.
+                        . Your purchased version will remain available from the
+                        purchase ledger after deletion, but the live latest
+                        package will not.
                       </p>
                     </div>
                   </div>
                 )}
 
                 {isPurchased ? (
-                  <div className="flex gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     <button
-                      onClick={() => downloadMutation.mutate(projectId)}
-                      disabled={downloadMutation.isPending}
-                      className="flex-1 relative group px-6 py-5 border-2 border-green-500 bg-green-500 text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-green-600 hover:border-green-600 transition-colors"
+                      onClick={handleDownloadPurchased}
+                      disabled={
+                        downloadMutation.isPending || !canDownloadPurchased
+                      }
+                      className="relative group px-6 py-5 border-2 border-green-500 bg-green-500 text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-green-600 hover:border-green-600 transition-colors"
                     >
                       <span className="relative z-10 flex items-center justify-center gap-2">
                         {downloadMutation.isPending ? (
@@ -555,7 +574,23 @@ export default function ProjectDetailPage({
                         ) : (
                           <Download className="w-4 h-4" />
                         )}
-                        Download
+                        Download Purchased Version
+                      </span>
+                    </button>
+                    <button
+                      onClick={handleDownloadLatest}
+                      disabled={
+                        downloadMutation.isPending || !canDownloadLatest
+                      }
+                      className="relative group px-6 py-5 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+                    >
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {downloadMutation.isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Download className="w-4 h-4" />
+                        )}
+                        Download Latest Version
                       </span>
                     </button>
                     {purchaseRecord && (
@@ -564,7 +599,7 @@ export default function ProjectDetailPage({
                           receiptMutation.mutate(purchaseRecord._id)
                         }
                         disabled={receiptMutation.isPending}
-                        className="flex-1 relative group px-6 py-5 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+                        className="relative group px-6 py-5 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
                       >
                         <span className="relative z-10 flex items-center justify-center gap-2">
                           {receiptMutation.isPending ? (
@@ -579,7 +614,7 @@ export default function ProjectDetailPage({
                   </div>
                 ) : project.price === 0 ? (
                   <button
-                    onClick={() => downloadMutation.mutate(projectId)}
+                    onClick={handleDownloadLatest}
                     disabled={downloadMutation.isPending}
                     className="w-full relative group px-8 py-5 border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
                   >

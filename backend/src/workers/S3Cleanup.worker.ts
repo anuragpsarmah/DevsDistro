@@ -3,6 +3,7 @@ import { s3Service } from "..";
 import logger from "../logger/logger";
 import * as cron from "node-cron";
 import { tryCatch } from "../utils/tryCatch.util";
+import { isRepoZipKeyRetained } from "../utils/projectPackageRetention.util";
 
 export default class S3CleanupService {
   private static async processExpiredJobs() {
@@ -23,6 +24,15 @@ export default class S3CleanupService {
           const actualS3Key = key.startsWith("s3upload_")
             ? key.slice("s3upload_".length)
             : key;
+
+          if (!key.startsWith("s3upload_")) {
+            const retained = await isRepoZipKeyRetained(actualS3Key);
+            if (retained) {
+              await redisClient.zrem("media-cleanup-schedule", key);
+              continue;
+            }
+          }
+
           await s3Service.deleteObject(actualS3Key);
           await redisClient.zrem("media-cleanup-schedule", key);
           cleanupItems.push(key);
