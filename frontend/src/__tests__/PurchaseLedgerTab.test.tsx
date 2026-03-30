@@ -69,6 +69,16 @@ const mockDeletedPurchase = {
   project_snapshot: { title: "Deleted Legacy App", project_type: "Mobile App" },
 };
 
+const mockRenamedPurchase = {
+  ...mockActivePurchase,
+  _id: "507f1f77bcf86cd799439055",
+  projectId: {
+    ...mockActivePurchase.projectId,
+    title: "Awesome Web App 2.0",
+  },
+  project_snapshot: { title: "Awesome Web App", project_type: "Web App" },
+};
+
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 describe("PurchaseLedgerTab", () => {
@@ -194,6 +204,20 @@ describe("PurchaseLedgerTab", () => {
 
     render(<PurchaseLedgerTab logout={vi.fn()} />);
     expect(screen.queryByText("Terminated")).not.toBeInTheDocument();
+  });
+
+  it("shows both current and purchase-time titles when an active project has been renamed", () => {
+    vi.mocked(useGetPurchasedProjectsQuery).mockReturnValue({
+      data: [mockRenamedPurchase],
+      isLoading: false,
+      isError: false,
+    } as any);
+
+    render(<PurchaseLedgerTab logout={vi.fn()} />);
+    expect(screen.getByText("Awesome Web App 2.0")).toBeInTheDocument();
+    expect(
+      screen.getByText("At purchase: Awesome Web App")
+    ).toBeInTheDocument();
   });
 
   // ── Deleted-project row ──────────────────────────────────────────────────────

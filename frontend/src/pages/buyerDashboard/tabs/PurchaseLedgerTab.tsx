@@ -135,14 +135,17 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
           {!isLoading && !isError && purchases && purchases.length > 0 && (
             <div className="space-y-6 lg:space-y-8">
               {purchases.map((purchase) => {
-                const title =
-                  purchase.projectId?.title ?? purchase.project_snapshot.title;
+                const purchaseTitle = purchase.project_snapshot.title;
+                const currentTitle = purchase.projectId?.title ?? null;
+                const title = currentTitle ?? purchaseTitle;
                 const projectType =
                   purchase.projectId?.project_type ??
                   purchase.project_snapshot.project_type;
                 const sellerName = purchase.seller_snapshot.name;
                 const sellerUsername = purchase.seller_snapshot.username;
                 const isDeleted = purchase.projectId === null;
+                const showPurchaseTitle =
+                  currentTitle !== null && currentTitle !== purchaseTitle;
 
                 return (
                   <div
@@ -160,6 +163,14 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                           <h3 className="font-space font-bold text-base text-black dark:text-white uppercase tracking-widest break-words hyphens-auto mt-1 line-clamp-2">
                             {title}
                           </h3>
+                          {showPurchaseTitle && (
+                            <span
+                              className="font-space text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1 line-clamp-1"
+                              title={purchaseTitle}
+                            >
+                              At purchase: {purchaseTitle}
+                            </span>
+                          )}
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             <span className="font-space text-[10px] bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 px-2 py-1 text-black dark:text-white uppercase tracking-widest transition-colors duration-300">
                               {projectType}

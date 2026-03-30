@@ -438,7 +438,7 @@ export default function ProjectDetailPage({
                 ) : (
                   <>
                     {seller?.short_bio && (
-                      <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-black/10 dark:border-white/10 pl-4 py-1">
+                      <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed border-black/10 dark:border-white/10 py-1">
                         {seller.short_bio}
                       </p>
                     )}
