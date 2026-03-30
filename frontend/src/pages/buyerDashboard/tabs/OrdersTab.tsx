@@ -48,6 +48,9 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
     version: "latest" | "purchased"
   ) => `${purchaseId}:${version}`;
 
+  const isPurchaseDownloadInFlight = (purchaseId: string) =>
+    downloadingKey?.startsWith(`${purchaseId}:`) ?? false;
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -275,8 +278,7 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                               );
                             }}
                             disabled={
-                              downloadingKey ===
-                                getDownloadKey(purchase._id, "purchased") ||
+                              isPurchaseDownloadInFlight(purchase._id) ||
                               !purchase.can_download_purchased
                             }
                             className="flex items-center gap-1.5 px-3 py-2 bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-[10px] border-2 border-black dark:border-white hover:bg-red-500 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
@@ -289,39 +291,39 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                             )}
                             Purchased
                           </button>
-                          <button
-                            onClick={() => {
-                              const key = getDownloadKey(
-                                purchase._id,
-                                "latest"
-                              );
-                              setDownloadingKey(key);
-                              downloadMutation.mutate(
-                                {
-                                  project_id: purchase.projectId!._id,
-                                  purchase_id: purchase._id,
-                                  version: "latest",
-                                },
-                                {
-                                  onSettled: () => setDownloadingKey(null),
-                                }
-                              );
-                            }}
-                            disabled={
-                              downloadingKey ===
-                                getDownloadKey(purchase._id, "latest") ||
-                              !purchase.can_download_latest
-                            }
-                            className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                          >
-                            {downloadingKey ===
-                            getDownloadKey(purchase._id, "latest") ? (
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                            ) : (
-                              <Download className="w-3 h-3" />
-                            )}
-                            Latest
-                          </button>
+                          {purchase.can_download_latest && (
+                            <button
+                              onClick={() => {
+                                const key = getDownloadKey(
+                                  purchase._id,
+                                  "latest"
+                                );
+                                setDownloadingKey(key);
+                                downloadMutation.mutate(
+                                  {
+                                    project_id: purchase.projectId!._id,
+                                    purchase_id: purchase._id,
+                                    version: "latest",
+                                  },
+                                  {
+                                    onSettled: () => setDownloadingKey(null),
+                                  }
+                                );
+                              }}
+                              disabled={isPurchaseDownloadInFlight(
+                                purchase._id
+                              )}
+                              className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {downloadingKey ===
+                              getDownloadKey(purchase._id, "latest") ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Download className="w-3 h-3" />
+                              )}
+                              Latest
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>

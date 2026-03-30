@@ -47,6 +47,9 @@ export default function ProjectDetailPage({
   const [imageIndex, setImageIndex] = useState(0);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
   const [mediaTab, setMediaTab] = useState<"images" | "video">("images");
+  const [activeDownloadVersion, setActiveDownloadVersion] = useState<
+    "purchased" | "latest" | null
+  >(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const {
@@ -93,17 +96,29 @@ export default function ProjectDetailPage({
   }, [projectId, purchaseFlow]);
 
   const handleDownloadLatest = useCallback(() => {
-    downloadMutation.mutate({ project_id: projectId, version: "latest" });
+    setActiveDownloadVersion("latest");
+    downloadMutation.mutate(
+      { project_id: projectId, version: "latest" },
+      {
+        onSettled: () => setActiveDownloadVersion(null),
+      }
+    );
   }, [downloadMutation, projectId]);
 
   const handleDownloadPurchased = useCallback(() => {
     if (!purchaseRecord) return;
 
-    downloadMutation.mutate({
-      project_id: projectId,
-      purchase_id: purchaseRecord._id,
-      version: "purchased",
-    });
+    setActiveDownloadVersion("purchased");
+    downloadMutation.mutate(
+      {
+        project_id: projectId,
+        purchase_id: purchaseRecord._id,
+        version: "purchased",
+      },
+      {
+        onSettled: () => setActiveDownloadVersion(null),
+      }
+    );
   }, [downloadMutation, projectId, purchaseRecord]);
 
   const images = project?.project_images ?? [];
@@ -564,12 +579,12 @@ export default function ProjectDetailPage({
                     <button
                       onClick={handleDownloadPurchased}
                       disabled={
-                        downloadMutation.isPending || !canDownloadPurchased
+                        activeDownloadVersion !== null || !canDownloadPurchased
                       }
                       className="relative group px-6 py-5 border-2 border-green-500 bg-green-500 text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-green-600 hover:border-green-600 transition-colors"
                     >
                       <span className="relative z-10 flex items-center justify-center gap-2">
-                        {downloadMutation.isPending ? (
+                        {activeDownloadVersion === "purchased" ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
                         ) : (
                           <Download className="w-4 h-4" />
@@ -577,22 +592,22 @@ export default function ProjectDetailPage({
                         Download Purchased Version
                       </span>
                     </button>
-                    <button
-                      onClick={handleDownloadLatest}
-                      disabled={
-                        downloadMutation.isPending || !canDownloadLatest
-                      }
-                      className="relative group px-6 py-5 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
-                    >
-                      <span className="relative z-10 flex items-center justify-center gap-2">
-                        {downloadMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Download className="w-4 h-4" />
-                        )}
-                        Download Latest Version
-                      </span>
-                    </button>
+                    {canDownloadLatest && (
+                      <button
+                        onClick={handleDownloadLatest}
+                        disabled={activeDownloadVersion !== null}
+                        className="relative group px-6 py-5 border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space font-bold uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+                      >
+                        <span className="relative z-10 flex items-center justify-center gap-2">
+                          {activeDownloadVersion === "latest" ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Download className="w-4 h-4" />
+                          )}
+                          Download Latest Version
+                        </span>
+                      </button>
+                    )}
                     {purchaseRecord && (
                       <button
                         onClick={() =>

@@ -157,4 +157,36 @@ describe("ProjectDetailPage", () => {
       screen.getByText(/we could not refresh this project right now/i)
     ).toBeInTheDocument();
   });
+
+  it("hides the latest download button when no live latest package is available", () => {
+    vi.mocked(useProjectDetailQuery).mockReturnValue({
+      data: { ...mockProject, price: 10 },
+      isLoading: false,
+      isError: false,
+    } as any);
+
+    vi.mocked(useGetPurchasedProjectsQuery).mockReturnValue({
+      data: [
+        {
+          _id: "purchase-1",
+          projectId: { ...mockProject, price: 10 },
+          can_download_purchased: true,
+          can_download_latest: false,
+        },
+      ],
+    } as any);
+
+    render(
+      <ProjectDetailPage
+        projectId={mockProject._id}
+        onBack={vi.fn()}
+        logout={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Download Purchased Version")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Download Latest Version")
+    ).not.toBeInTheDocument();
+  });
 });

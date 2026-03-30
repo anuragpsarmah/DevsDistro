@@ -269,6 +269,25 @@ describe("OrdersTab", () => {
     );
   });
 
+  it("does not render the Latest button when no live latest package is available", () => {
+    vi.mocked(useGetPurchasedProjectsInfiniteQuery).mockReturnValue({
+      ...baseInfiniteReturn,
+      data: makeInfiniteData([
+        {
+          ...mockActivePurchase,
+          can_download_latest: false,
+        },
+      ]),
+      isLoading: false,
+      isError: false,
+    } as any);
+
+    render(<OrdersTab logout={vi.fn()} />);
+
+    expect(screen.getByText("Purchased")).toBeInTheDocument();
+    expect(screen.queryByText("Latest")).not.toBeInTheDocument();
+  });
+
   it("calls receiptMutation.mutate with the purchase _id when Receipt is clicked", () => {
     vi.mocked(useGetPurchasedProjectsInfiniteQuery).mockReturnValue({
       ...baseInfiniteReturn,
