@@ -68,7 +68,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             transition={{ duration: 0.8, delay: 0.1 }}
             className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-widest uppercase break-words hyphens-auto text-center md:text-left"
           >
-            A SOURCE CODE MARKET THAT{" "}
+            A REPOSITORY MARKET THAT{" "}
             <span
               className="text-red-500 mix-blend-normal"
               style={{ WebkitTextStroke: "0px" }}

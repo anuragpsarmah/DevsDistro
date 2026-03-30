@@ -4,10 +4,9 @@ export const SITE_URL = (
 ).replace(/\/+$/, "");
 export const TWITTER_HANDLE = "@anuragpsarmah";
 export const DEFAULT_SEO_IMAGE = `${SITE_URL}/og-image.png`;
-export const DEFAULT_TITLE =
-  "DevsDistro | Source Code Marketplace for GitHub Repositories";
+export const DEFAULT_TITLE = "DevsDistro | Marketplace for GitHub Repositories";
 export const DEFAULT_DESCRIPTION =
-  "Buy and sell production-ready source code on DevsDistro. List private GitHub repositories, price them in USD, settle payments in SOL, and deliver code instantly.";
+  "Buy and sell repositories on DevsDistro. List private GitHub repositories, price them in USD, settle payments in SOL, and deliver repository archives instantly.";
 
 export function buildPageTitle(title: string) {
   return title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;

@@ -1097,11 +1097,7 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
     .font("Helvetica")
     .fontSize(11)
     .fillColor("#666666")
-    .text(
-      "A decentralized protocol for code monetization powered by Solana and GitHub.",
-      84,
-      78
-    );
+    .text("A repository marketplace powered by Solana and GitHub.", 84, 78);
 
   doc
     .font("Helvetica-Bold")

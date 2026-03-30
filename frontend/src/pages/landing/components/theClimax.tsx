@@ -40,8 +40,8 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
           </h2>
 
           <p className="font-space text-xl md:text-2xl text-black dark:text-black font-medium mb-10 max-w-2xl mx-auto transition-colors">
-            Take control of your codebase economics today. Open source is great,
-            but securing your financial upside is better.
+            Take control of your repository economics today. Open Source is
+            great, but securing your financial upside is better.
           </p>
 
           <button

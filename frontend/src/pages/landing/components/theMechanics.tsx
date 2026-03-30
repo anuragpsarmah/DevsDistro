@@ -43,7 +43,7 @@ export default function TheMechanics() {
             <p className="font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
               Begin with standard GitHub OAuth, followed by our native GitHub
               App Integration. This grants DevsDistro the specific scoped access
-              needed to securely fetch your repository code for packaging.
+              needed to securely fetch your repository for packaging.
             </p>
           </motion.div>
 

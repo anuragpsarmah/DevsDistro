@@ -7,7 +7,7 @@ import SEO from "@/components/seo/SEO";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
 
 const termsDescription =
-  "Review the DevsDistro terms of service for marketplace usage, GitHub app access, source code ownership, Solana payments, and delivery terms.";
+  "Review the DevsDistro terms of service for marketplace usage, GitHub app access, repository ownership, Solana payments, and delivery terms.";
 
 const termsStructuredData = {
   "@context": "https://schema.org",
@@ -74,8 +74,8 @@ export default function TermsOfService() {
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
               By accessing or using DevsDistro ("Platform"), you agree to be
               bound by these Terms of Service. The Platform provides a
-              decentralized marketplace for developers to buy and sell source
-              code securely and efficiently.
+              decentralized marketplace for developers to buy and sell
+              repositories securely and efficiently.
             </p>
           </section>
 
@@ -89,8 +89,8 @@ export default function TermsOfService() {
               mandatory requirement to verify your identity and confirm
               cryptographic ownership of the repositories you intend to list.
               The GitHub App requests scoped permissions exclusively for the
-              repositories you select, ensuring we only interact with the code
-              you choose to monetize.
+              repositories you select, ensuring we only interact with the
+              repository contents you choose to monetize.
             </p>
           </section>
 
@@ -108,9 +108,9 @@ export default function TermsOfService() {
                 </div>
                 <div className="flex-1">
                   You must exclusively own, or have explicit, verifiable legal
-                  rights to sell, the intellectual property of any code you list
-                  on the Platform. Copied, stolen, or improperly licensed
-                  open-source code is strictly prohibited.
+                  rights to sell, the intellectual property of any repository
+                  you list on the Platform. Copied, stolen, or improperly
+                  licensed repository content is strictly prohibited.
                 </div>
               </li>
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
@@ -121,8 +121,9 @@ export default function TermsOfService() {
                   </strong>
                 </div>
                 <div className="flex-1">
-                  You agree not to list malicious code, malware, exploits, or
-                  code that violates third-party intellectual property rights.
+                  You agree not to list repositories containing malware,
+                  exploits, or material that violates third-party intellectual
+                  property rights.
                 </div>
               </li>
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
@@ -148,10 +149,10 @@ export default function TermsOfService() {
               <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                 Solana Settlement /
               </strong>
-              You define the valuation of your codebase in USD fiat. At the time
-              of execution, DevsDistro automatically converts this amount and
-              processes the transaction exclusively in native SOL on the Solana
-              blockchain through a connected Web3 wallet (e.g., Phantom,
+              You define the valuation of your repository in USD fiat. At the
+              time of execution, DevsDistro automatically converts this amount
+              and processes the transaction exclusively in native SOL on the
+              Solana blockchain through a connected Web3 wallet (e.g., Phantom,
               Solflare).
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">

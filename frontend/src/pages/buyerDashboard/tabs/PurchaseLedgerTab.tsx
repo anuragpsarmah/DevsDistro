@@ -37,7 +37,7 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                 Purchase Ledger
               </h1>
               <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
-                Immutable record of all acquired source code.
+                Immutable record of all acquired repository archives.
               </p>
             </div>
 

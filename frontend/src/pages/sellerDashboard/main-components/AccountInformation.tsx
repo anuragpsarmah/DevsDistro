@@ -268,11 +268,11 @@ export default function AccountInformation({
             <div className="flex items-start justify-between gap-6 p-6 border-2 border-black/10 dark:border-white/10">
               <div>
                 <h3 className="font-syne text-xl uppercase tracking-widest font-bold text-black dark:text-white mb-2">
-                  Auto-repackage on code change
+                  Auto-repackage on repository updates
                 </h3>
                 <p className="font-space text-sm text-gray-600 dark:text-gray-400">
                   Automatically repackage your listed projects when you push
-                  code changes to GitHub.
+                  repository updates to GitHub.
                 </p>
               </div>
               {isInitialLoading ? (

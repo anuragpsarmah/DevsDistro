@@ -59,7 +59,7 @@ export default function AuthPage() {
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex flex-col">
       <SEO
         title="Authentication"
-        description="Sign in to DevsDistro with GitHub to buy or sell source code."
+        description="Sign in to DevsDistro with GitHub to buy or sell repositories."
         path="/authentication"
         robots="noindex, nofollow"
       />

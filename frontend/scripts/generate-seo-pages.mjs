@@ -63,7 +63,7 @@ const routes = [
     path: "/terms",
     title: "Terms of Service | DevsDistro",
     description:
-      "Review the DevsDistro terms of service for marketplace usage, GitHub app access, source code ownership, Solana payments, and delivery terms.",
+      "Review the DevsDistro terms of service for marketplace usage, GitHub app access, repository ownership, Solana payments, and delivery terms.",
     structuredData: [
       {
         "@context": "https://schema.org",
@@ -71,7 +71,7 @@ const routes = [
         name: "Terms of Service",
         url: `${siteUrl}/terms`,
         description:
-          "Review the DevsDistro terms of service for marketplace usage, GitHub app access, source code ownership, Solana payments, and delivery terms.",
+          "Review the DevsDistro terms of service for marketplace usage, GitHub app access, repository ownership, Solana payments, and delivery terms.",
       },
     ],
   },

@@ -73,7 +73,7 @@ export default function PrivacyPolicy() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
               We collect information necessary to facilitate the buying and
-              selling of source code. This includes:
+              selling of repositories. This includes:
             </p>
             <ul className="space-y-4 text-gray-600 dark:text-gray-400 text-lg">
               <li className="flex gap-4">
@@ -112,7 +112,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
-              02. App Security & Code Storage
+              02. App Security & Repository Storage
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
               DevsDistro treats your intellectual property with the highest
@@ -140,8 +140,8 @@ export default function PrivacyPolicy() {
                   <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     Listing Archival -
                   </strong>{" "}
-                  When you list a project, we read your raw source code and
-                  immediately compile it into a secure ZIP archive. This ensures
+                  When you list a project, we fetch your repository and
+                  immediately package it into a secure ZIP archive. This ensures
                   instant delivery to buyers upon successful transaction.
                 </span>
               </li>
@@ -151,9 +151,9 @@ export default function PrivacyPolicy() {
                   <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     S3 Delivery -
                   </strong>{" "}
-                  Code archives are stored in tightly restricted AWS S3 buckets.
-                  They are served directly to the buyer as a one-time download
-                  and remain entirely inaccessible from the public web.
+                  Repository archives are stored in tightly restricted AWS S3
+                  buckets. They are served directly to the buyer as a one-time
+                  download and remain entirely inaccessible from the public web.
                 </span>
               </li>
             </ul>
@@ -173,8 +173,8 @@ export default function PrivacyPolicy() {
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
-                Execute verifiable delivery of code archives associated with
-                verified SOL settlements.
+                Execute verifiable delivery of repository archives associated
+                with verified SOL settlements.
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
@@ -205,7 +205,7 @@ export default function PrivacyPolicy() {
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 Instantly revoke our app integration from your GitHub
                 settings—doing so severs our ability to fetch or archive your
-                code dynamically.
+                repositories dynamically.
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>

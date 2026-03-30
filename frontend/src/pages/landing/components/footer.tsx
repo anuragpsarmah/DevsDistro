@@ -28,8 +28,7 @@ export default function Footer() {
               DevsDistro
             </h3>
             <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-8 leading-relaxed transition-colors text-center md:text-left mx-auto md:mx-0">
-              A decentralized protocol for code monetization powered by Solana
-              and GitHub.
+              A repository marketplace powered by Solana and GitHub.
             </p>
             <div className="flex gap-4 justify-center md:justify-start">
               <a

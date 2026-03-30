@@ -121,7 +121,7 @@ export default function MarketplaceTab({
                 Explore Projects
               </h1>
               <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
-                Browse and discover source code projects from the community.
+                Browse and discover repository listings from the community.
               </p>
             </div>
             {!isInitialLoading && totalCount > 0 && (

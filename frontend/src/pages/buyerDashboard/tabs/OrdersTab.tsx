@@ -102,7 +102,7 @@ export default function OrdersTab({ logout }: OrdersTabProps) {
                 Purchased Projects
               </h1>
               <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
-                Download and manage your acquired source code.
+                Download and manage your acquired repository archives.
               </p>
             </div>
             {!isLoading && activePurchases.length > 0 && (
