@@ -1,8 +1,6 @@
 import { CropArea } from "./types";
 
-export function loadImageForCanvas(
-  src: string
-): Promise<HTMLImageElement | null> {
+function loadImageForCanvas(src: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";

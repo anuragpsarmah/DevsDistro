@@ -12,15 +12,6 @@ export const DashboardCardSkeleton = () => (
   </div>
 );
 
-export const MetricCardSkeleton = () => (
-  <div className="bg-black/5 dark:bg-white/5 border border-black/20 dark:border-white/20 p-6 lg:p-8 relative overflow-hidden">
-    <div className="relative z-10 space-y-6">
-      <Skeleton className="h-4 w-24 bg-black/10 dark:bg-white/10 rounded-none" />
-      <Skeleton className="h-8 lg:h-10 w-32 bg-black/10 dark:bg-white/10 rounded-none" />
-    </div>
-  </div>
-);
-
 export const SalesMetricsSkeleton = () => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
     {[...Array(4)].map((_, index) => (
@@ -39,19 +30,6 @@ export const MonthlySalesHeaderSkeleton = () => (
   </div>
 );
 
-export const MonthlySalesSkeleton = () => (
-  <div className="flex flex-col h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white p-6 lg:p-10 transition-colors duration-300">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 lg:mb-12 flex-shrink-0">
-      <MonthlySalesHeaderSkeleton />
-      <Skeleton className="h-12 w-[120px] rounded-none bg-black/10 dark:bg-white/10 border-2 border-black dark:border-white" />
-    </div>
-
-    <div className="flex-1 min-h-[300px] border-t border-black/10 dark:border-white/10 pt-8 mt-2 relative">
-      <ChartSkeleton />
-    </div>
-  </div>
-);
-
 export const ChartSkeleton = () => (
   <div className="flex items-end justify-between h-full gap-2 pt-4">
     {[...Array(12)].map((_, i) => (
@@ -61,27 +39,6 @@ export const ChartSkeleton = () => (
         style={{ height: `${Math.random() * 60 + 30}%` }}
       />
     ))}
-  </div>
-);
-
-export const DashboardSkeleton = () => (
-  <div className="flex flex-col min-h-[calc(100vh-3rem)] lg:min-h-[calc(100vh-4rem)] mt-10 lg:mt-0 pb-12 lg:pb-16 gap-12 lg:gap-16">
-    <div className="flex-shrink-0">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-[2px] bg-red-500/50"></div>
-        <Skeleton className="h-3 w-20 bg-black/10 dark:bg-white/10 rounded-none" />
-      </div>
-      <Skeleton className="h-12 lg:h-16 w-64 lg:w-96 bg-black/10 dark:bg-white/10 rounded-none mb-6" />
-      <Skeleton className="h-6 w-full max-w-2xl bg-black/10 dark:bg-white/10 rounded-none" />
-    </div>
-
-    <div className="flex-shrink-0 w-full">
-      <SalesMetricsSkeleton />
-    </div>
-
-    <div className="flex-1 min-h-0 w-full relative">
-      <MonthlySalesSkeleton />
-    </div>
   </div>
 );
 
@@ -186,7 +143,7 @@ export const ListedProjectSkeleton = () => (
   </div>
 );
 
-export const SalesTransactionCardSkeleton = () => (
+const SalesTransactionCardSkeleton = () => (
   <div className="border-2 border-black/10 dark:border-white/10 p-6 lg:p-8 flex flex-col xl:flex-row xl:items-center justify-between gap-8 transition-colors duration-300">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 w-full xl:w-auto flex-1">
       {[...Array(4)].map((_, i) => (

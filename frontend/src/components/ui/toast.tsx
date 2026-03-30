@@ -93,7 +93,10 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn("text-xs font-bold font-space uppercase tracking-widest", className)}
+    className={cn(
+      "text-xs font-bold font-space uppercase tracking-widest",
+      className
+    )}
     {...props}
   />
 ));
@@ -121,8 +124,6 @@ export {
   ToastProvider,
   ToastViewport,
   Toast,
-  ToastTitle,
   ToastDescription,
   ToastClose,
-  ToastAction,
 };
