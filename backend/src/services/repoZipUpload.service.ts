@@ -151,6 +151,26 @@ export default class RepoZipUploadService {
     );
   }
 
+  private async finalizeNoopRepackage(
+    projectId: string,
+    commitSha: string,
+    source: ProjectPackageSource
+  ): Promise<void> {
+    await tryCatch(
+      Project.findByIdAndUpdate(projectId, {
+        repackage_status: "IDLE",
+        repackage_error: null,
+        latest_package_commit_sha: commitSha,
+      })
+    );
+
+    logger.info("Skipping package creation because commit is unchanged", {
+      projectId,
+      commitSha,
+      source,
+    });
+  }
+
   async processRepoZipUpload(
     projectId: string,
     githubRepoId: string,
@@ -208,6 +228,17 @@ export default class RepoZipUploadService {
         return;
       }
 
+      if (
+        hadLatestPackage &&
+        project.latest_package_id &&
+        project.repo_zip_s3_key &&
+        options.commitSha &&
+        project.latest_package_commit_sha === options.commitSha
+      ) {
+        await this.finalizeNoopRepackage(projectId, options.commitSha, source);
+        return;
+      }
+
       const [installationToken, tokenError] = await tryCatch(
         githubAppService.getInstallationToken(installationId)
       );
@@ -229,6 +260,16 @@ export default class RepoZipUploadService {
           default_branch,
           installationToken
         ));
+
+      if (
+        hadLatestPackage &&
+        project.latest_package_id &&
+        project.repo_zip_s3_key &&
+        project.latest_package_commit_sha === commitSha
+      ) {
+        await this.finalizeNoopRepackage(projectId, commitSha, source);
+        return;
+      }
 
       const [zipResponse, downloadError] = await tryCatch(
         axios.get(

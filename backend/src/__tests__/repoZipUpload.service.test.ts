@@ -57,6 +57,10 @@ import { githubAppService } from "../services/githubApp.service";
 import { Project } from "../models/project.model";
 import { ProjectPackage } from "../models/projectPackage.model";
 import RepoZipUploadService from "../services/repoZipUpload.service";
+import {
+  reconcileProjectPackageRetention,
+  queueRepoZipKeyForCleanup,
+} from "../utils/projectPackageRetention.util";
 
 const PROJECT_ID = "507f191e810c19729de860ea";
 const REPO_ID = "953781574";
@@ -149,5 +153,79 @@ describe("RepoZipUploadService", () => {
       expect.any(PassThrough),
       "application/zip"
     );
+  });
+
+  it("skips creating a new package for manual repackage when the resolved commit matches the current latest package", async () => {
+    vi.mocked(Project.findById).mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        lean: vi.fn().mockResolvedValue({
+          userid: "507f1f77bcf86cd799439022",
+          repo_zip_status: "SUCCESS",
+          repo_zip_s3_key: `repoZips/${PROJECT_ID}/current.zip`,
+          latest_package_id: "507f1f77bcf86cd799439099",
+          latest_package_commit_sha: "abcdef1234567890abcdef1234567890abcdef12",
+        }),
+      }),
+    } as any);
+
+    vi.mocked(axios.get)
+      .mockResolvedValueOnce({
+        data: {
+          full_name: "anuragpsarmah/devsdistro-seller-repo",
+          default_branch: "main",
+        },
+      } as any)
+      .mockResolvedValueOnce({
+        data: {
+          sha: "abcdef1234567890abcdef1234567890abcdef12",
+        },
+      } as any);
+
+    const service = new RepoZipUploadService();
+    await service.processRepoZipUpload(PROJECT_ID, REPO_ID, 12345, {
+      source: "MANUAL_REPACKAGE",
+    });
+
+    expect(githubAppService.getInstallationToken).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledTimes(2);
+    expect(s3Service.uploadStream).not.toHaveBeenCalled();
+    expect(ProjectPackage.create).not.toHaveBeenCalled();
+    expect(vi.mocked(reconcileProjectPackageRetention)).not.toHaveBeenCalled();
+    expect(vi.mocked(queueRepoZipKeyForCleanup)).not.toHaveBeenCalled();
+    expect(Project.findByIdAndUpdate).toHaveBeenCalledWith(PROJECT_ID, {
+      repackage_status: "IDLE",
+      repackage_error: null,
+      latest_package_commit_sha: "abcdef1234567890abcdef1234567890abcdef12",
+    });
+  });
+
+  it("skips auto-repackage before any GitHub calls when the pushed commit matches the current latest package", async () => {
+    vi.mocked(Project.findById).mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        lean: vi.fn().mockResolvedValue({
+          userid: "507f1f77bcf86cd799439022",
+          repo_zip_status: "SUCCESS",
+          repo_zip_s3_key: `repoZips/${PROJECT_ID}/current.zip`,
+          latest_package_id: "507f1f77bcf86cd799439099",
+          latest_package_commit_sha: "abcdef1234567890abcdef1234567890abcdef12",
+        }),
+      }),
+    } as any);
+
+    const service = new RepoZipUploadService();
+    await service.processRepoZipUpload(PROJECT_ID, REPO_ID, 12345, {
+      source: "AUTO_REPACKAGE",
+      commitSha: "abcdef1234567890abcdef1234567890abcdef12",
+    });
+
+    expect(githubAppService.getInstallationToken).not.toHaveBeenCalled();
+    expect(axios.get).not.toHaveBeenCalled();
+    expect(s3Service.uploadStream).not.toHaveBeenCalled();
+    expect(ProjectPackage.create).not.toHaveBeenCalled();
+    expect(Project.findByIdAndUpdate).toHaveBeenCalledWith(PROJECT_ID, {
+      repackage_status: "IDLE",
+      repackage_error: null,
+      latest_package_commit_sha: "abcdef1234567890abcdef1234567890abcdef12",
+    });
   });
 });

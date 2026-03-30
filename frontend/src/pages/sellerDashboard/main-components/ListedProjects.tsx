@@ -538,7 +538,7 @@ const ListedProjects = ({
                     <div className="flex items-center gap-3 p-4 border-2 border-green-500 bg-green-500/5 mt-4 mb-2 transition-colors duration-300">
                       <Loader2 className="h-4 w-4 text-green-600 dark:text-green-400 animate-spin flex-shrink-0" />
                       <span className="text-[10px] uppercase font-bold tracking-wider font-space text-green-700 dark:text-green-300 flex-grow transition-colors duration-300">
-                        LATEST PACKAGE LIVE. BUILDING NEW REPACKAGE...
+                        REPACKAGING REPOSITORY...
                       </span>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -568,7 +568,7 @@ const ListedProjects = ({
                     <div className="flex items-center gap-3 p-4 border-2 border-amber-500 bg-amber-500/5 mt-4 mb-2 transition-colors duration-300">
                       <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
                       <span className="text-[10px] uppercase font-bold tracking-wider font-space text-amber-700 dark:text-amber-300 flex-grow transition-colors duration-300">
-                        LATEST PACKAGE STILL LIVE. LAST REPACKAGE FAILED.
+                        REPACKAGE FAILED. PREVIOUS VERSION STILL LIVE.
                       </span>
                       <Tooltip>
                         <TooltipTrigger asChild>
