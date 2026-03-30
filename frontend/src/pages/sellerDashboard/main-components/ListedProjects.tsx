@@ -519,7 +519,7 @@ const ListedProjects = ({
                         {(project.downloadCount ?? 0) > 0 && (
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <span className="px-3 py-1.5 bg-red-500 text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-red-500 cursor-default">
+                              <span className="px-3 h-8 flex items-center bg-red-500 text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-red-500 cursor-default">
                                 {formatCompactDownloadCount(
                                   project.downloadCount
                                 )}
@@ -533,7 +533,7 @@ const ListedProjects = ({
                             </TooltipContent>
                           </Tooltip>
                         )}
-                        <span className="px-3 py-1.5 bg-white dark:bg-black text-black dark:text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-black dark:border-white">
+                        <span className="px-3 h-8 flex items-center bg-white dark:bg-black text-black dark:text-white font-space font-bold uppercase tracking-wider text-sm border-2 border-black dark:border-white">
                           {project.price === 0 ? "Free" : `$ ${project.price}`}
                         </span>
                         {project.live_link && (
