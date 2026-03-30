@@ -219,8 +219,8 @@ const ListedProjects = ({
                   Wallet Connection Required
                 </p>
                 <p className="font-space text-xs text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-                  Wallet connection is required for projects to be visible in
-                  marketplace.
+                  Wallet connection is required for projects to be purchasable
+                  in the marketplace.
                 </p>
               </div>
             </div>

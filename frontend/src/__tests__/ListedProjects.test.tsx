@@ -71,7 +71,7 @@ describe("ListedProjects", () => {
     expect(screen.getByText(/wallet connection required/i)).toBeInTheDocument();
     expect(
       screen.getByText(
-        /wallet connection is required for projects to be visible in marketplace\./i
+        /wallet connection is required for projects to be purchasable in the marketplace\./i
       )
     ).toBeInTheDocument();
 
