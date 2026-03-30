@@ -592,7 +592,7 @@ const ListedProjects = ({
                     </div>
                   )}
 
-                <div className="flex flex-col flex-grow mt-4 space-y-4">
+                <div className="flex flex-col flex-grow mt-4 gap-4">
                   <p
                     className={`
                   text-sm font-space text-gray-700 dark:text-gray-300
