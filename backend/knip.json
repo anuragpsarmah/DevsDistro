@@ -1,0 +1,8 @@
+{
+  "entry": ["src/worker.ts", "src/__tests__/**/*.test.ts"],
+  "project": ["src/**/*.ts"],
+  "ignoreDependencies": ["pino-pretty"],
+  "rules": {
+    "duplicates": "off"
+  }
+}

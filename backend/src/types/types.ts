@@ -22,11 +22,6 @@ export interface MonthlySales {
   sales: Number;
 }
 
-export interface CityInfo {
-  city: string;
-  iso2: string;
-}
-
 export interface ProjectQuery {
   isActive: boolean;
   github_access_revoked: boolean;

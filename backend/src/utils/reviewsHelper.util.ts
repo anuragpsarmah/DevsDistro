@@ -6,7 +6,7 @@ import { Sales } from "../models/sales.model";
 import logger from "../logger/logger";
 import { tryCatch } from "./tryCatch.util";
 
-export function computeBestSellerBadge(
+function computeBestSellerBadge(
   avgRating: number,
   totalReviews: number
 ): string {

@@ -19,7 +19,7 @@ const COINGECKO_URL =
 const BINANCE_URL =
   "https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT";
 
-export interface SolanaRateResult {
+interface SolanaRateResult {
   rate: number;
   source: string;
   fetched_at: Date;
