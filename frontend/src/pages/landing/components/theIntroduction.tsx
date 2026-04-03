@@ -66,16 +66,17 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-widest uppercase break-words hyphens-auto text-center md:text-left"
+            className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-[0.08em] uppercase text-center md:text-left"
           >
-            A REPOSITORY MARKET THAT{" "}
+            <span className="block md:whitespace-nowrap">A REPOSITORY</span>
+            <span className="block md:whitespace-nowrap">MARKET THAT</span>
             <span
-              className="text-red-500 mix-blend-normal"
+              className="block text-red-500 mix-blend-normal md:whitespace-nowrap"
               style={{ WebkitTextStroke: "0px" }}
             >
               WORKS
+              <span className="text-black dark:text-white">.</span>
             </span>
-            .
           </motion.h1>
 
           <motion.p

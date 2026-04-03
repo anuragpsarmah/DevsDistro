@@ -71,35 +71,67 @@
 /* ========================================
    SCROLLBAR STYLES
    ======================================== */
-::-webkit-scrollbar {
-  width: 2px;
-  height: 2px;
+:root {
+  --app-scrollbar-size: 4px;
+  --app-scrollbar-thumb: #000;
 }
 
-::-webkit-scrollbar-track {
+.dark {
+  --app-scrollbar-thumb: #fff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--app-scrollbar-thumb) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: var(--app-scrollbar-size);
+  height: var(--app-scrollbar-size);
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-black dark:bg-white;
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-red-500;
+*::-webkit-scrollbar-thumb {
+  background: var(--app-scrollbar-thumb);
+  border-radius: 9999px;
 }
 
-::-webkit-scrollbar-button {
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--app-scrollbar-thumb);
+}
+
+*::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
   display: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
 }
 
-/* For Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: black transparent;
+*::-webkit-scrollbar-button:single-button,
+*::-webkit-scrollbar-button:vertical:start:decrement,
+*::-webkit-scrollbar-button:vertical:end:increment,
+*::-webkit-scrollbar-button:horizontal:start:decrement,
+*::-webkit-scrollbar-button:horizontal:end:increment,
+*::-webkit-scrollbar-button:start:decrement,
+*::-webkit-scrollbar-button:end:increment {
+  width: 0;
+  height: 0;
+  display: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
 }
 
-.dark * {
-  scrollbar-color: white transparent;
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* For Edge and IE */

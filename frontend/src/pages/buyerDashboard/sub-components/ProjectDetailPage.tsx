@@ -368,7 +368,7 @@ export default function ProjectDetailPage({
                   System Overview
                 </span>
               </div>
-              <div className="flex-1 min-h-0 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-transparent hover:[&::-webkit-scrollbar-thumb]:bg-black/20 dark:hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
+              <div className="flex-1 min-h-0 overflow-y-auto">
                 <p className="font-space text-black dark:text-white text-lg lg:text-xl leading-relaxed font-medium whitespace-pre-wrap pr-2">
                   {project.description}
                 </p>
@@ -385,7 +385,7 @@ export default function ProjectDetailPage({
                 </span>
               </div>
 
-              <div className="flex-1 min-h-0 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-transparent hover:[&::-webkit-scrollbar-thumb]:bg-black/20 dark:hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
+              <div className="flex-1 min-h-0 overflow-y-auto">
                 <div className="flex flex-wrap gap-3 pr-2">
                   {project.tech_stack.map((tech) => (
                     <span
@@ -403,7 +403,7 @@ export default function ProjectDetailPage({
 
         <div className="xl:col-span-2 h-full flex flex-col">
           <div className="h-full flex flex-col border-2 border-black dark:border-white bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
-            <div className="p-8 lg:p-10 flex-1 overflow-y-auto min-h-0 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-transparent hover:[&::-webkit-scrollbar-thumb]:bg-black/20 dark:hover:[&::-webkit-scrollbar-thumb]:bg-white/20">
+            <div className="p-8 lg:p-10 flex-1 overflow-y-auto min-h-0">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-[2px] bg-red-500"></div>
                 <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">

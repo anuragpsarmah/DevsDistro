@@ -339,27 +339,6 @@ export default function SearchBar({
           </div>
         </div>
       </div>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.05);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #ef4444;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #000;
-        }
-        .dark .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
-        }
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #fff;
-        }
-      `}</style>
     </div>
   );
 }
