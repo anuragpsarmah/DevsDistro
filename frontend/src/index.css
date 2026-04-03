@@ -64,7 +64,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
   }
 }
 
@@ -72,26 +72,34 @@
    SCROLLBAR STYLES
    ======================================== */
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 2px;
+  height: 2px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-white dark:bg-[#050505] border-l-2 border-black/10 dark:border-white/10;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-black/20 dark:bg-white/20 border-2 border-transparent bg-clip-padding;
+  @apply bg-black dark:bg-white;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-red-500 border-red-500 bg-clip-border;
+  @apply bg-red-500;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }
 
 /* For Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #4b5563 #1f2937;
+  scrollbar-color: black transparent;
+}
+
+.dark * {
+  scrollbar-color: white transparent;
 }
 
 /* For Edge and IE */
@@ -113,4 +121,3 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
-

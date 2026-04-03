@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 export default function TheShift() {
+  const isLarge = useMediaQuery("(min-width: 1024px)");
+
   return (
     <section
       className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] transition-colors duration-300 relative overflow-hidden"
@@ -26,8 +29,8 @@ export default function TheShift() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, ...(isLarge ? { x: 50 } : { y: 50 }) }}
+            whileInView={{ opacity: 1, ...(isLarge ? { x: 0 } : { y: 0 }) }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
             className="order-1 lg:order-2"
@@ -53,8 +56,8 @@ export default function TheShift() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, ...(isLarge ? { x: -50 } : { y: 50 }) }}
+            whileInView={{ opacity: 1, ...(isLarge ? { x: 0 } : { y: 0 }) }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
             className="order-2 lg:order-1 flex flex-col gap-6"

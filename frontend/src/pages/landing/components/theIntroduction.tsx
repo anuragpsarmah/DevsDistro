@@ -65,7 +65,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.8 }}
             className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-widest uppercase break-words hyphens-auto text-center md:text-left"
           >
             A REPOSITORY MARKET THAT{" "}
@@ -81,7 +81,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8 }}
             className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0"
           >
             Open marketplace where developers sell private repos — priced in
@@ -91,7 +91,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8 }}
             className="mt-12 flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center md:items-start"
           >
             <button
@@ -109,7 +109,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.2 }}
+          transition={{ duration: 1 }}
           className="lg:col-span-4 hidden lg:flex flex-col justify-end items-end"
         >
           <div className="border-r-2 border-red-500 pr-6 py-2 flex flex-col gap-3 font-space text-[10px] sm:text-xs uppercase tracking-widest text-gray-500">

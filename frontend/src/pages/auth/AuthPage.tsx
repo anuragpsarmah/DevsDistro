@@ -92,7 +92,7 @@ export default function AuthPage() {
             </h1>
 
             <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl leading-relaxed mb-10">
-              Authenticate securely using{" "}
+              Authenticate using{" "}
               <span className="text-black dark:text-white font-bold">
                 GITHUB OAUTH
               </span>
@@ -109,7 +109,7 @@ export default function AuthPage() {
               <li className="flex gap-4 items-start">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span className="text-gray-600 dark:text-gray-400 font-space text-sm md:text-base">
-                  Direct liquidity through Solana integration.
+                  Instant repository delivery on every purchase.
                 </span>
               </li>
               <li className="flex gap-4 items-start">

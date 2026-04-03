@@ -60,7 +60,7 @@ export default function Reviews() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: idx * 0.1, duration: 0.6 }}
+            transition={{ duration: 0.6 }}
             className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 flex flex-col justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group"
           >
             <div className="mb-12">

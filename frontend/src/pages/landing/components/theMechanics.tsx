@@ -26,14 +26,14 @@ export default function TheMechanics() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-l-2 border-black/20 dark:border-white/20 transition-colors">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-black/20 dark:border-white/20 transition-colors"
+        >
+          <div className="border-b-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group">
             <div className="font-space text-4xl font-bold mb-8 text-black dark:text-white group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
               01.
             </div>
@@ -45,15 +45,9 @@ export default function TheMechanics() {
               App Integration. This grants DevsDistro the specific scoped access
               needed to securely fetch your repository for packaging.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
-            className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group bg-white dark:bg-[#050505]"
-          >
+          <div className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group bg-white dark:bg-[#050505]">
             <div className="font-space text-4xl font-bold mb-8 text-black dark:text-white group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
               02.
             </div>
@@ -65,15 +59,9 @@ export default function TheMechanics() {
               purchase price in standard USD fiat for total clarity and
               stability.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-            className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group"
-          >
+          <div className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group">
             <div className="font-space text-4xl font-bold mb-8 text-black dark:text-white group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
               03.
             </div>
@@ -85,15 +73,9 @@ export default function TheMechanics() {
               the purchase paying native SOL equivalent to your USD price. Block
               confirmation occurs in sub-seconds.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, ease: "easeOut", delay: 0.3 }}
-            className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-black transition-colors duration-300 group lg:col-span-3 bg-black/5 dark:bg-white/5 text-black dark:text-white"
-          >
+          <div className="border-b-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-black transition-colors duration-300 group lg:col-span-3 bg-black/5 dark:bg-white/5 text-black dark:text-white">
             <div className="max-w-3xl">
               <div className="font-space text-4xl font-bold mb-8 text-gray-500 dark:text-gray-500 group-hover:text-white dark:group-hover:text-black transition-colors">
                 04.
@@ -108,8 +90,8 @@ export default function TheMechanics() {
                 to the buyer. No manual labor required.
               </p>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

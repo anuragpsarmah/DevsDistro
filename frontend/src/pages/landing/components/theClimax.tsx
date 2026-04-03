@@ -21,8 +21,8 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          viewport={{ once: true, margin: "-20px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           className="bg-red-500 p-8 md:p-16 border-4 border-black dark:border-white transform -skew-y-2 hover:skew-y-0 transition-all duration-500"
         >
           <div className="flex items-center gap-3 mb-6 justify-center">
