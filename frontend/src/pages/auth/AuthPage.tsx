@@ -103,13 +103,13 @@ export default function AuthPage() {
               <li className="flex gap-4 items-start">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span className="text-gray-600 dark:text-gray-400 font-space text-sm md:text-base">
-                  Seamless repository synchronization.
+                  Seamless repository integration.
                 </span>
               </li>
               <li className="flex gap-4 items-start">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span className="text-gray-600 dark:text-gray-400 font-space text-sm md:text-base">
-                  Instant repository delivery on every purchase.
+                  Instant delivery after every purchase.
                 </span>
               </li>
               <li className="flex gap-4 items-start">

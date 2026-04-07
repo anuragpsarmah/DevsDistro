@@ -1,6 +1,6 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { faqs } from "../utils/constants";
 
@@ -38,50 +38,71 @@ export default function FAQ() {
           </div>
 
           <div className="md:w-2/3 border-t-2 border-black/20 dark:border-white/20 transition-colors">
-            {faqs.map((faq, idx) => (
-              <div
-                key={idx}
-                className="border-b-2 border-black/20 dark:border-white/20 overflow-hidden group transition-colors"
-              >
-                <button
-                  onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                  className="w-full text-left py-8 flex justify-between items-center bg-transparent group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors duration-200 px-4"
-                  aria-expanded={openIndex === idx}
-                  aria-controls={`faq-panel-${idx}`}
+            {faqs.map((faq, idx) => {
+              const isOpen = openIndex === idx;
+
+              return (
+                <motion.div
+                  layout
+                  key={faq.question}
+                  className="border-b-2 border-black/20 dark:border-white/20 overflow-hidden group transition-colors"
                 >
-                  <span
-                    id={`faq-question-${idx}`}
-                    className="font-syne text-xl md:text-2xl font-bold uppercase pr-8 transition-colors"
+                  <button
+                    onClick={() => setOpenIndex(isOpen ? null : idx)}
+                    className="w-full text-left py-8 flex justify-between items-center bg-transparent group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors duration-200 px-4"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-panel-${idx}`}
                   >
-                    {faq.question}
-                  </span>
-                  <div className="text-red-500 shrink-0">
-                    {openIndex === idx ? (
-                      <Minus size={24} />
-                    ) : (
-                      <Plus size={24} />
-                    )}
-                  </div>
-                </button>
-                <AnimatePresence>
-                  {openIndex === idx && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="px-4 pb-8 overflow-hidden"
-                      id={`faq-panel-${idx}`}
-                      aria-labelledby={`faq-question-${idx}`}
+                    <span
+                      id={`faq-question-${idx}`}
+                      className="font-syne text-xl md:text-2xl font-bold uppercase pr-8 transition-colors"
                     >
-                      <p className="font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors">
+                      {faq.question}
+                    </span>
+                    <motion.span
+                      animate={{ rotate: isOpen ? 45 : 0 }}
+                      transition={{
+                        duration: 0.24,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      className="text-red-500 shrink-0"
+                    >
+                      <Plus size={24} />
+                    </motion.span>
+                  </button>
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      gridTemplateRows: isOpen ? "1fr" : "0fr",
+                      opacity: isOpen ? 1 : 0,
+                    }}
+                    transition={{
+                      duration: 0.28,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className="grid px-4"
+                    id={`faq-panel-${idx}`}
+                    role="region"
+                    aria-hidden={!isOpen}
+                    aria-labelledby={`faq-question-${idx}`}
+                  >
+                    <div className="overflow-hidden">
+                      <motion.p
+                        initial={false}
+                        animate={{ y: isOpen ? 0 : -8 }}
+                        transition={{
+                          duration: 0.28,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                        className="pb-8 font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors"
+                      >
                         {faq.answer}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
+                      </motion.p>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>

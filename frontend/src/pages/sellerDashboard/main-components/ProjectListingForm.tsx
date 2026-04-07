@@ -33,6 +33,7 @@ export default function ProjectListingForm({
   const [imageItems, setImageItems] = useState<ImageItem[]>([]);
   const [video, setVideo] = useState<File | null>(null);
   const [price, setPrice] = useState<number>(9.99);
+  const [allowPaymentsInSol, setAllowPaymentsInSol] = useState(false);
 
   const [showCropOverlay, setShowCropOverlay] = useState(false);
 
@@ -67,6 +68,7 @@ export default function ProjectListingForm({
       imageItems,
       video,
       price,
+      allowPaymentsInSol,
     };
 
     const validationError = projectListingFormDataValidation(formData);
@@ -89,6 +91,7 @@ export default function ProjectListingForm({
         liveLink,
         video,
         price,
+        allowPaymentsInSol,
       },
       croppedItems
     );
@@ -145,7 +148,12 @@ export default function ProjectListingForm({
               setVideo={setVideo}
             />
 
-            <ProjectPriceSelection price={price} setPrice={setPrice} />
+            <ProjectPriceSelection
+              price={price}
+              setPrice={setPrice}
+              allowPaymentsInSol={allowPaymentsInSol}
+              setAllowPaymentsInSol={setAllowPaymentsInSol}
+            />
 
             <Button
               type="button"

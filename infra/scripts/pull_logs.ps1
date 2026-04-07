@@ -3,6 +3,7 @@ param(
   [string]$Key = "$HOME\.ssh\contabo-server",
   [string]$SinceDocker = "48h",
   [string]$SinceJournal = "48 hours ago",
+  [string]$OutputRoot = ".",
   [string[]]$Logs = @()
 )
 
@@ -55,20 +56,25 @@ function Quote-ForBash([string]$Value) {
   return "'" + $Value.Replace("'", "'""'""'") + "'"
 }
 
+function Resolve-OutputRoot([string]$Path) {
+  if ([System.IO.Path]::IsPathRooted($Path)) {
+    return [System.IO.Path]::GetFullPath($Path)
+  }
+
+  return [System.IO.Path]::GetFullPath((Join-Path (Get-Location) $Path))
+}
+
 $selectedTargets = Resolve-LogTargets $Logs
 
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$repoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-$logsRoot = Join-Path $repoRoot "logs"
+$resolvedOutputRoot = Resolve-OutputRoot $OutputRoot
+$logsRoot = Join-Path $resolvedOutputRoot "logs"
 $outDir = Join-Path $logsRoot "devsdistro-logs-$stamp"
 $sessionToken = [guid]::NewGuid().ToString("N")
 $startPrefix = "__DEVS_DISTRO_LOG_START__:${sessionToken}:"
 $endPrefix = "__DEVS_DISTRO_LOG_END__:${sessionToken}:"
 
-New-Item -ItemType Directory -Path $outDir -Force | Out-Null
-
 $remoteArgs = @($SinceDocker, $SinceJournal, $sessionToken) + $selectedTargets
-$remoteCommand = "bash -s -- " + (($remoteArgs | ForEach-Object { Quote-ForBash $_ }) -join " ")
 
 $remoteScript = @'
 set -uo pipefail
@@ -134,14 +140,37 @@ for target in "$@"; do
 done
 '@
 
+$remoteScriptB64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($remoteScript))
+$remoteCommand = "printf %s " + (Quote-ForBash $remoteScriptB64) + " | base64 -d | bash -s -- " + (($remoteArgs | ForEach-Object { Quote-ForBash $_ }) -join " ")
+
 Write-Host "==> Pulling logs: $($selectedTargets -join ', ')"
 
-try {
-  $outputLines = @($remoteScript | & ssh -T -i $Key $Remote $remoteCommand)
+$sshErrorFile = [System.IO.Path]::GetTempFileName()
 
-  if ($LASTEXITCODE -ne 0) {
-    throw "ssh exited with code $LASTEXITCODE"
+try {
+  $outputLines = @(& ssh -T -i $Key $Remote $remoteCommand)
+
+  $sshExitCode = $LASTEXITCODE
+  if ($sshExitCode -ne 0) {
+    $null = & ssh -o BatchMode=yes -T -i $Key $Remote $remoteCommand 1> $null 2> $sshErrorFile
+    $sshError = Get-Content -Path $sshErrorFile -Raw -ErrorAction SilentlyContinue
+    if ($null -eq $sshError) {
+      $sshError = ""
+    } else {
+      $sshError = $sshError.Trim()
+    }
+    $messageLines = New-Object System.Collections.Generic.List[string]
+    $messageLines.Add("ssh exited with code $sshExitCode")
+    if ($sshError) {
+      $messageLines.Add($sshError)
+    }
+    if (($sshError -match "Permission denied") -or ($sshExitCode -eq 255)) {
+      $messageLines.Add("Hint: SSH key auth failed and the interactive password login did not complete. If you want a prompt, run the script directly in the terminal and enter the server password when ssh asks.")
+    }
+    throw ($messageLines -join "`r`n`r`n")
   }
+
+  New-Item -ItemType Directory -Path $outDir -Force | Out-Null
 
   $logContents = @{}
   $currentFile = $null
@@ -172,14 +201,16 @@ try {
     if ($logContents.ContainsKey($fileName)) {
       Set-Content -Path $path -Encoding utf8 -Value $logContents[$fileName]
     } else {
-      Set-Content -Path $path -Encoding utf8 -Value "WARNING: No output was returned for $fileName"
+      New-Item -ItemType File -Path $path -Force | Out-Null
+      Write-Warning "No output was returned for $fileName"
     }
   }
 } catch {
-  foreach ($target in $selectedTargets) {
-    $path = Join-Path $outDir $targetFiles[$target]
-    Set-Content -Path $path -Encoding utf8 -Value "WARNING: Could not pull $target logs`r`n$($_.Exception.Message)"
-  }
+  Write-Error $_.Exception.Message
+  Write-Host "==> Log pull failed. No log folder was created."
+  exit 1
+} finally {
+  Remove-Item -Path $sshErrorFile -ErrorAction SilentlyContinue
 }
 
 Write-Host "==> Done. Logs saved to $outDir"

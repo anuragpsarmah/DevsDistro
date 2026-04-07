@@ -158,6 +158,9 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                 const isDeleted = purchase.projectId === null;
                 const showPurchaseTitle =
                   currentTitle !== null && currentTitle !== purchaseTitle;
+                const settlementCurrency = purchase.payment_currency || "SOL";
+                const settlementValue =
+                  purchase.payment_total ?? purchase.price_sol_total ?? 0;
 
                 return (
                   <div
@@ -228,7 +231,10 @@ export default function PurchaseLedgerTab({ logout }: PurchaseLedgerTabProps) {
                               ${purchase.price_usd.toFixed(2)}
                             </span>
                             <span className="font-space text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1">
-                              {purchase.price_sol_total.toFixed(4)} SOL
+                              {settlementCurrency === "USDC"
+                                ? settlementValue.toFixed(2)
+                                : settlementValue.toFixed(4)}{" "}
+                              {settlementCurrency}
                             </span>
                           </div>
                         </div>

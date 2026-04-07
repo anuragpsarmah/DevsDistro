@@ -70,8 +70,9 @@ export default function TheMechanics() {
             </h3>
             <p className="font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
               A buyer connects their Phantom or Solflare wallet. They execute
-              the purchase paying native SOL equivalent to your USD price. Block
-              confirmation occurs in sub-seconds.
+              the purchase on Solana, paying in USDC by default or native SOL
+              when the seller enables it. Block confirmation occurs in
+              sub-seconds.
             </p>
           </div>
 

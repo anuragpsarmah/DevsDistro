@@ -46,6 +46,9 @@ export default function ProjectDetailPage({
 }: ProjectDetailPageProps) {
   const [imageIndex, setImageIndex] = useState(0);
   const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+  const [selectedPaymentCurrency, setSelectedPaymentCurrency] = useState<
+    "USDC" | "SOL"
+  >("USDC");
   const [mediaTab, setMediaTab] = useState<"images" | "video">("images");
   const [activeDownloadVersion, setActiveDownloadVersion] = useState<
     "purchased" | "latest" | null
@@ -82,8 +85,9 @@ export default function ProjectDetailPage({
   });
 
   const handleOpenPurchaseModal = useCallback(() => {
+    setSelectedPaymentCurrency("USDC");
     setIsPurchaseModalOpen(true);
-    purchaseFlow.initiate(projectId);
+    purchaseFlow.initiate(projectId, "USDC");
   }, [projectId, purchaseFlow]);
 
   const handleClosePurchaseModal = useCallback(() => {
@@ -92,8 +96,16 @@ export default function ProjectDetailPage({
   }, [purchaseFlow]);
 
   const handleRefreshQuote = useCallback(() => {
-    purchaseFlow.refreshQuote(projectId);
-  }, [projectId, purchaseFlow]);
+    purchaseFlow.refreshQuote(projectId, selectedPaymentCurrency);
+  }, [projectId, purchaseFlow, selectedPaymentCurrency]);
+
+  const handlePaymentCurrencyChange = useCallback(
+    (currency: "USDC" | "SOL") => {
+      setSelectedPaymentCurrency(currency);
+      purchaseFlow.refreshQuote(projectId, currency);
+    },
+    [projectId, purchaseFlow]
+  );
 
   const handleDownloadLatest = useCallback(() => {
     setActiveDownloadVersion("latest");
@@ -754,6 +766,8 @@ export default function ProjectDetailPage({
       {isPurchaseModalOpen && (
         <PurchaseModal
           projectTitle={project.title}
+          allowSolPayments={Boolean(project.allow_payments_in_sol)}
+          selectedPaymentCurrency={selectedPaymentCurrency}
           flowState={purchaseFlow.flowState}
           intent={purchaseFlow.intent}
           countdown={purchaseFlow.countdown}
@@ -761,6 +775,7 @@ export default function ProjectDetailPage({
           isWalletConnected={purchaseFlow.isWalletConnected}
           walletPublicKey={purchaseFlow.walletPublicKey}
           failedAfterOnChain={purchaseFlow.failedAfterOnChain}
+          onPaymentCurrencyChange={handlePaymentCurrencyChange}
           onConfirm={purchaseFlow.executePurchase}
           onRefreshQuote={handleRefreshQuote}
           onRetryConfirm={purchaseFlow.retryConfirm}

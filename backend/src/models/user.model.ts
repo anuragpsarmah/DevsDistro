@@ -55,6 +55,14 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+    wallet_last_connected_address: {
+      type: String,
+      default: "",
+    },
+    wallet_last_connected_at: {
+      type: Date,
+      default: null,
+    },
     github_id: {
       type: String,
       required: [true, "GitHub ID is required"],

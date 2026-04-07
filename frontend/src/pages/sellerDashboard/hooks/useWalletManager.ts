@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletName } from "@solana/wallet-adapter-base";
+import { AxiosError } from "axios";
 import { tryCatch } from "@/utils/tryCatch.util";
 import { errorToast } from "@/components/ui/customToast";
 import bs58 from "bs58";
@@ -131,9 +132,11 @@ export const useWalletManager = ({
 
         if (error) {
           console.error("Failed to sync wallet to backend:", error);
-          errorToast(
-            "Failed to verify wallet ownership. Please try connecting again."
-          );
+          if (!(error instanceof AxiosError)) {
+            errorToast(
+              "Failed to verify wallet ownership. Please try connecting again."
+            );
+          }
           await disconnect();
         }
 

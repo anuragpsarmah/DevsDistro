@@ -82,6 +82,7 @@ import {
   useConfirmPurchaseMutation,
 } from "@/hooks/apiMutations";
 import { usePurchaseFlow } from "@/pages/buyerDashboard/hooks/usePurchaseFlow";
+import { PurchaseIntent } from "@/utils/types";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -95,8 +96,16 @@ const PURCHASE_REF =
 const PURCHASE_REF_2 =
   "d77d331a28821988c457876559e43f9430371c1262ca59d6222837ab48b98079";
 
-const MOCK_INTENT = {
+const MOCK_INTENT: PurchaseIntent = {
   purchase_reference: PURCHASE_REF,
+  payment_currency: "SOL",
+  payment_total: 0.1,
+  payment_seller: 0.099,
+  payment_platform: 0.001,
+  payment_mint: null,
+  payment_decimals: 9,
+  seller_amount_atomic: 99_000_000,
+  treasury_amount_atomic: 1_000_000,
   price_usd: 10,
   price_sol_total: 0.1,
   price_sol_seller: 0.099,
@@ -366,7 +375,10 @@ describe("usePurchaseFlow", () => {
         await result.current.initiate(PROJECT_ID);
       });
 
-      expect(initiateMutateAsync).toHaveBeenCalledWith(PROJECT_ID);
+      expect(initiateMutateAsync).toHaveBeenCalledWith({
+        project_id: PROJECT_ID,
+        payment_currency: "USDC",
+      });
       expect(result.current.flowState).toBe("AWAITING_WALLET");
       expect(
         localStorage.getItem(makePendingConfirmKey(PURCHASE_REF))
@@ -396,8 +408,66 @@ describe("usePurchaseFlow", () => {
         await result.current.initiate(PROJECT_ID);
       });
 
-      expect(initiateMutateAsync).toHaveBeenCalledWith(PROJECT_ID);
+      expect(initiateMutateAsync).toHaveBeenCalledWith({
+        project_id: PROJECT_ID,
+        payment_currency: "USDC",
+      });
       expect(result.current.flowState).toBe("AWAITING_WALLET");
+    });
+
+    it("clears the previous quote immediately while a refreshed quote is loading", async () => {
+      let resolveRefreshIntent: ((value: typeof MOCK_INTENT) => void) | null =
+        null;
+      const initiateMutateAsync = vi
+        .fn()
+        .mockResolvedValueOnce(MOCK_INTENT)
+        .mockImplementationOnce(
+          () =>
+            new Promise<typeof MOCK_INTENT>((resolve) => {
+              resolveRefreshIntent = resolve;
+            })
+        );
+      setupMutations({ initiateMutateAsync });
+
+      const { result } = renderHook(() =>
+        usePurchaseFlow({ logout: vi.fn(), onSuccess: vi.fn() })
+      );
+
+      await act(async () => {
+        await result.current.initiate(PROJECT_ID);
+      });
+
+      expect(result.current.intent).toEqual(MOCK_INTENT);
+      expect(result.current.flowState).toBe("AWAITING_WALLET");
+      expect(result.current.countdown).toBe(600);
+
+      await act(async () => {
+        void result.current.refreshQuote(PROJECT_ID, "SOL");
+        await Promise.resolve();
+      });
+
+      expect(initiateMutateAsync).toHaveBeenLastCalledWith({
+        project_id: PROJECT_ID,
+        payment_currency: "SOL",
+      });
+      expect(result.current.flowState).toBe("INITIATING");
+      expect(result.current.intent).toBeNull();
+      expect(result.current.countdown).toBe(0);
+
+      await act(async () => {
+        resolveRefreshIntent?.({
+          ...MOCK_INTENT,
+          purchase_reference: PURCHASE_REF_2,
+          payment_currency: "SOL",
+        });
+        await Promise.resolve();
+      });
+
+      expect(result.current.flowState).toBe("AWAITING_WALLET");
+      expect(result.current.intent).toMatchObject({
+        purchase_reference: PURCHASE_REF_2,
+        payment_currency: "SOL",
+      });
     });
   });
 

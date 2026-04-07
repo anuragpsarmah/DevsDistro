@@ -41,6 +41,7 @@ export const projectListingFormDataValidation = (
         required_error: "Price is required",
       })
       .min(0, "Price should be greater than or equal to 0."),
+    allowPaymentsInSol: z.boolean(),
     existingVideo: z.string().nullable().optional(),
   });
 

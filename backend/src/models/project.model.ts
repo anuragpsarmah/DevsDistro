@@ -14,6 +14,10 @@ const projectSchema = new Schema(
       type: Number,
       required: [true, "Project price is required"],
     },
+    allow_payments_in_sol: {
+      type: Boolean,
+      default: false,
+    },
     isActive: {
       type: Boolean,
       default: true,

@@ -33,18 +33,44 @@ const purchaseSchema = new Schema(
       required: [true, "USD price is required"],
     },
 
+    payment_currency: {
+      type: String,
+      enum: ["USDC", "SOL"],
+      default: "SOL",
+    },
+    payment_total: {
+      type: Number,
+      default: null,
+    },
+    payment_seller: {
+      type: Number,
+      default: null,
+    },
+    payment_platform: {
+      type: Number,
+      default: null,
+    },
+    payment_mint: {
+      type: String,
+      default: null,
+    },
+    payment_decimals: {
+      type: Number,
+      default: 9,
+    },
+
     // SOL amounts (in SOL units, not lamports)
     price_sol_total: {
       type: Number,
-      required: [true, "Total SOL amount is required"],
+      default: 0,
     },
     price_sol_seller: {
       type: Number,
-      required: [true, "Seller SOL amount is required"],
+      default: 0,
     },
     price_sol_platform: {
       type: Number,
-      required: [true, "Platform SOL amount is required"],
+      default: 0,
     },
 
     platform_fee_percent: {
@@ -105,6 +131,10 @@ const purchaseSchema = new Schema(
     project_snapshot: {
       title: { type: String, required: true },
       project_type: { type: String, required: true },
+      tech_stack: {
+        type: [String],
+        default: [],
+      },
     },
     seller_snapshot: {
       name: { type: String, required: true },

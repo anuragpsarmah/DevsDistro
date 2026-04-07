@@ -245,11 +245,11 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
       );
 
       if (response) {
-        const isDisconnect = typeof data === "string";
         successToast(
-          isDisconnect
-            ? "Wallet disconnected successfully"
-            : "Wallet connected successfully"
+          response.data?.message ||
+            (typeof data === "string"
+              ? "Wallet disconnected successfully"
+              : "Wallet connected successfully")
         );
       }
 
@@ -265,6 +265,8 @@ const useUpdateWalletAddressMutation = ({ logout }: mutationParameter) => {
         handleError(error);
         throw error;
       }
+
+      return response?.data;
     },
   });
 };
@@ -364,10 +366,17 @@ const useInitiatePurchaseMutation = ({ logout }: mutationParameter) => {
   const { handleError } = useHandleError({ logout });
 
   return useMutation({
-    mutationFn: async (project_id: string) => {
+    mutationFn: async ({
+      project_id,
+      payment_currency,
+    }: {
+      project_id: string;
+      payment_currency?: "USDC" | "SOL";
+    }) => {
       const [response, error] = await tryCatch(
         apiClient.post<{ data: PurchaseIntent }>("/purchases/initiate", {
           project_id,
+          payment_currency,
         })
       );
 
