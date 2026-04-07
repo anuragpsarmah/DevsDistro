@@ -51,6 +51,7 @@ const MARKETPLACE_SELECT = {
   project_type: 1,
   tech_stack: 1,
   price: 1,
+  allow_payments_in_sol: 1,
   avgRating: 1,
   totalReviews: 1,
   live_link: 1,
@@ -942,6 +943,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       tech_stack: result.data.tech_stack,
       live_link: result.data.live_link,
       price: result.data.price,
+      allow_payments_in_sol: result.data.allow_payments_in_sol,
       project_images: finalImages,
       project_images_detail: finalImages_detail,
       project_video: validatedExistingVideo || preSignedVideoUrl,
@@ -1122,6 +1124,7 @@ const getInitialProjectData = asyncHandler(
           scheduled_deletion_at: 1,
           project_images: { $slice: 1 },
           price: 1,
+          allow_payments_in_sol: 1,
           live_link: 1,
         })
         .lean()
@@ -1230,7 +1233,7 @@ const getSpecificProjectData = asyncHandler(
         userid,
         github_repo_id: req.query.github_repo_id,
       }).select(
-        "github_repo_id github_installation_id price project_type live_link project_images project_images_detail project_video"
+        "github_repo_id github_installation_id price allow_payments_in_sol project_type live_link project_images project_images_detail project_video"
       )
     );
 
@@ -1903,6 +1906,7 @@ const PUBLIC_DETAIL_SELECT = {
   project_type: 1,
   tech_stack: 1,
   price: 1,
+  allow_payments_in_sol: 1,
   avgRating: 1,
   totalReviews: 1,
   live_link: 1,
@@ -1919,6 +1923,7 @@ const DETAIL_SELECT = {
   project_type: 1,
   tech_stack: 1,
   price: 1,
+  allow_payments_in_sol: 1,
   avgRating: 1,
   totalReviews: 1,
   live_link: 1,

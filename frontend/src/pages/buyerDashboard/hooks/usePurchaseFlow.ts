@@ -11,6 +11,10 @@ import {
   useInitiatePurchaseMutation,
   useConfirmPurchaseMutation,
 } from "@/hooks/apiMutations";
+import {
+  createTransferCheckedInstruction,
+  getAssociatedTokenAddress,
+} from "@/lib/splToken";
 
 export type PurchaseFlowState =
   | "IDLE"
@@ -128,7 +132,10 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
   }, []);
 
   const initiate = useCallback(
-    async (projectId: string) => {
+    async (
+      projectId: string,
+      paymentCurrency: PurchaseIntent["payment_currency"] = "USDC"
+    ) => {
       projectIdRef.current = projectId;
       cleanupExpiredPendingConfirms();
 
@@ -157,12 +164,17 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
       }
 
       setFlowState("INITIATING");
+      setIntent(null);
+      setCountdown(0);
       setError(null);
       setFailedAfterOnChain(false);
       pendingConfirmRef.current = null;
       pendingConfirmStorageKeyRef.current = null;
       try {
-        const result = await initiateMutation.mutateAsync(projectId);
+        const result = await initiateMutation.mutateAsync({
+          project_id: projectId,
+          payment_currency: paymentCurrency,
+        });
         setIntent(result);
         startCountdown(result.expires_in);
         setFlowState("AWAITING_WALLET");
@@ -179,9 +191,12 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
   );
 
   const refreshQuote = useCallback(
-    async (projectId: string) => {
+    async (
+      projectId: string,
+      paymentCurrency: PurchaseIntent["payment_currency"] = "USDC"
+    ) => {
       if (countdownRef.current) clearInterval(countdownRef.current);
-      await initiate(projectId);
+      await initiate(projectId, paymentCurrency);
     },
     [initiate]
   );
@@ -257,14 +272,6 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
     try {
       setFlowState("BUILDING_TX");
 
-      // Use the lamport values pre-computed by the backend so the TX amounts exactly
-      // match what the backend will verify on /confirm. Avoids any client-side
-      // float re-computation that could diverge by >5 lamports and cause rejection.
-      const sellerLamports = intent.seller_lamports;
-      const platformLamports = intent.treasury_lamports;
-
-      const sellerPubkey = new PublicKey(intent.seller_wallet);
-      const treasuryPubkey = new PublicKey(intent.treasury_wallet);
       const buyerPubkey = wallet.publicKey;
 
       // Fetch blockhash BEFORE building the transaction so the same values
@@ -276,23 +283,100 @@ export function usePurchaseFlow({ logout, onSuccess }: UsePurchaseFlowParams) {
       tx.recentBlockhash = blockhash;
       tx.feePayer = buyerPubkey;
 
-      // Transfer 99% to seller
-      tx.add(
-        SystemProgram.transfer({
-          fromPubkey: buyerPubkey,
-          toPubkey: sellerPubkey,
-          lamports: sellerLamports,
-        })
-      );
+      if (intent.payment_currency === "USDC") {
+        if (!intent.payment_mint) {
+          throw new Error("USDC mint is missing from the purchase intent.");
+        }
 
-      // Transfer 1% to DevsDistro treasury
-      tx.add(
-        SystemProgram.transfer({
-          fromPubkey: buyerPubkey,
-          toPubkey: treasuryPubkey,
-          lamports: platformLamports,
-        })
-      );
+        const mintPubkey = new PublicKey(intent.payment_mint);
+        const sellerWallet = new PublicKey(intent.seller_wallet);
+        const treasuryWallet = new PublicKey(intent.treasury_wallet);
+        const buyerTokenAccount = getAssociatedTokenAddress(
+          buyerPubkey,
+          mintPubkey
+        );
+        const sellerTokenAccount = getAssociatedTokenAddress(
+          sellerWallet,
+          mintPubkey
+        );
+        const treasuryTokenAccount = getAssociatedTokenAddress(
+          treasuryWallet,
+          mintPubkey
+        );
+
+        const [buyerTokenInfo, sellerTokenInfo, treasuryTokenInfo] =
+          await Promise.all([
+            connection.getAccountInfo(buyerTokenAccount),
+            connection.getAccountInfo(sellerTokenAccount),
+            connection.getAccountInfo(treasuryTokenAccount),
+          ]);
+
+        if (!buyerTokenInfo) {
+          throw new Error(
+            "Your wallet does not have a USDC token account for this purchase."
+          );
+        }
+
+        if (!sellerTokenInfo) {
+          throw new Error(
+            "Seller payment account is not ready to receive USDC. Please refresh and try again."
+          );
+        }
+
+        if (!treasuryTokenInfo) {
+          throw new Error(
+            "Platform payment account is not ready to receive USDC. Please refresh and try again."
+          );
+        }
+
+        tx.add(
+          createTransferCheckedInstruction(
+            buyerTokenAccount,
+            mintPubkey,
+            sellerTokenAccount,
+            buyerPubkey,
+            intent.seller_amount_atomic,
+            intent.payment_decimals
+          )
+        );
+
+        tx.add(
+          createTransferCheckedInstruction(
+            buyerTokenAccount,
+            mintPubkey,
+            treasuryTokenAccount,
+            buyerPubkey,
+            intent.treasury_amount_atomic,
+            intent.payment_decimals
+          )
+        );
+      } else {
+        // Use the lamport values pre-computed by the backend so the TX amounts exactly
+        // match what the backend will verify on /confirm. Avoids any client-side
+        // float re-computation that could diverge by >5 lamports and cause rejection.
+        const sellerLamports = intent.seller_lamports;
+        const platformLamports = intent.treasury_lamports;
+        const sellerPubkey = new PublicKey(intent.seller_wallet);
+        const treasuryPubkey = new PublicKey(intent.treasury_wallet);
+
+        // Transfer 99% to seller
+        tx.add(
+          SystemProgram.transfer({
+            fromPubkey: buyerPubkey,
+            toPubkey: sellerPubkey,
+            lamports: sellerLamports,
+          })
+        );
+
+        // Transfer 1% to DevsDistro treasury
+        tx.add(
+          SystemProgram.transfer({
+            fromPubkey: buyerPubkey,
+            toPubkey: treasuryPubkey,
+            lamports: platformLamports,
+          })
+        );
+      }
 
       // Add memo instruction with purchase reference (anti-replay nonce)
       tx.add(

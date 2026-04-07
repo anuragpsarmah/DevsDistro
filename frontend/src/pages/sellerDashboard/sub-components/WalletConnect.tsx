@@ -43,9 +43,8 @@ export const WalletConnect = ({
               Connect Your Wallet
             </h3>
             <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-300">
-              Link your Solana wallet to securely manage payments, verify
-              ownership, and track your project sales directly on the
-              blockchain.
+              Link your Solana wallet to manage payments, verify ownership, and
+              track your project sales.
             </p>
           </div>
         </div>

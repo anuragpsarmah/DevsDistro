@@ -38,6 +38,9 @@ export default function ProjectModificationForm({
   );
   const [video, setVideo] = useState<File | null>(null);
   const [price, setPrice] = useState(formProps.price ?? 9.99);
+  const [allowPaymentsInSol, setAllowPaymentsInSol] = useState(
+    formProps.allow_payments_in_sol ?? false
+  );
   const [existingVideo, setExistingVideo] = useState<string | null>(
     formProps.project_video || null
   );
@@ -70,6 +73,7 @@ export default function ProjectModificationForm({
       tech_stack: [],
       live_link: "",
       price: 0,
+      allow_payments_in_sol: false,
       project_images: [],
       project_type: "",
       project_video: "",
@@ -99,6 +103,7 @@ export default function ProjectModificationForm({
       imageItems,
       video,
       price,
+      allowPaymentsInSol,
       existingVideo,
     };
 
@@ -122,6 +127,7 @@ export default function ProjectModificationForm({
         liveLink,
         video,
         price,
+        allowPaymentsInSol,
         existingVideo,
       },
       croppedItems
@@ -181,7 +187,12 @@ export default function ProjectModificationForm({
               setExistingVideo={setExistingVideo}
             />
 
-            <ProjectPriceSelection price={price} setPrice={setPrice} />
+            <ProjectPriceSelection
+              price={price}
+              setPrice={setPrice}
+              allowPaymentsInSol={allowPaymentsInSol}
+              setAllowPaymentsInSol={setAllowPaymentsInSol}
+            />
 
             <Button
               type="button"

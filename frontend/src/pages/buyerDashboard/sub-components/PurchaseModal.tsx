@@ -13,6 +13,8 @@ import { PurchaseIntent } from "@/utils/types";
 
 interface PurchaseModalProps {
   projectTitle: string;
+  allowSolPayments?: boolean;
+  selectedPaymentCurrency?: "USDC" | "SOL";
   flowState: PurchaseFlowState;
   intent: PurchaseIntent | null;
   countdown: number;
@@ -20,6 +22,7 @@ interface PurchaseModalProps {
   isWalletConnected: boolean;
   walletPublicKey: string | null;
   failedAfterOnChain: boolean;
+  onPaymentCurrencyChange?: (currency: "USDC" | "SOL") => void;
   onConfirm: () => void;
   onRefreshQuote: () => void;
   onRetryConfirm: () => void;
@@ -55,6 +58,8 @@ const STEP_LABELS: Record<string, string> = {
 
 export default function PurchaseModal({
   projectTitle,
+  allowSolPayments = false,
+  selectedPaymentCurrency = "USDC",
   flowState,
   intent,
   countdown,
@@ -62,6 +67,7 @@ export default function PurchaseModal({
   isWalletConnected,
   walletPublicKey,
   failedAfterOnChain,
+  onPaymentCurrencyChange = () => undefined,
   onConfirm,
   onRefreshQuote,
   onRetryConfirm,
@@ -79,13 +85,29 @@ export default function PurchaseModal({
     : 0;
   const isRateStale = rateAgeMs > 5 * 60 * 1000;
   const rateAgeMinutes = Math.floor(rateAgeMs / 60_000);
+  const settlementCurrency =
+    intent?.payment_currency ??
+    ((intent?.price_sol_total ?? 0) > 0
+      ? "SOL"
+      : selectedPaymentCurrency === "SOL"
+        ? "SOL"
+        : "USDC");
+  const settlementUnit = settlementCurrency === "USDC" ? "USDC" : "SOL";
+  const settlementValue =
+    intent?.payment_total ??
+    (settlementCurrency === "SOL" ? (intent?.price_sol_total ?? 0) : 0);
+  const sellerSettlementValue =
+    intent?.payment_seller ??
+    (settlementCurrency === "SOL" ? (intent?.price_sol_seller ?? 0) : 0);
+  const platformSettlementValue =
+    intent?.payment_platform ??
+    (settlementCurrency === "SOL" ? (intent?.price_sol_platform ?? 0) : 0);
 
   const canConfirm =
     isWalletConnected &&
     !isQuoteExpired &&
     intent !== null &&
-    !isActive &&
-    flowState !== "SUCCESS";
+    flowState === "AWAITING_WALLET";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -146,8 +168,50 @@ export default function PurchaseModal({
         {/* Normal flow */}
         {flowState !== "SUCCESS" && (
           <div className="p-6 space-y-6">
+            <div className="border-2 border-black dark:border-white p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-black dark:text-white">
+                    Settlement Currency
+                  </span>
+                  <p className="font-space text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    USDC is the default checkout currency. SOL appears only when
+                    the seller allows it for this listing.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onPaymentCurrencyChange("USDC")}
+                    disabled={isActive || flowState === "INITIATING"}
+                    className={`px-4 py-2 border-2 font-space font-bold uppercase tracking-widest text-xs transition-colors ${
+                      selectedPaymentCurrency === "USDC"
+                        ? "border-red-500 bg-red-500 text-white"
+                        : "border-black dark:border-white text-black dark:text-white"
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                  >
+                    USDC
+                  </button>
+                  {allowSolPayments && (
+                    <button
+                      type="button"
+                      onClick={() => onPaymentCurrencyChange("SOL")}
+                      disabled={isActive || flowState === "INITIATING"}
+                      className={`px-4 py-2 border-2 font-space font-bold uppercase tracking-widest text-xs transition-colors ${
+                        selectedPaymentCurrency === "SOL"
+                          ? "border-red-500 bg-red-500 text-white"
+                          : "border-black dark:border-white text-black dark:text-white"
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    >
+                      SOL
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Price Summary */}
-            {intent && (
+            {intent && flowState !== "INITIATING" && (
               <div className="border-2 border-black dark:border-white p-5 bg-gray-50 dark:bg-[#0a0a0a]">
                 <div className="flex items-end justify-between mb-3">
                   <span className="font-space font-bold text-xs text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">
@@ -155,27 +219,43 @@ export default function PurchaseModal({
                   </span>
                   <div className="text-right">
                     <p className="font-syne font-black text-black dark:text-white text-3xl leading-none">
-                      {intent.price_sol_total.toFixed(6)} SOL
+                      {settlementCurrency === "USDC"
+                        ? settlementValue.toFixed(2)
+                        : settlementValue.toFixed(6)}{" "}
+                      {settlementUnit}
                     </p>
                     <p className="font-space text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      ≈ ${intent.price_usd.toFixed(2)} USD
+                      ${intent.price_usd.toFixed(2)} USD
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between text-xs font-space text-gray-400 dark:text-gray-600 border-t border-black/10 dark:border-white/10 pt-3 mt-3">
                   <div className="flex flex-col gap-1">
-                    <span className="uppercase tracking-widest">
-                      Rate: 1 SOL = ${intent.sol_usd_rate.toFixed(2)}{" "}
-                      (CoinGecko)
-                    </span>
-                    {isRateStale && (
-                      <span
-                        data-testid="stale-rate-warning"
-                        className="text-amber-500 uppercase tracking-widest font-bold"
-                      >
-                        Rate fetched ~{rateAgeMinutes}m ago — price may vary
-                      </span>
+                    {settlementCurrency === "SOL" ? (
+                      <>
+                        <span className="uppercase tracking-widest">
+                          Rate: 1 SOL = ${intent.sol_usd_rate.toFixed(2)} (
+                          {intent.exchange_rate_source || "CoinGecko"})
+                        </span>
+                        {isRateStale && (
+                          <span
+                            data-testid="stale-rate-warning"
+                            className="text-amber-500 uppercase tracking-widest font-bold"
+                          >
+                            Rate fetched ~{rateAgeMinutes}m ago, price may vary
+                          </span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <span className="uppercase tracking-widest">
+                          Fixed settlement: 1 USDC = $1.00 USD
+                        </span>
+                        <span className="uppercase tracking-widest max-w-[30ch] leading-relaxed">
+                          Network fee requires SOL
+                        </span>
+                      </>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
@@ -206,24 +286,34 @@ export default function PurchaseModal({
                     <span className="uppercase tracking-widest">
                       Seller receives
                     </span>
-                    <span>{intent.price_sol_seller.toFixed(6)} SOL (99%)</span>
+                    <span>
+                      {settlementCurrency === "USDC"
+                        ? sellerSettlementValue.toFixed(2)
+                        : sellerSettlementValue.toFixed(6)}{" "}
+                      {settlementUnit} (99%)
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="uppercase tracking-widest">
                       Platform fee
                     </span>
-                    <span>{intent.price_sol_platform.toFixed(6)} SOL (1%)</span>
+                    <span>
+                      {settlementCurrency === "USDC"
+                        ? platformSettlementValue.toFixed(2)
+                        : platformSettlementValue.toFixed(6)}{" "}
+                      {settlementUnit} (1%)
+                    </span>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Loading state — no intent yet */}
-            {!intent && flowState === "INITIATING" && (
+            {flowState === "INITIATING" && (
               <div className="border-2 border-black dark:border-white p-8 flex items-center justify-center gap-3 bg-gray-50 dark:bg-[#0a0a0a]">
                 <Loader2 className="w-5 h-5 animate-spin text-red-500" />
                 <span className="font-space font-bold uppercase tracking-widest text-xs text-black dark:text-white">
-                  Fetching live price...
+                  Preparing payment route...
                 </span>
               </div>
             )}

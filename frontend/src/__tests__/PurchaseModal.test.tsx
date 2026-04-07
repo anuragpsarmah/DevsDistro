@@ -20,6 +20,14 @@ import PurchaseModal from "@/pages/buyerDashboard/sub-components/PurchaseModal";
 
 const mockIntent: PurchaseIntent = {
   purchase_reference: "ref_abc123",
+  payment_currency: "SOL",
+  payment_total: 1.5,
+  payment_seller: 1.485,
+  payment_platform: 0.015,
+  payment_mint: null,
+  payment_decimals: 9,
+  seller_amount_atomic: 1_485_000_000,
+  treasury_amount_atomic: 15_000_000,
   price_usd: 150,
   price_sol_total: 1.5,
   price_sol_seller: 1.485,
@@ -261,6 +269,7 @@ describe("PurchaseModal — quote expiry and confirm button", () => {
     render(
       <PurchaseModal
         {...defaultProps}
+        flowState={"AWAITING_WALLET" as PurchaseFlowState}
         countdown={300}
         isWalletConnected={true}
       />
@@ -345,5 +354,57 @@ describe("PurchaseModal — stale rate warning", () => {
     );
 
     expect(screen.queryByTestId("stale-rate-warning")).not.toBeInTheDocument();
+  });
+});
+
+describe("PurchaseModal — settlement guidance", () => {
+  it("hides stale quote details and disables confirmation while a refreshed route is loading", () => {
+    render(
+      <PurchaseModal
+        {...defaultProps}
+        flowState={"INITIATING" as PurchaseFlowState}
+        intent={mockIntent}
+      />
+    );
+
+    expect(screen.getByText(/preparing payment route/i)).toBeInTheDocument();
+    expect(screen.queryByText("Total Cost")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /confirm purchase/i })
+    ).toBeDisabled();
+  });
+
+  it("shows the SOL network fee notice for USDC settlement", () => {
+    render(
+      <PurchaseModal
+        {...defaultProps}
+        selectedPaymentCurrency="USDC"
+        intent={{
+          ...mockIntent,
+          payment_currency: "USDC",
+          payment_total: 150,
+          payment_seller: 148.5,
+          payment_platform: 1.5,
+          payment_mint: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          payment_decimals: 6,
+        }}
+      />
+    );
+
+    expect(screen.getByText(/network fee requires sol/i)).toBeInTheDocument();
+  });
+
+  it("hides the USDC network fee notice for SOL settlement", () => {
+    render(
+      <PurchaseModal
+        {...defaultProps}
+        selectedPaymentCurrency="SOL"
+        intent={{ ...mockIntent, payment_currency: "SOL" }}
+      />
+    );
+
+    expect(
+      screen.queryByText(/network fee still requires a small amount of sol/i)
+    ).not.toBeInTheDocument();
   });
 });

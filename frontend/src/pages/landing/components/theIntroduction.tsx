@@ -85,8 +85,8 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             transition={{ duration: 0.8 }}
             className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0"
           >
-            Open marketplace where developers sell private repos — priced in
-            USD, settled in SOL, delivered instantly.
+            Open marketplace where developers sell repositories — priced in USD,
+            settled on Solana, delivered instantly.
           </motion.p>
 
           <motion.div

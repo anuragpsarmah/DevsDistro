@@ -88,6 +88,10 @@ vi.mock("../utils/solanaPrice.util", () => ({
   computeLamportSplit: vi.fn(),
 }));
 
+vi.mock("../utils/solanaAta.util", () => ({
+  getAssociatedTokenAccountStatus: vi.fn(),
+}));
+
 // Minimal PDFDocument stub: tracks text() calls and pipes to the response.
 vi.mock("pdfkit", () => {
   function MockPDFDocument(this: any) {
@@ -156,6 +160,7 @@ import {
   getSolanaUsdRate,
   computeLamportSplit,
 } from "../utils/solanaPrice.util";
+import { getAssociatedTokenAccountStatus } from "../utils/solanaAta.util";
 import { verifySolanaTransaction } from "../utils/solanaVerification.util";
 import { redisClient, s3Service } from "..";
 
@@ -214,6 +219,7 @@ const MOCK_PROJECT = {
   _id: PROJECT_ID,
   userid: { toString: () => SELLER_ID }, // ObjectId-like
   price: 10,
+  allow_payments_in_sol: true,
   isActive: true,
   github_access_revoked: false,
   repo_zip_status: "SUCCESS",
@@ -265,7 +271,7 @@ const MOCK_INTENT_OBJ = {
   treasury_wallet: TREASURY_ADDR,
 };
 
-const VALID_INITIATE_BODY = { project_id: PROJECT_ID };
+const VALID_INITIATE_BODY = { project_id: PROJECT_ID, payment_currency: "SOL" };
 const VALID_CONFIRM_BODY = {
   purchase_reference: PURCHASE_REF,
   tx_signature: TX_SIG,
@@ -300,6 +306,10 @@ describe("initiatePurchase", () => {
     );
     vi.mocked(getSolanaUsdRate).mockResolvedValue(MOCK_RATE_RESULT as any);
     vi.mocked(computeLamportSplit).mockReturnValue(MOCK_LAMPORT_SPLIT as any);
+    vi.mocked(getAssociatedTokenAccountStatus).mockResolvedValue({
+      exists: true,
+      ataAddress: "Ata111111111111111111111111111111111111111",
+    } as any);
     vi.mocked(redisClient.setex).mockResolvedValue("OK" as any);
   });
 
@@ -321,6 +331,21 @@ describe("initiatePurchase", () => {
     expect(body.data.purchase_reference).toMatch(/^[0-9a-f]{64}$/);
   });
 
+  it("defaults initiatePurchase to USDC when payment_currency is omitted", async () => {
+    process.env.SOLANA_NETWORK = "devnet";
+
+    const req = makeReq({ body: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    initiatePurchase(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    const body = vi.mocked(res.json).mock.calls[0][0];
+    expect(body.data.payment_currency).toBe("USDC");
+    expect(body.data.payment_total).toBe(10);
+  });
+
   it("stores the intent in Redis with exactly 600-second TTL", async () => {
     const req = makeReq({ body: VALID_INITIATE_BODY });
     const res = makeRes();
@@ -333,6 +358,49 @@ describe("initiatePurchase", () => {
       600,
       expect.any(String)
     );
+  });
+
+  it("returns 400 when the seller USDC receiving account is not ready", async () => {
+    vi.mocked(getAssociatedTokenAccountStatus)
+      .mockResolvedValueOnce({
+        exists: false,
+        ataAddress: "AtaSeller11111111111111111111111111111111111",
+      } as any)
+      .mockResolvedValueOnce({
+        exists: true,
+        ataAddress: "AtaTreasury111111111111111111111111111111111",
+      } as any);
+
+    const req = makeReq({ body: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    initiatePurchase(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(vi.mocked(res.json).mock.calls[0][0].message).toMatch(
+      /not ready to receive usdc/i
+    );
+  });
+
+  it("returns 500 when the treasury USDC receiving account is missing", async () => {
+    vi.mocked(getAssociatedTokenAccountStatus)
+      .mockResolvedValueOnce({
+        exists: true,
+        ataAddress: "AtaSeller11111111111111111111111111111111111",
+      } as any)
+      .mockResolvedValueOnce({
+        exists: false,
+        ataAddress: "AtaTreasury111111111111111111111111111111111",
+      } as any);
+
+    const req = makeReq({ body: { project_id: PROJECT_ID } });
+    const res = makeRes();
+
+    initiatePurchase(req, res, next);
+    await flushPromises();
+
+    expect(res.status).toHaveBeenCalledWith(500);
   });
 
   it("returns 400 for an invalid project_id (not a 24-char hex ObjectId)", async () => {
@@ -716,6 +784,7 @@ describe("confirmPurchase", () => {
         expectedBuyerWallet: BUYER_WALLET,
         expectedSellerWallet: SELLER_WALLET,
         expectedTreasuryWallet: TREASURY_ADDR,
+        paymentCurrency: "SOL",
         expectedSellerLamports: MOCK_INTENT_OBJ.seller_lamports,
         expectedTreasuryLamports: MOCK_INTENT_OBJ.treasury_lamports,
         purchaseReference: PURCHASE_REF,
@@ -1215,6 +1284,45 @@ describe("getPurchasedProjects", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     const { purchases } = vi.mocked(res.json).mock.calls[0][0].data;
     expect(purchases).toHaveLength(1);
+  });
+
+  it("preserves legacy SOL purchases when generic payment fields are absent", async () => {
+    mockPurchaseFind([
+      {
+        _id: PURCHASE_ID,
+        projectId: null,
+        price_usd: 10,
+        price_sol_total: 0.1,
+        price_sol_seller: 0.099,
+        price_sol_platform: 0.001,
+        buyer_wallet: BUYER_WALLET,
+        tx_signature: TX_SIG,
+        createdAt: new Date(),
+        project_snapshot: {
+          title: "Legacy SOL Project",
+          project_type: "Web App",
+        },
+        seller_snapshot: {
+          name: "Seller",
+          username: "seller",
+          profile_image_url: "",
+        },
+      },
+    ]);
+
+    const req = makeReq();
+    const res = makeRes();
+
+    getPurchasedProjects(req, res, next);
+    await flushPromises();
+
+    const { purchases } = vi.mocked(res.json).mock.calls[0][0].data;
+    expect(purchases[0]).toMatchObject({
+      payment_currency: "SOL",
+      payment_total: 0.1,
+      payment_seller: 0.099,
+      payment_platform: 0.001,
+    });
   });
 
   it("normalises project_images to only the first image", async () => {
@@ -1907,7 +2015,11 @@ const MOCK_PURCHASE_FULL = {
   tx_signature: TX_SIG,
   purchase_reference: PURCHASE_REF,
   status: "CONFIRMED",
-  project_snapshot: { title: "Test Project", project_type: "Web App" },
+  project_snapshot: {
+    title: "Test Project",
+    project_type: "Web App",
+    tech_stack: ["React", "Node.js"],
+  },
   seller_snapshot: {
     name: "Test Seller",
     username: "testseller",
@@ -2004,6 +2116,38 @@ describe("downloadReceipt", () => {
     expect(allText).toContain("Test Project");
   });
 
+  it("uses purchase-time snapshot fields even when the live project was renamed or repriced", async () => {
+    vi.mocked(Project.findById).mockReturnValue(
+      mockSelectLean({
+        title: "Renamed Project",
+        project_type: "CLI Tool",
+        tech_stack: ["Go"],
+        price: 99,
+      }) as any
+    );
+
+    const PDFDocument = (await import("pdfkit")).default as any;
+    PDFDocument.mockClear();
+
+    const req = makeReq({ query: { purchase_id: PURCHASE_ID } });
+    const res = makeRes();
+    res.setHeader = vi.fn();
+
+    downloadReceipt(req, res, next);
+    await flushPromises();
+
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const allText = pdfInstance._texts.join(" ");
+
+    expect(allText).toContain("Test Project");
+    expect(allText).not.toContain("Renamed Project");
+    expect(allText).toContain("Web App");
+    expect(allText).not.toContain("CLI Tool");
+    expect(allText).toContain("$10.00 USD (at time of purchase)");
+    expect(allText).not.toContain("$99 USD");
+  });
+
   it("falls back to project_snapshot title when the project has been hard-deleted", async () => {
     vi.mocked(Project.findById).mockReturnValue(mockSelectLean(null) as any);
 
@@ -2023,6 +2167,38 @@ describe("downloadReceipt", () => {
 
     // snapshot title should appear — receipt is still valid after deletion
     expect(allText).toContain("Test Project");
+  });
+
+  it("uses legacy SOL settlement amounts in the receipt when generic payment fields are absent", async () => {
+    vi.mocked(Purchase.findOne).mockReturnValue({
+      lean: vi.fn().mockResolvedValue({
+        ...MOCK_PURCHASE_FULL,
+        payment_currency: undefined,
+        payment_total: undefined,
+        payment_seller: undefined,
+        payment_platform: undefined,
+        payment_mint: undefined,
+        payment_decimals: undefined,
+      }),
+    } as any);
+
+    const PDFDocument = (await import("pdfkit")).default as any;
+    PDFDocument.mockClear();
+
+    const req = makeReq({ query: { purchase_id: PURCHASE_ID } });
+    const res = makeRes();
+    res.setHeader = vi.fn();
+
+    downloadReceipt(req, res, next);
+    await flushPromises();
+
+    const pdfInstance =
+      PDFDocument.mock.results[PDFDocument.mock.results.length - 1].value;
+    const allText = pdfInstance._texts.join(" ");
+
+    expect(allText).toContain("Amount Paid (SOL):");
+    expect(allText).toContain("0.1 SOL");
+    expect(allText).not.toContain("Amount Paid (USDC):");
   });
 
   it("includes purchased package identifiers and commit details in the receipt", async () => {

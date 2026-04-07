@@ -54,6 +54,7 @@ export default function ManageProjectsTab({
     tech_stack: [],
     live_link: "",
     price: 0,
+    allow_payments_in_sol: false,
     project_images: [],
     project_type: "",
     project_video: "",
