@@ -1,9 +1,17 @@
 import { z } from "zod";
+import {
+  DEFAULT_PAYMENT_CURRENCY,
+  PAYMENT_CURRENCY_ENUM,
+} from "../types/constants";
 
 export const initiatePurchaseSchema = z.object({
   project_id: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, "Invalid project_id format"),
+  payment_currency: z
+    .enum(PAYMENT_CURRENCY_ENUM)
+    .optional()
+    .default(DEFAULT_PAYMENT_CURRENCY),
 });
 
 const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/;

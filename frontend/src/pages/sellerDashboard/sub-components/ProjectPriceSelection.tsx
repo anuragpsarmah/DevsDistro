@@ -5,11 +5,15 @@ import { ChangeEvent, useState, KeyboardEvent, FocusEvent } from "react";
 interface ProjectPriceSelectionProps {
   price: number;
   setPrice: (curr: number) => void;
+  allowPaymentsInSol: boolean;
+  setAllowPaymentsInSol: (curr: boolean) => void;
 }
 
 export default function ProjectPriceSelection({
   price,
   setPrice,
+  allowPaymentsInSol,
+  setAllowPaymentsInSol,
 }: ProjectPriceSelectionProps) {
   const [inputValue, setInputValue] = useState<string>(price.toFixed(2));
 
@@ -65,7 +69,7 @@ export default function ProjectPriceSelection({
       >
         Project Price (USD)
       </Label>
-      <div className="relative flex justify-center">
+      <div className="relative flex flex-col items-center gap-4 mt-2">
         <div className="lg:w-1/3 md:w-1/3 w-1/2 relative bg-transparent border-2 border-black/20 dark:border-white/20 transition-colors duration-300">
           <span className="absolute top-1/2 left-4 transform -translate-y-1/2 flex items-center font-space font-black text-3xl md:text-4xl text-black dark:text-white leading-none">
             $
@@ -122,6 +126,53 @@ export default function ProjectPriceSelection({
             </button>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setAllowPaymentsInSol(!allowPaymentsInSol)}
+          className={`group lg:w-1/3 md:w-1/3 w-1/2 p-5 flex items-center gap-4 text-left transition-colors duration-300 border-2 ${
+            allowPaymentsInSol
+              ? "border-red-500 bg-red-500/[0.02]"
+              : "border-black/10 dark:border-white/10 hover:border-black/40 dark:hover:border-white/40"
+          }`}
+        >
+          <div
+            className={`flex items-center justify-center w-5 h-5 border-2 transition-colors duration-300 shrink-0 ${
+              allowPaymentsInSol
+                ? "border-red-500 bg-red-500 text-white"
+                : "border-black/30 dark:border-white/30 text-transparent group-hover:border-black/60 dark:group-hover:border-white/60"
+            }`}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="4"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
+            >
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <p
+              className={`font-space font-bold uppercase tracking-[0.2em] text-[10px] transition-colors duration-300 ${
+                allowPaymentsInSol
+                  ? "text-red-500"
+                  : "text-black dark:text-white"
+              }`}
+            >
+              Allow Payments In SOL
+            </p>
+            <p className="font-space text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed">
+              Buyers will pay in USDC by default. Turn this on to also let them
+              choose native SOL at checkout.
+            </p>
+          </div>
+        </button>
       </div>
     </div>
   );

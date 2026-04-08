@@ -399,6 +399,13 @@ const getSalesTransactions = asyncHandler(
           _id: 1,
           createdAt: 1,
           tx_signature: 1,
+          payment_currency: { $ifNull: ["$payment_currency", "SOL"] },
+          payment_total: { $ifNull: ["$payment_total", "$price_sol_total"] },
+          payment_seller: { $ifNull: ["$payment_seller", "$price_sol_seller"] },
+          payment_platform: {
+            $ifNull: ["$payment_platform", "$price_sol_platform"],
+          },
+          payment_mint: { $ifNull: ["$payment_mint", null] },
           price_usd: 1,
           price_sol_total: 1,
           price_sol_seller: 1,

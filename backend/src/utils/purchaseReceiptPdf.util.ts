@@ -13,12 +13,14 @@ type PurchaseReceiptPayload = {
   purchasedCommitSha: string;
   packagedAt: string;
   amountPaidUsd: string;
-  amountPaidSol: string;
+  settlementAmountLabel: string;
+  settlementAmountValue: string;
   sellerReceivedLabel: string;
   sellerReceivedValue: string;
   platformFeeLabel: string;
   platformFeeValue: string;
-  solUsdRate: string;
+  pricingReferenceLabel: string;
+  pricingReferenceValue: string;
   rateSource: string;
   rateTimestamp: string;
   buyerDisplayName: string;
@@ -212,10 +214,10 @@ export function renderPurchaseReceiptPdf(
   y += 10;
 
   y = row("Amount Paid (USD):", payload.amountPaidUsd, y);
-  y = row("Amount Paid (SOL):", payload.amountPaidSol, y);
+  y = row(payload.settlementAmountLabel, payload.settlementAmountValue, y);
   y = row(payload.sellerReceivedLabel, payload.sellerReceivedValue, y);
   y = row(payload.platformFeeLabel, payload.platformFeeValue, y);
-  y = row("SOL/USD Rate at Purchase:", payload.solUsdRate, y);
+  y = row(payload.pricingReferenceLabel, payload.pricingReferenceValue, y);
   y = row("Rate Source:", payload.rateSource, y);
   y = row("Rate Timestamp:", payload.rateTimestamp, y);
   y += 12;

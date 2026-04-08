@@ -53,8 +53,14 @@ export const PROJECT_PACKAGE_SOURCE_ENUM = [
   "AUTO_REPACKAGE",
 ] as const;
 
+export const PAYMENT_CURRENCY_ENUM = ["USDC", "SOL"] as const;
+
+export const DEFAULT_PAYMENT_CURRENCY = "USDC" as const;
+
 export const MEMO_PROGRAM_ID = "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr";
 
 // Fixed lamport tolerance: both sides compute from the identical price_sol_total float
 // using the same deterministic integer arithmetic, so the delta is always 0.
 export const LAMPORT_FIXED_TOLERANCE = 5;
+
+export const USDC_DECIMALS = 6;

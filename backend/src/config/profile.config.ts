@@ -1,2 +1,3 @@
 export const WALLET_VERIFICATION_WINDOW_MS = 5 * 60 * 1000;
 export const WALLET_CLOCK_SKEW_MS = 60_000;
+export const DIFFERENT_WALLET_COOLDOWN_MS = 24 * 60 * 60 * 1000;

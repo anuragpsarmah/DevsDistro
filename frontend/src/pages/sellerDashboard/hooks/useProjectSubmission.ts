@@ -164,6 +164,7 @@ export const useProjectSubmission = ({
       tech_stack: formData.techStack,
       live_link: formData.liveLink,
       price: formData.price,
+      allow_payments_in_sol: formData.allowPaymentsInSol,
       imageOrder,
       imageOrder_detail,
       project_video: formData.video && videoKey ? videoKey : "",

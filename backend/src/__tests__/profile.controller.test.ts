@@ -19,6 +19,15 @@ vi.mock("../utils/walletVerification.util", () => ({
   verifyWalletSignature: vi.fn(),
 }));
 
+vi.mock("../utils/payment.util", () => ({
+  resolveUsdcMintAddress: vi.fn(),
+}));
+
+vi.mock("../utils/solanaAta.util", () => ({
+  getAssociatedTokenAccountStatus: vi.fn(),
+  sponsorAssociatedTokenAccount: vi.fn(),
+}));
+
 vi.mock("../logger/logger", () => ({
   default: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
@@ -33,12 +42,19 @@ import {
   getWalletAddress,
   updateWalletAddress,
 } from "../controllers/profile.controller";
+import logger from "../logger/logger";
 import { User } from "../models/user.model";
 import { SiteReview } from "../models/siteReview.model";
 import { verifyWalletSignature } from "../utils/walletVerification.util";
+import { resolveUsdcMintAddress } from "../utils/payment.util";
+import {
+  getAssociatedTokenAccountStatus,
+  sponsorAssociatedTokenAccount,
+} from "../utils/solanaAta.util";
 
 const VALID_USER_ID = "507f1f77bcf86cd799439011";
 const VALID_WALLET = "GsbwXfJraMomNxBcpR3DBuWMxSrPMD8HuCHBuyBEjMzN";
+const SECOND_VALID_WALLET = "7Vj6kR4v1nY4tT1f4K4g1gK7hP8fKXy9gQ6mD4sE2qLp";
 
 const flushPromises = () =>
   new Promise<void>((resolve) => setImmediate(resolve));
@@ -81,6 +97,8 @@ const makeMockUser = (overrides: Record<string, any> = {}) => ({
   profile_visibility: true,
   auto_repackage_on_push: false,
   wallet_address: "",
+  wallet_last_connected_address: "",
+  wallet_last_connected_at: null,
   save: vi.fn().mockResolvedValue(undefined),
   ...overrides,
 });
@@ -95,11 +113,11 @@ const makeMockReview = (overrides: Record<string, any> = {}) => ({
   ...overrides,
 });
 
-const validWalletBody = (timestampOffset = 0) => {
+const validWalletBody = (timestampOffset = 0, walletAddress = VALID_WALLET) => {
   const ts = Date.now() + timestampOffset;
-  const message = `DevsDistro Wallet Verification\nAddress: ${VALID_WALLET}\nTimestamp: ${ts}`;
+  const message = `DevsDistro Wallet Verification\nAddress: ${walletAddress}\nTimestamp: ${ts}`;
   return {
-    wallet_address: VALID_WALLET,
+    wallet_address: walletAddress,
     signature: "validSig123",
     message,
   };
@@ -111,6 +129,25 @@ describe("profile.controller", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     res = makeRes();
+    vi.mocked(resolveUsdcMintAddress).mockReturnValue(
+      "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+    );
+    vi.mocked(getAssociatedTokenAccountStatus).mockResolvedValue({
+      exists: true,
+      ataAddress: "Ata111111111111111111111111111111111111111",
+    } as any);
+    vi.mocked(sponsorAssociatedTokenAccount).mockResolvedValue({
+      ataAddress: "Ata111111111111111111111111111111111111111",
+      txSignature: "sig111",
+      transactionFeeLamports: 5000,
+      ataRentLamports: 2039280,
+      totalCostLamports: 2044280,
+      transactionFeeSol: 0.000005,
+      ataRentSol: 0.00203928,
+      totalCostSol: 0.00204428,
+    } as any);
+    process.env.SOLANA_RPC_URL = "https://api.devnet.solana.com";
+    process.env.SOLANA_ATA_SPONSOR_SECRET_KEY = "test-sponsor-secret";
   });
 
   // ─────────────────────────────────────────────────────────────
@@ -492,13 +529,14 @@ describe("profile.controller", () => {
 
     it("disconnects wallet (empty address) without requiring signature", async () => {
       const mockUser = makeMockUser({ wallet_address: VALID_WALLET });
-      vi.mocked(User.findByIdAndUpdate).mockResolvedValue(mockUser as any);
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
 
       const req = makeReq({ body: { wallet_address: "" } });
       updateWalletAddress(req, res, next);
       await flushPromises();
 
       expect(verifyWalletSignature).not.toHaveBeenCalled();
+      expect(mockUser.save).toHaveBeenCalled();
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
@@ -585,19 +623,96 @@ describe("profile.controller", () => {
     it("returns 200 when signature verification passes and DB update succeeds", async () => {
       vi.mocked(verifyWalletSignature).mockReturnValue(true);
       const mockUser = makeMockUser({ wallet_address: VALID_WALLET });
-      vi.mocked(User.findByIdAndUpdate).mockResolvedValue(mockUser as any);
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
 
       const req = makeReq({ body: validWalletBody() });
       updateWalletAddress(req, res, next);
       await flushPromises();
 
       expect(verifyWalletSignature).toHaveBeenCalled();
+      expect(mockUser.save).toHaveBeenCalled();
+      expect(mockUser.wallet_last_connected_address).toBe(VALID_WALLET);
+      expect(mockUser.wallet_last_connected_at).toBeInstanceOf(Date);
       expect(res.status).toHaveBeenCalledWith(200);
     });
 
-    it("returns 401 when DB update returns null (user not found)", async () => {
+    it("allows reconnecting the same wallet within 24 hours after disconnecting it", async () => {
       vi.mocked(verifyWalletSignature).mockReturnValue(true);
-      vi.mocked(User.findByIdAndUpdate).mockResolvedValue(null);
+      const mockUser = makeMockUser({
+        wallet_address: "",
+        wallet_last_connected_address: VALID_WALLET,
+        wallet_last_connected_at: new Date(Date.now() - 60 * 60 * 1000),
+      });
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
+
+      const req = makeReq({ body: validWalletBody(0, VALID_WALLET) });
+      updateWalletAddress(req, res, next);
+      await flushPromises();
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(vi.mocked(getAssociatedTokenAccountStatus)).toHaveBeenCalled();
+    });
+
+    it("blocks connecting a different wallet within 24 hours of the last wallet connection", async () => {
+      vi.mocked(verifyWalletSignature).mockReturnValue(true);
+      const mockUser = makeMockUser({
+        wallet_address: "",
+        wallet_last_connected_address: VALID_WALLET,
+        wallet_last_connected_at: new Date(Date.now() - 60 * 60 * 1000),
+      });
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
+
+      const req = makeReq({ body: validWalletBody(0, SECOND_VALID_WALLET) });
+      updateWalletAddress(req, res, next);
+      await flushPromises();
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(vi.mocked(getAssociatedTokenAccountStatus)).not.toHaveBeenCalled();
+      expect(sponsorAssociatedTokenAccount).not.toHaveBeenCalled();
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message:
+            "You can connect a different wallet 24 hours after your last wallet connection.",
+          data: expect.objectContaining({
+            reason_code: "SELLER_WALLET_SWITCH_COOLDOWN_ACTIVE",
+          }),
+        })
+      );
+    });
+
+    it("allows connecting a different wallet after 24 hours have passed", async () => {
+      vi.mocked(verifyWalletSignature).mockReturnValue(true);
+      const mockUser = makeMockUser({
+        wallet_address: "",
+        wallet_last_connected_address: VALID_WALLET,
+        wallet_last_connected_at: new Date(Date.now() - 25 * 60 * 60 * 1000),
+      });
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
+
+      const req = makeReq({ body: validWalletBody(0, SECOND_VALID_WALLET) });
+      updateWalletAddress(req, res, next);
+      await flushPromises();
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(vi.mocked(getAssociatedTokenAccountStatus)).toHaveBeenCalledWith({
+        ownerWallet: SECOND_VALID_WALLET,
+        mintAddress: "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        rpcUrl: "https://api.devnet.solana.com",
+      });
+      expect(mockUser.wallet_last_connected_address).toBe(SECOND_VALID_WALLET);
+      expect(mockUser.wallet_last_connected_at).toBeInstanceOf(Date);
+      expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+        "Seller USDC ATA already exists during wallet connection",
+        expect.objectContaining({
+          walletAddress: SECOND_VALID_WALLET,
+          usdcAtaAddress: "Ata111111111111111111111111111111111111111",
+        })
+      );
+    });
+
+    it("returns 401 when user lookup returns null", async () => {
+      vi.mocked(verifyWalletSignature).mockReturnValue(true);
+      vi.mocked(User.findById).mockResolvedValue(null);
 
       const req = makeReq({ body: validWalletBody() });
       updateWalletAddress(req, res, next);
@@ -608,15 +723,84 @@ describe("profile.controller", () => {
 
     it("returns 500 on DB update error", async () => {
       vi.mocked(verifyWalletSignature).mockReturnValue(true);
-      vi.mocked(User.findByIdAndUpdate).mockRejectedValue(
-        new Error("DB error")
-      );
+      const mockUser = makeMockUser();
+      mockUser.save.mockRejectedValue(new Error("DB error"));
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
 
       const req = makeReq({ body: validWalletBody() });
       updateWalletAddress(req, res, next);
       await flushPromises();
 
       expect(res.status).toHaveBeenCalledWith(500);
+    });
+
+    it("sponsors the seller USDC ATA when the connected wallet is missing it", async () => {
+      vi.mocked(verifyWalletSignature).mockReturnValue(true);
+      vi.mocked(getAssociatedTokenAccountStatus).mockResolvedValue({
+        exists: false,
+        ataAddress: "Ata111111111111111111111111111111111111111",
+      } as any);
+      const mockUser = makeMockUser();
+      vi.mocked(User.findById).mockResolvedValue(mockUser as any);
+
+      const req = makeReq({ body: validWalletBody() });
+      updateWalletAddress(req, res, next);
+      await flushPromises();
+
+      expect(sponsorAssociatedTokenAccount).toHaveBeenCalled();
+      expect(vi.mocked(logger.info)).toHaveBeenCalledWith(
+        "Seller USDC ATA prepared during wallet connection",
+        expect.objectContaining({
+          walletAddress: VALID_WALLET,
+          usdcAtaAddress: "Ata111111111111111111111111111111111111111",
+          ataCreationTxSignature: "sig111",
+          transactionFeeLamports: 5000,
+          ataRentLamports: 2039280,
+          totalCostLamports: 2044280,
+        })
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Wallet connected and USDC receiving account is ready.",
+          data: expect.objectContaining({
+            reason_code: "SELLER_USDC_ATA_CREATED",
+          }),
+        })
+      );
+    });
+
+    it("still sponsors the seller USDC ATA when switching to another wallet that is missing it", async () => {
+      vi.mocked(verifyWalletSignature).mockReturnValue(true);
+      vi.mocked(getAssociatedTokenAccountStatus).mockResolvedValue({
+        exists: false,
+        ataAddress: "Ata111111111111111111111111111111111111111",
+      } as any);
+      vi.mocked(User.findById).mockResolvedValue(
+        makeMockUser({
+          wallet_address: "OldWallet11111111111111111111111111111111",
+        }) as any
+      );
+
+      const req = makeReq({ body: validWalletBody() });
+      updateWalletAddress(req, res, next);
+      await flushPromises();
+
+      expect(sponsorAssociatedTokenAccount).toHaveBeenCalledWith({
+        ownerWallet: VALID_WALLET,
+        mintAddress: "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+        rpcUrl: "https://api.devnet.solana.com",
+        sponsorSecretKey: "test-sponsor-secret",
+      });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Wallet connected and USDC receiving account is ready.",
+          data: expect.objectContaining({
+            reason_code: "SELLER_USDC_ATA_CREATED",
+          }),
+        })
+      );
     });
   });
 });

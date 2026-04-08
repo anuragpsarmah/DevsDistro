@@ -42,6 +42,11 @@ export interface SellerSalesTransaction {
   _id: string;
   createdAt: string;
   tx_signature: string;
+  payment_currency: "USDC" | "SOL";
+  payment_total: number;
+  payment_seller: number;
+  payment_platform: number;
+  payment_mint: string | null;
   price_usd: number;
   price_sol_total: number;
   price_sol_seller: number;
@@ -259,6 +264,7 @@ export interface projectListingFormData {
   techStack: string[];
   liveLink: string;
   price: number;
+  allowPaymentsInSol: boolean;
   imageItems: ImageItem[];
   video: File | null;
   existingVideo?: string | null;
@@ -325,6 +331,7 @@ export interface projectListingValidatedFormData {
   tech_stack: string[];
   live_link: string;
   price: number;
+  allow_payments_in_sol: boolean;
   imageOrder: string[];
   imageOrder_detail: string[];
   project_video: string;
@@ -359,6 +366,7 @@ export interface InitialProjectData {
   repackage_status?: RepackageStatus;
   repackage_error?: string | null;
   price: number;
+  allow_payments_in_sol?: boolean;
   live_link?: string;
   downloadCount: number;
 }
@@ -397,6 +405,7 @@ export interface formPropsType {
   tech_stack: Array<string>;
   live_link: string;
   price: number;
+  allow_payments_in_sol?: boolean;
   project_images: Array<string>;
   project_images_detail?: Array<string>;
   project_type: string;

@@ -86,6 +86,11 @@ export interface VerifyParams {
   expectedBuyerWallet: string;
   expectedSellerWallet: string;
   expectedTreasuryWallet: string;
+  paymentCurrency?: "USDC" | "SOL";
+  expectedMint?: string;
+  expectedTotalAmountAtomic?: number;
+  expectedSellerAmountAtomic?: number;
+  expectedTreasuryAmountAtomic?: number;
   expectedSellerLamports: number;
   expectedTreasuryLamports: number;
   purchaseReference: string;

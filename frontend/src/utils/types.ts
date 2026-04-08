@@ -52,6 +52,7 @@ export interface projectListingValidatedFormData {
   tech_stack: string[];
   live_link: string;
   price: number;
+  allow_payments_in_sol: boolean;
   imageOrder: string[];
   imageOrder_detail: string[];
   project_video: string;
@@ -75,6 +76,7 @@ export interface MarketplaceProject {
   project_type: string;
   tech_stack: string[];
   price: number;
+  allow_payments_in_sol?: boolean;
   avgRating: number;
   totalReviews: number;
   live_link?: string;
@@ -100,6 +102,7 @@ export interface ProjectDetail {
   project_type: string;
   tech_stack: string[];
   price: number;
+  allow_payments_in_sol?: boolean;
   avgRating: number;
   totalReviews: number;
   live_link?: string;
@@ -132,6 +135,7 @@ export interface PublicProjectDetail {
   project_type: string;
   tech_stack: string[];
   price: number;
+  allow_payments_in_sol?: boolean;
   avgRating: number;
   totalReviews: number;
   live_link?: string;
@@ -156,6 +160,14 @@ export interface PublicProjectDetail {
 
 export interface PurchaseIntent {
   purchase_reference: string;
+  payment_currency: "USDC" | "SOL";
+  payment_total: number;
+  payment_seller: number;
+  payment_platform: number;
+  payment_mint: string | null;
+  payment_decimals: number;
+  seller_amount_atomic: number;
+  treasury_amount_atomic: number;
   price_usd: number;
   price_sol_total: number;
   price_sol_seller: number;
@@ -167,6 +179,7 @@ export interface PurchaseIntent {
   seller_wallet: string;
   treasury_wallet: string;
   sol_usd_rate: number;
+  exchange_rate_source?: string;
   /** ISO timestamp of when the exchange rate was fetched from the oracle */
   exchange_rate_fetched_at: string;
   expires_in: number;
@@ -204,6 +217,11 @@ export interface PurchasedProject {
         scheduled_deletion_at?: string | null;
       })
     | null;
+  payment_currency: "USDC" | "SOL";
+  payment_total: number;
+  payment_seller: number;
+  payment_platform: number;
+  payment_mint: string | null;
   price_usd: number;
   price_sol_total: number;
   buyer_wallet: string;
@@ -225,6 +243,11 @@ interface SellerSalesTransaction {
   _id: string;
   createdAt: string;
   tx_signature: string;
+  payment_currency: "USDC" | "SOL";
+  payment_total: number;
+  payment_seller: number;
+  payment_platform: number;
+  payment_mint: string | null;
   price_usd: number;
   price_sol_total: number;
   price_sol_seller: number;

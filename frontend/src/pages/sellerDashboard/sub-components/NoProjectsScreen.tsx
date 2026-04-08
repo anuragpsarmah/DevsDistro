@@ -22,7 +22,7 @@ export const NoProjectsScreen: React.FC = () => {
             [Status: Portfolio Empty]
           </p>
           <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed transition-colors duration-300">
-            Your project listing portfolio is empty. Head over to the List New
+            Your project listing portfolio is empty. Head over to the List
             Project tab to publish your first project to the marketplace.
           </p>
         </div>

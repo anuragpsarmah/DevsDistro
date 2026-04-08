@@ -7,6 +7,7 @@ export const projectFormDataSchema = z.object({
       required_error: "Price is required",
     })
     .min(0, "Price should be greater than or equal to 0."),
+  allow_payments_in_sol: z.boolean().optional().default(false),
   title: z
     .string({
       required_error: "Title is required",

@@ -174,7 +174,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 Execute verifiable delivery of repository archives associated
-                with verified SOL settlements.
+                with verified on-chain settlements.
               </li>
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>

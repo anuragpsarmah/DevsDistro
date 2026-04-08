@@ -2,13 +2,12 @@
 # Run from your local machine:
 #   bash infra/scripts/pull_logs.sh
 #   bash infra/scripts/pull_logs.sh backend-api backend-worker
+#   bash infra/scripts/pull_logs.sh --output-root ../frontend worker
 set -euo pipefail
 
 REMOTE="anurag@161.97.91.246"
 KEY="${HOME}/.ssh/contabo-server"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-OUT="${REPO_ROOT}/logs/devsdistro-logs-$(date +%Y%m%d-%H%M%S)"
+OUTPUT_ROOT="${PWD}"
 SINCE_DOCKER="48h"
 SINCE_JOURNAL="48 hours ago"
 MARKER_TOKEN="devsdistro-$(date +%s)-$$"
@@ -68,24 +67,39 @@ resolve_targets() {
   done
 }
 
-resolve_targets "$@"
+target_args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --output-root|-o)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for $1" >&2
+        exit 1
+      fi
+      OUTPUT_ROOT="$2"
+      shift 2
+      ;;
+    *)
+      target_args+=("$1")
+      shift
+      ;;
+  esac
+done
 
-mkdir -p "${OUT}"
+OUT="${OUTPUT_ROOT}/logs/devsdistro-logs-$(date +%Y%m%d-%H%M%S)"
+
+resolve_targets "${target_args[@]}"
 
 echo "==> Pulling logs: ${selected_targets[*]}"
 
-remote_command="bash -s --"
-for arg in "${SINCE_DOCKER}" "${SINCE_JOURNAL}" "${MARKER_TOKEN}" "${selected_targets[@]}"; do
-  remote_command+=" $(printf "%q" "${arg}")"
-done
-
 stream_file="$(mktemp)"
+ssh_error_file="$(mktemp)"
 cleanup() {
   rm -f "${stream_file}"
+  rm -f "${ssh_error_file}"
 }
 trap cleanup EXIT
 
-if ! ssh -T -i "${KEY}" "${REMOTE}" "${remote_command}" >"${stream_file}" <<'REMOTE_SCRIPT'
+remote_script="$(cat <<'REMOTE_SCRIPT'
 set -uo pipefail
 
 since_docker="$1"
@@ -148,14 +162,34 @@ for target in "$@"; do
   esac
 done
 REMOTE_SCRIPT
-then
-  for target in "${selected_targets[@]}"; do
-    printf 'WARNING: Could not pull %s logs\n' "${target}" >"${OUT}/${TARGET_FILES[${target}]}"
-  done
-  echo "==> Done. Logs saved to ${OUT}/"
-  ls -lh "${OUT}/"
-  exit 0
+)"
+
+remote_script_b64="$(printf '%s' "${remote_script}" | base64 | tr -d '\n')"
+remote_command="printf %s $(printf "%q" "${remote_script_b64}") | base64 -d | bash -s --"
+for arg in "${SINCE_DOCKER}" "${SINCE_JOURNAL}" "${MARKER_TOKEN}" "${selected_targets[@]}"; do
+  remote_command+=" $(printf "%q" "${arg}")"
+done
+
+if ssh -T -i "${KEY}" "${REMOTE}" "${remote_command}" >"${stream_file}"; then
+  :
+else
+  ssh_status=$?
+  ssh -o BatchMode=yes -T -i "${KEY}" "${REMOTE}" "${remote_command}" 1>/dev/null 2>"${ssh_error_file}" || true
+  ssh_error_message="$(<"${ssh_error_file}")"
+  ssh_error_message="${ssh_error_message%"${ssh_error_message##*[!$'\r\n']}"}"
+  echo "ERROR: Failed to pull logs via SSH (exit ${ssh_status})." >&2
+  if [[ -n "${ssh_error_message}" ]]; then
+    printf '%s\n' "${ssh_error_message}" >&2
+  fi
+  if [[ "${ssh_error_message}" == *"Permission denied"* || "${ssh_status}" -eq 255 ]]; then
+    printf '%s\n' 'Hint: SSH key auth failed and the interactive password login did not complete. If you want a prompt, run the script directly in the terminal and enter the server password when ssh asks.' >&2
+  fi
+  echo "==> Log pull failed. No log folder was created." >&2
+  exit 1
 fi
+
+mkdir -p "${OUT}"
+OUT="$(cd "${OUT}" && pwd)"
 
 start_prefix="__DEVS_DISTRO_LOG_START__:${MARKER_TOKEN}:"
 end_prefix="__DEVS_DISTRO_LOG_END__:${MARKER_TOKEN}:"
@@ -181,7 +215,8 @@ done <"${stream_file}"
 for target in "${selected_targets[@]}"; do
   file_name="${TARGET_FILES[${target}]}"
   if [[ ! -f "${OUT}/${file_name}" ]]; then
-    printf 'WARNING: No output was returned for %s\n' "${file_name}" >"${OUT}/${file_name}"
+    : >"${OUT}/${file_name}"
+    echo "WARNING: No output was returned for ${file_name}" >&2
   fi
 done
 

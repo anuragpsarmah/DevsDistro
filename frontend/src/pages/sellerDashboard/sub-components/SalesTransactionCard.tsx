@@ -13,6 +13,9 @@ export default function SalesTransactionCard({
   const projectType =
     transaction.projectId?.project_type ??
     transaction.project_snapshot.project_type;
+  const settlementCurrency = transaction.payment_currency || "SOL";
+  const settlementValue =
+    transaction.payment_total ?? transaction.price_sol_total ?? 0;
 
   return (
     <div className="border-2 border-black dark:border-white bg-white dark:bg-[#050505] transition-colors duration-300 hover:border-red-500 dark:hover:border-red-500">
@@ -65,7 +68,10 @@ export default function SalesTransactionCard({
                 ${transaction.price_usd.toFixed(2)}
               </span>
               <span className="font-space text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-1">
-                {transaction.price_sol_total.toFixed(4)} SOL
+                {settlementCurrency === "USDC"
+                  ? settlementValue.toFixed(2)
+                  : settlementValue.toFixed(4)}{" "}
+                {settlementCurrency}
               </span>
             </div>
           </div>

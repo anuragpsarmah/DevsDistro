@@ -150,10 +150,12 @@ export default function TermsOfService() {
                 Solana Settlement /
               </strong>
               You define the valuation of your repository in USD fiat. At the
-              time of execution, DevsDistro automatically converts this amount
-              and processes the transaction exclusively in native SOL on the
+              time of execution, DevsDistro processes the transaction on the
               Solana blockchain through a connected Web3 wallet (e.g., Phantom,
-              Solflare).
+              Solflare). Checkout settles in USDC by default, and may also
+              settle in native SOL when the seller has explicitly enabled that
+              option for the listing. No currency conversion is performed during
+              settlement.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
               <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
@@ -178,8 +180,8 @@ export default function TermsOfService() {
               consequential damages arising from your use of the Platform,
               including but not limited to loss of data, unauthorized access to
               your GitHub account or Web3 wallet, smart contract
-              vulnerabilities, market volatility of SOL, or any other financial
-              loss.
+              vulnerabilities, market volatility of digital assets, or any other
+              financial loss.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
               <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
@@ -201,10 +203,10 @@ export default function TermsOfService() {
               you expressly acknowledge and accept that all transactions are
               executed at your own risk. You are solely responsible for
               independently verifying transaction details — including recipient
-              addresses and SOL amounts — prior to authorizing any payment
-              through your connected Web3 wallet. DevsDistro strongly recommends
-              transacting only amounts you are prepared to lose in the event of
-              an unforeseen technical failure.
+              addresses and settlement amounts — prior to authorizing any
+              payment through your connected Web3 wallet. DevsDistro strongly
+              recommends transacting only amounts you are prepared to lose in
+              the event of an unforeseen technical failure.
             </p>
           </section>
 

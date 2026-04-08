@@ -27,6 +27,15 @@ import { verifySolanaTransaction } from "../utils/solanaVerification.util";
 import { isProjectMarketplaceVisible } from "../utils/projectVisibility.util";
 import { DownloadVersion } from "../types/types";
 import { renderPurchaseReceiptPdf } from "../utils/purchaseReceiptPdf.util";
+import {
+  computeUsdcSplit,
+  derivePaymentSummary,
+  normalizePaymentCurrency,
+  resolveStoredPaymentCurrency,
+  resolveUsdcMintAddress,
+  type PaymentCurrency,
+} from "../utils/payment.util";
+import { getAssociatedTokenAccountStatus } from "../utils/solanaAta.util";
 
 const PURCHASE_INTENT_TTL = 600; // 10 minutes
 
@@ -50,6 +59,9 @@ const buildSafeDownloadFilename = (
 
   return `${safeTitle || "project"}.zip`;
 };
+
+const resolveIntentPaymentCurrency = (intent: any): PaymentCurrency =>
+  resolveStoredPaymentCurrency(intent ?? {});
 
 const recordProjectDownload = async ({
   projectId,
@@ -112,7 +124,8 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  const { project_id } = parseResult.data;
+  const { project_id, payment_currency } = parseResult.data;
+  const paymentCurrency = normalizePaymentCurrency(payment_currency);
   const buyerId = new mongoose.Types.ObjectId(req.user._id);
   const projectObjectId = new mongoose.Types.ObjectId(project_id);
 
@@ -122,7 +135,7 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   const [project, projectError] = await tryCatch(
     Project.findById(projectObjectId)
       .select(
-        "userid price isActive github_access_revoked repo_zip_status repo_zip_s3_key github_installation_id"
+        "userid price allow_payments_in_sol isActive github_access_revoked repo_zip_status repo_zip_s3_key github_installation_id"
       )
       .lean()
   );
@@ -158,6 +171,15 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   if (!project.price || project.price <= 0) {
     enrichContext({ outcome: "validation_failed", reason: "free_project" });
     response(res, 400, "This project is free and does not require a purchase");
+    return;
+  }
+
+  if (paymentCurrency === "SOL" && !project.allow_payments_in_sol) {
+    enrichContext({
+      outcome: "validation_failed",
+      reason: "sol_not_allowed",
+    });
+    response(res, 400, "This seller only accepts USDC for this project");
     return;
   }
 
@@ -233,37 +255,150 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Get SOL/USD exchange rate
-  let rateResult;
-  try {
-    rateResult = await getSolanaUsdRate();
-  } catch (rateError: any) {
-    enrichContext({ outcome: "error", reason: "oracle_unavailable" });
-    response(
-      res,
-      503,
-      rateError.message || "Price oracle unavailable, please try again shortly"
-    );
-    return;
-  }
-
-  const { rate, source, fetched_at } = rateResult;
   const price_usd = project.price as number;
-  const price_sol_total = parseFloat((price_usd / rate).toFixed(9));
-
-  const {
-    totalLamports,
-    sellerLamports,
-    platformLamports,
-    priceSolSeller,
-    priceSolPlatform,
-  } = computeLamportSplit(price_sol_total);
-
   const treasuryWallet = process.env.SOLANA_TREASURY_WALLET as string;
   if (!treasuryWallet) {
     logger.error("SOLANA_TREASURY_WALLET env var not set");
     response(res, 500, "Payment system configuration error");
     return;
+  }
+
+  let sol_usd_rate = 0;
+  let exchange_rate_source = "USDC_FIXED";
+  let exchange_rate_fetched_at = new Date();
+  let price_sol_total = 0;
+  let price_sol_seller = 0;
+  let price_sol_platform = 0;
+  let total_lamports = 0;
+  let seller_lamports = 0;
+  let treasury_lamports = 0;
+  let payment_total = 0;
+  let payment_seller = 0;
+  let payment_platform = 0;
+  let total_amount_atomic = 0;
+  let seller_amount_atomic = 0;
+  let treasury_amount_atomic = 0;
+  let payment_mint: string | null = null;
+  let payment_decimals = 9;
+
+  if (paymentCurrency === "SOL") {
+    let rateResult;
+    try {
+      rateResult = await getSolanaUsdRate();
+    } catch (rateError: any) {
+      enrichContext({ outcome: "error", reason: "oracle_unavailable" });
+      response(
+        res,
+        503,
+        rateError.message ||
+          "Price oracle unavailable, please try again shortly"
+      );
+      return;
+    }
+
+    const { rate, source, fetched_at } = rateResult;
+    sol_usd_rate = rate;
+    exchange_rate_source = source;
+    exchange_rate_fetched_at = fetched_at;
+    price_sol_total = parseFloat((price_usd / rate).toFixed(9));
+
+    const {
+      totalLamports,
+      sellerLamports,
+      platformLamports,
+      priceSolSeller,
+      priceSolPlatform,
+    } = computeLamportSplit(price_sol_total);
+
+    total_lamports = totalLamports;
+    seller_lamports = sellerLamports;
+    treasury_lamports = platformLamports;
+    price_sol_seller = priceSolSeller;
+    price_sol_platform = priceSolPlatform;
+    payment_total = price_sol_total;
+    payment_seller = priceSolSeller;
+    payment_platform = priceSolPlatform;
+    total_amount_atomic = totalLamports;
+    seller_amount_atomic = sellerLamports;
+    treasury_amount_atomic = platformLamports;
+  } else {
+    const rpcUrl = process.env.SOLANA_RPC_URL;
+    if (!rpcUrl) {
+      logger.error("SOLANA_RPC_URL env var not set");
+      response(res, 500, "Payment system configuration error");
+      return;
+    }
+
+    const usdcMint = resolveUsdcMintAddress(
+      process.env.SOLANA_NETWORK,
+      process.env.SOLANA_USDC_MINT
+    );
+
+    if (!usdcMint) {
+      logger.error("SOLANA_USDC_MINT env var not set and no network default");
+      response(res, 500, "Payment system configuration error");
+      return;
+    }
+
+    let sellerAtaStatus;
+    let treasuryAtaStatus;
+    try {
+      [sellerAtaStatus, treasuryAtaStatus] = await Promise.all([
+        getAssociatedTokenAccountStatus({
+          ownerWallet: seller.wallet_address,
+          mintAddress: usdcMint,
+          rpcUrl,
+        }),
+        getAssociatedTokenAccountStatus({
+          ownerWallet: treasuryWallet,
+          mintAddress: usdcMint,
+          rpcUrl,
+        }),
+      ]);
+    } catch (ataLookupError) {
+      logger.error(
+        "Failed to verify recipient USDC accounts during purchase initiation",
+        ataLookupError
+      );
+      response(
+        res,
+        503,
+        "Payment network is temporarily unavailable. Please try again."
+      );
+      return;
+    }
+
+    if (!sellerAtaStatus.exists) {
+      enrichContext({
+        outcome: "validation_failed",
+        reason: "seller_usdc_ata_missing",
+      });
+      response(
+        res,
+        400,
+        "Seller payment wallet is not ready to receive USDC yet."
+      );
+      return;
+    }
+
+    if (!treasuryAtaStatus.exists) {
+      logger.error("Treasury USDC ATA is missing", {
+        treasuryWallet,
+        usdcMint,
+      });
+      response(res, 500, "Payment system configuration error");
+      return;
+    }
+
+    const usdcSplit = computeUsdcSplit(price_usd);
+    payment_mint = usdcMint;
+    payment_decimals = 6;
+    payment_total = usdcSplit.paymentTotal;
+    payment_seller = usdcSplit.paymentSeller;
+    payment_platform = usdcSplit.paymentPlatform;
+    total_amount_atomic = usdcSplit.totalAtomic;
+    seller_amount_atomic = usdcSplit.sellerAtomic;
+    treasury_amount_atomic = usdcSplit.platformAtomic;
   }
 
   // Generate unique purchase reference (nonce)
@@ -273,16 +408,25 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
     buyerId: buyerId.toString(),
     sellerId: sellerId.toString(),
     projectId: projectObjectId.toString(),
+    payment_currency: paymentCurrency,
+    payment_total,
+    payment_seller,
+    payment_platform,
+    payment_mint,
+    payment_decimals,
+    total_amount_atomic,
+    seller_amount_atomic,
+    treasury_amount_atomic,
     price_usd,
     price_sol_total,
-    price_sol_seller: priceSolSeller,
-    price_sol_platform: priceSolPlatform,
-    total_lamports: totalLamports,
-    seller_lamports: sellerLamports,
-    treasury_lamports: platformLamports,
-    sol_usd_rate: rate,
-    exchange_rate_source: source,
-    exchange_rate_fetched_at: fetched_at.toISOString(),
+    price_sol_seller,
+    price_sol_platform,
+    total_lamports,
+    seller_lamports,
+    treasury_lamports,
+    sol_usd_rate,
+    exchange_rate_source,
+    exchange_rate_fetched_at: exchange_rate_fetched_at.toISOString(),
     seller_wallet: seller.wallet_address,
     treasury_wallet: treasuryWallet,
   };
@@ -304,18 +448,27 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ outcome: "success", purchase_reference });
   response(res, 200, "Purchase initiated", {
     purchase_reference,
+    payment_currency: paymentCurrency,
+    payment_total,
+    payment_seller,
+    payment_platform,
+    payment_mint,
+    payment_decimals,
+    seller_amount_atomic,
+    treasury_amount_atomic,
     price_usd,
     price_sol_total,
-    price_sol_seller: priceSolSeller,
-    price_sol_platform: priceSolPlatform,
+    price_sol_seller,
+    price_sol_platform,
     // Raw lamport values so the frontend constructs the TX using the exact same
     // amounts the backend will verify. Avoids any float re-computation divergence.
-    seller_lamports: sellerLamports,
-    treasury_lamports: platformLamports,
+    seller_lamports,
+    treasury_lamports,
     seller_wallet: seller.wallet_address,
     treasury_wallet: treasuryWallet,
-    sol_usd_rate: rate,
-    exchange_rate_fetched_at: fetched_at.toISOString(),
+    sol_usd_rate,
+    exchange_rate_source,
+    exchange_rate_fetched_at: exchange_rate_fetched_at.toISOString(),
     expires_in: PURCHASE_INTENT_TTL,
   });
 });
@@ -464,13 +617,19 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   // Only fall back to public mainnet if configured for mainnet-beta.
   // Never use mainnet as a fallback for devnet/testnet — transactions don't cross networks.
   const isMainnet = process.env.SOLANA_NETWORK === "mainnet-beta";
+  const intentPaymentCurrency = resolveIntentPaymentCurrency(intent);
   const verifyResult = await verifySolanaTransaction({
     txSignature: tx_signature,
     expectedBuyerWallet: buyer_wallet,
     expectedSellerWallet: intent.seller_wallet,
     expectedTreasuryWallet: intent.treasury_wallet,
-    expectedSellerLamports: intent.seller_lamports,
-    expectedTreasuryLamports: intent.treasury_lamports,
+    paymentCurrency: intentPaymentCurrency,
+    expectedMint: intent.payment_mint ?? undefined,
+    expectedTotalAmountAtomic: intent.total_amount_atomic ?? 0,
+    expectedSellerAmountAtomic: intent.seller_amount_atomic ?? 0,
+    expectedTreasuryAmountAtomic: intent.treasury_amount_atomic ?? 0,
+    expectedSellerLamports: intent.seller_lamports ?? 0,
+    expectedTreasuryLamports: intent.treasury_lamports ?? 0,
     purchaseReference: purchase_reference,
     rpcUrl,
     fallbackRpcUrl: isMainnet
@@ -503,7 +662,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     tryCatch(
       Project.findById(projectObjectId)
         .select(
-          "title project_type latest_package_id latest_package_commit_sha repo_zip_s3_key"
+          "title project_type tech_stack latest_package_id latest_package_commit_sha repo_zip_s3_key"
         )
         .lean()
     ),
@@ -563,6 +722,12 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       sellerId: new mongoose.Types.ObjectId(intent.sellerId),
       projectId: projectObjectId,
       price_usd: intent.price_usd,
+      payment_currency: intentPaymentCurrency,
+      payment_total: intent.payment_total,
+      payment_seller: intent.payment_seller,
+      payment_platform: intent.payment_platform,
+      payment_mint: intent.payment_mint ?? null,
+      payment_decimals: intent.payment_decimals ?? 9,
       price_sol_total: intent.price_sol_total,
       price_sol_seller: intent.price_sol_seller,
       price_sol_platform: intent.price_sol_platform,
@@ -580,6 +745,9 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       project_snapshot: {
         title: (projectSnap?.title as string) || "Unknown Project",
         project_type: (projectSnap?.project_type as string) || "Unknown",
+        tech_stack: Array.isArray(projectSnap?.tech_stack)
+          ? (projectSnap.tech_stack as string[])
+          : [],
       },
       seller_snapshot: {
         name:
@@ -764,6 +932,7 @@ const getPurchasedProjects = asyncHandler(
         purchasedCommitSha &&
         latestCommitSha !== purchasedCommitSha
       );
+      const paymentSummary = derivePaymentSummary(p);
 
       return {
         _id: p._id,
@@ -773,6 +942,11 @@ const getPurchasedProjects = asyncHandler(
               project_images: p.projectId.project_images?.[0] ?? "",
             }
           : null,
+        payment_currency: paymentSummary.payment_currency,
+        payment_total: paymentSummary.payment_total,
+        payment_seller: paymentSummary.payment_seller,
+        payment_platform: paymentSummary.payment_platform,
+        payment_mint: paymentSummary.payment_mint,
         price_usd: p.price_usd,
         price_sol_total: p.price_sol_total,
         buyer_wallet: p.buyer_wallet,
@@ -1235,20 +1409,26 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Resolve project fields — live data preferred, snapshot as fallback
+  // Resolve project fields from purchase-time snapshots so receipts remain
+  // immutable even after project rename, repricing, or taxonomy changes.
   const snap = (purchase as any).project_snapshot ?? {};
-  const projectTitle = (project?.title as string) || snap.title || "N/A";
+  const projectTitle = snap.title || (project?.title as string) || "N/A";
   const projectType =
-    (project?.project_type as string) || snap.project_type || "N/A";
-  const projectTechStack: string[] = (project?.tech_stack as string[]) || [];
-  const projectPrice = project
-    ? `$${project.price} USD`
-    : `$${(purchase.price_usd as number).toFixed(2)} USD (at time of purchase)`;
+    snap.project_type || (project?.project_type as string) || "N/A";
+  const projectTechStack: string[] = Array.isArray(snap.tech_stack)
+    ? (snap.tech_stack as string[])
+    : (project?.tech_stack as string[]) || [];
+  const projectPrice = `$${(purchase.price_usd as number).toFixed(2)} USD (at time of purchase)`;
   const purchasedPackageId =
     (purchase as any).purchased_package_id?.toString?.() || "N/A";
   const purchasedCommitSha =
     (purchase as any).package_snapshot?.commit_sha || "N/A";
   const packagedAtRaw = (purchase as any).package_snapshot?.packaged_at;
+  const paymentSummary = derivePaymentSummary(purchase as any);
+  const pricingReferenceValue =
+    paymentSummary.payment_currency === "SOL"
+      ? `$${purchase.sol_usd_rate} per SOL`
+      : "1 USDC = $1.00 USD";
   const packagedAt = packagedAtRaw
     ? new Date(packagedAtRaw).toISOString()
     : "N/A";
@@ -1276,12 +1456,17 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
     purchasedCommitSha,
     packagedAt,
     amountPaidUsd: `$${(purchase.price_usd as number).toFixed(2)}`,
-    amountPaidSol: `${purchase.price_sol_total} SOL`,
+    settlementAmountLabel: `Amount Paid (${paymentSummary.payment_currency}):`,
+    settlementAmountValue: `${paymentSummary.payment_total} ${paymentSummary.payment_currency}`,
     sellerReceivedLabel: `Seller Received (${100 - (purchase.platform_fee_percent as number)}%):`,
-    sellerReceivedValue: `${purchase.price_sol_seller} SOL`,
+    sellerReceivedValue: `${paymentSummary.payment_seller} ${paymentSummary.payment_currency}`,
     platformFeeLabel: `Platform Fee (${purchase.platform_fee_percent}%):`,
-    platformFeeValue: `${purchase.price_sol_platform} SOL`,
-    solUsdRate: `$${purchase.sol_usd_rate} per SOL`,
+    platformFeeValue: `${paymentSummary.payment_platform} ${paymentSummary.payment_currency}`,
+    pricingReferenceLabel:
+      paymentSummary.payment_currency === "SOL"
+        ? "SOL/USD Rate at Purchase:"
+        : "Pricing Reference:",
+    pricingReferenceValue,
     rateSource: (purchase.exchange_rate_source as string) || "CoinGecko",
     rateTimestamp: new Date(
       purchase.exchange_rate_fetched_at as Date

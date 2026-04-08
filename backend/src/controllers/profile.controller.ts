@@ -16,7 +16,13 @@ import { verifyWalletSignature } from "../utils/walletVerification.util";
 import {
   WALLET_VERIFICATION_WINDOW_MS,
   WALLET_CLOCK_SKEW_MS,
+  DIFFERENT_WALLET_COOLDOWN_MS,
 } from "../config/profile.config";
+import { resolveUsdcMintAddress } from "../utils/payment.util";
+import {
+  getAssociatedTokenAccountStatus,
+  sponsorAssociatedTokenAccount,
+} from "../utils/solanaAta.util";
 
 const getProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
@@ -425,12 +431,175 @@ const updateWalletAddress = asyncHandler(
     }
 
     const dbStartTime = performance.now();
-    const [updatedUser, updateError] = await tryCatch(
-      User.findByIdAndUpdate(userId, { wallet_address }, { new: true })
-    );
+    const [user, findError] = await tryCatch(User.findById(userId));
     enrichContext({
       db_latency_ms: Math.round(performance.now() - dbStartTime),
     });
+
+    if (findError) {
+      enrichContext({
+        outcome: "error",
+        error: {
+          name: "DatabaseError",
+          message:
+            findError instanceof Error
+              ? findError.message
+              : "Database query failed",
+        },
+      });
+      logger.error("Failed to find user for wallet update", findError);
+      throw new ApiError("Internal Server Error", 500);
+    }
+
+    if (!user) {
+      enrichContext({ outcome: "not_found" });
+      response(res, 401, "User not found. Unauthorized access.");
+      return;
+    }
+
+    let successMessage = "Wallet address removed successfully";
+    const responseData: Record<string, any> = {};
+
+    if (wallet_address) {
+      const lastConnectedAddress = user.wallet_last_connected_address || "";
+      const lastConnectedAt = user.wallet_last_connected_at
+        ? new Date(user.wallet_last_connected_at)
+        : null;
+      const walletSwitchCooldownActive =
+        lastConnectedAddress &&
+        lastConnectedAt &&
+        lastConnectedAddress !== wallet_address &&
+        Date.now() - lastConnectedAt.getTime() < DIFFERENT_WALLET_COOLDOWN_MS;
+
+      if (walletSwitchCooldownActive) {
+        enrichContext({
+          outcome: "validation_failed",
+          reason: "wallet_switch_cooldown_active",
+        });
+        response(
+          res,
+          400,
+          "You can connect a different wallet 24 hours after your last wallet connection.",
+          {
+            reason_code: "SELLER_WALLET_SWITCH_COOLDOWN_ACTIVE",
+          }
+        );
+        return;
+      }
+
+      const rpcUrl = process.env.SOLANA_RPC_URL;
+      if (!rpcUrl) {
+        logger.error("SOLANA_RPC_URL env var not set");
+        response(res, 500, "Payment system configuration error");
+        return;
+      }
+
+      const usdcMint = resolveUsdcMintAddress(
+        process.env.SOLANA_NETWORK,
+        process.env.SOLANA_USDC_MINT
+      );
+
+      if (!usdcMint) {
+        logger.error("SOLANA_USDC_MINT env var not set and no network default");
+        response(res, 500, "Payment system configuration error");
+        return;
+      }
+
+      let ataStatus;
+      try {
+        ataStatus = await getAssociatedTokenAccountStatus({
+          ownerWallet: wallet_address,
+          mintAddress: usdcMint,
+          rpcUrl,
+        });
+      } catch (ataLookupError) {
+        logger.error(
+          "Failed to check seller USDC ATA during wallet connection",
+          ataLookupError
+        );
+        response(
+          res,
+          503,
+          "We couldn't verify your USDC receiving account right now. Please try again."
+        );
+        return;
+      }
+
+      if (!ataStatus.exists) {
+        const sponsorSecretKey = process.env.SOLANA_ATA_SPONSOR_SECRET_KEY;
+        if (!sponsorSecretKey) {
+          logger.error("SOLANA_ATA_SPONSOR_SECRET_KEY env var not set");
+          response(
+            res,
+            503,
+            "Wallet setup is temporarily unavailable. Please try again later.",
+            {
+              reason_code: "SELLER_USDC_ATA_CREATE_FAILED",
+            }
+          );
+          return;
+        }
+
+        try {
+          const sponsorshipResult = await sponsorAssociatedTokenAccount({
+            ownerWallet: wallet_address,
+            mintAddress: usdcMint,
+            rpcUrl,
+            sponsorSecretKey,
+          });
+
+          responseData.reason_code = "SELLER_USDC_ATA_CREATED";
+          responseData.usdc_ata_address = sponsorshipResult.ataAddress;
+          responseData.ata_creation_tx_signature =
+            sponsorshipResult.txSignature;
+          logger.info("Seller USDC ATA prepared during wallet connection", {
+            userId: user._id?.toString?.() ?? userId,
+            walletAddress: wallet_address,
+            usdcMint,
+            usdcAtaAddress: sponsorshipResult.ataAddress,
+            ataCreationTxSignature: sponsorshipResult.txSignature,
+            transactionFeeLamports: sponsorshipResult.transactionFeeLamports,
+            ataRentLamports: sponsorshipResult.ataRentLamports,
+            totalCostLamports: sponsorshipResult.totalCostLamports,
+            transactionFeeSol: sponsorshipResult.transactionFeeSol,
+            ataRentSol: sponsorshipResult.ataRentSol,
+            totalCostSol: sponsorshipResult.totalCostSol,
+          });
+          successMessage =
+            "Wallet connected and USDC receiving account is ready.";
+        } catch (sponsorshipError) {
+          logger.error(
+            "Failed to sponsor seller USDC ATA during wallet connection",
+            sponsorshipError
+          );
+          response(
+            res,
+            503,
+            "We couldn't prepare your USDC receiving account right now. Please try again.",
+            {
+              reason_code: "SELLER_USDC_ATA_CREATE_FAILED",
+            }
+          );
+          return;
+        }
+      } else {
+        responseData.reason_code = "SELLER_USDC_ATA_ALREADY_EXISTS";
+        responseData.usdc_ata_address = ataStatus.ataAddress;
+        logger.info("Seller USDC ATA already exists during wallet connection", {
+          userId: user._id?.toString?.() ?? userId,
+          walletAddress: wallet_address,
+          usdcMint,
+          usdcAtaAddress: ataStatus.ataAddress,
+        });
+        successMessage = "Wallet connected successfully";
+      }
+
+      user.wallet_last_connected_address = wallet_address;
+      user.wallet_last_connected_at = new Date();
+    }
+
+    user.wallet_address = wallet_address;
+    const [, updateError] = await tryCatch(user.save());
 
     if (updateError) {
       enrichContext({
@@ -447,24 +616,12 @@ const updateWalletAddress = asyncHandler(
       throw new ApiError("Internal Server Error", 500);
     }
 
-    if (!updatedUser) {
-      enrichContext({ outcome: "not_found" });
-      response(res, 401, "User not found. Unauthorized access.");
-      return;
-    }
-
     enrichContext({
       outcome: "success",
       wallet_action: wallet_address ? "set" : "removed",
     });
 
-    response(
-      res,
-      200,
-      wallet_address
-        ? "Wallet address updated successfully"
-        : "Wallet address removed successfully"
-    );
+    response(res, 200, successMessage, responseData);
   }
 );
 

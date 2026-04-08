@@ -83,7 +83,7 @@ export default function TheShift() {
                 <div className="font-space text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">
                   Input Valuation
                 </div>
-                <div className="font-syne text-4xl font-black transition-colors">
+                <div className="font-syne text-3xl font-black transition-colors">
                   USD
                 </div>
               </div>
@@ -94,8 +94,8 @@ export default function TheShift() {
                 <div className="font-space text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">
                   Output Settlement
                 </div>
-                <div className="font-syne text-4xl font-black transition-colors">
-                  SOL
+                <div className="font-syne text-3xl font-black transition-colors">
+                  USDC / SOL
                 </div>
               </div>
             </div>
