@@ -30,16 +30,26 @@ import {
   createSessionToken,
 } from "../utils/authToken.util";
 import {
+  AUTH_COOKIE_NAMES,
   OAUTH_STATE_MAX_AGE_MS,
   authCookieOptions,
+  authPurchaseConfig,
+  authRetentionConfig,
+  authUserDefaults,
+  githubAuthConfig,
 } from "../config/auth.config";
 import { isTrustedOrigin } from "../utils/trustedOrigin.util";
+
+const clearOAuthCookies = (res: Response) => {
+  res.clearCookie(AUTH_COOKIE_NAMES.oauthState, authCookieOptions);
+  res.clearCookie(AUTH_COOKIE_NAMES.oauthNext, authCookieOptions);
+};
 
 const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "github_login_start" });
 
   const oauthState = crypto.randomBytes(24).toString("hex");
-  const clientId = process.env.GITHUB_CLIENT_ID as string;
+  const clientId = githubAuthConfig.clientId;
   if (!clientId) {
     enrichContext({
       outcome: "error",
@@ -47,11 +57,11 @@ const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
     });
     throw new ApiError("Internal Server Error", 500);
   }
-  const redirectUri = process.env.GITHUB_REDIRECT_URI;
+  const redirectUri = githubAuthConfig.redirectUri;
 
   const params = new URLSearchParams({
     client_id: clientId,
-    scope: "read:user",
+    scope: githubAuthConfig.oauthScope,
     state: oauthState,
   });
 
@@ -59,10 +69,10 @@ const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
     params.set("redirect_uri", redirectUri);
   }
 
-  const authorize_url = `https://github.com/login/oauth/authorize?${params.toString()}`;
+  const authorize_url = `${githubAuthConfig.authorizeUrl}?${params.toString()}`;
 
   enrichContext({ outcome: "success" });
-  res.cookie("oauth_state", oauthState, {
+  res.cookie(AUTH_COOKIE_NAMES.oauthState, oauthState, {
     ...authCookieOptions,
     maxAge: OAUTH_STATE_MAX_AGE_MS,
   });
@@ -74,7 +84,7 @@ const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
     !nextParam.startsWith("//") &&
     !nextParam.includes("://")
   ) {
-    res.cookie("oauth_next", decodeURIComponent(nextParam), {
+    res.cookie(AUTH_COOKIE_NAMES.oauthNext, decodeURIComponent(nextParam), {
       ...authCookieOptions,
       maxAge: OAUTH_STATE_MAX_AGE_MS,
     });
@@ -101,20 +111,19 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
   const { code, state } = result.data;
-  const stateFromCookie = req.cookies.oauth_state;
+  const stateFromCookie = req.cookies[AUTH_COOKIE_NAMES.oauthState];
   if (
     typeof stateFromCookie !== "string" ||
     stateFromCookie.length !== state.length ||
     !crypto.timingSafeEqual(Buffer.from(stateFromCookie), Buffer.from(state))
   ) {
     enrichContext({ outcome: "unauthorized", auth_status: "token_invalid" });
-    res.clearCookie("oauth_state", authCookieOptions);
-    res.clearCookie("oauth_next", authCookieOptions);
+    clearOAuthCookies(res);
     response(res, 401, "Unauthorized Access");
     return;
   }
 
-  const oauthNextRaw = req.cookies.oauth_next;
+  const oauthNextRaw = req.cookies[AUTH_COOKIE_NAMES.oauthNext];
   const oauthNext =
     typeof oauthNextRaw === "string" &&
     oauthNextRaw.startsWith("/") &&
@@ -123,33 +132,23 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       ? oauthNextRaw
       : null;
 
-  const {
-    GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET,
-    GITHUB_REDIRECT_URI,
-    ENCRYPTION_KEY_32,
-  } = process.env;
-
   const tokenExchangePayload = new URLSearchParams({
-    client_id: GITHUB_CLIENT_ID as string,
-    client_secret: GITHUB_CLIENT_SECRET as string,
+    client_id: githubAuthConfig.clientId as string,
+    client_secret: githubAuthConfig.clientSecret as string,
     code,
   });
-  if (GITHUB_REDIRECT_URI) {
-    tokenExchangePayload.set("redirect_uri", GITHUB_REDIRECT_URI);
+  if (githubAuthConfig.redirectUri) {
+    tokenExchangePayload.set("redirect_uri", githubAuthConfig.redirectUri);
   }
 
   const tokenStartTime = performance.now();
   const [accessTokenResponse, tokenError] = await tryCatch(
     axios.post(
-      "https://github.com/login/oauth/access_token",
+      githubAuthConfig.accessTokenUrl,
       tokenExchangePayload.toString(),
       {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Accept: "application/json",
-        },
-        timeout: 10_000,
+        headers: githubAuthConfig.tokenExchangeHeaders,
+        timeout: githubAuthConfig.requestTimeoutMs,
       }
     )
   );
@@ -179,8 +178,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       logger.warn("GitHub OAuth token exchange rejected (client error)", {
         status: tokenError.response?.status,
       });
-      res.clearCookie("oauth_state", authCookieOptions);
-      res.clearCookie("oauth_next", authCookieOptions);
+      clearOAuthCookies(res);
       response(res, 401, "Authentication failed");
       return;
     }
@@ -204,14 +202,13 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       error: { name: "GitHubOAuthError", message: error },
     });
     logger.error("GitHub OAuth error response", { github_error: error });
-    res.clearCookie("oauth_state", authCookieOptions);
-    res.clearCookie("oauth_next", authCookieOptions);
+    clearOAuthCookies(res);
     response(res, 401, "Unauthorized Access");
     return;
   }
 
   const [encryptedAccessToken, encryptError] = await tryCatch(() =>
-    encrypt(access_token, ENCRYPTION_KEY_32 as string)
+    encrypt(access_token, githubAuthConfig.encryptionKey as string)
   );
 
   if (encryptError) {
@@ -229,18 +226,13 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError("Internal Server Error", 500);
   }
 
-  const githubUserHeaders = {
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-  };
-
   const [userGH, userGHError] = await tryCatch(
-    axios.get("https://api.github.com/user", {
+    axios.get(githubAuthConfig.userApiUrl, {
       headers: {
-        ...githubUserHeaders,
+        ...githubAuthConfig.userApiHeaders,
         Authorization: `Bearer ${access_token}`,
       },
-      timeout: 10_000,
+      timeout: githubAuthConfig.requestTimeoutMs,
     })
   );
 
@@ -266,8 +258,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       logger.warn("GitHub User Profile fetch rejected", {
         status: responseStatus,
       });
-      res.clearCookie("oauth_state", authCookieOptions);
-      res.clearCookie("oauth_next", authCookieOptions);
+      clearOAuthCookies(res);
       response(res, 401, "Authentication failed");
       return;
     }
@@ -363,8 +354,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
     }
 
     enrichContext({ outcome: "success" });
-    res.clearCookie("oauth_state", authCookieOptions);
-    res.clearCookie("oauth_next", authCookieOptions);
+    clearOAuthCookies(res);
     response(
       res,
       200,
@@ -391,20 +381,23 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
 
     if (deletedUser) {
       const allowedAfter = new Date(
-        (deletedUser as any).deleted_at.getTime() + 15 * 24 * 60 * 60 * 1000
+        (deletedUser as any).deleted_at.getTime() +
+          authRetentionConfig.accountDeletionCooldownMs
       );
-      const formattedDate = allowedAfter.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        timeZone: "UTC",
-      });
+      const formattedDate = allowedAfter.toLocaleDateString(
+        authRetentionConfig.deletedAccountRejoinDateLocale,
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          timeZone: authRetentionConfig.deletedAccountRejoinDateTimeZone,
+        }
+      );
       enrichContext({
         outcome: "forbidden",
         reason: "account_deletion_cooldown",
       });
-      res.clearCookie("oauth_state", authCookieOptions);
-      res.clearCookie("oauth_next", authCookieOptions);
+      clearOAuthCookies(res);
       response(
         res,
         403,
@@ -421,10 +414,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
         username,
         profile_image_url: profile_image_url,
         github_user_token: encryptedAccessToken,
-        project_listing_limit: parseInt(
-          process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2",
-          10
-        ),
+        project_listing_limit: authUserDefaults.projectListingLimit,
       })
     );
     enrichContext({
@@ -469,8 +459,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       throw new ApiError("Internal Server Error", 500);
     }
 
-    res.clearCookie("oauth_state", authCookieOptions);
-    res.clearCookie("oauth_next", authCookieOptions);
+    clearOAuthCookies(res);
     response(
       res,
       200,
@@ -521,7 +510,7 @@ const githubLogout = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  const rawRefreshToken = req.cookies.refresh_token;
+  const rawRefreshToken = req.cookies[AUTH_COOKIE_NAMES.refreshToken];
 
   if (rawRefreshToken) {
     const [, revokeError] = await tryCatch(revokeRefreshToken(rawRefreshToken));
@@ -685,7 +674,10 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     }
 
     const [hasSales, salesCheckError] = await tryCatch(
-      Purchase.exists({ projectId: project._id, status: "CONFIRMED" })
+      Purchase.exists({
+        projectId: project._id,
+        status: authPurchaseConfig.confirmedStatus,
+      })
     );
 
     if (salesCheckError) {
@@ -704,7 +696,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
           {
             isActive: false,
             scheduled_deletion_at: new Date(
-              Date.now() + 7 * 24 * 60 * 60 * 1000
+              Date.now() + authRetentionConfig.projectSoftDeleteGracePeriodMs
             ),
           }
         )
