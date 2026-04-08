@@ -3,14 +3,10 @@
  *
  * Key logic:
  * - No authentication required (public endpoint)
- * - Accepts either a 24-char hex MongoDB ObjectId (backward compat) or a slug
- * - ObjectId → queries by _id
- * - Slug → queries by slug
- * - Identifier too short (<3) or too long (>200) → 400
+ * - Accepts a slug route param
+ * - Slug too short (<3) or too long (>200) → 400
  * - DB error → 500
  * - Not found → 404
- * - Found without slug → lazy backfill fires (Project.updateOne), slug set on response
- * - Found with slug already → no backfill, slug returned as-is
  * - Seller with profile_visibility=false → sensitive fields stripped
  * - Seller with profile_visibility=true (or undefined) → all fields returned
  *
@@ -102,16 +98,16 @@ import { ProjectDownload } from "../models/projectDownload.model";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const VALID_OBJECT_ID = "507f191e810c19729de860ea";
 const VALID_SLUG = "nextjs-ecommerce-boilerplate-k8x2mp";
+const PROJECT_ID = "507f191e810c19729de860ea";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const flushPromises = () =>
   new Promise<void>((resolve) => setImmediate(resolve));
 
-const makeReq = (identifier: string) => ({
-  params: { identifier },
+const makeReq = (slug: string) => ({
+  params: { slug },
   query: {},
   body: {},
 });
@@ -126,7 +122,7 @@ const makeRes = () => {
 const next = vi.fn();
 
 const makeProjectDoc = (overrides: Record<string, any> = {}) => ({
-  _id: VALID_OBJECT_ID,
+  _id: PROJECT_ID,
   title: "Next.js Ecommerce Boilerplate",
   description: "A complete ecommerce boilerplate",
   project_type: "Web Application",
@@ -171,13 +167,12 @@ describe("getPublicProjectDetail", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     res = makeRes();
-    vi.mocked(Project.updateOne).mockResolvedValue({ modifiedCount: 1 } as any);
     vi.mocked(ProjectDownload.countDocuments).mockResolvedValue(18);
   });
 
-  // ── Identifier validation ─────────────────────────────────────────────────
+  // ── Slug validation ───────────────────────────────────────────────────────
 
-  it("returns 400 when identifier is too short (< 3 chars)", async () => {
+  it("returns 400 when slug is too short (< 3 chars)", async () => {
     const req = makeReq("ab");
     getPublicProjectDetail(req as any, res, next);
     await flushPromises();
@@ -185,13 +180,13 @@ describe("getPublicProjectDetail", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        message: "Valid project identifier is required",
+        message: "Valid project slug is required",
       })
     );
     expect(Project.findOne).not.toHaveBeenCalled();
   });
 
-  it("returns 400 when identifier is too long (> 200 chars)", async () => {
+  it("returns 400 when slug is too long (> 200 chars)", async () => {
     const req = makeReq("a".repeat(201));
     getPublicProjectDetail(req as any, res, next);
     await flushPromises();
@@ -200,7 +195,7 @@ describe("getPublicProjectDetail", () => {
     expect(Project.findOne).not.toHaveBeenCalled();
   });
 
-  it("returns 400 when identifier is empty string", async () => {
+  it("returns 400 when slug is empty string", async () => {
     const req = makeReq("");
     getPublicProjectDetail(req as any, res, next);
     await flushPromises();
@@ -209,25 +204,9 @@ describe("getPublicProjectDetail", () => {
     expect(Project.findOne).not.toHaveBeenCalled();
   });
 
-  // ── ObjectId vs slug routing ──────────────────────────────────────────────
+  // ── Slug routing ───────────────────────────────────────────────────────────
 
-  it("queries by _id when identifier is a 24-char hex ObjectId", async () => {
-    stubProjectFindOne(makeProjectDoc());
-
-    const req = makeReq(VALID_OBJECT_ID);
-    getPublicProjectDetail(req as any, res, next);
-    await flushPromises();
-
-    expect(Project.findOne).toHaveBeenCalledWith(
-      expect.objectContaining({ _id: expect.anything() })
-    );
-    // Should NOT query by slug
-    expect(Project.findOne).not.toHaveBeenCalledWith(
-      expect.objectContaining({ slug: expect.anything() })
-    );
-  });
-
-  it("queries by slug when identifier is not a 24-char hex string", async () => {
+  it("queries by slug", async () => {
     stubProjectFindOne(makeProjectDoc());
 
     const req = makeReq(VALID_SLUG);
@@ -237,7 +216,22 @@ describe("getPublicProjectDetail", () => {
     expect(Project.findOne).toHaveBeenCalledWith(
       expect.objectContaining({ slug: VALID_SLUG })
     );
-    // Should NOT include _id in the query
+    expect(Project.findOne).not.toHaveBeenCalledWith(
+      expect.objectContaining({ _id: expect.anything() })
+    );
+  });
+
+  it("treats a 24-char hex string as a slug, not a legacy ObjectId", async () => {
+    const hexLookingSlug = "507f191e810c19729de860ea";
+    stubProjectFindOne(makeProjectDoc({ slug: hexLookingSlug }));
+
+    const req = makeReq(hexLookingSlug);
+    getPublicProjectDetail(req as any, res, next);
+    await flushPromises();
+
+    expect(Project.findOne).toHaveBeenCalledWith(
+      expect.objectContaining({ slug: hexLookingSlug })
+    );
     expect(Project.findOne).not.toHaveBeenCalledWith(
       expect.objectContaining({ _id: expect.anything() })
     );
@@ -309,52 +303,6 @@ describe("getPublicProjectDetail", () => {
       })
     );
   });
-
-  it("returns slug in the response when the project already has one", async () => {
-    stubProjectFindOne(makeProjectDoc({ slug: VALID_SLUG }));
-
-    const req = makeReq(VALID_SLUG);
-    getPublicProjectDetail(req as any, res, next);
-    await flushPromises();
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    const responseData = res.json.mock.calls[0][0];
-    expect(responseData.data.slug).toBe(VALID_SLUG);
-    // No backfill should be triggered when slug already exists
-    expect(Project.updateOne).not.toHaveBeenCalled();
-  });
-
-  // ── Lazy slug backfill ────────────────────────────────────────────────────
-
-  it("fires lazy backfill and sets slug on response when project has no slug", async () => {
-    // Legacy project: no slug field
-    const legacyProject = makeProjectDoc({ slug: undefined });
-    delete legacyProject.slug;
-    stubProjectFindOne(legacyProject);
-
-    const req = makeReq(VALID_OBJECT_ID);
-    getPublicProjectDetail(req as any, res, next);
-    await flushPromises();
-
-    expect(res.status).toHaveBeenCalledWith(200);
-
-    // updateOne should have been called to persist the slug
-    expect(Project.updateOne).toHaveBeenCalledWith(
-      expect.objectContaining({
-        _id: expect.anything(),
-        slug: { $exists: false },
-      }),
-      expect.objectContaining({
-        $set: expect.objectContaining({ slug: expect.any(String) }),
-      })
-    );
-
-    // The generated slug should be present in the response
-    const responseData = res.json.mock.calls[0][0];
-    expect(typeof responseData.data.slug).toBe("string");
-    expect(responseData.data.slug.length).toBeGreaterThan(0);
-  });
-
   it("returns downloadCount = 0 when the unique download count lookup fails", async () => {
     vi.mocked(ProjectDownload.countDocuments).mockRejectedValue(
       new Error("count failed")
@@ -367,48 +315,6 @@ describe("getPublicProjectDetail", () => {
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json.mock.calls[0][0].data.downloadCount).toBe(0);
-  });
-
-  it("generates a slug derived from the project title during backfill", async () => {
-    const legacyProject = makeProjectDoc({
-      title: "Awesome React Dashboard",
-      slug: undefined,
-    });
-    delete legacyProject.slug;
-    stubProjectFindOne(legacyProject);
-
-    const req = makeReq(VALID_OBJECT_ID);
-    getPublicProjectDetail(req as any, res, next);
-    await flushPromises();
-
-    const responseData = res.json.mock.calls[0][0];
-    const generatedSlug: string = responseData.data.slug;
-
-    // Slug should be lowercase, contain only alphanumeric chars and hyphens
-    expect(generatedSlug).toMatch(/^[a-z0-9-]+$/);
-    // Should be derived from the title (title words appear in the slug)
-    expect(generatedSlug).toContain("awesome");
-    expect(generatedSlug).toContain("react");
-    expect(generatedSlug).toContain("dashboard");
-  });
-
-  it("generates a valid slug even when the title has only non-ASCII characters", async () => {
-    const legacyProject = makeProjectDoc({
-      title: "日本語プロジェクト",
-      slug: undefined,
-    });
-    delete legacyProject.slug;
-    stubProjectFindOne(legacyProject);
-
-    const req = makeReq(VALID_OBJECT_ID);
-    getPublicProjectDetail(req as any, res, next);
-    await flushPromises();
-
-    const responseData = res.json.mock.calls[0][0];
-    const generatedSlug: string = responseData.data.slug;
-
-    // Should fall back to "project-{suffix}" format
-    expect(generatedSlug).toMatch(/^project-[a-z0-9]{6}$/);
   });
 
   // ── Seller profile visibility ─────────────────────────────────────────────
@@ -479,8 +385,12 @@ describe("getPublicProjectDetail", () => {
 
   it("returns all seller fields when profile_visibility is undefined (default)", async () => {
     const projectDoc = makeProjectDoc();
-    delete projectDoc.userid.profile_visibility;
-    stubProjectFindOne(projectDoc);
+    const { profile_visibility, ...useridWithoutVisibility } =
+      projectDoc.userid;
+    stubProjectFindOne({
+      ...projectDoc,
+      userid: useridWithoutVisibility,
+    });
 
     const req = makeReq(VALID_SLUG);
     getPublicProjectDetail(req as any, res, next);

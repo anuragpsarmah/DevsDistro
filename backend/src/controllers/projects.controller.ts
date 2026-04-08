@@ -31,38 +31,21 @@ import { Purchase } from "../models/purchase.model";
 import { ProjectDownload } from "../models/projectDownload.model";
 import { performProjectHardDelete } from "../utils/projectCleanup.util";
 import { MARKETPLACE_VISIBLE_FILTER } from "../utils/projectVisibility.util";
-
-function generateProjectSlug(title: string): string {
-  const base = title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, "")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 50)
-    .replace(/-+$/, "");
-  const suffix = Math.random().toString(36).slice(2, 8).padEnd(6, "0");
-  return base ? `${base}-${suffix}` : `project-${suffix}`;
-}
-
-const MARKETPLACE_SELECT = {
-  title: 1,
-  description: 1,
-  project_type: 1,
-  tech_stack: 1,
-  price: 1,
-  allow_payments_in_sol: 1,
-  avgRating: 1,
-  totalReviews: 1,
-  live_link: 1,
-  createdAt: 1,
-  project_images: { $slice: 1 },
-} as const;
-
-const SELLER_POPULATE = {
-  path: "userid",
-  select: "username name profile_image_url -_id",
-} as const;
+import { generateProjectSlug } from "../utils/projectSlug.util";
+import {
+  projectsDetailSelect,
+  projectsDetailSellerPopulate,
+  projectsGitHubConfig,
+  projectsMarketplaceSelect,
+  projectsMediaConfig,
+  projectsPackagingConfig,
+  projectsPublicDetailSelect,
+  projectsPurchaseConfig,
+  projectsRedisConfig,
+  projectsRetentionConfig,
+  projectsSellerPopulate,
+  projectsUserDefaults,
+} from "../config/projects.config";
 
 const searchAndFilterProjects = async (
   searchTerm: string = "",
@@ -77,7 +60,7 @@ const searchAndFilterProjects = async (
   const query: ProjectQuery = {
     isActive: true,
     github_access_revoked: false,
-    repo_zip_status: "SUCCESS",
+    repo_zip_status: projectsPackagingConfig.successStatus,
     scheduled_deletion_at: null,
   };
 
@@ -136,8 +119,8 @@ const searchAndFilterProjects = async (
       .sort(sort)
       .skip(offset)
       .limit(limit)
-      .select(MARKETPLACE_SELECT)
-      .populate(SELLER_POPULATE)
+      .select(projectsMarketplaceSelect)
+      .populate(projectsSellerPopulate)
       .lean(),
     Project.countDocuments(query),
   ]);
@@ -242,12 +225,16 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
     hasMore,
     totalCount,
   };
-  const CACHE_DURATION = 60 * 60;
   const [, cacheError] = await tryCatch(
     redisClient.hset(redisKey, `page:${page}`, JSON.stringify(responseData))
   );
   if (!cacheError) {
-    await tryCatch(redisClient.expire(redisKey, CACHE_DURATION));
+    await tryCatch(
+      redisClient.expire(
+        redisKey,
+        projectsRedisConfig.privateRepoCacheDurationSeconds
+      )
+    );
   } else {
     enrichContext({ cache_error: true });
     logger.error("Redis caching error", cacheError);
@@ -318,7 +305,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
       const [projectCount, userData] = queryResult;
       const projectListingLimit =
         userData?.project_listing_limit ??
-        parseInt(process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2", 10);
+        projectsUserDefaults.projectListingLimit;
 
       if (projectCount >= projectListingLimit) {
         enrichContext({
@@ -542,7 +529,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       const [projectCount, userData] = queryResult;
       const projectListingLimit =
         userData?.project_listing_limit ??
-        parseInt(process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2", 10);
+        projectsUserDefaults.projectListingLimit;
 
       if (projectCount >= projectListingLimit) {
         enrichContext({
@@ -617,11 +604,11 @@ const validateMediaUploadAndStoreProject = asyncHandler(
 
     const [, githubError] = await tryCatch(
       axios.get(
-        `https://api.github.com/repositories/${projectData.github_repo_id}`,
+        projectsGitHubConfig.getRepositoryApiUrl(projectData.github_repo_id),
         {
           headers: {
             Authorization: `Bearer ${installationToken}`,
-            Accept: "application/vnd.github+json",
+            ...projectsGitHubConfig.repositoryApiHeaders,
           },
         }
       )
@@ -755,7 +742,8 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       return;
     }
 
-    const cloudFrontDomain = process.env.S3_CLOUDFRONT_DISTRIBUTION as string;
+    const cloudFrontDomain =
+      projectsMediaConfig.cloudFrontDistribution as string;
     const isExistingUrl = (item: string) => item.startsWith(cloudFrontDomain);
     const existingUrls: string[] = imageOrder.filter(isExistingUrl);
     const newKeys: string[] = imageOrder.filter(
@@ -994,12 +982,16 @@ const validateMediaUploadAndStoreProject = asyncHandler(
       // Queue unused media for background cleanup
       for (const media of mediaToRemove) {
         const S3Uploadkey = media.replace(
-          `${process.env.S3_CLOUDFRONT_DISTRIBUTION as string}/`,
+          `${projectsMediaConfig.cloudFrontDistribution as string}/`,
           ""
         );
 
         const [, redisError] = await tryCatch(
-          redisClient.zadd("media-cleanup-schedule", Date.now(), S3Uploadkey)
+          redisClient.zadd(
+            projectsRedisConfig.mediaCleanupScheduleKey,
+            Date.now(),
+            S3Uploadkey
+          )
         );
 
         if (redisError) logger.error("Failed to delete object:", redisError);
@@ -1042,10 +1034,7 @@ const getTotalListedProjects = asyncHandler(
       logger.error("Failed to count listed projects", countError);
       response(res, 500, "Failed to fetch total listed projects", {
         totalListedProjects: -1,
-        projectListingLimit: parseInt(
-          process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2",
-          10
-        ),
+        projectListingLimit: projectsUserDefaults.projectListingLimit,
       });
       return;
     }
@@ -1053,7 +1042,7 @@ const getTotalListedProjects = asyncHandler(
     const [projectCount, userData] = queryResult;
     const projectListingLimit =
       userData?.project_listing_limit ??
-      parseInt(process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2", 10);
+      projectsUserDefaults.projectListingLimit;
 
     enrichContext({ outcome: "success", project_count: projectCount });
     response(res, 200, "Total listed projects fetched successfully", {
@@ -1334,7 +1323,7 @@ const toggleProjectListing = asyncHandler(
 
     const projectListingLimit =
       userData?.project_listing_limit ??
-      parseInt(process.env.DEFAULT_PROJECT_LISTING_LIMIT || "2", 10);
+      projectsUserDefaults.projectListingLimit;
 
     if (
       !existingProject.isActive &&
@@ -1461,8 +1450,10 @@ const deleteProjectListing = asyncHandler(
     }
 
     if (
-      projectData.repo_zip_status === "PROCESSING" ||
-      (projectData as any).repackage_status === "PROCESSING"
+      projectData.repo_zip_status ===
+        projectsPackagingConfig.processingStatus ||
+      (projectData as any).repackage_status ===
+        projectsPackagingConfig.processingStatus
     ) {
       enrichContext({
         outcome: "validation_failed",
@@ -1477,7 +1468,10 @@ const deleteProjectListing = asyncHandler(
     }
 
     const [hasSales, salesCheckError] = await tryCatch(
-      Purchase.exists({ projectId: projectData._id, status: "CONFIRMED" })
+      Purchase.exists({
+        projectId: projectData._id,
+        status: projectsPurchaseConfig.confirmedStatus,
+      })
     );
 
     if (salesCheckError) {
@@ -1496,7 +1490,8 @@ const deleteProjectListing = asyncHandler(
           {
             isActive: false,
             scheduled_deletion_at: new Date(
-              Date.now() + 7 * 24 * 60 * 60 * 1000
+              Date.now() +
+                projectsRetentionConfig.projectSoftDeleteGracePeriodMs
             ),
           }
         )
@@ -1739,7 +1734,7 @@ const retryRepoZipUpload = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  if (project.repo_zip_status !== "FAILED") {
+  if (project.repo_zip_status !== projectsPackagingConfig.failedStatus) {
     enrichContext({
       outcome: "validation_failed",
       reason: "not_failed_status",
@@ -1751,7 +1746,10 @@ const retryRepoZipUpload = asyncHandler(async (req: Request, res: Response) => {
   const [, saveError] = await tryCatch(
     Project.updateOne(
       { _id: project._id },
-      { repo_zip_status: "PROCESSING", $unset: { repo_zip_error: 1 } }
+      {
+        repo_zip_status: projectsPackagingConfig.processingStatus,
+        $unset: { repo_zip_error: 1 },
+      }
     )
   );
 
@@ -1844,7 +1842,10 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  if (project.repo_zip_status !== "SUCCESS" || !project.repo_zip_s3_key) {
+  if (
+    project.repo_zip_status !== projectsPackagingConfig.successStatus ||
+    !project.repo_zip_s3_key
+  ) {
     enrichContext({
       outcome: "validation_failed",
       reason: "latest_package_not_available",
@@ -1857,7 +1858,10 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  if ((project as any).repackage_status === "PROCESSING") {
+  if (
+    (project as any).repackage_status ===
+    projectsPackagingConfig.processingStatus
+  ) {
     enrichContext({
       outcome: "validation_failed",
       reason: "repackage_already_processing",
@@ -1870,7 +1874,7 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
     Project.updateOne(
       { _id: project._id },
       {
-        repackage_status: "PROCESSING",
+        repackage_status: projectsPackagingConfig.processingStatus,
         $unset: { repackage_error: 1 },
       }
     )
@@ -1899,49 +1903,6 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ outcome: "success" });
   response(res, 200, "Refresh initiated");
 });
-
-const PUBLIC_DETAIL_SELECT = {
-  title: 1,
-  description: 1,
-  project_type: 1,
-  tech_stack: 1,
-  price: 1,
-  allow_payments_in_sol: 1,
-  avgRating: 1,
-  totalReviews: 1,
-  live_link: 1,
-  createdAt: 1,
-  project_images: 1,
-  project_images_detail: 1,
-  project_video: 1,
-  slug: 1,
-} as const;
-
-const DETAIL_SELECT = {
-  title: 1,
-  description: 1,
-  project_type: 1,
-  tech_stack: 1,
-  price: 1,
-  allow_payments_in_sol: 1,
-  avgRating: 1,
-  totalReviews: 1,
-  live_link: 1,
-  createdAt: 1,
-  project_images: 1,
-  project_images_detail: 1,
-  project_video: 1,
-  repo_tree: 1,
-  repo_tree_status: 1,
-  scheduled_deletion_at: 1,
-  slug: 1,
-} as const;
-
-const DETAIL_SELLER_POPULATE = {
-  path: "userid",
-  select:
-    "username name profile_image_url short_bio job_role location website_url x_username profile_visibility -_id",
-} as const;
 
 const getMarketplaceProjectDetail = asyncHandler(
   async (req: Request, res: Response) => {
@@ -1976,7 +1937,7 @@ const getMarketplaceProjectDetail = asyncHandler(
       Purchase.exists({
         buyerId,
         projectId: projectObjectId,
-        status: "CONFIRMED",
+        status: projectsPurchaseConfig.confirmedStatus,
       })
     );
 
@@ -1984,13 +1945,13 @@ const getMarketplaceProjectDetail = asyncHandler(
     if (!hasPurchased) {
       projectQuery.isActive = true;
       projectQuery.github_access_revoked = false;
-      projectQuery.repo_zip_status = "SUCCESS";
+      projectQuery.repo_zip_status = projectsPackagingConfig.successStatus;
     }
 
     const [projectData, projectError] = await tryCatch(
       Project.findOne(projectQuery)
-        .select(DETAIL_SELECT)
-        .populate(DETAIL_SELLER_POPULATE)
+        .select(projectsDetailSelect)
+        .populate(projectsDetailSellerPopulate)
         .lean()
     );
 
@@ -2039,36 +2000,30 @@ const getPublicProjectDetail = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_public_project_detail" });
 
-    const identifier = req.params.identifier as string;
+    const slug = req.params.slug as string;
 
-    if (!identifier || identifier.length < 3 || identifier.length > 200) {
+    if (!slug || slug.length < 3 || slug.length > 200) {
       enrichContext({
         outcome: "validation_failed",
-        reason: "invalid_identifier",
+        reason: "invalid_slug",
       });
-      response(res, 400, "Valid project identifier is required");
+      response(res, 400, "Valid project slug is required");
       return;
     }
 
-    // Detect whether the identifier is a legacy MongoDB ObjectId or a new slug
-    const isObjectId = /^[0-9a-f]{24}$/i.test(identifier);
     const projectQuery: Record<string, unknown> = {
       isActive: true,
       github_access_revoked: false,
-      repo_zip_status: "SUCCESS",
+      repo_zip_status: projectsPackagingConfig.successStatus,
+      slug,
     };
-    if (isObjectId) {
-      projectQuery._id = new mongoose.Types.ObjectId(identifier);
-    } else {
-      projectQuery.slug = identifier;
-    }
 
-    enrichContext({ entity: { type: "project", id: identifier } });
+    enrichContext({ entity: { type: "project", id: slug } });
 
     const [projectData, projectError] = await tryCatch(
       Project.findOne(projectQuery)
-        .select(PUBLIC_DETAIL_SELECT)
-        .populate(DETAIL_SELLER_POPULATE)
+        .select(projectsPublicDetailSelect)
+        .populate(projectsDetailSellerPopulate)
         .lean()
     );
 
@@ -2083,21 +2038,6 @@ const getPublicProjectDetail = asyncHandler(
       enrichContext({ outcome: "not_found" });
       response(res, 404, "Project not found");
       return;
-    }
-
-    // Lazy backfill: generate and persist a slug for projects created before
-    // the slug feature was introduced. Fire-and-forget — the response proceeds
-    // immediately. A race between two concurrent requests is harmless: the
-    // $exists:false filter makes the second update a no-op.
-    if (!(projectData as any).slug) {
-      const backfillSlug = generateProjectSlug(
-        (projectData as any).title as string
-      );
-      Project.updateOne(
-        { _id: (projectData as any)._id, slug: { $exists: false } },
-        { $set: { slug: backfillSlug } }
-      ).catch((err) => logger.error("Failed to backfill project slug", err));
-      (projectData as any).slug = backfillSlug;
     }
 
     if (
