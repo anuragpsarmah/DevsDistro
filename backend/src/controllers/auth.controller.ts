@@ -374,7 +374,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
       rawRefreshToken
     );
   } else {
-    // Check if this github_id is under a deletion cooldown
+    // Check the GitHub deletion cooldown.
     const [deletedUser] = await tryCatch(
       DeletedUser.findOne({ github_id: github_id.toString() }).lean()
     );
@@ -620,7 +620,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
 
   const userId = new mongoose.Types.ObjectId(req.user._id);
 
-  // Step 1: Fetch user document (fail-fast — needed for username → SiteReview lookup, github_id → DeletedUser record)
+  // Step 1: fetch the user record.
   const [user, userFetchError] = await tryCatch(
     User.findById(userId).select("username github_id").lean()
   );
@@ -637,7 +637,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     user: { username: (user as any).username },
   });
 
-  // Step 2: Fetch ALL seller's projects (including already-scheduled ones)
+  // Step 2: fetch all owned projects.
   const [projects, projectsFetchError] = await tryCatch(
     Project.find({ userid: userId })
       .select(
@@ -652,7 +652,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
 
   const projectList = projects ?? [];
 
-  // Step 3: Bulk delete reviews on ALL seller's projects (including already-scheduled)
+  // Step 3: delete reviews on owned projects.
   if (projectList.length > 0) {
     const allProjectIds = projectList.map((p) => p._id);
     const [, bulkReviewsDeleteError] = await tryCatch(
@@ -666,9 +666,9 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     }
   }
 
-  // Step 4: Per-project: hard or soft delete (mirrors deleteProjectListing logic)
+  // Step 4: hard- or soft-delete each project.
   for (const project of projectList) {
-    // Already scheduled → skip; background job owns the project document
+    // Skip projects already scheduled for deletion.
     if ((project as any).scheduled_deletion_at) {
       continue;
     }
@@ -689,7 +689,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (hasSales) {
-      // Soft delete: mark inactive and schedule for 7-day cleanup
+      // Soft-delete projects with sales.
       const [, softDeleteError] = await tryCatch(
         Project.updateOne(
           { _id: project._id },
@@ -721,12 +721,12 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
         });
       }
     } else {
-      // Hard delete immediately
+      // Hard-delete projects without sales.
       await performProjectHardDelete(project as any);
     }
   }
 
-  // Step 5: Delete Sales document
+  // Step 5: delete the sales record.
   const [, salesDeleteError] = await tryCatch(Sales.deleteOne({ userId }));
   if (salesDeleteError) {
     logger.error(
@@ -735,7 +735,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
-  // Step 6: Delete GitHubAppInstallation records
+  // Step 6: delete GitHub app installation records.
   const [, ghInstallDeleteError] = await tryCatch(
     GitHubAppInstallation.deleteMany({ user_id: userId })
   );
@@ -746,7 +746,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
-  // Step 7: Delete reviews this user left on OTHERS' projects + recalculate aggregates
+  // Step 7: delete authored reviews and recalculate aggregates.
   const [userReviews, reviewsFetchError] = await tryCatch(
     Review.find({ userId }).select("projectId").lean()
   );
@@ -786,7 +786,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     }
   }
 
-  // Step 8: Delete SiteReview by username
+  // Step 8: delete site reviews by username.
   const [, siteReviewDeleteError] = await tryCatch(
     SiteReview.deleteMany({ username: (user as any).username })
   );
@@ -797,7 +797,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
-  // Step 9: Delete the User document — point of no return
+  // Step 9: delete the user record.
   const [, userDeleteError] = await tryCatch(User.deleteOne({ _id: userId }));
   if (userDeleteError) {
     logger.error(
@@ -808,7 +808,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Step 10a: Record deletion for re-registration cooldown (non-fatal)
+  // Step 10a: record the deletion cooldown.
   const [, deletedUserCreateError] = await tryCatch(
     DeletedUser.create({
       github_id: (user as any).github_id,
@@ -824,7 +824,7 @@ const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
 
   enrichContext({ outcome: "success" });
 
-  // Step 10b: Clear both auth cookies (same pattern as githubLogout)
+  // Step 10b: clear both auth cookies.
   response(
     res,
     200,

@@ -36,28 +36,29 @@ import {
   type PaymentCurrency,
 } from "../utils/payment.util";
 import { getAssociatedTokenAccountStatus } from "../utils/solanaAta.util";
-
-const PURCHASE_INTENT_TTL = 600; // 10 minutes
-
-const PURCHASED_PROJECT_SELECT =
-  "title description project_type tech_stack price avgRating totalReviews live_link createdAt project_images repo_zip_status scheduled_deletion_at latest_package_commit_sha repackage_status";
-
-const PURCHASED_SELLER_POPULATE = {
-  path: "userid",
-  select: "username name profile_image_url -_id",
-};
+import {
+  purchaseDownloadConfig,
+  purchaseIntentConfig,
+  purchaseNetworkConfig,
+  purchasePaginationConfig,
+  purchasePlatformConfig,
+  purchasePurchasedProjectSelect,
+  purchasePurchasedSellerPopulate,
+  purchaseReceiptConfig,
+  purchaseStatusConfig,
+} from "../config/purchase.config";
 
 const buildSafeDownloadFilename = (
   title: string | null | undefined
 ): string => {
-  const safeTitle = (title || "project")
+  const safeTitle = (title || purchaseDownloadConfig.filenameFallback)
     .replace(/[^a-zA-Z0-9_\- ]/g, "")
     .trim()
     .replace(/\s+/g, "-")
     .toLowerCase()
-    .slice(0, 80);
+    .slice(0, purchaseDownloadConfig.filenameMaxLength);
 
-  return `${safeTitle || "project"}.zip`;
+  return `${safeTitle || purchaseDownloadConfig.filenameFallback}.zip`;
 };
 
 const resolveIntentPaymentCurrency = (intent: any): PaymentCurrency =>
@@ -105,9 +106,6 @@ const recordProjectDownload = async ({
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/purchases/initiate
-// ─────────────────────────────────────────────────────────────────────────────
 const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "initiate_purchase" });
 
@@ -162,7 +160,10 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  if (project.repo_zip_status !== "SUCCESS" || !project.repo_zip_s3_key) {
+  if (
+    project.repo_zip_status !== purchaseStatusConfig.packageReadyStatus ||
+    !project.repo_zip_s3_key
+  ) {
     enrichContext({ outcome: "validation_failed", reason: "zip_not_ready" });
     response(res, 400, "Project files are not ready for download yet");
     return;
@@ -402,7 +403,9 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Generate unique purchase reference (nonce)
-  const purchase_reference = crypto.randomBytes(32).toString("hex");
+  const purchase_reference = crypto
+    .randomBytes(purchaseIntentConfig.referenceBytes)
+    .toString("hex");
 
   const intentData = {
     buyerId: buyerId.toString(),
@@ -433,8 +436,8 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
 
   const [, redisError] = await tryCatch(
     redisClient.setex(
-      `purchase_intent_${purchase_reference}`,
-      PURCHASE_INTENT_TTL,
+      `${purchaseIntentConfig.redisKeyPrefix}${purchase_reference}`,
+      purchaseIntentConfig.ttlSeconds,
       JSON.stringify(intentData)
     )
   );
@@ -460,8 +463,7 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
     price_sol_total,
     price_sol_seller,
     price_sol_platform,
-    // Raw lamport values so the frontend constructs the TX using the exact same
-    // amounts the backend will verify. Avoids any float re-computation divergence.
+    // Raw lamport values for exact frontend transaction construction.
     seller_lamports,
     treasury_lamports,
     seller_wallet: seller.wallet_address,
@@ -469,13 +471,10 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
     sol_usd_rate,
     exchange_rate_source,
     exchange_rate_fetched_at: exchange_rate_fetched_at.toISOString(),
-    expires_in: PURCHASE_INTENT_TTL,
+    expires_in: purchaseIntentConfig.ttlSeconds,
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/purchases/confirm
-// ─────────────────────────────────────────────────────────────────────────────
 const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "confirm_purchase" });
 
@@ -500,13 +499,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     tx_signature,
   });
 
-  // ── Step 1: Check tx_signature idempotency BEFORE touching Redis.
-  // This is the critical fix for the retryConfirm failure scenario:
-  //   1st attempt: GET intent → verify TX → Purchase.create fails (DB down) → 500, intent NOT deleted
-  //   Retry: tx_sig still not in DB → GET intent → still valid → proceed → create → success
-  //
-  // If Purchase.create already succeeded (e.g. duplicate network request), we short-circuit here
-  // before even reading Redis — saves a Redis round-trip on the hot idempotent path.
+  // Step 1: check tx_signature idempotency before Redis.
   const [existingByTx, txCheckError] = await tryCatch(
     Purchase.findOne({ tx_signature }).select("_id projectId").lean()
   );
@@ -528,10 +521,8 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // ── Step 2: GET the intent from Redis (non-destructive — do NOT delete yet).
-  // We delete it only after a successful Purchase.create so that if the DB write
-  // fails, the user can retry and the intent is still available.
-  const intentKey = `purchase_intent_${purchase_reference}`;
+  // Step 2: read the intent from Redis without deleting it.
+  const intentKey = `${purchaseIntentConfig.redisKeyPrefix}${purchase_reference}`;
   let intentStr: string | null = null;
   try {
     intentStr = await redisClient.get(intentKey);
@@ -542,9 +533,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   }
 
   if (!intentStr) {
-    // Intent is gone (expired or never existed). As a last-resort check, look up
-    // by tx_signature one more time in case the intent was already deleted by a
-    // successful concurrent request that raced us here.
+    // Re-check by tx_signature in case another request already confirmed it.
     const [raceCheck, raceCheckErr] = await tryCatch(
       Purchase.findOne({ tx_signature }).select("_id projectId").lean()
     );
@@ -614,9 +603,9 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Only fall back to public mainnet if configured for mainnet-beta.
-  // Never use mainnet as a fallback for devnet/testnet — transactions don't cross networks.
-  const isMainnet = process.env.SOLANA_NETWORK === "mainnet-beta";
+  // Only use the public fallback RPC on mainnet-beta.
+  const isMainnet =
+    process.env.SOLANA_NETWORK === purchaseNetworkConfig.mainnetNetwork;
   const intentPaymentCurrency = resolveIntentPaymentCurrency(intent);
   const verifyResult = await verifySolanaTransaction({
     txSignature: tx_signature,
@@ -633,7 +622,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     purchaseReference: purchase_reference,
     rpcUrl,
     fallbackRpcUrl: isMainnet
-      ? "https://api.mainnet-beta.solana.com"
+      ? purchaseNetworkConfig.mainnetFallbackRpcUrl
       : undefined,
   });
 
@@ -652,12 +641,9 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Save Purchase document
-  const platformFeePercent = parseInt(
-    process.env.PLATFORM_FEE_PERCENT || "1",
-    10
-  );
+  const platformFeePercent = purchasePlatformConfig.platformFeePercent;
 
-  // Fetch project and seller snapshots (non-fatal — fall back to placeholders)
+  // Fetch project and seller snapshots, with placeholder fallbacks.
   const [[projectSnap], [sellerSnap]] = await Promise.all([
     tryCatch(
       Project.findById(projectObjectId)
@@ -740,7 +726,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       treasury_wallet: intent.treasury_wallet,
       tx_signature,
       purchase_reference,
-      status: "CONFIRMED",
+      status: purchaseStatusConfig.confirmedStatus,
       purchased_package_id: projectSnap.latest_package_id,
       project_snapshot: {
         title: (projectSnap?.title as string) || "Unknown Project",
@@ -766,8 +752,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   );
 
   if (saveError || !newPurchase) {
-    // Check if it was a duplicate key error (race condition — another request confirmed first).
-    // DEL the intent since the purchase IS confirmed (by the other concurrent request).
+    // Duplicate key means another request already confirmed this purchase.
     if ((saveError as any)?.code === 11000) {
       await tryCatch(redisClient.del(intentKey));
       enrichContext({
@@ -779,8 +764,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       });
       return;
     }
-    // Generic DB error: do NOT delete the intent from Redis.
-    // The user can retry /confirm and the intent will still be there (within its TTL).
+    // Keep the Redis intent so the user can retry /confirm.
     logger.error("Failed to save purchase", saveError);
     response(
       res,
@@ -790,11 +774,10 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Purchase saved — now atomically delete the intent to prevent future replay.
-  // (No need to check error here: if DEL fails, the intent expires naturally after TTL.)
+  // Delete the intent after a successful save to prevent replay.
   await tryCatch(redisClient.del(intentKey));
 
-  // Remove project from buyer's wishlist if present (non-fatal)
+  // Remove the project from the buyer's wishlist if present.
   const [, wishlistCleanupErr] = await tryCatch(
     User.updateOne({ _id: buyerId }, { $pull: { wishlist: projectObjectId } })
   );
@@ -805,25 +788,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
     );
   }
 
-  // Update seller Sales document (fully atomic, race-condition-safe).
-  //
-  // The previous approach (findOne → conditional save → updateOne) had a TOCTOU race:
-  // two concurrent purchases for the same seller could both find no Sales doc and both
-  // try to create one (duplicate-key violation), OR both push a year entry leading to
-  // duplicate year sub-documents that double-count on subsequent $inc operations.
-  //
-  // Fix: two individually-atomic MongoDB operations.
-  //
-  // Step 1 — ensure the Sales doc and current year/month skeleton exist (idempotent).
-  //   • upsert:true creates the doc if absent.
-  //   • The filter `"yearly_sales.year": { $ne: currentYear }` ensures $push only runs
-  //     when the year is absent — if two concurrent calls race here, only the first $push
-  //     wins (MongoDB atomically checks the filter + applies the update). The second call's
-  //     filter no longer matches so it becomes a no-op.  No duplicate year entries.
-  //
-  // Step 2 — atomically $inc total_sales and the correct monthly bucket.
-  //   • arrayFilters guarantee we hit exactly the right year/month sub-document.
-  //   • $inc is always atomic regardless of concurrent callers.
+  // Update seller sales using atomic upsert, year init, and increment steps.
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1; // 1-12
@@ -836,7 +801,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   }));
 
   const [, salesError] = await tryCatch(async () => {
-    // Step 1a: upsert the Sales document itself (no-op if it already exists).
+    // Step 1a: upsert the Sales document.
     await Sales.updateOne(
       { userId: sellerId },
       {
@@ -852,9 +817,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       { upsert: true }
     );
 
-    // Step 1b: push the current year entry only if it doesn't already exist.
-    // The compound filter `"yearly_sales.year": { $ne: currentYear }` makes this a no-op
-    // if the year is present, so concurrent calls cannot create duplicate year entries.
+    // Step 1b: add the current year only if it is missing.
     await Sales.updateOne(
       { userId: sellerId, "yearly_sales.year": { $ne: currentYear } },
       {
@@ -867,7 +830,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
       }
     );
 
-    // Step 2: atomic $inc — both total_sales and the matching monthly bucket.
+    // Step 2: atomically increment total and monthly sales.
     await Sales.updateOne(
       { userId: sellerId },
       {
@@ -886,7 +849,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (salesError) {
-    // Non-fatal: log but don't fail the purchase response
+    // Non-fatal: log without failing the purchase.
     logger.error("Failed to update seller Sales document", salesError);
   }
 
@@ -896,9 +859,6 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/purchases/getPurchasedProjects
-// ─────────────────────────────────────────────────────────────────────────────
 const getPurchasedProjects = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_purchased_projects" });
@@ -910,24 +870,35 @@ const getPurchasedProjects = asyncHandler(
 
     const buyerId = new mongoose.Types.ObjectId(req.user._id);
 
-    // Parse optional pagination params (only active when limit is explicitly provided)
+    // Parse optional pagination params when limit is provided.
     const rawLimit = req.query.limit;
     const rawOffset = req.query.offset;
     const limit = rawLimit
-      ? Math.min(Math.max(parseInt(rawLimit as string, 10) || 12, 1), 50)
+      ? Math.min(
+          Math.max(
+            parseInt(rawLimit as string, 10) ||
+              purchasePaginationConfig.defaultLimit,
+            purchasePaginationConfig.minLimit
+          ),
+          purchasePaginationConfig.maxLimit
+        )
       : null;
     const offset = rawOffset
       ? Math.max(parseInt(rawOffset as string, 10) || 0, 0)
       : 0;
 
-    const baseQuery = { buyerId, status: "CONFIRMED" };
+    const baseQuery = {
+      buyerId,
+      status: purchaseStatusConfig.confirmedStatus,
+    };
 
     const mapPurchase = (p: any) => {
       const latestCommitSha = p.projectId?.latest_package_commit_sha || null;
       const purchasedCommitSha = p.package_snapshot?.commit_sha || null;
       const hasDistinctLatestVersion = Boolean(
         p.projectId?._id &&
-        p.projectId?.repo_zip_status === "SUCCESS" &&
+        p.projectId?.repo_zip_status ===
+          purchaseStatusConfig.packageReadyStatus &&
         latestCommitSha &&
         purchasedCommitSha &&
         latestCommitSha !== purchasedCommitSha
@@ -963,7 +934,9 @@ const getPurchasedProjects = asyncHandler(
         latest_package: p.projectId
           ? {
               commit_sha: latestCommitSha,
-              repackage_status: p.projectId.repackage_status || "IDLE",
+              repackage_status:
+                p.projectId.repackage_status ||
+                purchaseStatusConfig.repackageIdleStatus,
             }
           : null,
         can_download_purchased: Boolean(p.package_snapshot?.s3_key),
@@ -972,15 +945,15 @@ const getPurchasedProjects = asyncHandler(
     };
 
     if (limit !== null) {
-      // Paginated path
+      // Paginated response.
       const [[purchases, purchasesError], [totalCount, countError]] =
         await Promise.all([
           tryCatch(
             Purchase.find(baseQuery)
               .populate({
                 path: "projectId",
-                select: PURCHASED_PROJECT_SELECT,
-                populate: PURCHASED_SELLER_POPULATE,
+                select: purchasePurchasedProjectSelect,
+                populate: purchasePurchasedSellerPopulate,
               })
               .sort({ createdAt: -1 })
               .skip(offset)
@@ -1020,13 +993,13 @@ const getPurchasedProjects = asyncHandler(
         },
       });
     } else {
-      // Non-paginated path (backward compatible — returns all purchases)
+      // Backward-compatible non-paginated response.
       const [purchases, purchasesError] = await tryCatch(
         Purchase.find(baseQuery)
           .populate({
             path: "projectId",
-            select: PURCHASED_PROJECT_SELECT,
-            populate: PURCHASED_SELLER_POPULATE,
+            select: purchasePurchasedProjectSelect,
+            populate: purchasePurchasedSellerPopulate,
           })
           .sort({ createdAt: -1 })
           .lean()
@@ -1038,8 +1011,7 @@ const getPurchasedProjects = asyncHandler(
         return;
       }
 
-      // Return all purchases, including those where the project has been hard-deleted (projectId = null).
-      // Snapshot fields provide fallback data for deleted-project purchases.
+      // Keep deleted-project purchases by falling back to snapshots.
       const validPurchases = (purchases ?? []).map(mapPurchase);
 
       enrichContext({
@@ -1053,9 +1025,6 @@ const getPurchasedProjects = asyncHandler(
   }
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/purchases/download?project_id=X
-// ─────────────────────────────────────────────────────────────────────────────
 const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "download_project" });
 
@@ -1111,7 +1080,7 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   if (purchaseObjectId || version === "purchased") {
     const purchaseQuery: Record<string, unknown> = {
       buyerId,
-      status: "CONFIRMED",
+      status: purchaseStatusConfig.confirmedStatus,
     };
 
     if (purchaseObjectId) {
@@ -1174,7 +1143,7 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     const [downloadUrl, downloadError] = await tryCatch(
       s3Service.createSignedDownloadUrl(
         s3Key,
-        900,
+        purchaseDownloadConfig.signedUrlExpirySeconds,
         buildSafeDownloadFilename(confirmedPurchase.project_snapshot?.title)
       )
     );
@@ -1222,7 +1191,10 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  if (project.repo_zip_status !== "SUCCESS" || !project.repo_zip_s3_key) {
+  if (
+    project.repo_zip_status !== purchaseStatusConfig.packageReadyStatus ||
+    !project.repo_zip_s3_key
+  ) {
     enrichContext({
       outcome: "validation_failed",
       reason: "zip_not_available",
@@ -1276,7 +1248,7 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
       Purchase.findOne({
         buyerId,
         projectId: projectObjectId,
-        status: "CONFIRMED",
+        status: purchaseStatusConfig.confirmedStatus,
       })
         .select("_id")
         .lean()
@@ -1312,7 +1284,7 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   const [downloadUrl, downloadError] = await tryCatch(
     s3Service.createSignedDownloadUrl(
       project.repo_zip_s3_key as string,
-      900,
+      purchaseDownloadConfig.signedUrlExpirySeconds,
       buildSafeDownloadFilename(project.title as string)
     )
   );
@@ -1336,9 +1308,6 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Download URL generated", { download_url: downloadUrl });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/purchases/receipt?purchase_id=X
-// ─────────────────────────────────────────────────────────────────────────────
 const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "download_receipt" });
 
@@ -1362,12 +1331,12 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
   const buyerId = new mongoose.Types.ObjectId(req.user._id);
   const purchaseObjectId = new mongoose.Types.ObjectId(purchase_id);
 
-  // Fetch purchase — only for this buyer, only confirmed
+  // Fetch the confirmed purchase for this buyer.
   const [purchase, purchaseError] = await tryCatch(
     Purchase.findOne({
       _id: purchaseObjectId,
       buyerId,
-      status: "CONFIRMED",
+      status: purchaseStatusConfig.confirmedStatus,
     }).lean()
   );
 
@@ -1383,8 +1352,8 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Fetch buyer, seller, and project details in parallel
-  // Project may be null if hard-deleted; fall back to purchase snapshots
+  // Fetch buyer, seller, and project details in parallel.
+  // The project may be null if it was hard-deleted.
   const [buyerResult, sellerResult, projectResult] = await Promise.all([
     tryCatch(User.findById(purchase.buyerId).select("username name").lean()),
     tryCatch(User.findById(purchase.sellerId).select("username name").lean()),
@@ -1409,20 +1378,26 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  // Resolve project fields from purchase-time snapshots so receipts remain
-  // immutable even after project rename, repricing, or taxonomy changes.
+  // Prefer purchase-time snapshots so the receipt stays immutable.
   const snap = (purchase as any).project_snapshot ?? {};
-  const projectTitle = snap.title || (project?.title as string) || "N/A";
+  const projectTitle =
+    snap.title ||
+    (project?.title as string) ||
+    purchaseReceiptConfig.unavailableLabel;
   const projectType =
-    snap.project_type || (project?.project_type as string) || "N/A";
+    snap.project_type ||
+    (project?.project_type as string) ||
+    purchaseReceiptConfig.unavailableLabel;
   const projectTechStack: string[] = Array.isArray(snap.tech_stack)
     ? (snap.tech_stack as string[])
     : (project?.tech_stack as string[]) || [];
   const projectPrice = `$${(purchase.price_usd as number).toFixed(2)} USD (at time of purchase)`;
   const purchasedPackageId =
-    (purchase as any).purchased_package_id?.toString?.() || "N/A";
+    (purchase as any).purchased_package_id?.toString?.() ||
+    purchaseReceiptConfig.unavailableLabel;
   const purchasedCommitSha =
-    (purchase as any).package_snapshot?.commit_sha || "N/A";
+    (purchase as any).package_snapshot?.commit_sha ||
+    purchaseReceiptConfig.unavailableLabel;
   const packagedAtRaw = (purchase as any).package_snapshot?.packaged_at;
   const paymentSummary = derivePaymentSummary(purchase as any);
   const pricingReferenceValue =
@@ -1431,18 +1406,11 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
       : "1 USDC = $1.00 USD";
   const packagedAt = packagedAtRaw
     ? new Date(packagedAtRaw).toISOString()
-    : "N/A";
+    : purchaseReceiptConfig.unavailableLabel;
 
   const purchaseDate = new Date(purchase.createdAt as Date).toLocaleString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZoneName: "short",
-    }
+    purchaseReceiptConfig.dateLocale,
+    purchaseReceiptConfig.dateTimeOptions
   );
   renderPurchaseReceiptPdf(res, {
     purchaseReference: purchase.purchase_reference as string,
@@ -1467,7 +1435,9 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
         ? "SOL/USD Rate at Purchase:"
         : "Pricing Reference:",
     pricingReferenceValue,
-    rateSource: (purchase.exchange_rate_source as string) || "CoinGecko",
+    rateSource:
+      (purchase.exchange_rate_source as string) ||
+      purchaseReceiptConfig.fallbackRateSource,
     rateTimestamp: new Date(
       purchase.exchange_rate_fetched_at as Date
     ).toISOString(),
@@ -1477,14 +1447,10 @@ const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
     sellerDisplayName: (seller.name as string) || (seller.username as string),
     sellerUsername: seller.username as string,
     sellerWallet: purchase.seller_wallet as string,
-    generatedAt: new Date().toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      timeZoneName: "short",
-    }),
+    generatedAt: new Date().toLocaleString(
+      purchaseReceiptConfig.dateLocale,
+      purchaseReceiptConfig.dateTimeOptions
+    ),
   });
 
   enrichContext({ outcome: "success", purchase_id });

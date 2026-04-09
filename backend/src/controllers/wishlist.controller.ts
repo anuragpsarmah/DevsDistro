@@ -62,7 +62,7 @@ const toggleWishlist = asyncHandler(async (req: Request, res: Response) => {
     id.equals(projectObjectId)
   );
 
-  // If not yet wishlisted, verify user hasn't already purchased this project
+  // Only allow wishlisting if the project is not already purchased.
   if (!isCurrentlyWishlisted) {
     const [existingPurchase, purchaseCheckError] = await tryCatch(
       Purchase.findOne({
@@ -132,7 +132,7 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
   const userId = new mongoose.Types.ObjectId(req.user._id);
   enrichContext({ entity: { type: "wishlist", id: userId.toString() } });
 
-  // Parse optional pagination params (only active when limit is explicitly provided)
+  // Parse pagination only when limit is provided.
   const rawLimit = req.query.limit;
   const rawOffset = req.query.offset;
   const limit = rawLimit
@@ -184,7 +184,7 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
   };
 
   if (limit !== null) {
-    // Paginated path
+    // Paginated response.
     const [[projects, fetchError], [totalCount, countError]] =
       await Promise.all([
         tryCatch(
@@ -234,7 +234,7 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
       },
     });
   } else {
-    // Non-paginated path (backward compatible — returns all active wishlist items)
+    // Backward-compatible non-paginated response.
     const [projects, fetchError] = await tryCatch(
       Project.find(matchQuery)
         .select(WISHLIST_PROJECT_SELECT)

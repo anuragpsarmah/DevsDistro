@@ -19,9 +19,7 @@ import {
 } from "../validations/review.validation";
 import { recalculateProjectAggregates } from "../utils/reviewsHelper.util";
 
-// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/reviews/getFeaturedReviews
-// ─────────────────────────────────────────────────────────────────────────────
 const getFeaturedReviews = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_featured_reviews" });
 
@@ -74,9 +72,7 @@ const getFeaturedReviews = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Featured reviews fetched successfully", featuredReviews);
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
 // POST /api/reviews/project
-// ─────────────────────────────────────────────────────────────────────────────
 const submitProjectReview = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "submit_project_review" });
@@ -191,9 +187,7 @@ const submitProjectReview = asyncHandler(
   }
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
 // PUT /api/reviews/project
-// ─────────────────────────────────────────────────────────────────────────────
 const updateProjectReview = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "update_project_review" });
@@ -294,9 +288,7 @@ const updateProjectReview = asyncHandler(
   }
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/reviews/project
-// ─────────────────────────────────────────────────────────────────────────────
 const deleteProjectReview = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "delete_project_review" });
@@ -344,9 +336,7 @@ const deleteProjectReview = asyncHandler(
   }
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/reviews/project  (public — no auth required)
-// ─────────────────────────────────────────────────────────────────────────────
+// GET /api/reviews/project
 const getProjectReviews = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_project_reviews" });
 
@@ -399,9 +389,7 @@ const getProjectReviews = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/reviews/my-review
-// ─────────────────────────────────────────────────────────────────────────────
 const getMyProjectReview = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_my_project_review" });
 

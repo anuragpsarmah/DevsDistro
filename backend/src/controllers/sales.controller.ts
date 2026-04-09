@@ -343,10 +343,7 @@ const getSalesTransactions = asyncHandler(
 
     pipeline.push({ $sort: { createdAt: -1, _id: -1 } });
 
-    // For non-unlisted paths we know the full result set after sort+match,
-    // so limit early to avoid doing $lookup work on documents we'll discard.
-    // For the unlisted path we must first $lookup projects to identify orphans,
-    // so the $limit is deferred to after the project match below.
+    // Apply the limit early unless orphan detection needs the project lookup first.
     if (!isProjectFilterUnlisted) {
       pipeline.push({ $limit: limit + 1 });
     }

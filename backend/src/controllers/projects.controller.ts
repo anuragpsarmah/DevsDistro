@@ -979,7 +979,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
         (url) => !updatedMedia.includes(url)
       );
 
-      // Queue unused media for background cleanup
+      // Queue unused media for cleanup.
       for (const media of mediaToRemove) {
         const S3Uploadkey = media.replace(
           `${projectsMediaConfig.cloudFrontDistribution as string}/`,
