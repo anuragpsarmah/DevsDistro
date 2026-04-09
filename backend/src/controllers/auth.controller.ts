@@ -45,6 +45,7 @@ const clearOAuthCookies = (res: Response) => {
   res.clearCookie(AUTH_COOKIE_NAMES.oauthNext, authCookieOptions);
 };
 
+// GET /api/auth/githubLoginStart
 const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "github_login_start" });
 
@@ -95,6 +96,7 @@ const githubLoginStart = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// GET /api/auth/githubLogin
 const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "github_login" });
 
@@ -481,6 +483,7 @@ const githubLogin = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/auth/authValidation
 const authValidation = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "auth_validation" });
 
@@ -502,6 +505,7 @@ const authValidation = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// POST /api/auth/githubLogout
 const githubLogout = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "github_logout" });
   if (!isTrustedOrigin(req)) {
@@ -533,6 +537,7 @@ const githubLogout = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+// POST /api/auth/refresh
 const refreshTokenHandler = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "token_refresh" });
@@ -604,6 +609,7 @@ const refreshTokenHandler = asyncHandler(
   }
 );
 
+// DELETE /api/auth/deleteAccount
 const deleteAccount = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "delete_account" });
 

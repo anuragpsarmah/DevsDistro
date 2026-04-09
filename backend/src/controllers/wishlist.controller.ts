@@ -18,6 +18,7 @@ const WISHLIST_SELLER_POPULATE = {
   select: "username name profile_image_url -_id",
 };
 
+// POST /api/wishlist/toggle
 const toggleWishlist = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "toggle_wishlist" });
 
@@ -121,6 +122,7 @@ const toggleWishlist = asyncHandler(async (req: Request, res: Response) => {
   );
 });
 
+// GET /api/wishlist/getWishlist
 const getWishlist = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_wishlist" });
 
@@ -264,6 +266,7 @@ const getWishlist = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/wishlist/count
 const getWishlistCount = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_wishlist_count" });
 

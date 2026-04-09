@@ -9,6 +9,7 @@ import { enrichContext } from "../utils/asyncContext";
 import { githubAppService } from "../services/githubApp.service";
 import logger from "../logger/logger";
 
+// GET /api/github-app/status
 const checkInstallationStatus = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "check_installation_status" });
@@ -49,6 +50,7 @@ const checkInstallationStatus = asyncHandler(
   }
 );
 
+// GET /api/github-app/callback
 const handleAppInstallCallback = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "github_app_callback" });

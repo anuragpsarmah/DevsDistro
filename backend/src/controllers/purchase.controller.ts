@@ -106,6 +106,7 @@ const recordProjectDownload = async ({
   }
 };
 
+// POST /api/purchases/initiate
 const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "initiate_purchase" });
 
@@ -475,6 +476,7 @@ const initiatePurchase = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// POST /api/purchases/confirm
 const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "confirm_purchase" });
 
@@ -859,6 +861,7 @@ const confirmPurchase = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// GET /api/purchases/getPurchasedProjects
 const getPurchasedProjects = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_purchased_projects" });
@@ -1025,6 +1028,7 @@ const getPurchasedProjects = asyncHandler(
   }
 );
 
+// GET /api/purchases/download
 const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "download_project" });
 
@@ -1308,6 +1312,7 @@ const downloadProject = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Download URL generated", { download_url: downloadUrl });
 });
 
+// GET /api/purchases/receipt
 const downloadReceipt = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "download_receipt" });
 

@@ -134,6 +134,7 @@ const searchAndFilterProjects = async (
   };
 };
 
+// GET /api/projects/getPrivateRepos
 const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_private_repos" });
 
@@ -249,6 +250,7 @@ const getPrivateRepos = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Repos fetched successfully", responseData);
 });
 
+// POST /api/projects/getPreSignedUrlForProjectMediaUpload
 const getPreSignedUrlForProjectMediaUpload = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_presigned_upload_url" });
@@ -477,6 +479,7 @@ const getPreSignedUrlForProjectMediaUpload = asyncHandler(
   }
 );
 
+// PUT /api/projects/validateMediaUploadAndStoreProject
 const validateMediaUploadAndStoreProject = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "store_project" });
@@ -1012,6 +1015,7 @@ const validateMediaUploadAndStoreProject = asyncHandler(
   }
 );
 
+// GET /api/projects/getTotalListedProjects
 const getTotalListedProjects = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_total_listed_projects" });
@@ -1052,6 +1056,7 @@ const getTotalListedProjects = asyncHandler(
   }
 );
 
+// GET /api/projects/getTotalActiveProjects
 const getTotalActiveProjects = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_total_active_projects" });
@@ -1085,6 +1090,7 @@ const getTotalActiveProjects = asyncHandler(
   }
 );
 
+// GET /api/projects/getInitialProjectData
 const getInitialProjectData = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_initial_project_data" });
@@ -1186,6 +1192,7 @@ const getInitialProjectData = asyncHandler(
   }
 );
 
+// GET /api/projects/getSpecificProjectData
 const getSpecificProjectData = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_specific_project_data" });
@@ -1244,6 +1251,7 @@ const getSpecificProjectData = asyncHandler(
   }
 );
 
+// PATCH /api/projects/toggleProjectListing
 const toggleProjectListing = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "toggle_project_listing" });
@@ -1379,6 +1387,7 @@ const toggleProjectListing = asyncHandler(
   }
 );
 
+// DELETE /api/projects/deleteProjectListing
 const deleteProjectListing = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "delete_project_listing" });
@@ -1532,6 +1541,7 @@ const deleteProjectListing = asyncHandler(
   }
 );
 
+// POST /api/projects/search
 const searchProject = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "search_projects" });
 
@@ -1613,6 +1623,7 @@ const searchProject = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// GET /api/projects/getRepoZipStatus
 const getRepoZipStatus = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_repo_zip_status" });
 
@@ -1668,6 +1679,7 @@ const getRepoZipStatus = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
+// POST /api/projects/retryRepoZipUpload
 const retryRepoZipUpload = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "retry_repo_zip_upload" });
 
@@ -1776,6 +1788,7 @@ const retryRepoZipUpload = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Retry initiated");
 });
 
+// POST /api/projects/refreshRepoZip
 const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "refresh_repo_zip" });
 
@@ -1904,6 +1917,7 @@ const refreshRepoZip = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Refresh initiated");
 });
 
+// GET /api/projects/getMarketplaceProjectDetail
 const getMarketplaceProjectDetail = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_marketplace_project_detail" });
@@ -1996,6 +2010,7 @@ const getMarketplaceProjectDetail = asyncHandler(
   }
 );
 
+// GET /api/projects/public/:slug
 const getPublicProjectDetail = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_public_project_detail" });

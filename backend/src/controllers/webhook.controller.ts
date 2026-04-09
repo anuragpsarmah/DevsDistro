@@ -57,6 +57,7 @@ interface WebhookPayload {
   after?: string;
 }
 
+// POST /api/webhooks/github
 const handleWebhook = asyncHandler(async (req: Request, res: Response) => {
   const event = req.headers["x-github-event"] as string;
   const signature = req.headers["x-hub-signature-256"] as string;

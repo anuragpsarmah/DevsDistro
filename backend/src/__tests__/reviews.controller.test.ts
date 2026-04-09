@@ -40,12 +40,14 @@ vi.mock("../utils/asyncContext", () => ({
 }));
 
 import {
+  getFeaturedReviews,
   submitProjectReview,
   updateProjectReview,
   deleteProjectReview,
   getProjectReviews,
   getMyProjectReview,
 } from "../controllers/reviews.controller";
+import { SiteReview } from "../models/siteReview.model";
 import { Review } from "../models/projectReview.model";
 import { Project } from "../models/project.model";
 import { Purchase } from "../models/purchase.model";
@@ -137,6 +139,41 @@ describe("reviews.controller", () => {
     vi.clearAllMocks();
     res = makeRes();
     setupAggregateRecalcMocks();
+    delete process.env.FEATURED_REVIEW_ID1;
+    delete process.env.FEATURED_REVIEW_ID2;
+    delete process.env.FEATURED_REVIEW_ID3;
+  });
+
+  describe("getFeaturedReviews (GET /reviews/getFeaturedReviews)", () => {
+    it("returns 404 when featured review env vars are missing", async () => {
+      const req = makeReq();
+
+      getFeaturedReviews(req, res, next);
+      await flushPromises();
+
+      expect(SiteReview.find).not.toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(404);
+    });
+
+    it("fetches featured reviews using configured env ids", async () => {
+      process.env.FEATURED_REVIEW_ID1 = "507f191e810c19729de86001";
+      process.env.FEATURED_REVIEW_ID2 = "507f191e810c19729de86002";
+      process.env.FEATURED_REVIEW_ID3 = "507f191e810c19729de86003";
+      vi.mocked(SiteReview.find).mockResolvedValue([
+        { _id: process.env.FEATURED_REVIEW_ID1, review: "one" },
+        { _id: process.env.FEATURED_REVIEW_ID2, review: "two" },
+      ] as any);
+
+      const req = makeReq();
+
+      getFeaturedReviews(req, res, next);
+      await flushPromises();
+
+      expect(SiteReview.find).toHaveBeenCalledWith({
+        _id: { $in: expect.arrayContaining([expect.anything()]) },
+      });
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
   });
 
   describe("submitProjectReview (POST /reviews/project)", () => {

@@ -24,6 +24,7 @@ import {
   sponsorAssociatedTokenAccount,
 } from "../utils/solanaAta.util";
 
+// GET /api/profile/getProfileInformation
 const getProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_profile" });
@@ -80,6 +81,7 @@ const getProfileInformation = asyncHandler(
   }
 );
 
+// PUT /api/profile/updateProfileInformation
 const updateProfileInformation = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "update_profile" });
@@ -277,6 +279,7 @@ const updateProfileInformation = asyncHandler(
   }
 );
 
+// GET /api/profile/getWalletAddress
 const getWalletAddress = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_wallet" });
 
@@ -325,6 +328,7 @@ const getWalletAddress = asyncHandler(async (req: Request, res: Response) => {
   response(res, 200, "Wallet address fetched successfully", responseObj);
 });
 
+// PUT /api/profile/updateWalletAddress
 const updateWalletAddress = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "update_wallet" });

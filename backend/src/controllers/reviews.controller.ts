@@ -18,13 +18,20 @@ import {
   getMyReviewSchema,
 } from "../validations/review.validation";
 import { recalculateProjectAggregates } from "../utils/reviewsHelper.util";
+import {
+  reviewsFeaturedConfig,
+  reviewsProjectSelect,
+  reviewsPurchaseConfig,
+  reviewsSortConfig,
+  reviewsUserPopulate,
+} from "../config/reviews.config";
 
 // GET /api/reviews/getFeaturedReviews
 const getFeaturedReviews = asyncHandler(async (req: Request, res: Response) => {
   enrichContext({ action: "get_featured_reviews" });
 
-  const { FEATURED_REVIEW_ID1, FEATURED_REVIEW_ID2, FEATURED_REVIEW_ID3 } =
-    process.env;
+  const [FEATURED_REVIEW_ID1, FEATURED_REVIEW_ID2, FEATURED_REVIEW_ID3] =
+    reviewsFeaturedConfig.reviewIds;
 
   if (!FEATURED_REVIEW_ID1 || !FEATURED_REVIEW_ID2 || !FEATURED_REVIEW_ID3) {
     enrichContext({ outcome: "not_found", reason: "missing_env_config" });
@@ -98,7 +105,7 @@ const submitProjectReview = asyncHandler(
     const dbStart = performance.now();
     const [project, projectError] = await tryCatch(
       Project.findById(projectObjectId)
-        .select("_id userid isActive price")
+        .select(reviewsProjectSelect.submitProjectLookup)
         .lean()
     );
     enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });
@@ -128,7 +135,7 @@ const submitProjectReview = asyncHandler(
         Purchase.findOne({
           buyerId: userId,
           projectId: projectObjectId,
-          status: "CONFIRMED",
+          status: reviewsPurchaseConfig.confirmedStatus,
         })
           .select("_id")
           .lean()
@@ -211,7 +218,9 @@ const updateProjectReview = asyncHandler(
     enrichContext({ entity: { type: "review", project_id } });
 
     const [projectForUpdate, projectForUpdateError] = await tryCatch(
-      Project.findById(projectObjectId).select("_id price").lean()
+      Project.findById(projectObjectId)
+        .select(reviewsProjectSelect.updateProjectLookup)
+        .lean()
     );
 
     if (projectForUpdateError) {
@@ -235,7 +244,7 @@ const updateProjectReview = asyncHandler(
         Purchase.findOne({
           buyerId: userId,
           projectId: projectObjectId,
-          status: "CONFIRMED",
+          status: reviewsPurchaseConfig.confirmedStatus,
         })
           .select("_id")
           .lean()
@@ -357,11 +366,8 @@ const getProjectReviews = asyncHandler(async (req: Request, res: Response) => {
     [
       tryCatch(
         Review.find({ projectId: projectObjectId })
-          .populate({
-            path: "userId",
-            select: "username name profile_image_url",
-          })
-          .sort({ createdAt: -1 })
+          .populate({ ...reviewsUserPopulate })
+          .sort({ ...reviewsSortConfig.newestFirst })
           .skip(offset)
           .limit(limit)
           .lean()
@@ -414,7 +420,7 @@ const getMyProjectReview = asyncHandler(async (req: Request, res: Response) => {
   const dbStart = performance.now();
   const [review, error] = await tryCatch(
     Review.findOne({ userId, projectId: projectObjectId })
-      .populate({ path: "userId", select: "username name profile_image_url" })
+      .populate({ ...reviewsUserPopulate })
       .lean()
   );
   enrichContext({ db_latency_ms: Math.round(performance.now() - dbStart) });

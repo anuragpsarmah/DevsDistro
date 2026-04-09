@@ -42,6 +42,7 @@ const getDateLowerBound = (preset: DatePreset): Date | null => {
   return null;
 };
 
+// GET /api/sales/getCommonSalesInformation
 const getCommonSalesInformation = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_sales" });
@@ -158,6 +159,7 @@ const getCommonSalesInformation = asyncHandler(
   }
 );
 
+// GET /api/sales/getYearlySalesInformation
 const getYearlySalesInformation = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_yearly_sales" });
@@ -238,6 +240,7 @@ const getYearlySalesInformation = asyncHandler(
   }
 );
 
+// GET /api/sales/getSalesTransactions
 const getSalesTransactions = asyncHandler(
   async (req: Request, res: Response) => {
     enrichContext({ action: "get_sales_transactions" });
