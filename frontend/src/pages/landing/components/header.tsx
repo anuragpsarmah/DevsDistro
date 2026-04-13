@@ -54,7 +54,7 @@ export default function Header({
                   className="hover:text-black dark:hover:text-white transition-colors duration-200 relative group text-xs md:text-sm"
                 >
                   <span>{item}</span>
-                  <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-red-500 transition-all duration-300 group-hover:w-full"></span>
+                  <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-red-500 opacity-0 transition-opacity duration-200 group-hover:opacity-100"></span>
                 </Link>
               );
             }
