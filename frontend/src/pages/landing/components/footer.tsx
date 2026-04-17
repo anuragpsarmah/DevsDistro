@@ -23,13 +23,15 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
           <div className="md:col-span-2">
-            <h3 className="font-syne text-3xl font-black uppercase tracking-widest mb-6 flex items-center gap-3 justify-center md:justify-start">
-              <LogoIcon className="w-8 h-8" />
-              DevsDistro
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-8 leading-relaxed transition-colors text-center md:text-left mx-auto md:mx-0">
-              A repository marketplace powered by Solana and GitHub.
-            </p>
+            <div className="max-w-[18rem] mx-auto md:mx-0">
+              <h3 className="font-syne text-3xl font-black uppercase tracking-widest mb-6 flex items-center gap-3 justify-center md:justify-start">
+                <LogoIcon className="w-8 h-8" />
+                DevsDistro
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed transition-colors text-center md:text-left">
+                A repository marketplace powered by Solana and GitHub.
+              </p>
+            </div>
             <div className="flex gap-4 justify-center md:justify-start">
               <a
                 href="https://github.com/anuragpsarmah/DevsDistro"

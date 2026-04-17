@@ -23,9 +23,11 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
         style={{
           backgroundImage: `
             linear-gradient(to right, rgba(0,0,0,0.5) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,0.5) 1px, transparent 1px)
+            linear-gradient(to bottom, rgba(0,0,0,0.5) 1px, transparent 1px),
+            linear-gradient(to right, rgba(0,0,0,0.12) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.12) 1px, transparent 1px)
           `,
-          backgroundSize: "4rem 4rem",
+          backgroundSize: "4rem 4rem, 4rem 4rem, 2px 2px, 2px 2px",
           maskImage:
             "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
           WebkitMaskImage:
@@ -37,9 +39,11 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
         style={{
           backgroundImage: `
             linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px)
+            linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px),
+            linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
           `,
-          backgroundSize: "4rem 4rem",
+          backgroundSize: "4rem 4rem, 4rem 4rem, 2px 2px, 2px 2px",
           maskImage:
             "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
           WebkitMaskImage:
