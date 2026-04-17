@@ -78,11 +78,12 @@ export default function AuthPage() {
       <main className="flex-grow pt-[calc(6rem+70px)] pb-24 px-4 mx-auto w-full max-w-5xl flex items-center justify-center">
         <div className="w-full border-2 border-black dark:border-white p-8 md:p-16 relative flex flex-col lg:flex-row gap-16 items-stretch">
           <div className="flex-1 flex flex-col justify-center">
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
               <div className="w-12 h-[2px] bg-red-500"></div>
               <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
                 Auth Protocol
               </span>
+              <div className="w-12 h-[2px] bg-red-500"></div>
             </div>
 
             <h1 className="font-syne font-black uppercase tracking-widest leading-none text-5xl md:text-6xl lg:text-7xl mb-6 break-words hyphens-auto">
@@ -129,11 +130,10 @@ export default function AuthPage() {
             />
 
             <button
-              className="w-full group relative px-8 py-5 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-xs md:text-sm overflow-hidden transition-colors duration-300 flex items-center justify-center gap-4"
+              className="w-full px-8 py-5 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-xs md:text-sm transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-black dark:hover:border-white flex items-center justify-center gap-4"
               onClick={handleLoginClick}
             >
-              <div className="absolute inset-0 bg-red-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
-              <span className="relative z-10 flex items-center justify-center gap-3 group-hover:text-white transition-colors duration-300">
+              <span className="flex items-center justify-center gap-3">
                 <GithubIcon className="w-6 h-6" />
                 <span>Execute Auth</span>
                 <ArrowRight className="w-5 h-5" />

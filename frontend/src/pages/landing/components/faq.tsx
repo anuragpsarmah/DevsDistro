@@ -13,7 +13,7 @@ export default function FAQ() {
       id="query-log"
       aria-labelledby="faq-heading"
     >
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="max-w-6xl mx-auto w-full">
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/3">
             <div className="flex items-center gap-3 mb-6 justify-center md:justify-start">
@@ -94,7 +94,7 @@ export default function FAQ() {
                           duration: 0.28,
                           ease: [0.22, 1, 0.36, 1],
                         }}
-                        className="pb-8 font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors"
+                        className="text-justify pb-8 font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors"
                       >
                         {faq.answer}
                       </motion.p>

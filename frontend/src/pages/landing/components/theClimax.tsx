@@ -27,7 +27,7 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
         style={{ backgroundImage: `url(${noiseUrl})` }}
       ></div>
 
-      <div className="max-w-7xl mx-auto w-full text-center relative z-10 flex justify-center">
+      <div className="max-w-6xl mx-auto w-full text-center relative z-10 flex justify-center">
         <motion.div
           initial={{ scale: 0.7 }}
           style={{ scale }}

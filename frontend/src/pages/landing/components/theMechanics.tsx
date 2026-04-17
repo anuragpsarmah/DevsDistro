@@ -1,18 +1,50 @@
 import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import MechanicsDiagram from "./MechanicsDiagram";
 
 export default function TheMechanics() {
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [hasStartedDiagram, setHasStartedDiagram] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section || hasStartedDiagram) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) {
+          return;
+        }
+
+        setHasStartedDiagram(true);
+        observer.disconnect();
+      },
+      {
+        threshold: 0.35,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [hasStartedDiagram]);
+
   return (
     <section
+      ref={sectionRef}
       className="py-32 px-6 md:px-12 bg-gray-50 dark:bg-[#0a0a0a] text-black dark:text-white transition-colors duration-300"
       id="the-mechanics"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-20"
+          className="mb-16"
         >
           <div className="flex items-center gap-3 mb-6 border-b-4 border-black/20 dark:border-white/20 pb-4 transition-colors w-fit mx-auto md:mx-0">
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">
@@ -27,6 +59,16 @@ export default function TheMechanics() {
         </motion.div>
 
         <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10px" }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          className="border-t-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 transition-colors"
+        >
+          <MechanicsDiagram isRunning={hasStartedDiagram} />
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-10px" }}
@@ -38,12 +80,12 @@ export default function TheMechanics() {
               01.
             </div>
             <h3 className="font-syne text-2xl font-bold uppercase mb-4">
-              OAuth & App Sync
+              The Repository
             </h3>
-            <p className="font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
-              Begin with standard GitHub OAuth, followed by our native GitHub
-              App Integration. This grants DevsDistro the specific scoped access
-              needed to securely fetch your repository for packaging.
+            <p className="text-justify font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
+              Your intellectual property. DevsDistro allows sellers to easily
+              select and monetize the codebases and high-value repositories they
+              already own on GitHub.
             </p>
           </div>
 
@@ -52,12 +94,12 @@ export default function TheMechanics() {
               02.
             </div>
             <h3 className="font-syne text-2xl font-bold uppercase mb-4">
-              Set Valuation
+              GitHub Sync
             </h3>
-            <p className="font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
-              List your repository metadata on the global marketplace. Set the
-              purchase price in standard USD fiat for total clarity and
-              stability.
+            <p className="text-justify font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
+              Connect via standard GitHub OAuth and our native App Integration.
+              This securely fetches your selected repositories so you can list
+              them on the marketplace and set a standard USD fiat valuation.
             </p>
           </div>
 
@@ -68,11 +110,10 @@ export default function TheMechanics() {
             <h3 className="font-syne text-2xl font-bold uppercase mb-4">
               Solana Settlement
             </h3>
-            <p className="font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
+            <p className="text-justify font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
               A buyer connects their Phantom or Solflare wallet. They execute
               the purchase on Solana, paying in USDC by default or native SOL
-              when the seller enables it. Block confirmation occurs in
-              sub-seconds.
+              when the seller enables it.
             </p>
           </div>
 
@@ -82,9 +123,9 @@ export default function TheMechanics() {
                 04.
               </div>
               <h3 className="font-syne text-3xl font-bold uppercase mb-4">
-                Automated Archive Delivery
+                Archive Delivery
               </h3>
-              <p className="font-space text-lg leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
+              <p className="text-justify font-space text-lg leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
                 The instant the Solana transaction is validated on-chain,
                 DevsDistro orchestrates the secure downloading and compiling of
                 your repository into a downloadable ZIP file, immediately served

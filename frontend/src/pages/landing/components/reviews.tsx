@@ -107,7 +107,7 @@ export default function Reviews() {
       id="validations"
       aria-labelledby="reviews-heading"
     >
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="max-w-6xl mx-auto w-full">
         <div className="flex items-center justify-center md:justify-between mb-20 border-b-4 border-black/20 dark:border-white/20 pb-6 transition-colors">
           <div className="flex items-center gap-3">
             <span

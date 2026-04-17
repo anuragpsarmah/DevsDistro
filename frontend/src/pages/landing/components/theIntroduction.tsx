@@ -47,7 +47,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
         }}
       ></div>
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
+      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
         <div className="lg:col-span-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -80,8 +80,8 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0"
           >
@@ -97,10 +97,9 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           >
             <button
               onClick={handleAuthNavigate}
-              className="group relative px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest overflow-hidden transition-colors"
+              className="px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-black dark:hover:border-white"
             >
-              <div className="absolute inset-0 w-0 bg-red-500 transition-all transition-duration-[250ms] ease-out group-hover:w-full"></div>
-              <span className="relative z-10 group-hover:text-white dark:group-hover:text-black transition-colors duration-200 flex items-center gap-2">
+              <span className="flex items-center gap-2">
                 Init Setup <Code2 size={18} />
               </span>
             </button>

@@ -24,7 +24,7 @@ export default function TheShift() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto w-full relative z-10">
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="flex items-center gap-3 mb-16 justify-center lg:justify-start">
           <div className="w-12 h-[2px] bg-red-500 transition-colors"></div>
           <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500 transition-colors">
@@ -41,7 +41,7 @@ export default function TheShift() {
             transition={{ duration: 0.8 }}
             className="order-1 lg:order-2"
           >
-            <h2 className="font-syne text-4xl md:text-6xl font-bold text-black dark:text-white uppercase leading-snug mb-8 transition-colors">
+            <h2 className="font-syne text-3xl md:text-5xl font-bold text-black dark:text-white uppercase leading-snug mb-8 transition-colors">
               A Direct Pipeline from{" "}
               <span className="text-black/40 dark:text-white/40">Commit</span>{" "}
               to{" "}
@@ -52,7 +52,7 @@ export default function TheShift() {
             </h2>
             <div className="space-y-6 font-space text-gray-600 dark:text-gray-400 text-lg md:text-xl transition-colors">
               <div className="py-2 text-black dark:text-white transition-colors">
-                <p className="leading-relaxed">
+                <p className="text-justify leading-relaxed">
                   You price listings in stable fiat. They execute via Web3
                   wallets. We handle the real-time conversion and secure archive
                   delivery in milliseconds.
