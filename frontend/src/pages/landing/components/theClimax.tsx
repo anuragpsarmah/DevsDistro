@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import noiseUrl from "@/assets/noise.svg";
 
@@ -7,8 +8,17 @@ interface TheClimaxProps {
 }
 
 export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end end"],
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 1], [0.7, 1]);
+
   return (
     <section
+      ref={containerRef}
       className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
       id="the-climax"
     >
@@ -17,13 +27,11 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
         style={{ backgroundImage: `url(${noiseUrl})` }}
       ></div>
 
-      <div className="max-w-7xl mx-auto w-full text-center relative z-10">
+      <div className="max-w-7xl mx-auto w-full text-center relative z-10 flex justify-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-20px" }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="bg-red-500 p-8 md:p-16 border-4 border-black dark:border-white transform -skew-y-2 hover:skew-y-0 transition-all duration-500"
+          initial={{ scale: 0.7 }}
+          style={{ scale }}
+          className="bg-red-500 p-8 md:p-16 border-4 border-black dark:border-white w-full"
         >
           <div className="flex items-center gap-3 mb-6 justify-center">
             <div className="w-8 h-[2px] bg-black dark:bg-white transition-colors"></div>
