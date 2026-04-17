@@ -10,15 +10,21 @@ export default function TheShift() {
       id="the-revelation"
     >
       <div
-        className="absolute inset-0 pointer-events-none select-none overflow-hidden hidden md:flex items-center justify-center"
+        className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none select-none overflow-hidden hidden md:flex items-center justify-center"
         aria-hidden="true"
+        style={{
+          maskImage:
+            "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+        }}
       >
         <div className="font-syne text-[20vw] font-black text-black dark:text-white whitespace-nowrap opacity-[0.03] dark:opacity-5 transform -rotate-12 transition-colors">
           REVELATION
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto w-full relative z-10">
         <div className="flex items-center gap-3 mb-16 justify-center lg:justify-start">
           <div className="w-12 h-[2px] bg-red-500 transition-colors"></div>
           <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500 transition-colors">

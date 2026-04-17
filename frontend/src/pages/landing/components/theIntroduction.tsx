@@ -19,7 +19,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
         }}
       ></div>
       <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-25 dark:hidden"
+        className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none z-0 opacity-25 dark:hidden"
         style={{
           backgroundImage: `
             linear-gradient(to right, rgba(0,0,0,0.5) 1px, transparent 1px),
@@ -27,13 +27,13 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           `,
           backgroundSize: "4rem 4rem",
           maskImage:
-            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
         }}
       ></div>
       <div
-        className="absolute inset-0 pointer-events-none z-0 opacity-60 hidden dark:block"
+        className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none z-0 opacity-60 hidden dark:block"
         style={{
           backgroundImage: `
             linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px),
@@ -41,9 +41,9 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
           `,
           backgroundSize: "4rem 4rem",
           maskImage:
-            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
           WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 50%, black 0%, transparent 80%)",
+            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
         }}
       ></div>
 

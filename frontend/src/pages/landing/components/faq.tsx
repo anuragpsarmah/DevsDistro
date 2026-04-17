@@ -13,7 +13,7 @@ export default function FAQ() {
       id="query-log"
       aria-labelledby="faq-heading"
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/3">
             <div className="flex items-center gap-3 mb-6 justify-center md:justify-start">

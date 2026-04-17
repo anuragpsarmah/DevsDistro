@@ -20,7 +20,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-100 dark:bg-black text-black dark:text-white py-20 px-6 md:px-12 font-space transition-colors duration-300">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
           <div className="md:col-span-2">
             <h3 className="font-syne text-3xl font-black uppercase tracking-widest mb-6 flex items-center gap-3 justify-center md:justify-start">

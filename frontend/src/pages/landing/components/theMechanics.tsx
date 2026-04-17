@@ -47,7 +47,7 @@ export default function TheMechanics() {
             </p>
           </div>
 
-          <div className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group bg-white dark:bg-[#050505]">
+          <div className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group">
             <div className="font-space text-4xl font-bold mb-8 text-black dark:text-white group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
               02.
             </div>
@@ -76,15 +76,15 @@ export default function TheMechanics() {
             </p>
           </div>
 
-          <div className="border-b-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-black transition-colors duration-300 group lg:col-span-3 bg-black/5 dark:bg-white/5 text-black dark:text-white">
+          <div className="border-b-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors duration-300 group lg:col-span-3 bg-black/5 dark:bg-white/5 text-black dark:text-white">
             <div className="max-w-3xl">
-              <div className="font-space text-4xl font-bold mb-8 text-gray-500 dark:text-gray-500 group-hover:text-white dark:group-hover:text-black transition-colors">
+              <div className="font-space text-4xl font-bold mb-8 text-gray-500 dark:text-gray-500 group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
                 04.
               </div>
               <h3 className="font-syne text-3xl font-bold uppercase mb-4">
                 Automated Archive Delivery
               </h3>
-              <p className="font-space text-lg leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-white dark:group-hover:text-black transition-colors">
+              <p className="font-space text-lg leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
                 The instant the Solana transaction is validated on-chain,
                 DevsDistro orchestrates the secure downloading and compiling of
                 your repository into a downloadable ZIP file, immediately served

@@ -28,9 +28,9 @@ export default function Header({
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
+      className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
     >
-      <nav className="w-full flex justify-between items-center px-6 py-4">
+      <nav className="max-w-7xl mx-auto w-full flex justify-between items-center py-4">
         <Link
           to="/"
           className="flex items-center gap-3 text-xl font-syne font-black tracking-widest text-black dark:text-white uppercase transition-colors group"
