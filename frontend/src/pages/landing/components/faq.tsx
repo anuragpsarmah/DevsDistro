@@ -1,11 +1,30 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 
 import { faqs } from "../utils/constants";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  const iconTransition = hasMounted
+    ? {
+        duration: 0.24,
+        ease: [0.22, 1, 0.36, 1] as const,
+      }
+    : { duration: 0 };
+
+  const panelTransition = hasMounted
+    ? {
+        duration: 0.28,
+        ease: [0.22, 1, 0.36, 1] as const,
+      }
+    : { duration: 0 };
 
   return (
     <section
@@ -43,7 +62,7 @@ export default function FAQ() {
 
               return (
                 <motion.div
-                  layout
+                  layout={hasMounted}
                   key={faq.question}
                   className="border-b-2 border-black/20 dark:border-white/20 overflow-hidden group transition-colors"
                 >
@@ -60,11 +79,9 @@ export default function FAQ() {
                       {faq.question}
                     </span>
                     <motion.span
+                      initial={false}
                       animate={{ rotate: isOpen ? 45 : 0 }}
-                      transition={{
-                        duration: 0.24,
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
+                      transition={iconTransition}
                       className="text-red-500 shrink-0"
                     >
                       <Plus size={24} />
@@ -76,10 +93,7 @@ export default function FAQ() {
                       gridTemplateRows: isOpen ? "1fr" : "0fr",
                       opacity: isOpen ? 1 : 0,
                     }}
-                    transition={{
-                      duration: 0.28,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
+                    transition={panelTransition}
                     className="grid px-4"
                     id={`faq-panel-${idx}`}
                     role="region"
@@ -90,10 +104,7 @@ export default function FAQ() {
                       <motion.p
                         initial={false}
                         animate={{ y: isOpen ? 0 : -8 }}
-                        transition={{
-                          duration: 0.28,
-                          ease: [0.22, 1, 0.36, 1],
-                        }}
+                        transition={panelTransition}
                         className="text-justify pb-8 font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors"
                       >
                         {faq.answer}

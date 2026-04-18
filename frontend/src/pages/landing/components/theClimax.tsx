@@ -14,7 +14,7 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
     offset: ["start end", "end end"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 1], [0.7, 1]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.65, 1]);
 
   return (
     <section
@@ -29,7 +29,7 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
 
       <div className="max-w-6xl mx-auto w-full text-center relative z-10 flex justify-center">
         <motion.div
-          initial={{ scale: 0.7 }}
+          initial={{ scale: 0.65 }}
           style={{ scale }}
           className="bg-red-500 p-8 md:p-16 border-4 border-black dark:border-white w-full"
         >

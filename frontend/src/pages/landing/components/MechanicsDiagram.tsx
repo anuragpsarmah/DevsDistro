@@ -19,7 +19,7 @@ export default function MechanicsDiagram({
 
     const interval = window.setInterval(() => {
       setActiveIndex((prev) => ((prev ?? 0) + 1) % 4);
-    }, 2800); // Slightly slower for better reading pace
+    }, 2100); // Slightly shorter hold between nodes, same animation pace
 
     return () => window.clearInterval(interval);
   }, [isRunning]);
@@ -504,7 +504,7 @@ export default function MechanicsDiagram({
               </g>
             </g>
             <text className="text-label font-space" x="0" y="65">
-              GITHUB SYNC
+              INTEGRATION
             </text>
           </g>
 

@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useFeaturedReviewQuery } from "@/hooks/apiQueries";
 
 export default function Reviews() {
@@ -55,12 +54,8 @@ export default function Reviews() {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-2 border-l-2 border-black/20 dark:border-white/20 transition-colors">
         {reviews.map((review: any, idx: number) => (
-          <motion.div
+          <div
             key={review._id ?? idx}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
             className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 flex flex-col justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group"
           >
             <div className="mb-12">
@@ -95,7 +90,7 @@ export default function Reviews() {
                 {"☆".repeat(Math.max(0, 5 - Math.min(5, review.review_stars)))}
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     );

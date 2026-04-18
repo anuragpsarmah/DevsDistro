@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Sun, Moon } from "lucide-react";
-import { motion } from "framer-motion";
 import LogoIcon from "@/assets/icons/LogoIcon";
 import { HeaderProps } from "../utils/types";
 import { useTheme } from "@/components/providers/ThemeProvider";
@@ -24,12 +23,7 @@ export default function Header({
   };
 
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300">
       <nav className="max-w-6xl mx-auto w-full flex justify-between items-center py-4">
         <Link
           to="/"
@@ -98,6 +92,6 @@ export default function Header({
           </button>
         </div>
       </nav>
-    </motion.header>
+    </header>
   );
 }

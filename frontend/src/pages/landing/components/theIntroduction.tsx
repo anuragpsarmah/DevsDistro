@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Code2 } from "lucide-react";
 import noiseUrl from "@/assets/noise.svg";
 
@@ -53,25 +52,15 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
 
       <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
         <div className="lg:col-span-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-4 mb-8 justify-center md:justify-start"
-          >
+          <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
             <div className="w-12 h-[2px] bg-red-500"></div>
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
               DevsDistro
             </span>
             <div className="w-12 h-[2px] bg-red-500"></div>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-[0.08em] uppercase text-center md:text-left"
-          >
+          <h1 className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-[0.08em] uppercase text-center md:text-left">
             <span className="block md:whitespace-nowrap">A REPOSITORY</span>
             <span className="block md:whitespace-nowrap">MARKET THAT</span>
             <span
@@ -81,24 +70,14 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
               WORKS
               <span className="text-black dark:text-white">.</span>
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0"
-          >
+          <p className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0">
             Open marketplace where creators sell repositories — priced in USD,
             settled on Solana, delivered instantly.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mt-12 flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center md:items-start"
-          >
+          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center md:items-start">
             <button
               onClick={handleAuthNavigate}
               className="px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-black dark:hover:border-white"
@@ -107,15 +86,10 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
                 Init Setup <Code2 size={18} />
               </span>
             </button>
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
-          className="lg:col-span-4 hidden lg:flex flex-col justify-end items-end"
-        >
+        <div className="lg:col-span-4 hidden lg:flex flex-col justify-end items-end">
           <div className="border-r-2 border-red-500 pr-6 py-2 flex flex-col gap-3 font-space text-[10px] sm:text-xs uppercase tracking-widest text-gray-500">
             <div className="text-black dark:text-white font-bold mb-4 text-right">
               System Diagnostics
@@ -131,7 +105,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
               <span className="text-red-500 w-24 text-left">V_1.0.0</span>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

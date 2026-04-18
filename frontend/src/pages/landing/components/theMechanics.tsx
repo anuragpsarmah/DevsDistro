@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import MechanicsDiagram from "./MechanicsDiagram";
 
@@ -39,13 +38,7 @@ export default function TheMechanics() {
       id="the-mechanics"
     >
       <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-16"
-        >
+        <div className="mb-16">
           <div className="flex items-center gap-3 mb-6 border-b-4 border-black/20 dark:border-white/20 pb-4 transition-colors w-fit mx-auto md:mx-0">
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">
               The Mechanics
@@ -56,14 +49,9 @@ export default function TheMechanics() {
             <br />
             <span className="text-black/40 dark:text-white/40">Operates.</span>
           </h2>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-10px" }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-        >
+        <div>
           <div className="border-t-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 transition-colors">
             <MechanicsDiagram isRunning={hasStartedDiagram} />
           </div>
@@ -78,8 +66,8 @@ export default function TheMechanics() {
               </h3>
               <p className="text-justify font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
                 Your intellectual property. DevsDistro allows sellers to easily
-                select and monetize the codebases and high-value repositories
-                they already own on GitHub.
+                integrate and monetize the private repositories they already own
+                on GitHub.
               </p>
             </div>
 
@@ -88,7 +76,7 @@ export default function TheMechanics() {
                 02.
               </div>
               <h3 className="font-syne text-2xl font-bold uppercase mb-4">
-                GitHub Sync
+                Integration
               </h3>
               <p className="text-justify font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
                 Connect via standard GitHub OAuth and our native App
@@ -106,13 +94,13 @@ export default function TheMechanics() {
               </h3>
               <p className="text-justify font-space text-sm leading-relaxed text-gray-600 dark:text-gray-400 group-hover:text-black dark:group-hover:text-gray-300 transition-colors">
                 A buyer connects their Phantom or Solflare wallet. They execute
-                the purchase on Solana, paying in USDC by default or native SOL
+                the purchase on Solana, paying in USDC by default, or native SOL
                 when the seller enables it.
               </p>
             </div>
 
             <div className="border-b-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 p-10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors duration-300 group lg:col-span-3 bg-black/5 dark:bg-white/5 text-black dark:text-white">
-              <div className="max-w-3xl">
+              <div className="max-w-3xl lg:max-w-[66.666%]">
                 <div className="font-space text-4xl font-bold mb-8 text-gray-500 dark:text-gray-500 group-hover:text-red-500 dark:group-hover:text-red-500 transition-colors">
                   04.
                 </div>
@@ -128,7 +116,7 @@ export default function TheMechanics() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
