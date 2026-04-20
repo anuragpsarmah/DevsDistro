@@ -98,11 +98,12 @@ export default function Reviews() {
 
   return (
     <section
-      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white border-y border-black/10 dark:border-white/10 transition-colors duration-300 overflow-hidden"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
       id="validations"
       aria-labelledby="reviews-heading"
     >
-      <div className="max-w-6xl mx-auto w-full">
+      <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="flex items-center justify-center md:justify-between mb-20 border-b-4 border-black/20 dark:border-white/20 pb-6 transition-colors">
           <div className="flex items-center gap-3">
             <span

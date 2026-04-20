@@ -13,6 +13,8 @@ export default {
         "fade-in-up": "fadeInUp 0.6s ease forwards",
         "float": "float 6s ease-in-out infinite",
         "pulse-glow": "pulseGlow 2s ease-in-out infinite",
+        "cell-ripple": "ripple 2s ease-out forwards",
+        "ripple-fill": "ripple-fill 1s forwards",
       },
       keyframes: {
         shimmer: {
@@ -38,6 +40,14 @@ export default {
         pulseGlow: {
           "0%, 100%": { boxShadow: "0 0 20px rgba(139, 92, 246, 0.3)" },
           "50%": { boxShadow: "0 0 40px rgba(139, 92, 246, 0.6)" },
+        },
+        ripple: {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
+        "ripple-fill": {
+          "0%": { opacity: "0.4" },
+          "100%": { opacity: "0" },
         },
       },
       borderRadius: {

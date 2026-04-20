@@ -90,7 +90,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen text-gray-900 bg-gray-50 dark:text-white relative dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen text-gray-900 bg-white dark:text-white relative dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300">
       <SEO
         title={SITE_NAME}
         description={DEFAULT_DESCRIPTION}
@@ -109,7 +109,10 @@ export default function LandingPage() {
         setIsMenuOpen={setIsMenuOpen}
       />
 
-      <main className="relative z-10 w-full pt-16">
+      <main className="relative z-10 w-full pt-0">
+        {/* Global vertical dashed lines bounding the max-width */}
+        <div className="landing-dotted-rule landing-dotted-x fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-30"></div>
+
         <TheIntroduction handleAuthNavigate={handleAuthNavigate} />
         <TheRevelation />
         <TheMechanics />

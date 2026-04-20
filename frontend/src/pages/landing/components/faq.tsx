@@ -28,11 +28,12 @@ export default function FAQ() {
 
   return (
     <section
-      className="py-32 px-6 md:px-12 bg-gray-50 dark:bg-[#0a0a0a] text-black dark:text-white border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 relative"
       id="query-log"
       aria-labelledby="faq-heading"
     >
-      <div className="max-w-6xl mx-auto w-full">
+      <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
+      <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/3">
             <div className="flex items-center gap-3 mb-6 justify-center md:justify-start">

@@ -39,7 +39,7 @@ export default function MobileMenu({
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
           id="mobile-navigation"
-          className="fixed inset-0 z-40 bg-white dark:bg-[#0a0a0a] pt-24 px-6 md:hidden overflow-y-auto transition-colors duration-300"
+          className="fixed inset-0 z-40 bg-white dark:bg-[#050505] pt-24 px-6 md:hidden overflow-y-auto transition-colors duration-300"
         >
           <div className="flex flex-col gap-8 h-full">
             <div className="flex flex-col gap-6 font-syne text-3xl font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">

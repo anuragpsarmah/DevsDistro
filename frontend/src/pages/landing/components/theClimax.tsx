@@ -22,6 +22,7 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
       className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
       id="the-climax"
     >
+      <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
       <div
         className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
         style={{ backgroundImage: `url(${noiseUrl})` }}

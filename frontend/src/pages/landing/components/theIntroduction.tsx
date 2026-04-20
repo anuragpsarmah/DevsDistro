@@ -1,5 +1,6 @@
-import { Code2 } from "lucide-react";
+import { ArrowRight, Code2 } from "lucide-react";
 import noiseUrl from "@/assets/noise.svg";
+import { BackgroundRippleEffect } from "./BackgroundRippleEffect";
 
 interface PrologueProps {
   handleAuthNavigate: () => void;
@@ -8,51 +9,49 @@ interface PrologueProps {
 export default function Prologue({ handleAuthNavigate }: PrologueProps) {
   return (
     <section
-      className="min-h-[90vh] flex flex-col justify-center relative px-6 md:px-12 pt-32 pb-24 bg-white dark:bg-[#0a0a0a] border-b-2 border-black/10 dark:border-white/10 transition-colors duration-300"
+      className="min-h-[90vh] flex flex-col justify-center relative px-6 md:px-12 pt-48 pb-24 bg-white dark:bg-[#050505] transition-colors duration-300"
       id="the-introduction"
     >
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay"
-        style={{
-          backgroundImage: `url(${noiseUrl})`,
-        }}
-      ></div>
-      <div
-        className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none z-0 opacity-25 dark:hidden"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(0,0,0,0.5) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,0.5) 1px, transparent 1px),
-            linear-gradient(to right, rgba(0,0,0,0.12) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,0.12) 1px, transparent 1px)
-          `,
-          backgroundSize: "4rem 4rem, 4rem 4rem, 2px 2px, 2px 2px",
-          maskImage:
-            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
-        }}
-      ></div>
-      <div
-        className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none z-0 opacity-60 hidden dark:block"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.4) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.4) 1px, transparent 1px),
-            linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
-          `,
-          backgroundSize: "4rem 4rem, 4rem 4rem, 2px 2px, 2px 2px",
-          maskImage:
-            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse at 50% 50%, black 25%, transparent 75%)",
-        }}
-      ></div>
+      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl bg-white dark:bg-[#050505] z-0 transition-colors duration-300 overflow-hidden">
+        <BackgroundRippleEffect autoPlayCenter />
+        <div
+          className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay z-[5]"
+          style={{
+            backgroundImage: `url(${noiseUrl})`,
+          }}
+        ></div>
 
-      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 relative z-10">
-        <div className="lg:col-span-8">
-          <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
+        {/* Premium Top Fade & Blur Composites */}
+        <div
+          className="absolute inset-x-0 top-0 h-64 sm:h-80 pointer-events-none z-[6]"
+          style={{
+            backdropFilter: "blur(2px)",
+            WebkitBackdropFilter: "blur(2px)",
+            maskImage: "linear-gradient(to top, transparent 0%, black 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to top, transparent 0%, black 100%)",
+          }}
+        ></div>
+        <div className="absolute inset-x-0 top-0 h-48 sm:h-64 bg-gradient-to-b from-white dark:from-[#050505] to-transparent pointer-events-none z-[7] transition-colors duration-300"></div>
+
+        {/* Premium Bottom Fade & Blur Composites */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-40 sm:h-56 pointer-events-none z-[6]"
+          style={{
+            backdropFilter: "blur(2px)",
+            WebkitBackdropFilter: "blur(2px)",
+            maskImage: "linear-gradient(to bottom, transparent 0%, black 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 100%)",
+          }}
+        ></div>
+        <div className="absolute inset-x-0 bottom-0 h-28 sm:h-40 bg-gradient-to-t from-white dark:from-[#050505] to-transparent pointer-events-none z-[7] transition-colors duration-300"></div>
+      </div>
+      <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
+
+      <div className="max-w-6xl mx-auto w-full relative z-10 pointer-events-none">
+        <div className="flex flex-col items-center text-center">
+          <div className="flex items-center gap-4 mb-8 justify-center pointer-events-auto">
             <div className="w-12 h-[2px] bg-red-500"></div>
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
               DevsDistro
@@ -60,7 +59,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             <div className="w-12 h-[2px] bg-red-500"></div>
           </div>
 
-          <h1 className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-[0.08em] uppercase text-center md:text-left">
+          <h1 className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-[0.08em] uppercase pointer-events-auto select-text">
             <span className="block md:whitespace-nowrap">A REPOSITORY</span>
             <span className="block md:whitespace-nowrap">MARKET THAT</span>
             <span
@@ -72,38 +71,24 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             </span>
           </h1>
 
-          <p className="font-space mt-10 text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed tracking-wide text-center md:text-left mx-auto md:mx-0">
-            Open marketplace where creators sell repositories — priced in USD,
+          <p className="font-space mt-10 text-base md:text-2xl text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed tracking-wide mx-auto pointer-events-auto select-text">
+            Open marketplace where creators sell repositories priced in USD,
             settled on Solana, delivered instantly.
           </p>
 
-          <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center md:justify-start items-center md:items-start">
+          <div className="relative z-30 mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center pointer-events-auto">
             <button
               onClick={handleAuthNavigate}
-              className="px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-black dark:hover:border-white"
+              className="inline-flex items-center gap-2 px-8 py-4 font-space font-bold uppercase tracking-widest text-white dark:text-black bg-black dark:bg-white hover:bg-red-500 dark:hover:bg-red-500 hover:text-white transition-colors duration-200 border-2 border-transparent hover:border-black dark:hover:border-white"
             >
-              <span className="flex items-center gap-2">
-                Init Setup <Code2 size={18} />
-              </span>
+              Init Setup <Code2 size={18} />
             </button>
-          </div>
-        </div>
-
-        <div className="lg:col-span-4 hidden lg:flex flex-col justify-end items-end">
-          <div className="border-r-2 border-red-500 pr-6 py-2 flex flex-col gap-3 font-space text-[10px] sm:text-xs uppercase tracking-widest text-gray-500">
-            <div className="text-black dark:text-white font-bold mb-4 text-right">
-              System Diagnostics
-            </div>
-            <div className="flex justify-end gap-6 text-right">
-              <span>Status:</span>
-              <span className="text-black dark:text-white w-24 text-left">
-                Operational
-              </span>
-            </div>
-            <div className="flex justify-end gap-6 text-right">
-              <span>Version:</span>
-              <span className="text-red-500 w-24 text-left">V_1.0.0</span>
-            </div>
+            <a
+              href="#the-mechanics"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-neutral-100/95 text-black dark:bg-[#050505]/90 dark:text-white font-space font-bold uppercase tracking-widest transition-all duration-200 border-2 border-black/15 dark:border-white/15 ring-1 ring-black/5 dark:ring-white/10 shadow-[0_10px_24px_-22px_rgba(0,0,0,0.45)] dark:shadow-[0_10px_24px_-22px_rgba(255,255,255,0.28)] hover:bg-neutral-200/90 hover:border-black/40 dark:hover:border-white/40 hover:shadow-[0_14px_30px_-24px_rgba(0,0,0,0.5)] dark:hover:shadow-[0_14px_30px_-24px_rgba(255,255,255,0.35)]"
+            >
+              View Flow <ArrowRight size={18} />
+            </a>
           </div>
         </div>
       </div>

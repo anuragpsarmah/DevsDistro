@@ -75,8 +75,12 @@ export default function AuthPage() {
         setIsMenuOpen={setIsMenuOpen}
       />
 
-      <main className="flex-grow pt-[calc(6rem+70px)] pb-24 px-4 mx-auto w-full max-w-5xl flex items-center justify-center">
-        <div className="w-full border-2 border-black dark:border-white p-8 md:p-16 relative flex flex-col lg:flex-row gap-16 items-stretch">
+      <div className="landing-dotted-rule landing-dotted-x fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-30"></div>
+
+      <main className="relative z-10 flex-grow pt-[calc(6rem+70px)] pb-24 px-4 w-full flex items-center justify-center">
+        <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
+
+        <div className="mx-auto w-full max-w-5xl border-2 border-black dark:border-white p-8 md:p-16 relative flex flex-col lg:flex-row gap-16 items-stretch">
           <div className="flex-1 flex flex-col justify-center">
             <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
               <div className="w-12 h-[2px] bg-red-500"></div>

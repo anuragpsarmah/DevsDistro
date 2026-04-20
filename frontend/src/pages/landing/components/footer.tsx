@@ -19,7 +19,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-100 dark:bg-black text-black dark:text-white py-20 px-6 md:px-12 font-space transition-colors duration-300">
+    <footer className="bg-white dark:bg-[#050505] text-black dark:text-white py-20 px-6 md:px-12 font-space transition-colors duration-300">
       <div className="max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
           <div className="md:col-span-2">

@@ -58,6 +58,61 @@
   }
 }
 
+@layer utilities {
+  .bg-structural-dots {
+    background-image: radial-gradient(
+      circle,
+      currentColor 1.5px,
+      transparent 1.5px
+    );
+    background-size: 16px 16px;
+  }
+
+  .landing-dotted-rule {
+    --landing-dot-color: rgb(0 0 0 / 0.32);
+  }
+
+  .dark .landing-dotted-rule {
+    --landing-dot-color: rgb(255 255 255 / 0.32);
+  }
+
+  .landing-dotted-x {
+    background-image: radial-gradient(
+        circle at 2px 2px,
+        var(--landing-dot-color) 0 1.25px,
+        transparent 1.35px
+      ),
+      radial-gradient(
+        circle at 2px 2px,
+        var(--landing-dot-color) 0 1.25px,
+        transparent 1.35px
+      );
+    background-position:
+      left top,
+      right top;
+    background-repeat: repeat-y;
+    background-size: 4px 9px;
+  }
+
+  .landing-dotted-b {
+    background-image: radial-gradient(
+      circle at 2px 2px,
+      var(--landing-dot-color) 0 1.25px,
+      transparent 1.35px
+    );
+    background-position: left bottom;
+    background-repeat: repeat-x;
+    background-size: 9px 4px;
+    height: 4px;
+    width: calc(100% - 18px);
+    max-width: calc(80rem - 18px);
+  }
+
+  .ease-premium {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

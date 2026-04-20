@@ -6,23 +6,27 @@ export default function TheShift() {
 
   return (
     <section
-      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] transition-colors duration-300 relative overflow-hidden"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] transition-colors duration-300 relative"
       id="the-revelation"
     >
-      <div
-        className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none select-none overflow-hidden hidden md:flex items-center justify-center"
-        aria-hidden="true"
-        style={{
-          maskImage:
-            "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-          WebkitMaskImage:
-            "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-        }}
-      >
-        <div className="font-syne text-[20vw] font-black text-black dark:text-white whitespace-nowrap opacity-[0.03] dark:opacity-5 transform -rotate-12 transition-colors">
-          REVELATION
+      {/* Constrained background container */}
+      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl bg-white dark:bg-[#050505] -z-10 transition-colors duration-300 overflow-hidden">
+        <div
+          className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-[120rem] pointer-events-none select-none overflow-hidden hidden md:flex items-center justify-center"
+          aria-hidden="true"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
+          }}
+        >
+          <div className="font-syne text-[20vw] font-black text-black dark:text-white whitespace-nowrap opacity-[0.03] dark:opacity-5 transform -rotate-12 transition-colors">
+            REVELATION
+          </div>
         </div>
       </div>
+      <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
 
       <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="flex items-center gap-3 mb-16 justify-center lg:justify-start">
