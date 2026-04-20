@@ -206,12 +206,12 @@ export default function MechanicsDiagram({
         }
 
         .mechanics-diagram.is-running.is-release-firing .interactive-node.active.release-firing .track-beam {
-          animation: md-release-shoot-beam 0.52s linear forwards;
+          animation: md-release-shoot-beam 0.27s linear forwards;
         }
 
         .mechanics-diagram.is-running.is-release-firing .interactive-node.active.release-firing .beam-gather,
         .mechanics-diagram.is-running.is-release-firing .interactive-node.active.release-firing .beam-gather-cap {
-          animation: md-release-gather-flash 0.52s linear forwards;
+          animation: md-release-gather-flash 0.27s linear forwards;
         }
 
         .mechanics-diagram .interactive-node.active .icon-bg {
@@ -402,23 +402,30 @@ export default function MechanicsDiagram({
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 8px var(--md-accent));
           }
-          28% {
+          20% {
             opacity: 1;
-            transform: scaleX(1.45);
+            transform: scaleX(1.5);
             stroke-width: 6px;
             stroke: #ffffff;
-            filter: drop-shadow(0 0 16px var(--md-accent)) drop-shadow(0 0 3px #ffffff);
+            filter: drop-shadow(0 0 15px var(--md-accent)) drop-shadow(0 0 3px #ffffff);
           }
-          100% {
+          47% {
             opacity: 0;
             transform: scaleX(4);
             stroke-width: 1px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 0px var(--md-accent));
           }
+          100% {
+            opacity: 0;
+          }
         }
         @keyframes md-release-shoot-beam {
-          0% {
+          0%, 20% {
+            stroke-dashoffset: 40;
+            opacity: 0;
+          }
+          20.1% {
             stroke-dashoffset: 40;
             opacity: 1;
           }

@@ -7,7 +7,7 @@ const HOVER_INTENT_RECENCY_MS = 160;
 const HOVER_MOVE_THRESHOLD_PX = 4;
 const HOVER_SCROLL_SUPPRESSION_MS = 520;
 const NODE_SEQUENCE_MS = 1800;
-const RELEASE_BEAM_MS = 520;
+const RELEASE_BEAM_MS = 270;
 
 export default function TheMechanics() {
   const sectionRef = useRef<HTMLElement | null>(null);
