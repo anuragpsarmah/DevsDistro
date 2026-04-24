@@ -221,13 +221,11 @@ export default function TheMechanics() {
       "relative border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-10 transition-colors duration-300";
     const edgeClassName = index === 0 || isFeature ? " border-l-2" : "";
     const featureClassName = isFeature
-      ? " lg:col-span-3 text-neutral-800 dark:text-white"
+      ? " lg:col-span-3 text-neutral-800 dark:text-white bg-gray-100 dark:bg-[#1a1a1a] border-neutral-800/10 dark:border-white/10"
       : "";
     const activeClassName = isActive
       ? " bg-red-500/[0.06] dark:bg-red-500/[0.08] shadow-[inset_0_0_0_1px_rgba(239,68,68,0.28)]"
-      : isFeature
-        ? " bg-neutral-800/5 dark:bg-white/5"
-        : "";
+      : "";
 
     return `${baseClassName}${edgeClassName}${featureClassName}${activeClassName}`;
   };
@@ -297,7 +295,7 @@ export default function TheMechanics() {
           </h2>
         </div>
 
-        <div>
+        <div className="shadow-[0_14px_32px_-28px_rgba(38,38,38,0.42),10px_0_24px_-26px_rgba(38,38,38,0.22),-10px_0_24px_-26px_rgba(38,38,38,0.18)] dark:shadow-[0_14px_34px_-28px_rgba(38,38,38,0.78),10px_0_26px_-26px_rgba(38,38,38,0.42),-10px_0_26px_-26px_rgba(38,38,38,0.36)]">
           <div className="border-t-2 border-l-2 border-r-2 border-neutral-800/20 dark:border-white/20 transition-colors">
             <MechanicsDiagram
               activeIndex={activeMechanicIndex}

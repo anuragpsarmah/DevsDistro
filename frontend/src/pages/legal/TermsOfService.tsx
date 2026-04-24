@@ -54,172 +54,178 @@ export default function TermsOfService() {
         setIsMenuOpen={setIsMenuOpen}
       />
 
-      <main className="relative z-10 w-full pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-[2px] bg-red-500"></div>
-          <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-            Legal Documentation
-          </span>
-        </div>
+      <div className="landing-dotted-rule landing-dotted-x fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-30"></div>
 
-        <h1 className="font-syne text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-16 break-words hyphens-auto">
-          Terms of Service
-        </h1>
+      <main className="relative z-10 w-full pt-32 pb-24 px-6 md:px-12">
+        <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-[2px] bg-red-500"></div>
+            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
+              Legal Documentation
+            </span>
+          </div>
 
-        <div className="space-y-16 border-l-2 border-neutral-800/10 dark:border-white/10 pl-6 md:pl-10">
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              01. Acceptance of Terms
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-              By accessing or using DevsDistro ("Platform"), you agree to be
-              bound by these Terms of Service. The Platform provides a
-              decentralized marketplace for developers to buy and sell
-              repositories securely and efficiently.
-            </p>
-          </section>
+          <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-16 whitespace-nowrap">
+            Terms of Service
+          </h1>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              02. Account Security & GitHub Access
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
-              To use the Platform, you are required to authenticate via GitHub
-              OAuth and authorize the official DevsDistro GitHub App. This is a
-              mandatory requirement to verify your identity and confirm
-              cryptographic ownership of the repositories you intend to list.
-              The GitHub App requests scoped permissions exclusively for the
-              repositories you select, ensuring we only interact with the
-              repository contents you choose to monetize.
-            </p>
-          </section>
+          <div className="space-y-16">
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                01. Acceptance of Terms
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
+                By accessing or using DevsDistro ("Platform"), you agree to be
+                bound by these Terms of Service. The Platform provides a
+                decentralized marketplace for developers to buy and sell
+                repositories securely and efficiently.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              03. User Obligations & Property Rights
-            </h2>
-            <ul className="space-y-6 text-gray-600 dark:text-gray-400 text-lg">
-              <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
-                <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
-                  <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-neutral-800 dark:text-white">
-                    Ownership Assertion:
-                  </strong>
-                </div>
-                <div className="flex-1">
-                  You must exclusively own, or have explicit, verifiable legal
-                  rights to sell, the intellectual property of any repository
-                  you list on the Platform. Copied, stolen, or improperly
-                  licensed repository content is strictly prohibited.
-                </div>
-              </li>
-              <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
-                <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
-                  <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-neutral-800 dark:text-white">
-                    Prohibited Content:
-                  </strong>
-                </div>
-                <div className="flex-1">
-                  You agree not to list repositories containing malware,
-                  exploits, or material that violates third-party intellectual
-                  property rights.
-                </div>
-              </li>
-              <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
-                <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
-                  <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-neutral-800 dark:text-white">
-                    Accountability:
-                  </strong>
-                </div>
-                <div className="flex-1">
-                  You remain solely responsible for maintaining the security of
-                  your GitHub account and connected Web3 wallet.
-                </div>
-              </li>
-            </ul>
-          </section>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                02. Account Security & GitHub Access
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
+                To use the Platform, you are required to authenticate via GitHub
+                OAuth and authorize the official DevsDistro GitHub App. This is
+                a mandatory requirement to verify your identity and confirm
+                cryptographic ownership of the repositories you intend to list.
+                The GitHub App requests scoped permissions exclusively for the
+                repositories you select, ensuring we only interact with the
+                repository contents you choose to monetize.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              04. Transactions & Delivery
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
-              <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
-                Solana Settlement /
-              </strong>
-              You define the valuation of your repository in USD fiat. At the
-              time of execution, DevsDistro processes the transaction on the
-              Solana blockchain through a connected Web3 wallet (e.g., Phantom,
-              Solflare). Checkout settles in USDC by default, and may also
-              settle in native SOL when the seller has explicitly enabled that
-              option for the listing. No currency conversion is performed during
-              settlement.
-            </p>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-              <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
-                Automated Delivery /
-              </strong>
-              When you list a repository, we immediately pull the latest commit
-              and compile it into a secure ZIP file stored in our AWS S3
-              infrastructure. Upon on-chain confirmation of payment, this
-              pre-packaged archive is served directly to the buyer for immediate
-              download. DevsDistro facilitates the pipeline but relies on the
-              immutability of the blockchain for settlement.
-            </p>
-          </section>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                03. User Obligations & Property Rights
+              </h2>
+              <ul className="space-y-6 text-gray-600 dark:text-gray-400 text-lg">
+                <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
+                  <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
+                    <span className="text-red-500 font-bold opacity-50">/</span>
+                    <strong className="text-neutral-800 dark:text-white">
+                      Ownership Assertion:
+                    </strong>
+                  </div>
+                  <div className="flex-1">
+                    You must exclusively own, or have explicit, verifiable legal
+                    rights to sell, the intellectual property of any repository
+                    you list on the Platform. Copied, stolen, or improperly
+                    licensed repository content is strictly prohibited.
+                  </div>
+                </li>
+                <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
+                  <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
+                    <span className="text-red-500 font-bold opacity-50">/</span>
+                    <strong className="text-neutral-800 dark:text-white">
+                      Prohibited Content:
+                    </strong>
+                  </div>
+                  <div className="flex-1">
+                    You agree not to list repositories containing malware,
+                    exploits, or material that violates third-party intellectual
+                    property rights.
+                  </div>
+                </li>
+                <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
+                  <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
+                    <span className="text-red-500 font-bold opacity-50">/</span>
+                    <strong className="text-neutral-800 dark:text-white">
+                      Accountability:
+                    </strong>
+                  </div>
+                  <div className="flex-1">
+                    You remain solely responsible for maintaining the security
+                    of your GitHub account and connected Web3 wallet.
+                  </div>
+                </li>
+              </ul>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              05. Limitation of Liability
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
-              The Platform is provided "AS IS" without warranty of any kind. We
-              are not liable for any direct, indirect, incidental, or
-              consequential damages arising from your use of the Platform,
-              including but not limited to loss of data, unauthorized access to
-              your GitHub account or Web3 wallet, smart contract
-              vulnerabilities, market volatility of digital assets, or any other
-              financial loss.
-            </p>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
-              <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
-                Platform Errors & Software Defects /
-              </strong>
-              DevsDistro makes reasonable efforts to maintain the integrity,
-              security, and reliability of the Platform. However, all software
-              may contain defects, bugs, or vulnerabilities. To the maximum
-              extent permitted by applicable law, DevsDistro shall not be held
-              responsible or liable for any loss of funds, digital assets,
-              cryptocurrency, or financial damages of any nature arising from
-              software errors, bugs, platform malfunctions, failed transactions,
-              incorrect price calculations, or any other technical deficiency —
-              whether or not such deficiency was known or foreseeable by
-              DevsDistro at the time of the incident.
-            </p>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-              By using the Platform and initiating any financial transaction,
-              you expressly acknowledge and accept that all transactions are
-              executed at your own risk. You are solely responsible for
-              independently verifying transaction details — including recipient
-              addresses and settlement amounts — prior to authorizing any
-              payment through your connected Web3 wallet. DevsDistro strongly
-              recommends transacting only amounts you are prepared to lose in
-              the event of an unforeseen technical failure.
-            </p>
-          </section>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                04. Transactions & Delivery
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
+                <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  Solana Settlement /
+                </strong>
+                You define the valuation of your repository in USD fiat. At the
+                time of execution, DevsDistro processes the transaction on the
+                Solana blockchain through a connected Web3 wallet (e.g.,
+                Phantom, Solflare). Checkout settles in USDC by default, and may
+                also settle in native SOL when the seller has explicitly enabled
+                that option for the listing. No currency conversion is performed
+                during settlement.
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
+                <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  Automated Delivery /
+                </strong>
+                When you list a repository, we immediately pull the latest
+                commit and compile it into a secure ZIP file stored in our AWS
+                S3 infrastructure. Upon on-chain confirmation of payment, this
+                pre-packaged archive is served directly to the buyer for
+                immediate download. DevsDistro facilitates the pipeline but
+                relies on the immutability of the blockchain for settlement.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              06. Changes to Terms
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg pb-12">
-              We reserve the right to modify these terms at any time. Continued
-              use of the Platform following changes constitutes acceptance of
-              the newly deployed terms.
-            </p>
-          </section>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                05. Limitation of Liability
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
+                The Platform is provided "AS IS" without warranty of any kind.
+                We are not liable for any direct, indirect, incidental, or
+                consequential damages arising from your use of the Platform,
+                including but not limited to loss of data, unauthorized access
+                to your GitHub account or Web3 wallet, smart contract
+                vulnerabilities, market volatility of digital assets, or any
+                other financial loss.
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
+                <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  Platform Errors & Software Defects /
+                </strong>
+                DevsDistro makes reasonable efforts to maintain the integrity,
+                security, and reliability of the Platform. However, all software
+                may contain defects, bugs, or vulnerabilities. To the maximum
+                extent permitted by applicable law, DevsDistro shall not be held
+                responsible or liable for any loss of funds, digital assets,
+                cryptocurrency, or financial damages of any nature arising from
+                software errors, bugs, platform malfunctions, failed
+                transactions, incorrect price calculations, or any other
+                technical deficiency — whether or not such deficiency was known
+                or foreseeable by DevsDistro at the time of the incident.
+              </p>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
+                By using the Platform and initiating any financial transaction,
+                you expressly acknowledge and accept that all transactions are
+                executed at your own risk. You are solely responsible for
+                independently verifying transaction details — including
+                recipient addresses and settlement amounts — prior to
+                authorizing any payment through your connected Web3 wallet.
+                DevsDistro strongly recommends transacting only amounts you are
+                prepared to lose in the event of an unforeseen technical
+                failure.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                06. Changes to Terms
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg pb-12">
+                We reserve the right to modify these terms at any time.
+                Continued use of the Platform following changes constitutes
+                acceptance of the newly deployed terms.
+              </p>
+            </section>
+          </div>
         </div>
       </main>
 

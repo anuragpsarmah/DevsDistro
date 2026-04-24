@@ -75,228 +75,234 @@ export default function ApiPage() {
         setIsMenuOpen={setIsMenuOpen}
       />
 
-      <main className="relative z-10 w-full pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-[2px] bg-red-500"></div>
-          <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-            Public API
-          </span>
-        </div>
+      <div className="landing-dotted-rule landing-dotted-x fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-30"></div>
 
-        <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-6 break-words hyphens-auto">
-          World Cities API
-        </h1>
+      <main className="relative z-10 w-full pt-32 pb-24 px-6 md:px-12">
+        <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-[2px] bg-red-500"></div>
+            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
+              Public API
+            </span>
+          </div>
 
-        <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-8">
-          A free, public REST API for fast trie based look up for cities around
-          the world. No authentication required.
-        </p>
+          <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-6 break-words hyphens-auto">
+            World Cities API
+          </h1>
 
-        <div className="space-y-16 border-l-2 border-neutral-800/10 dark:border-white/10 pl-6 md:pl-10">
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              01. Base URL
-            </h2>
-            <pre className={blockCodeClassName}>
-              https://cities.devsdistro.com
-            </pre>
-          </section>
+          <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed mb-8">
+            A free, public REST API for fast trie based look up for cities
+            around the world. No authentication required.
+          </p>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              02. Endpoint
-            </h2>
-            <div className="flex flex-col gap-4 mb-8">
-              <div className="flex items-center gap-4">
-                <span className="font-syne font-black text-xs uppercase tracking-widest text-green-600 dark:text-green-400 border border-green-600/30 dark:border-green-400/30 px-2 py-1">
-                  GET
-                </span>
-                <code className={codeClassName}>/searchCities</code>
-              </div>
-            </div>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
-              Search for cities by prefix. Returns a list of matching city names
-              with their ISO 3166-1 alpha-2 country codes.
-            </p>
+          <div className="space-y-16">
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                01. Base URL
+              </h2>
+              <pre className={blockCodeClassName}>
+                https://cities.devsdistro.com
+              </pre>
+            </section>
 
-            <h3 className="font-syne text-lg font-bold text-neutral-800 dark:text-white mb-4 uppercase tracking-wider">
-              Query Parameters
-            </h3>
-            <div className="border border-neutral-800/10 dark:border-white/10 overflow-hidden mb-8">
-              {/* Header — hidden on mobile */}
-              <div className="hidden md:grid md:grid-cols-4 bg-neutral-800/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
-                <span>Parameter</span>
-                <span>Type</span>
-                <span>Required</span>
-                <span>Description</span>
-              </div>
-              {/* Row 1 */}
-              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
-                    Param
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                02. Endpoint
+              </h2>
+              <div className="flex flex-col gap-4 mb-8">
+                <div className="flex items-center gap-4">
+                  <span className="font-syne font-black text-xs uppercase tracking-widest text-green-600 dark:text-green-400 border border-green-600/30 dark:border-green-400/30 px-2 py-1">
+                    GET
                   </span>
-                  <code className="text-red-500 font-mono">q</code>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
-                    Type
-                  </span>
-                  <span className="text-gray-500">string</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
-                    Required
-                  </span>
-                  <span className="text-green-600 dark:text-green-400 font-bold">
-                    Yes
-                  </span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0 mt-0.5">
-                    Desc
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Search term. Minimum 2 characters.
-                  </span>
+                  <code className={codeClassName}>/searchCities</code>
                 </div>
               </div>
-              {/* Row 2 */}
-              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
-                    Param
-                  </span>
-                  <code className="text-red-500 font-mono">limit</code>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
+                Search for cities by prefix. Returns a list of matching city
+                names with their ISO 3166-1 alpha-2 country codes.
+              </p>
+
+              <h3 className="font-syne text-lg font-bold text-neutral-800 dark:text-white mb-4 uppercase tracking-wider">
+                Query Parameters
+              </h3>
+              <div className="border border-neutral-800/10 dark:border-white/10 overflow-hidden mb-8">
+                {/* Header — hidden on mobile */}
+                <div className="hidden md:grid md:grid-cols-4 bg-neutral-800/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+                  <span>Parameter</span>
+                  <span>Type</span>
+                  <span>Required</span>
+                  <span>Description</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
-                    Type
-                  </span>
-                  <span className="text-gray-500">number</span>
+                {/* Row 1 */}
+                <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                      Param
+                    </span>
+                    <code className="text-red-500 font-mono">q</code>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                      Type
+                    </span>
+                    <span className="text-gray-500">string</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                      Required
+                    </span>
+                    <span className="text-green-600 dark:text-green-400 font-bold">
+                      Yes
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0 mt-0.5">
+                      Desc
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Search term. Minimum 2 characters.
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
-                    Required
-                  </span>
-                  <span className="text-gray-500">No</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0 mt-0.5">
-                    Desc
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Max results to return. Default: 10. Max: 1000.
-                  </span>
+                {/* Row 2 */}
+                <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                      Param
+                    </span>
+                    <code className="text-red-500 font-mono">limit</code>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                      Type
+                    </span>
+                    <span className="text-gray-500">number</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
+                      Required
+                    </span>
+                    <span className="text-gray-500">No</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0 mt-0.5">
+                      Desc
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Max results to return. Default: 10. Max: 1000.
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              03. Response Format
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
-              A successful <code className={codeClassName}>200</code> response
-              returns a JSON object with the following shape:
-            </p>
-            <pre className={blockCodeClassName}>{`{
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                03. Response Format
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
+                A successful <code className={codeClassName}>200</code> response
+                returns a JSON object with the following shape:
+              </p>
+              <pre className={blockCodeClassName}>{`{
   "filteredResults": ["London, GB", "Long Beach, US", "Londrina, BR"],
   "count": 3,
   "limit": 10
 }`}</pre>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
-              Each entry in{" "}
-              <code className={codeClassName}>filteredResults</code> is
-              formatted as{" "}
-              <code className={codeClassName}>"City Name, ISO2"</code>.
-            </p>
-          </section>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
+                Each entry in{" "}
+                <code className={codeClassName}>filteredResults</code> is
+                formatted as{" "}
+                <code className={codeClassName}>"City Name, ISO2"</code>.
+              </p>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              04. Error Codes
-            </h2>
-            <div className="border border-neutral-800/10 dark:border-white/10 overflow-hidden">
-              {/* Header — hidden on mobile */}
-              <div className="hidden md:grid md:grid-cols-3 bg-neutral-800/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
-                <span>Status</span>
-                <span>Code</span>
-                <span>Reason</span>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                04. Error Codes
+              </h2>
+              <div className="border border-neutral-800/10 dark:border-white/10 overflow-hidden">
+                {/* Header — hidden on mobile */}
+                <div className="hidden md:grid md:grid-cols-3 bg-neutral-800/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+                  <span>Status</span>
+                  <span>Code</span>
+                  <span>Reason</span>
+                </div>
+                {/* Row 1 */}
+                <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                      Status
+                    </span>
+                    <code className="text-yellow-500 font-mono font-bold">
+                      400
+                    </code>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                      Code
+                    </span>
+                    <span className="text-gray-500">Bad Request</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-0.5">
+                      Reason
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Query is shorter than 2 characters or{" "}
+                      <code className={codeClassName}>limit</code> is invalid.
+                    </span>
+                  </div>
+                </div>
+                {/* Row 2 */}
+                <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                      Status
+                    </span>
+                    <code className="text-red-500 font-mono font-bold">
+                      429
+                    </code>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
+                      Code
+                    </span>
+                    <span className="text-gray-500">Too Many Requests</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-0.5">
+                      Reason
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Per-IP rate limit exceeded. Back off and retry.
+                    </span>
+                  </div>
+                </div>
               </div>
-              {/* Row 1 */}
-              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
-                    Status
-                  </span>
-                  <code className="text-yellow-500 font-mono font-bold">
-                    400
-                  </code>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
-                    Code
-                  </span>
-                  <span className="text-gray-500">Bad Request</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-0.5">
-                    Reason
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Query is shorter than 2 characters or{" "}
-                    <code className={codeClassName}>limit</code> is invalid.
-                  </span>
-                </div>
-              </div>
-              {/* Row 2 */}
-              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
-                    Status
-                  </span>
-                  <code className="text-red-500 font-mono font-bold">429</code>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
-                    Code
-                  </span>
-                  <span className="text-gray-500">Too Many Requests</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0 mt-0.5">
-                    Reason
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    Per-IP rate limit exceeded. Back off and retry.
-                  </span>
-                </div>
-              </div>
-            </div>
-          </section>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              05. Examples
-            </h2>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                05. Examples
+              </h2>
 
-            <h3 className="font-syne text-base font-bold text-neutral-800 dark:text-white mb-3 uppercase tracking-wider">
-              JavaScript (Fetch)
-            </h3>
-            <pre className={blockCodeClassName}>{`const res = await fetch(
+              <h3 className="font-syne text-base font-bold text-neutral-800 dark:text-white mb-3 uppercase tracking-wider">
+                JavaScript (Fetch)
+              </h3>
+              <pre className={blockCodeClassName}>{`const res = await fetch(
   "https://cities.devsdistro.com/searchCities?q=par&limit=5"
 );
 const data = await res.json();
 // data.filteredResults => ["Paris, FR", "Paramaribo, SR", ...]`}</pre>
 
-            <h3 className="font-syne text-base font-bold text-neutral-800 dark:text-white mb-3 mt-10 uppercase tracking-wider">
-              React Query
-            </h3>
-            <pre
-              className={blockCodeClassName}
-            >{`import { useQuery } from "@tanstack/react-query";
+              <h3 className="font-syne text-base font-bold text-neutral-800 dark:text-white mb-3 mt-10 uppercase tracking-wider">
+                React Query
+              </h3>
+              <pre
+                className={blockCodeClassName}
+              >{`import { useQuery } from "@tanstack/react-query";
 
 const { data, isLoading } = useQuery({
   queryKey: ["cities", query],
@@ -310,61 +316,63 @@ const { data, isLoading } = useQuery({
 });
 
 // data?.filteredResults => ["Paris, FR", "Paramaribo, SR", ...]`}</pre>
-          </section>
+            </section>
 
-          <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
-              06. Notes
-            </h2>
-            <ul className="space-y-6 text-gray-600 dark:text-gray-400 text-lg pb-12">
-              <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
-                <div className="flex gap-4 md:w-48 shrink-0">
-                  <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-neutral-800 dark:text-white">
-                    Free to use
-                  </strong>
-                </div>
-                <div className="flex-1">
-                  No API key or authentication is required. CORS is enabled for
-                  all origins. Intended for browser-based consumption only —
-                  server-side or CLI requests are blocked by Cloudflare bot
-                  protection.
-                </div>
-              </li>
-              <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
-                <div className="flex gap-4 md:w-48 shrink-0">
-                  <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-neutral-800 dark:text-white">
-                    Rate limiting
-                  </strong>
-                </div>
-                <div className="flex-1">
-                  Requests are rate-limited per IP address to prevent abuse. For
-                  high-volume use cases, consider caching results client-side.
-                </div>
-              </li>
-              <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
-                <div className="flex gap-4 md:w-48 shrink-0">
-                  <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-neutral-800 dark:text-white">
-                    Open source
-                  </strong>
-                </div>
-                <div className="flex-1">
-                  The source code is available on{" "}
-                  <a
-                    href="https://github.com/anuragpsarmah/World-Cities-API"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-red-500 hover:underline"
-                  >
-                    GitHub
-                  </a>
-                  .
-                </div>
-              </li>
-            </ul>
-          </section>
+            <section>
+              <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
+                06. Notes
+              </h2>
+              <ul className="space-y-6 text-gray-600 dark:text-gray-400 text-lg pb-12">
+                <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
+                  <div className="flex gap-4 md:w-48 shrink-0">
+                    <span className="text-red-500 font-bold opacity-50">/</span>
+                    <strong className="text-neutral-800 dark:text-white">
+                      Free to use
+                    </strong>
+                  </div>
+                  <div className="flex-1">
+                    No API key or authentication is required. CORS is enabled
+                    for all origins. Intended for browser-based consumption only
+                    — server-side or CLI requests are blocked by Cloudflare bot
+                    protection.
+                  </div>
+                </li>
+                <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
+                  <div className="flex gap-4 md:w-48 shrink-0">
+                    <span className="text-red-500 font-bold opacity-50">/</span>
+                    <strong className="text-neutral-800 dark:text-white">
+                      Rate limiting
+                    </strong>
+                  </div>
+                  <div className="flex-1">
+                    Requests are rate-limited per IP address to prevent abuse.
+                    For high-volume use cases, consider caching results
+                    client-side.
+                  </div>
+                </li>
+                <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
+                  <div className="flex gap-4 md:w-48 shrink-0">
+                    <span className="text-red-500 font-bold opacity-50">/</span>
+                    <strong className="text-neutral-800 dark:text-white">
+                      Open source
+                    </strong>
+                  </div>
+                  <div className="flex-1">
+                    The source code is available on{" "}
+                    <a
+                      href="https://github.com/anuragpsarmah/World-Cities-API"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-500 hover:underline"
+                    >
+                      GitHub
+                    </a>
+                    .
+                  </div>
+                </li>
+              </ul>
+            </section>
+          </div>
         </div>
       </main>
 
