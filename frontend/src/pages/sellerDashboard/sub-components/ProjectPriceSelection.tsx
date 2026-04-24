@@ -62,7 +62,7 @@ export default function ProjectPriceSelection({
   };
 
   return (
-    <div className="border-t-2 border-black/10 dark:border-white/10 pt-10 mt-10">
+    <div className="border-t-2 border-neutral-800/10 dark:border-white/10 pt-10 mt-10">
       <Label
         htmlFor="price"
         className="font-space text-[10px] uppercase font-bold tracking-[0.2em] text-gray-600 dark:text-gray-400 mb-6 block text-center"
@@ -70,8 +70,8 @@ export default function ProjectPriceSelection({
         Project Price (USD)
       </Label>
       <div className="relative flex flex-col items-center gap-4 mt-2">
-        <div className="lg:w-1/3 md:w-1/3 w-1/2 relative bg-transparent border-2 border-black/20 dark:border-white/20 transition-colors duration-300">
-          <span className="absolute top-1/2 left-4 transform -translate-y-1/2 flex items-center font-space font-black text-3xl md:text-4xl text-black dark:text-white leading-none">
+        <div className="lg:w-1/3 md:w-1/3 w-1/2 relative bg-transparent border-2 border-neutral-800/20 dark:border-white/20 transition-colors duration-300">
+          <span className="absolute top-1/2 left-4 transform -translate-y-1/2 flex items-center font-space font-black text-3xl md:text-4xl text-neutral-800 dark:text-white leading-none">
             $
           </span>
           <Input
@@ -83,7 +83,7 @@ export default function ProjectPriceSelection({
             onChange={handleInputChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            className="bg-transparent border-0 text-black dark:text-white focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-colors duration-300 font-space text-3xl md:text-4xl font-black text-center appearance-none py-8 pl-12 pr-12 h-auto"
+            className="bg-transparent border-0 text-neutral-800 dark:text-white focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none transition-colors duration-300 font-space text-3xl md:text-4xl font-black text-center appearance-none py-8 pl-12 pr-12 h-auto"
             placeholder="0.00"
             required
           />
@@ -91,7 +91,7 @@ export default function ProjectPriceSelection({
             <button
               type="button"
               onClick={incrementPrice}
-              className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors duration-200"
+              className="text-neutral-800 dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors duration-200"
             >
               <svg
                 width="14"
@@ -109,7 +109,7 @@ export default function ProjectPriceSelection({
             <button
               type="button"
               onClick={decrementPrice}
-              className="text-black dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors duration-200"
+              className="text-neutral-800 dark:text-white hover:text-red-500 dark:hover:text-red-500 transition-colors duration-200"
             >
               <svg
                 width="14"
@@ -133,14 +133,14 @@ export default function ProjectPriceSelection({
           className={`group lg:w-1/3 md:w-1/3 w-1/2 p-5 flex items-center gap-4 text-left transition-colors duration-300 border-2 ${
             allowPaymentsInSol
               ? "border-red-500 bg-red-500/[0.02]"
-              : "border-black/10 dark:border-white/10 hover:border-black/40 dark:hover:border-white/40"
+              : "border-neutral-800/10 dark:border-white/10 hover:border-neutral-800/40 dark:hover:border-white/40"
           }`}
         >
           <div
             className={`flex items-center justify-center w-5 h-5 border-2 transition-colors duration-300 shrink-0 ${
               allowPaymentsInSol
                 ? "border-red-500 bg-red-500 text-white"
-                : "border-black/30 dark:border-white/30 text-transparent group-hover:border-black/60 dark:group-hover:border-white/60"
+                : "border-neutral-800/30 dark:border-white/30 text-transparent group-hover:border-neutral-800/60 dark:group-hover:border-white/60"
             }`}
           >
             <svg
@@ -162,7 +162,7 @@ export default function ProjectPriceSelection({
               className={`font-space font-bold uppercase tracking-[0.2em] text-[10px] transition-colors duration-300 ${
                 allowPaymentsInSol
                   ? "text-red-500"
-                  : "text-black dark:text-white"
+                  : "text-neutral-800 dark:text-white"
               }`}
             >
               Allow Payments In SOL

@@ -39,7 +39,7 @@ const ConnectToWallet = ({
 
   return (
     <div className="relative max-w-6xl mx-auto w-full">
-      <div className="relative bg-white dark:bg-[#050505] border-2 border-black dark:border-white transition-colors duration-300 flex flex-col overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+      <div className="relative bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white transition-colors duration-300 flex flex-col overflow-hidden shadow-[8px_8px_0px_0px_rgba(38,38,38,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
         <div className="relative z-10 p-8 md:p-12">
           <div className="w-full flex flex-col justify-center max-w-5xl mx-auto">
             {!walletAddress ? (

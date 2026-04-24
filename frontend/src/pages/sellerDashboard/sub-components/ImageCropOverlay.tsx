@@ -280,11 +280,11 @@ export default function ImageCropOverlay({
     cropView === "card" ? currentCropState?.card : currentCropState?.detail;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-[#050505] border-2 border-black dark:border-white w-full max-w-2xl max-h-[95vh] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b-2 border-black dark:border-white flex-shrink-0">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-800/80 backdrop-blur-sm p-4">
+      <div className="bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white w-full max-w-2xl max-h-[95vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b-2 border-neutral-800 dark:border-white flex-shrink-0">
           <div>
-            <h2 className="font-syne font-black uppercase tracking-widest text-black dark:text-white text-sm">
+            <h2 className="font-syne font-black uppercase tracking-widest text-neutral-800 dark:text-white text-sm">
               Crop Your Images
             </h2>
             <p className="font-space text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider mt-0.5">
@@ -293,39 +293,39 @@ export default function ImageCropOverlay({
           </div>
           <button
             onClick={onCancel}
-            className="w-8 h-8 border-2 border-black dark:border-white flex items-center justify-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+            className="w-8 h-8 border-2 border-neutral-800 dark:border-white flex items-center justify-center hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 dark:border-white/10 flex-shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-800/10 dark:border-white/10 flex-shrink-0">
           <button
             onClick={goToPrev}
             disabled={croppablePos === 0}
-            className="w-7 h-7 border-2 border-black dark:border-white flex items-center justify-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-7 h-7 border-2 border-neutral-800 dark:border-white flex items-center justify-center hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          <span className="font-space font-bold uppercase tracking-widest text-[10px] text-black dark:text-white">
+          <span className="font-space font-bold uppercase tracking-widest text-[10px] text-neutral-800 dark:text-white">
             Image {croppablePos + 1} of {imageItems.length}
           </span>
           <button
             onClick={goToNext}
             disabled={croppablePos === imageItems.length - 1}
-            className="w-7 h-7 border-2 border-black dark:border-white flex items-center justify-center hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-7 h-7 border-2 border-neutral-800 dark:border-white flex items-center justify-center hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="flex border-b-2 border-black dark:border-white flex-shrink-0">
+        <div className="flex border-b-2 border-neutral-800 dark:border-white flex-shrink-0">
           <button
             onClick={() => handleTabClick("card")}
-            className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors border-r-2 border-black dark:border-white ${
+            className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors border-r-2 border-neutral-800 dark:border-white ${
               cropView === "card"
-                ? "bg-black text-white dark:bg-white dark:text-black"
-                : "text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5"
+                ? "bg-neutral-800 text-white dark:bg-white dark:text-neutral-800"
+                : "text-neutral-800 dark:text-white hover:bg-neutral-800/5 dark:hover:bg-white/5"
             }`}
           >
             Card (16:9)
@@ -334,8 +334,8 @@ export default function ImageCropOverlay({
             onClick={() => handleTabClick("detail")}
             className={`flex-1 py-2.5 font-space font-bold uppercase tracking-widest text-[10px] transition-colors ${
               cropView === "detail"
-                ? "bg-black text-white dark:bg-white dark:text-black"
-                : "text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5"
+                ? "bg-neutral-800 text-white dark:bg-white dark:text-neutral-800"
+                : "text-neutral-800 dark:text-white hover:bg-neutral-800/5 dark:hover:bg-white/5"
             }`}
           >
             Detail (21:9)
@@ -365,12 +365,12 @@ export default function ImageCropOverlay({
               }}
             />
           )}
-          <div className="absolute top-2 left-2 z-10 bg-black/70 text-white font-space font-bold uppercase tracking-widest text-[9px] px-2 py-1">
+          <div className="absolute top-2 left-2 z-10 bg-neutral-800/70 text-white font-space font-bold uppercase tracking-widest text-[9px] px-2 py-1">
             {cropLabel}
           </div>
         </div>
 
-        <div className="px-4 py-3 border-t border-black/10 dark:border-white/10 flex-shrink-0">
+        <div className="px-4 py-3 border-t border-neutral-800/10 dark:border-white/10 flex-shrink-0">
           <div className="flex items-center gap-3">
             <span className="font-space text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-shrink-0">
               Zoom
@@ -403,7 +403,7 @@ export default function ImageCropOverlay({
                   className={`flex-shrink-0 relative w-12 h-12 border-2 overflow-hidden transition-all ${
                     isCurrentImage
                       ? "border-red-500"
-                      : "border-black dark:border-white opacity-60 hover:opacity-100"
+                      : "border-neutral-800 dark:border-white opacity-60 hover:opacity-100"
                   }`}
                 >
                   <img
@@ -418,18 +418,18 @@ export default function ImageCropOverlay({
           </div>
         )}
 
-        <div className="flex gap-3 p-4 border-t-2 border-black dark:border-white flex-shrink-0">
+        <div className="flex gap-3 p-4 border-t-2 border-neutral-800 dark:border-white flex-shrink-0">
           <button
             onClick={onCancel}
             disabled={isGenerating}
-            className="flex-1 py-3 border-2 border-black dark:border-white font-space font-bold uppercase tracking-widest text-[10px] text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-3 border-2 border-neutral-800 dark:border-white font-space font-bold uppercase tracking-widest text-[10px] text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirmAll}
             disabled={isGenerating}
-            className="flex-1 py-3 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-[10px] hover:bg-red-500 dark:hover:bg-red-500 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="flex-1 py-3 bg-neutral-800 text-white dark:bg-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-[10px] hover:bg-red-500 dark:hover:bg-red-500 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isGenerating ? (
               <>

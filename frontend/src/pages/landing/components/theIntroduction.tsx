@@ -62,7 +62,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             <div className="w-12 h-[2px] bg-red-500"></div>
           </div>
 
-          <h1 className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-black dark:text-white tracking-[0.08em] uppercase pointer-events-auto select-text">
+          <h1 className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-neutral-800 dark:text-white tracking-[0.08em] uppercase pointer-events-auto select-text">
             <span className="block md:whitespace-nowrap">A REPOSITORY</span>
             <span className="block md:whitespace-nowrap">MARKET THAT</span>
             <span
@@ -70,7 +70,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
               style={{ WebkitTextStroke: "0px" }}
             >
               WORKS
-              <span className="text-black dark:text-white">.</span>
+              <span className="text-neutral-800 dark:text-white">.</span>
             </span>
           </h1>
 
@@ -88,7 +88,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             </button>
             <a
               href="#the-mechanics"
-              className="inline-flex items-center gap-2 border-[3px] border-black/35 bg-neutral-200/90 px-8 py-4 font-space font-bold uppercase tracking-widest text-black shadow-[inset_0_0_0_2px_rgba(255,255,255,0.9),inset_0_0_22px_rgba(255,255,255,0.18),0_10px_22px_-18px_rgba(0,0,0,0.34)] transition-all duration-200 hover:border-black/50 hover:bg-neutral-300/90 hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,1),inset_0_0_26px_rgba(255,255,255,0.25),0_10px_22px_-18px_rgba(0,0,0,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-white/35 dark:bg-[#151515]/95 dark:text-white dark:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.14),inset_0_0_22px_rgba(255,255,255,0.08),0_10px_24px_-18px_rgba(0,0,0,0.72)] dark:hover:border-white/50 dark:hover:bg-[#202020]/95 dark:hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.2),inset_0_0_26px_rgba(255,255,255,0.12),0_10px_24px_-18px_rgba(0,0,0,0.72)]"
+              className="inline-flex items-center gap-2 border-[3px] border-neutral-800/35 bg-neutral-200/90 px-8 py-4 font-space font-bold uppercase tracking-widest text-neutral-800 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.9),inset_0_0_22px_rgba(255,255,255,0.18),0_10px_22px_-18px_rgba(38,38,38,0.34)] transition-all duration-200 hover:border-neutral-800/50 hover:bg-neutral-300/90 hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,1),inset_0_0_26px_rgba(255,255,255,0.25),0_10px_22px_-18px_rgba(38,38,38,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-white/35 dark:bg-[#151515]/95 dark:text-white dark:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.14),inset_0_0_22px_rgba(255,255,255,0.08),0_10px_24px_-18px_rgba(38,38,38,0.72)] dark:hover:border-white/50 dark:hover:bg-[#202020]/95 dark:hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.2),inset_0_0_26px_rgba(255,255,255,0.12),0_10px_24px_-18px_rgba(38,38,38,0.72)]"
             >
               View Flow <ArrowRight size={18} />
             </a>
@@ -107,7 +107,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
                 aria-label="GitHub repositories"
                 className="flex items-center gap-3 cursor-pointer"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] border-[3px] border-neutral-300 bg-white p-[2px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] dark:border-neutral-700 dark:bg-[#050505] dark:shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] border-[3px] border-neutral-300 bg-white p-[2px] shadow-[0_4px_12px_rgba(38,38,38,0.06)] dark:border-neutral-700 dark:bg-[#050505] dark:shadow-[0_4px_12px_rgba(38,38,38,0.5)]">
                   <div className="flex h-full w-full items-center justify-center rounded-[4px] bg-neutral-200 dark:bg-neutral-700">
                     <div className="h-[25px] w-[25.5px] overflow-hidden relative">
                       <img
@@ -136,10 +136,10 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
                 aria-label="Solana settlements"
                 className="flex items-center gap-3 cursor-pointer"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] border-[3px] border-neutral-300 bg-white p-[2px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] dark:border-neutral-700 dark:bg-[#050505] dark:shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] border-[3px] border-neutral-300 bg-white p-[2px] shadow-[0_4px_12px_rgba(38,38,38,0.06)] dark:border-neutral-700 dark:bg-[#050505] dark:shadow-[0_4px_12px_rgba(38,38,38,0.5)]">
                   <div className="flex h-full w-full items-center justify-center rounded-[4px] bg-neutral-200 dark:bg-neutral-700">
                     <div
-                      className="h-[20px] w-[23px] bg-black dark:bg-neutral-200"
+                      className="h-[20px] w-[23px] bg-neutral-800 dark:bg-neutral-200"
                       style={{
                         maskImage: `url(${solanaLogoUrl})`,
                         maskSize: "auto 100%",

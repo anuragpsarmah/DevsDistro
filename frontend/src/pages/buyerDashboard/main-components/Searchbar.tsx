@@ -173,8 +173,8 @@ export default function SearchBar({
   return (
     <div className="w-full">
       <div className="relative overflow-visible">
-        <div className="relative flex flex-col lg:flex-row items-stretch lg:items-center bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] transition-shadow duration-300">
-          <div className="flex-1 relative group border-b-2 lg:border-b-0 lg:border-r-2 border-black dark:border-white">
+        <div className="relative flex flex-col lg:flex-row items-stretch lg:items-center bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] transition-shadow duration-300">
+          <div className="flex-1 relative group border-b-2 lg:border-b-0 lg:border-r-2 border-neutral-800 dark:border-white">
             <div className="absolute left-6 top-1/2 transform -translate-y-1/2 transition-colors duration-300">
               <Search className="h-5 w-5 text-gray-400 group-focus-within:text-red-500" />
             </div>
@@ -183,15 +183,15 @@ export default function SearchBar({
               placeholder="Search Projects"
               value={searchQuery}
               onChange={(e) => onSearchQueryChange(e.target.value)}
-              className="w-full pl-14 pr-6 py-4 bg-transparent text-black dark:text-white placeholder-gray-500 focus:outline-none text-lg font-space font-bold focus:placeholder-black dark:focus:placeholder-white transition-colors duration-300 hover:bg-black/5 dark:hover:bg-white/5"
+              className="w-full pl-14 pr-6 py-4 bg-transparent text-neutral-800 dark:text-white placeholder-gray-500 focus:outline-none text-lg font-space font-bold focus:placeholder-black dark:focus:placeholder-white transition-colors duration-300 hover:bg-neutral-800/5 dark:hover:bg-white/5"
             />
           </div>
 
           <div className="flex lg:hidden">
-            <div className="relative flex-1 border-r-2 border-black dark:border-white">
+            <div className="relative flex-1 border-r-2 border-neutral-800 dark:border-white">
               <button
                 onClick={handleFilterClick}
-                className="flex items-center justify-center gap-2 w-full px-4 py-4 font-space font-bold uppercase tracking-wider text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300"
+                className="flex items-center justify-center gap-2 w-full px-4 py-4 font-space font-bold uppercase tracking-wider text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-all duration-300"
               >
                 <Filter className="h-5 w-5" />
                 <span>Filter</span>
@@ -209,7 +209,7 @@ export default function SearchBar({
             <div className="relative flex-1">
               <button
                 onClick={handleSortClick}
-                className="flex items-center justify-center gap-2 w-full px-4 py-4 font-space font-bold uppercase tracking-wider text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300"
+                className="flex items-center justify-center gap-2 w-full px-4 py-4 font-space font-bold uppercase tracking-wider text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-all duration-300"
               >
                 <ArrowUpDown className="h-5 w-5" />
                 <span>Sort</span>
@@ -223,11 +223,11 @@ export default function SearchBar({
           <div className="hidden lg:flex">
             <div
               ref={filterContainerRef}
-              className="relative border-r-2 border-black dark:border-white"
+              className="relative border-r-2 border-neutral-800 dark:border-white"
               onMouseEnter={handleFilterHoverEnter}
               onMouseLeave={handleFilterHoverLeave}
             >
-              <button className="flex items-center gap-3 px-8 py-4 font-space font-bold uppercase tracking-wider text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300 group">
+              <button className="flex items-center gap-3 px-8 py-4 font-space font-bold uppercase tracking-wider text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-all duration-300 group">
                 <Filter className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 <span>Filter</span>
                 {selectedFilters.length > 0 && (
@@ -245,7 +245,7 @@ export default function SearchBar({
               onMouseEnter={handleSortHoverEnter}
               onMouseLeave={handleSortHoverLeave}
             >
-              <button className="flex items-center gap-3 px-8 py-4 font-space font-bold uppercase tracking-wider text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300 group">
+              <button className="flex items-center gap-3 px-8 py-4 font-space font-bold uppercase tracking-wider text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-all duration-300 group">
                 <ArrowUpDown className="h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
                 <span>{getSortLabel()}</span>
                 <ChevronDown className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
@@ -255,7 +255,7 @@ export default function SearchBar({
         </div>
 
         <div
-          className={`absolute top-full right-0 lg:right-32 mt-4 w-full max-w-sm bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${
+          className={`absolute top-full right-0 lg:right-32 mt-4 w-full max-w-sm bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${
             showFilterDropdown
               ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
               : "opacity-0 -translate-y-4 scale-95 pointer-events-none"
@@ -264,14 +264,14 @@ export default function SearchBar({
           onMouseLeave={handleFilterHoverLeave}
         >
           <div className="relative p-6">
-            <div className="flex items-center justify-between mb-6 border-b-2 border-black dark:border-white pb-2">
-              <h3 className="text-black dark:text-white font-syne font-bold uppercase tracking-widest text-lg">
+            <div className="flex items-center justify-between mb-6 border-b-2 border-neutral-800 dark:border-white pb-2">
+              <h3 className="text-neutral-800 dark:text-white font-syne font-bold uppercase tracking-widest text-lg">
                 Project Types
               </h3>
               {selectedFilters.length > 0 && (
                 <button
                   onClick={clearFilters}
-                  className="text-red-500 hover:bg-red-500 hover:text-white font-space font-bold uppercase tracking-wider text-xs flex items-center gap-1 px-3 py-1 border-2 border-transparent hover:border-black dark:hover:border-white transition-all duration-300"
+                  className="text-red-500 hover:bg-red-500 hover:text-white font-space font-bold uppercase tracking-wider text-xs flex items-center gap-1 px-3 py-1 border-2 border-transparent hover:border-neutral-800 dark:hover:border-white transition-all duration-300"
                 >
                   <X className="h-3 w-3" />
                   Clear All
@@ -282,7 +282,7 @@ export default function SearchBar({
               {PROJECT_TYPES.map((type) => (
                 <label
                   key={type}
-                  className="flex items-center gap-3 p-2 border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-300 cursor-pointer group"
+                  className="flex items-center gap-3 p-2 border-2 border-transparent hover:border-neutral-800 dark:hover:border-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-all duration-300 cursor-pointer group"
                 >
                   <div className="relative flex-shrink-0">
                     <input
@@ -294,8 +294,8 @@ export default function SearchBar({
                     <div
                       className={`w-5 h-5 border-2 flex items-center justify-center transition-all duration-300 ${
                         selectedFilters.includes(type)
-                          ? "bg-red-500 border-black dark:border-white"
-                          : "border-black dark:border-white bg-white dark:bg-[#050505]"
+                          ? "bg-red-500 border-neutral-800 dark:border-white"
+                          : "border-neutral-800 dark:border-white bg-white dark:bg-[#050505]"
                       }`}
                     >
                       {selectedFilters.includes(type) && (
@@ -313,7 +313,7 @@ export default function SearchBar({
         </div>
 
         <div
-          className={`absolute top-full right-0 mt-4 w-full max-w-xs bg-white dark:bg-[#050505] border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${
+          className={`absolute top-full right-0 mt-4 w-full max-w-xs bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-50 transition-all duration-300 transform ${
             showSortDropdown
               ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
               : "opacity-0 -translate-y-4 scale-95 pointer-events-none"
@@ -328,8 +328,8 @@ export default function SearchBar({
                 onClick={() => handleSortChange(option.value)}
                 className={`w-full text-left px-4 py-3 border-2 transition-all duration-300 flex items-center justify-between font-space font-bold uppercase tracking-wider text-sm ${
                   selectedSort === option.value
-                    ? "bg-red-500 text-white border-black dark:border-white"
-                    : "border-transparent text-black dark:text-white hover:border-black dark:hover:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black"
+                    ? "bg-red-500 text-white border-neutral-800 dark:border-white"
+                    : "border-transparent text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800"
                 }`}
               >
                 <span>{option.label}</span>

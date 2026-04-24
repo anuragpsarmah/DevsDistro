@@ -28,7 +28,7 @@ export default function FAQ() {
 
   return (
     <section
-      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 relative"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-neutral-800 dark:text-white transition-colors duration-300 relative"
       id="query-log"
       aria-labelledby="faq-heading"
     >
@@ -49,7 +49,9 @@ export default function FAQ() {
             >
               Frequently
               <br />
-              <span className="text-black/40 dark:text-white/40">Asked.</span>
+              <span className="text-neutral-800/40 dark:text-white/40">
+                Asked.
+              </span>
             </h2>
             <p className="font-space text-gray-700 dark:text-gray-300 text-sm transition-colors text-center md:text-left">
               Operational specifications and technical constraints regarding
@@ -57,7 +59,7 @@ export default function FAQ() {
             </p>
           </div>
 
-          <div className="md:w-2/3 border-t-2 border-black/20 dark:border-white/20 transition-colors">
+          <div className="md:w-2/3 border-t-2 border-neutral-800/20 dark:border-white/20 transition-colors">
             {faqs.map((faq, idx) => {
               const isOpen = openIndex === idx;
 
@@ -65,11 +67,11 @@ export default function FAQ() {
                 <motion.div
                   layout={hasMounted}
                   key={faq.question}
-                  className="border-b-2 border-black/20 dark:border-white/20 overflow-hidden group transition-colors"
+                  className="border-b-2 border-neutral-800/20 dark:border-white/20 overflow-hidden group transition-colors"
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? null : idx)}
-                    className="w-full text-left py-8 flex justify-between items-center bg-transparent group-hover:bg-black/5 dark:group-hover:bg-white/5 transition-colors duration-200 px-4"
+                    className="w-full text-left py-8 flex justify-between items-center bg-transparent group-hover:bg-neutral-800/5 dark:group-hover:bg-white/5 transition-colors duration-200 px-4"
                     aria-expanded={isOpen}
                     aria-controls={`faq-panel-${idx}`}
                   >

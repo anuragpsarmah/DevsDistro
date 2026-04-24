@@ -18,7 +18,7 @@ export default function Sidebar({
 }: SidebarProps) {
   return (
     <>
-      <aside className="hidden lg:flex flex-col w-80 h-screen sticky top-0 bg-white dark:bg-[#050505] border-r border-black/20 dark:border-white/20 relative z-10 transition-colors duration-300">
+      <aside className="hidden lg:flex flex-col w-80 h-screen sticky top-0 bg-white dark:bg-[#050505] border-r border-neutral-800/20 dark:border-white/20 relative z-10 transition-colors duration-300">
         <SidebarContent
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -29,10 +29,10 @@ export default function Sidebar({
       <div className="lg:hidden">
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="fixed top-4 left-4 z-20 p-2 bg-white dark:bg-[#050505] border-2 border-black dark:border-white transition-colors duration-300"
+          className="fixed top-4 left-4 z-20 p-2 bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white transition-colors duration-300"
           aria-label="Open sidebar"
         >
-          <Menu className="h-6 w-6 text-black dark:text-white" />
+          <Menu className="h-6 w-6 text-neutral-800 dark:text-white" />
         </button>
 
         <AnimatePresence>
@@ -43,7 +43,7 @@ export default function Sidebar({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 bg-black/80 z-30"
+                className="fixed inset-0 bg-neutral-800/80 z-30"
                 onClick={() => setIsSidebarOpen(false)}
               />
               <motion.aside
@@ -51,11 +51,11 @@ export default function Sidebar({
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ duration: 0.3 }}
-                className="fixed top-0 left-0 bottom-0 w-80 bg-white dark:bg-[#050505] border-r border-black/10 dark:border-white/10 z-40 transition-colors duration-300"
+                className="fixed top-0 left-0 bottom-0 w-80 bg-white dark:bg-[#050505] border-r border-neutral-800/10 dark:border-white/10 z-40 transition-colors duration-300"
               >
                 <button
                   onClick={() => setIsSidebarOpen(false)}
-                  className="absolute top-4 right-4 p-2 text-black dark:text-white"
+                  className="absolute top-4 right-4 p-2 text-neutral-800 dark:text-white"
                   aria-label="Close sidebar"
                 >
                   <X className="h-6 w-6" />
@@ -99,8 +99,8 @@ function SidebarContent({
     <div className="flex flex-col h-full bg-white dark:bg-[#050505] transition-colors duration-300">
       <div className="p-6 2xl:p-8">
         <div className="flex items-center gap-3 mb-6">
-          <LogoIcon className="w-7 h-7 2xl:w-8 2xl:h-8 text-black dark:text-white flex-shrink-0" />
-          <h2 className="font-syne text-xl 2xl:text-2xl font-black uppercase tracking-widest leading-none text-black dark:text-white whitespace-nowrap">
+          <LogoIcon className="w-7 h-7 2xl:w-8 2xl:h-8 text-neutral-800 dark:text-white flex-shrink-0" />
+          <h2 className="font-syne text-xl 2xl:text-2xl font-black uppercase tracking-widest leading-none text-neutral-800 dark:text-white whitespace-nowrap">
             DevsDistro
           </h2>
         </div>
@@ -132,9 +132,9 @@ function SidebarContent({
           ))}
         </ul>
       </nav>
-      <div className="p-6 space-y-4 border-t border-black/10 dark:border-white/10">
+      <div className="p-6 space-y-4 border-t border-neutral-800/10 dark:border-white/10">
         <button
-          className="w-full px-6 py-4 flex items-center justify-between border-2 border-black/20 dark:border-white/20 text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:border-black dark:hover:border-white"
+          className="w-full px-6 py-4 flex items-center justify-between border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:border-neutral-800 dark:hover:border-white"
           onClick={toggleTheme}
         >
           <span>{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
@@ -145,14 +145,14 @@ function SidebarContent({
           )}
         </button>
         <button
-          className="w-full px-6 py-4 flex items-center justify-center gap-3 bg-white text-black dark:bg-[#050505] dark:text-white border-2 border-black dark:border-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black group"
+          className="w-full px-6 py-4 flex items-center justify-center gap-3 bg-white text-neutral-800 dark:bg-[#050505] dark:text-white border-2 border-neutral-800 dark:border-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 group"
           onClick={onSwitchToSeller}
         >
           <Repeat className="h-4 w-4 flex-shrink-0 transition-transform duration-300 group-hover:rotate-180" />
           <span className="whitespace-nowrap">Switch to Seller</span>
         </button>
         <button
-          className="w-full px-6 py-4 bg-red-500 text-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:bg-black dark:hover:bg-white dark:hover:text-black border-2 border-transparent hover:border-black dark:hover:border-white"
+          className="w-full px-6 py-4 bg-red-500 text-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm transition-colors duration-300 hover:bg-neutral-800 dark:hover:bg-white dark:hover:text-neutral-800 border-2 border-transparent hover:border-neutral-800 dark:hover:border-white"
           onClick={logout}
         >
           Log Out
@@ -186,8 +186,8 @@ function SidebarItem({
         className={cn(
           "group relative flex w-full items-center gap-4 px-4 py-3 transition-colors duration-300 focus:outline-none border-2 font-space font-bold uppercase tracking-widest text-xs",
           isActive
-            ? "border-black dark:border-white bg-black text-white dark:bg-white dark:text-black"
-            : "border-transparent text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white"
+            ? "border-neutral-800 dark:border-white bg-neutral-800 text-white dark:bg-white dark:text-neutral-800"
+            : "border-transparent text-gray-600 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white"
         )}
       >
         {isHovered && (
@@ -196,8 +196,8 @@ function SidebarItem({
             className={cn(
               "absolute inset-0 border-2 z-0",
               isActive
-                ? "border-black/50 dark:border-white/50 bg-black/10 dark:bg-white/10"
-                : "border-black/20 dark:border-white/20 bg-black/[0.02] dark:bg-white/[0.02]"
+                ? "border-neutral-800/50 dark:border-white/50 bg-neutral-800/10 dark:bg-white/10"
+                : "border-neutral-800/20 dark:border-white/20 bg-neutral-800/[0.02] dark:bg-white/[0.02]"
             )}
             transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
           />
@@ -211,7 +211,7 @@ function SidebarItem({
             className={cn(
               "relative z-10 flex items-center justify-center px-2 py-0.5 text-[10px] font-bold leading-none transition-transform duration-300",
               isActive
-                ? "bg-white text-black dark:bg-[#050505] dark:text-white translate-x-0"
+                ? "bg-white text-neutral-800 dark:bg-[#050505] dark:text-white translate-x-0"
                 : "bg-red-500 text-white translate-x-8 group-hover:translate-x-0"
             )}
           >

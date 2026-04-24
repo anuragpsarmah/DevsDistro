@@ -24,11 +24,11 @@ export default function Header({
   };
 
   return (
-    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-3rem)] max-w-5xl bg-white/90 dark:bg-[#050505]/90 backdrop-blur-md border border-neutral-300/70 dark:border-neutral-700/70 shadow-[0_12px_24px_-22px_rgba(0,0,0,0.38)] dark:shadow-[0_12px_26px_-24px_rgba(0,0,0,0.72)] transition-colors duration-300 rounded-xl md:rounded-2xl">
+    <header className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-3rem)] max-w-5xl bg-white/90 dark:bg-[#050505]/90 backdrop-blur-md border border-neutral-300/70 dark:border-neutral-700/70 shadow-[0_12px_24px_-22px_rgba(38,38,38,0.38)] dark:shadow-[0_12px_26px_-24px_rgba(38,38,38,0.72)] transition-colors duration-300 rounded-xl md:rounded-2xl">
       <nav className="flex justify-between items-center px-4 md:px-6 py-2 md:py-3">
         <Link
           to="/"
-          className="flex items-center gap-2 text-lg font-syne font-black tracking-widest text-black dark:text-white uppercase transition-colors group"
+          className="flex items-center gap-2 text-lg font-syne font-black tracking-widest text-neutral-800 dark:text-white uppercase transition-colors group"
           aria-label="Go to DevsDistro home page"
         >
           <LogoIcon className="w-6 h-6" />
@@ -46,7 +46,7 @@ export default function Header({
                   key={item}
                   to={isHome ? `#${id}` : `/#${id}`}
                   onClick={() => handleScroll(id)}
-                  className="hover:text-black dark:hover:text-white transition-colors duration-500 ease-premium relative group text-[10px] md:text-[11px] lg:text-xs focus-visible:outline-none focus-visible:text-black dark:focus-visible:text-white"
+                  className="hover:text-neutral-800 dark:hover:text-white transition-colors duration-500 ease-premium relative group text-[10px] md:text-[11px] lg:text-xs focus-visible:outline-none focus-visible:text-neutral-800 dark:focus-visible:text-white"
                 >
                   <span>{item}</span>
                   <span className="absolute -bottom-2 left-0 h-[2px] w-full origin-center scale-x-0 rounded-full bg-red-500 opacity-0 transition-[transform,opacity] duration-500 ease-premium group-hover:scale-x-100 group-hover:opacity-100 group-focus-visible:scale-x-100 group-focus-visible:opacity-100 motion-reduce:transition-none" />
@@ -59,7 +59,7 @@ export default function Header({
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={toggleTheme}
-            className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+            className="text-gray-600 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors"
             aria-label="Toggle theme"
           >
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -75,13 +75,13 @@ export default function Header({
         <div className="md:hidden flex items-center gap-4">
           <button
             onClick={toggleTheme}
-            className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+            className="text-gray-600 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors"
             aria-label="Toggle theme"
           >
             {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
           </button>
           <button
-            className="text-black dark:text-white hover:text-red-500 transition-colors"
+            className="text-neutral-800 dark:text-white hover:text-red-500 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label={
               isMenuOpen ? "Close navigation menu" : "Open navigation menu"

@@ -80,7 +80,7 @@ export default function AuthPage() {
       <main className="relative z-10 flex-grow pt-[calc(6rem+70px)] pb-24 px-4 w-full flex items-center justify-center">
         <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
 
-        <div className="mx-auto w-full max-w-5xl border-2 border-black dark:border-white p-8 md:p-16 relative flex flex-col lg:flex-row gap-16 items-stretch">
+        <div className="mx-auto w-full max-w-5xl border-2 border-neutral-800 dark:border-white p-8 md:p-16 relative flex flex-col lg:flex-row gap-16 items-stretch">
           <div className="flex-1 flex flex-col justify-center">
             <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
               <div className="w-12 h-[2px] bg-red-500"></div>
@@ -98,7 +98,7 @@ export default function AuthPage() {
 
             <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl leading-relaxed mb-10">
               Authenticate using{" "}
-              <span className="text-black dark:text-white font-bold">
+              <span className="text-neutral-800 dark:text-white font-bold">
                 GITHUB OAUTH
               </span>
               .
@@ -126,15 +126,15 @@ export default function AuthPage() {
             </ul>
           </div>
 
-          <div className="flex-1 w-full lg:w-3/5 border-t-2 lg:border-t-0 lg:border-l-2 border-black/10 dark:border-white/10 pt-12 lg:pt-0 lg:pl-16 flex flex-col items-center justify-center">
+          <div className="flex-1 w-full lg:w-3/5 border-t-2 lg:border-t-0 lg:border-l-2 border-neutral-800/10 dark:border-white/10 pt-12 lg:pt-0 lg:pl-16 flex flex-col items-center justify-center">
             <Code2
               size={64}
-              className="text-black dark:text-white mb-10 opacity-30"
+              className="text-neutral-800 dark:text-white mb-10 opacity-30"
               strokeWidth={1}
             />
 
             <button
-              className="w-full px-8 py-5 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-xs md:text-sm transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-black dark:hover:border-white flex items-center justify-center gap-4"
+              className="w-full px-8 py-5 bg-neutral-800 text-white dark:bg-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-xs md:text-sm transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-neutral-800 dark:hover:border-white flex items-center justify-center gap-4"
               onClick={handleLoginClick}
             >
               <span className="flex items-center justify-center gap-3">
@@ -151,7 +151,7 @@ export default function AuthPage() {
               <div className="flex flex-col gap-3 items-center">
                 <Link
                   to="/terms"
-                  className="group flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors uppercase tracking-widest"
+                  className="group flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors uppercase tracking-widest"
                 >
                   <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                     /
@@ -163,7 +163,7 @@ export default function AuthPage() {
                 </Link>
                 <Link
                   to="/privacy"
-                  className="group flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors uppercase tracking-widest"
+                  className="group flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors uppercase tracking-widest"
                 >
                   <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                     /

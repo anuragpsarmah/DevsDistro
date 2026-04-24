@@ -35,8 +35,8 @@ export default function ProfileSelectionPage() {
         className="absolute inset-0 pointer-events-none z-0 opacity-[0.10] dark:hidden"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(0,0,0,1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,1) 1px, transparent 1px)
+            linear-gradient(to right, rgba(38,38,38,1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(38,38,38,1) 1px, transparent 1px)
           `,
           backgroundSize: "4rem 4rem",
           maskImage:
@@ -71,14 +71,14 @@ export default function ProfileSelectionPage() {
           <h1 className="text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-widest leading-none font-syne mb-8 break-words hyphens-auto">
             SELECT <br className="hidden md:block" />
             <span
-              className="text-black dark:text-white"
+              className="text-neutral-800 dark:text-white"
               style={{ WebkitTextStroke: "1px rgba(128,128,128,0.2)" }}
             >
               YOUR
             </span>{" "}
             PROFILE
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-space max-w-2xl md:mx-auto border-l-2 md:border-l-0 md:border-t-2 border-black/10 dark:border-white/10 pl-6 md:pl-0 pt-0 md:pt-8 md:text-center">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-space max-w-2xl md:mx-auto border-l-2 md:border-l-0 md:border-t-2 border-neutral-800/10 dark:border-white/10 pl-6 md:pl-0 pt-0 md:pt-8 md:text-center">
             SPECIFY HOW YOU WANT TO OPERATE. YOU CAN SWITCH BETWEEN PROFILES
             ANYTIME DURING YOUR SESSION.
           </p>

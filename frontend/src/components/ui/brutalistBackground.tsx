@@ -7,8 +7,8 @@ const BrutalistBackground: React.FC = () => {
         className="fixed inset-0 pointer-events-none z-0 opacity-[0.055] dark:hidden"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(0,0,0,1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0,0,0,1) 1px, transparent 1px)
+            linear-gradient(to right, rgba(38,38,38,1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(38,38,38,1) 1px, transparent 1px)
           `,
           backgroundSize: "4rem 4rem",
         }}

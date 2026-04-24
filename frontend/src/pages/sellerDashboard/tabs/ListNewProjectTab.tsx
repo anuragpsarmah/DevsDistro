@@ -162,7 +162,7 @@ export default function ListNewProjectTab({
             </span>
           </div>
           <div>
-            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
+            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-neutral-800 dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
               List New Project
             </h1>
             <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
@@ -178,23 +178,23 @@ export default function ListNewProjectTab({
               installUrl={installationStatus?.data?.installUrl || ""}
             />
           ) : (
-            <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
+            <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
               <div className="relative z-10 h-full overflow-y-auto p-6 lg:p-10 custom-scrollbar">
                 {installationStatusLoading ? (
                   <div className="space-y-8">
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="flex items-center justify-between p-6 border-b-2 border-black/10 dark:border-white/10"
+                        className="flex items-center justify-between p-6 border-b-2 border-neutral-800/10 dark:border-white/10"
                       >
                         <div className="flex items-center space-x-4">
-                          <Skeleton className="w-10 h-10 rounded-none bg-black/10 dark:bg-white/10" />
+                          <Skeleton className="w-10 h-10 rounded-none bg-neutral-800/10 dark:bg-white/10" />
                           <div className="space-y-3">
-                            <Skeleton className="w-40 h-5 bg-black/10 dark:bg-white/10 rounded-none" />
-                            <Skeleton className="w-24 h-3 bg-black/10 dark:bg-white/10 rounded-none" />
+                            <Skeleton className="w-40 h-5 bg-neutral-800/10 dark:bg-white/10 rounded-none" />
+                            <Skeleton className="w-24 h-3 bg-neutral-800/10 dark:bg-white/10 rounded-none" />
                           </div>
                         </div>
-                        <Skeleton className="w-24 h-12 bg-black/10 dark:bg-white/10 rounded-none" />
+                        <Skeleton className="w-24 h-12 bg-neutral-800/10 dark:bg-white/10 rounded-none" />
                       </div>
                     ))}
                   </div>

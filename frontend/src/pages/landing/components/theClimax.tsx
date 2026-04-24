@@ -20,7 +20,7 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
   return (
     <section
       ref={containerRef}
-      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-neutral-800 dark:text-white transition-colors duration-300 overflow-hidden relative"
       id="the-climax"
     >
       <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
@@ -33,23 +33,23 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
         <motion.div
           initial={{ scale: 0.65 }}
           style={{ scale }}
-          className="bg-red-500 p-8 md:p-16 border-4 border-black dark:border-white w-full"
+          className="bg-red-500 p-8 md:p-16 border-4 border-neutral-800 dark:border-white w-full"
         >
           <div className="flex items-center gap-3 mb-6 justify-center">
-            <div className="w-8 h-[2px] bg-black dark:bg-white transition-colors"></div>
-            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-black dark:text-white transition-colors">
+            <div className="w-8 h-[2px] bg-neutral-800 dark:bg-white transition-colors"></div>
+            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-neutral-800 dark:text-white transition-colors">
               The Climax
             </span>
-            <div className="w-8 h-[2px] bg-black dark:bg-white transition-colors"></div>
+            <div className="w-8 h-[2px] bg-neutral-800 dark:bg-white transition-colors"></div>
           </div>
 
-          <h2 className="font-syne text-4xl md:text-7xl font-black uppercase leading-none mb-8 text-black dark:text-black transition-colors">
+          <h2 className="font-syne text-4xl md:text-7xl font-black uppercase leading-none mb-8 text-neutral-800 dark:text-neutral-800 transition-colors">
             Stop giving your
             <br />
             margin to the middleman.
           </h2>
 
-          <p className="font-space text-xl md:text-2xl text-black/80 dark:text-black/80 font-medium mb-10 max-w-2xl mx-auto transition-colors">
+          <p className="font-space text-xl md:text-2xl text-neutral-800/80 dark:text-neutral-800/80 font-medium mb-10 max-w-2xl mx-auto transition-colors">
             Take control of your repository economics today. Open Source is
             great, but securing your financial upside is better.
           </p>

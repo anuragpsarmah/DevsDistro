@@ -128,7 +128,7 @@
    ======================================== */
 :root {
   --app-scrollbar-size: 4px;
-  --app-scrollbar-thumb: #000;
+  --app-scrollbar-thumb: #262626;
 }
 
 .dark {

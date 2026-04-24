@@ -62,13 +62,13 @@ export default function PrivacyPolicy() {
           </span>
         </div>
 
-        <h1 className="font-syne text-5xl md:text-7xl font-black leading-none text-black dark:text-white uppercase tracking-widest mb-16 break-words hyphens-auto">
+        <h1 className="font-syne text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-16 break-words hyphens-auto">
           Privacy Policy
         </h1>
 
-        <div className="space-y-16 border-l-2 border-black/10 dark:border-white/10 pl-6 md:pl-10">
+        <div className="space-y-16 border-l-2 border-neutral-800/10 dark:border-white/10 pl-6 md:pl-10">
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               01. Data Collection
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
@@ -79,7 +79,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span>
-                  <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     Personal Information -
                   </strong>{" "}
                   Name, email address, and profile details provided during the
@@ -89,7 +89,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span>
-                  <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     Repository Metadata -
                   </strong>{" "}
                   We fetch listed repository metadata (names, descriptions,
@@ -100,7 +100,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span>
-                  <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     Technical Data -
                   </strong>{" "}
                   Web3 wallet addresses used for Solana payouts and standard
@@ -111,7 +111,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               02. App Security & Repository Storage
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
@@ -124,7 +124,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span>
-                  <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     GitHub App Integration -
                   </strong>{" "}
                   You authorize the DevsDistro GitHub App exclusively for the
@@ -137,7 +137,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span>
-                  <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     Listing Archival -
                   </strong>{" "}
                   When you list a project, we fetch your repository and
@@ -148,7 +148,7 @@ export default function PrivacyPolicy() {
               <li className="flex gap-4">
                 <span className="text-red-500 font-bold opacity-50">/</span>
                 <span>
-                  <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+                  <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                     S3 Delivery -
                   </strong>{" "}
                   Repository archives are stored in tightly restricted AWS S3
@@ -160,7 +160,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               03. Use of Information
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
@@ -182,15 +182,15 @@ export default function PrivacyPolicy() {
                 updates.
               </li>
             </ul>
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 md:p-8">
-              <p className="text-black dark:text-white font-bold tracking-wide uppercase text-center font-syne">
+            <div className="bg-neutral-800/5 dark:bg-white/5 border border-neutral-800/10 dark:border-white/10 p-6 md:p-8">
+              <p className="text-neutral-800 dark:text-white font-bold tracking-wide uppercase text-center font-syne">
                 We do not interact with data brokers or sell your personal data.
               </p>
             </div>
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               04. User Rights
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">

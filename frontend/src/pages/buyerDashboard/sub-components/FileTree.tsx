@@ -20,11 +20,11 @@ function FileTreeNode({ node, depth }: FileTreeNodeProps) {
   if (node.type === "file") {
     return (
       <div
-        className="flex items-center gap-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        className="flex items-center gap-2 py-1 hover:bg-neutral-800/5 dark:hover:bg-white/5 transition-colors"
         style={{ paddingLeft: `${paddingLeft + 6}px` }}
       >
         <FileText className="w-4 h-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-        <span className="font-mono text-sm text-black dark:text-white truncate">
+        <span className="font-mono text-sm text-neutral-800 dark:text-white truncate">
           {node.name}
         </span>
       </div>
@@ -35,7 +35,7 @@ function FileTreeNode({ node, depth }: FileTreeNodeProps) {
     <div>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="w-full flex items-center gap-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left"
+        className="w-full flex items-center gap-2 py-1 hover:bg-neutral-800/5 dark:hover:bg-white/5 transition-colors text-left"
         style={{ paddingLeft: `${paddingLeft + 6}px` }}
       >
         {isOpen ? (
@@ -46,16 +46,16 @@ function FileTreeNode({ node, depth }: FileTreeNodeProps) {
         {isOpen ? (
           <FolderOpen className="w-4 h-4 flex-shrink-0 text-red-500" />
         ) : (
-          <Folder className="w-4 h-4 flex-shrink-0 text-black dark:text-white" />
+          <Folder className="w-4 h-4 flex-shrink-0 text-neutral-800 dark:text-white" />
         )}
-        <span className="font-mono text-sm font-bold text-black dark:text-white truncate">
+        <span className="font-mono text-sm font-bold text-neutral-800 dark:text-white truncate">
           {node.name}
         </span>
       </button>
 
       {isOpen && node.children && node.children.length > 0 && (
         <div
-          className="border-l-2 border-black/20 dark:border-white/20"
+          className="border-l-2 border-neutral-800/20 dark:border-white/20"
           style={{ marginLeft: `${paddingLeft + 14}px` }}
         >
           {node.children.map((child, idx) => (

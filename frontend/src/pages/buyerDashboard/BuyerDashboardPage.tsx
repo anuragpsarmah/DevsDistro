@@ -42,7 +42,7 @@ export default function BuyerDashboardPage({
   }, [searchParams, setSearchParams]);
 
   return (
-    <div className="h-screen flex transition-colors duration-300 relative overflow-hidden bg-white text-black dark:text-white dark:bg-[#050505]">
+    <div className="h-screen flex transition-colors duration-300 relative overflow-hidden bg-white text-neutral-800 dark:text-white dark:bg-[#050505]">
       <SEO
         title="Buyer Marketplace"
         description="Browse DevsDistro marketplace listings, orders, and purchase history."

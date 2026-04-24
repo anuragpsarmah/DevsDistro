@@ -15,7 +15,7 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
   <div className="relative">
     <Label
       htmlFor="city"
-      className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+      className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
     >
       City
     </Label>
@@ -31,10 +31,10 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
         setTimeout(() => setShowSuggestions(false), 200);
       }}
       placeholder="ENTER YOUR CITY"
-      className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto placeholder:text-black/30 placeholder:dark:text-white/30"
+      className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto placeholder:text-neutral-800/30 placeholder:dark:text-white/30"
     />
     {showSuggestions && cityInput && (
-      <div className="absolute w-full z-10 mt-2 bg-white dark:bg-[#050505] border-2 border-black dark:border-white text-black dark:text-white rounded-none shadow-none max-h-60 overflow-auto font-space">
+      <div className="absolute w-full z-10 mt-2 bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white rounded-none shadow-none max-h-60 overflow-auto font-space">
         {isLoadingCities ? (
           <div className="px-5 py-3 text-sm text-gray-500 font-bold uppercase tracking-widest">
             Loading cities...
@@ -51,7 +51,7 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
           cities.map((city) => (
             <div
               key={city}
-              className="px-5 py-3 text-sm font-bold uppercase tracking-wider text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black cursor-pointer transition-colors duration-200"
+              className="px-5 py-3 text-sm font-bold uppercase tracking-wider text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 cursor-pointer transition-colors duration-200"
               onMouseDown={(e) => {
                 e.preventDefault();
                 onCitySelect(city);

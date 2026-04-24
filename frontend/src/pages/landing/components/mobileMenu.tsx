@@ -56,7 +56,7 @@ export default function MobileMenu({
                     key={item}
                     to={isHome ? `#${id}` : `/#${id}`}
                     onClick={() => handleScroll(id)}
-                    className="hover:text-black dark:hover:text-white hover:translate-x-2 transition-all duration-300"
+                    className="hover:text-neutral-800 dark:hover:text-white hover:translate-x-2 transition-all duration-300"
                   >
                     {item}
                   </Link>
@@ -64,7 +64,7 @@ export default function MobileMenu({
               })}
             </div>
 
-            <div className="mt-8 pt-8 border-t border-black/10 dark:border-white/20">
+            <div className="mt-8 pt-8 border-t border-neutral-800/10 dark:border-white/20">
               <button
                 className={`${landingPrimaryButtonChrome} w-full justify-center px-6 py-6 text-xl`}
                 onClick={() => {
@@ -76,10 +76,10 @@ export default function MobileMenu({
               </button>
             </div>
 
-            <div className="md:hidden mt-8 flex justify-center border-t border-black/10 dark:border-white/20 pt-8">
+            <div className="md:hidden mt-8 flex justify-center border-t border-neutral-800/10 dark:border-white/20 pt-8">
               <button
                 onClick={toggleTheme}
-                className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors border border-black/10 dark:border-white/20 rounded-full px-6 py-3"
+                className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors border border-neutral-800/10 dark:border-white/20 rounded-full px-6 py-3"
                 aria-label="Toggle theme"
               >
                 {isDarkMode ? (

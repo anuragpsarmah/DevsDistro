@@ -83,7 +83,7 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
           </AlertDialogDescription>
 
           <div className="space-y-3">
-            <label className="font-space text-[10px] md:text-xs font-bold uppercase tracking-widest text-black dark:text-white block group-focus-within:text-red-500 transition-colors duration-300">
+            <label className="font-space text-[10px] md:text-xs font-bold uppercase tracking-widest text-neutral-800 dark:text-white block group-focus-within:text-red-500 transition-colors duration-300">
               Please type{" "}
               <span className="text-red-500 select-all">I CONFIRM</span> to
               verify.
@@ -92,13 +92,13 @@ export const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
               value={confirmationText}
               onChange={(e) => setConfirmationText(e.target.value)}
               placeholder="I CONFIRM"
-              className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto"
+              className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto"
             />
           </div>
         </div>
 
         <AlertDialogFooter className="relative z-10 flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-          <AlertDialogCancel className="bg-transparent border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black w-full sm:w-auto transition-all duration-300 rounded-none font-space uppercase tracking-widest font-bold text-xs py-3 px-6 h-auto m-0">
+          <AlertDialogCancel className="bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 w-full sm:w-auto transition-all duration-300 rounded-none font-space uppercase tracking-widest font-bold text-xs py-3 px-6 h-auto m-0">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction

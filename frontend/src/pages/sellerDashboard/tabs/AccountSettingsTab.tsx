@@ -102,7 +102,7 @@ export default function AccountSettingsTab({
             </span>
           </div>
           <div className="text-left w-full max-w-4xl">
-            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
+            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-neutral-800 dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
               Account Settings
             </h1>
             <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
@@ -113,7 +113,7 @@ export default function AccountSettingsTab({
 
         <div className="flex-1 min-h-0 w-full relative">
           <div className="relative h-full bg-white dark:bg-[#050505] transition-colors duration-300 flex flex-col">
-            <div className="relative z-10 h-full overflow-y-auto p-4 lg:p-8 xl:p-12 border-2 border-black dark:border-white custom-scrollbar">
+            <div className="relative z-10 h-full overflow-y-auto p-4 lg:p-8 xl:p-12 border-2 border-neutral-800 dark:border-white custom-scrollbar">
               {isInitialLoading ? (
                 <ProfileHeaderSkeleton />
               ) : (
@@ -147,10 +147,10 @@ export default function AccountSettingsTab({
 
               <div className="mt-16 flex justify-end">
                 {isInitialLoading ? (
-                  <Skeleton className="w-40 h-14 rounded-none bg-black/10 dark:bg-white/10" />
+                  <Skeleton className="w-40 h-14 rounded-none bg-neutral-800/10 dark:bg-white/10" />
                 ) : (
                   <Button
-                    className="px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-none border-2 border-transparent hover:border-black dark:hover:border-white hover:bg-white dark:hover:bg-black hover:text-black dark:hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-8 py-4 bg-neutral-800 text-white dark:bg-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-none border-2 border-transparent hover:border-neutral-800 dark:hover:border-white hover:bg-white dark:hover:bg-neutral-800 hover:text-neutral-800 dark:hover:text-white transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     onClick={handleProfileUpdate}
                     disabled={isPending}
                   >

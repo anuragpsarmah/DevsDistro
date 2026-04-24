@@ -19,7 +19,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white dark:bg-[#050505] text-black dark:text-white py-20 px-6 md:px-12 font-space transition-colors duration-300">
+    <footer className="bg-white dark:bg-[#050505] text-neutral-800 dark:text-white py-20 px-6 md:px-12 font-space transition-colors duration-300">
       <div className="max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-16">
           <div className="md:col-span-2">
@@ -37,7 +37,7 @@ export default function Footer() {
                 href="https://github.com/anuragpsarmah/DevsDistro"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 dark:hover:text-red-500 transition-all flex items-center justify-center"
+                className="p-3 border border-neutral-800/20 dark:border-white/20 hover:border-neutral-800 dark:hover:border-white hover:text-red-500 dark:hover:text-red-500 transition-all flex items-center justify-center"
                 aria-label="Open DevsDistro GitHub repository"
               >
                 <Github size={20} />
@@ -46,7 +46,7 @@ export default function Footer() {
                 href="https://x.com/anuragpsarmah"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 dark:hover:text-red-500 transition-all flex items-center justify-center"
+                className="p-3 border border-neutral-800/20 dark:border-white/20 hover:border-neutral-800 dark:hover:border-white hover:text-red-500 dark:hover:text-red-500 transition-all flex items-center justify-center"
                 aria-label="Open DevsDistro creator profile on X"
               >
                 <XIcon />
@@ -127,9 +127,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest transition-colors">
+        <div className="pt-8 border-t border-neutral-800/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest transition-colors">
           <p>© {new Date().getFullYear()} DevsDistro. All rights reserved.</p>
-          <div className="flex gap-8 border border-black/10 dark:border-white/10 px-4 py-2 transition-colors">
+          <div className="flex gap-8 border border-neutral-800/10 dark:border-white/10 px-4 py-2 transition-colors">
             <span>
               Status:{" "}
               <span className="text-green-600 dark:text-green-500">

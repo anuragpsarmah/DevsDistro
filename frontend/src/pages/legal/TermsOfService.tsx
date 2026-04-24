@@ -62,13 +62,13 @@ export default function TermsOfService() {
           </span>
         </div>
 
-        <h1 className="font-syne text-5xl md:text-7xl font-black leading-none text-black dark:text-white uppercase tracking-widest mb-16 break-words hyphens-auto">
+        <h1 className="font-syne text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-16 break-words hyphens-auto">
           Terms of Service
         </h1>
 
-        <div className="space-y-16 border-l-2 border-black/10 dark:border-white/10 pl-6 md:pl-10">
+        <div className="space-y-16 border-l-2 border-neutral-800/10 dark:border-white/10 pl-6 md:pl-10">
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               01. Acceptance of Terms
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
@@ -80,7 +80,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               02. Account Security & GitHub Access
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-8">
@@ -95,14 +95,14 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               03. User Obligations & Property Rights
             </h2>
             <ul className="space-y-6 text-gray-600 dark:text-gray-400 text-lg">
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
                 <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
                   <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-black dark:text-white">
+                  <strong className="text-neutral-800 dark:text-white">
                     Ownership Assertion:
                   </strong>
                 </div>
@@ -116,7 +116,7 @@ export default function TermsOfService() {
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
                 <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
                   <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-black dark:text-white">
+                  <strong className="text-neutral-800 dark:text-white">
                     Prohibited Content:
                   </strong>
                 </div>
@@ -129,7 +129,7 @@ export default function TermsOfService() {
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
                 <div className="flex gap-4 md:w-56 lg:w-64 shrink-0">
                   <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-black dark:text-white">
+                  <strong className="text-neutral-800 dark:text-white">
                     Accountability:
                   </strong>
                 </div>
@@ -142,11 +142,11 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               04. Transactions & Delivery
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
-              <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+              <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                 Solana Settlement /
               </strong>
               You define the valuation of your repository in USD fiat. At the
@@ -158,7 +158,7 @@ export default function TermsOfService() {
               settlement.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">
-              <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+              <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                 Automated Delivery /
               </strong>
               When you list a repository, we immediately pull the latest commit
@@ -171,7 +171,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               05. Limitation of Liability
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
@@ -184,7 +184,7 @@ export default function TermsOfService() {
               financial loss.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
-              <strong className="text-black dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
+              <strong className="text-neutral-800 dark:text-white uppercase text-sm tracking-widest font-syne mr-2">
                 Platform Errors & Software Defects /
               </strong>
               DevsDistro makes reasonable efforts to maintain the integrity,
@@ -211,7 +211,7 @@ export default function TermsOfService() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               06. Changes to Terms
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg pb-12">

@@ -22,24 +22,24 @@ export const WalletConnect = ({
   return (
     <div className="flex flex-col md:flex-row gap-12 lg:gap-16">
       <div className="flex flex-col flex-1 space-y-8">
-        <div className="flex items-center space-x-4 pb-4 border-b-2 border-black dark:border-white transition-colors duration-300">
-          <div className="p-2 border-2 border-black dark:border-white bg-black dark:bg-white transition-colors duration-300">
-            <Wallet className="h-6 w-6 text-white dark:text-black" />
+        <div className="flex items-center space-x-4 pb-4 border-b-2 border-neutral-800 dark:border-white transition-colors duration-300">
+          <div className="p-2 border-2 border-neutral-800 dark:border-white bg-neutral-800 dark:bg-white transition-colors duration-300">
+            <Wallet className="h-6 w-6 text-white dark:text-neutral-800" />
           </div>
-          <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-black dark:text-white transition-colors duration-300">
+          <h2 className="text-2xl lg:text-3xl font-syne uppercase tracking-widest font-black text-neutral-800 dark:text-white transition-colors duration-300">
             Solana Wallet
           </h2>
         </div>
 
         <div className="flex flex-col items-center justify-center flex-grow py-8 space-y-8">
           <div className="relative group">
-            <div className="p-8 border-2 border-black dark:border-white bg-white dark:bg-[#050505] transition-all duration-300 group-hover:bg-black dark:group-hover:bg-white group-hover:-translate-y-1 group-hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              <SolanaLogo className="h-16 w-16 text-black dark:text-white group-hover:text-white dark:group-hover:text-black transition-colors" />
+            <div className="p-8 border-2 border-neutral-800 dark:border-white bg-white dark:bg-[#050505] transition-all duration-300 group-hover:bg-neutral-800 dark:group-hover:bg-white group-hover:-translate-y-1 group-hover:shadow-[4px_4px_0px_0px_rgba(38,38,38,1)] dark:group-hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <SolanaLogo className="h-16 w-16 text-neutral-800 dark:text-white group-hover:text-white dark:group-hover:text-neutral-800 transition-colors" />
             </div>
           </div>
 
           <div className="text-center space-y-4 max-w-sm">
-            <h3 className="text-xl font-space font-bold uppercase tracking-widest text-black dark:text-white transition-colors duration-300">
+            <h3 className="text-xl font-space font-bold uppercase tracking-widest text-neutral-800 dark:text-white transition-colors duration-300">
               Connect Your Wallet
             </h3>
             <p className="font-space text-sm text-gray-600 dark:text-gray-400 leading-relaxed transition-colors duration-300">
@@ -50,12 +50,12 @@ export const WalletConnect = ({
         </div>
       </div>
 
-      <div className="hidden md:block w-[2px] bg-black dark:bg-white transition-colors duration-300" />
+      <div className="hidden md:block w-[2px] bg-neutral-800 dark:bg-white transition-colors duration-300" />
 
       <div className="flex-1 flex flex-col justify-center">
         <div className="flex items-center space-x-3 mb-8">
           <div className="w-8 h-[2px] bg-red-500"></div>
-          <h3 className="text-lg font-space font-bold uppercase tracking-widest text-black dark:text-white transition-colors duration-300">
+          <h3 className="text-lg font-space font-bold uppercase tracking-widest text-neutral-800 dark:text-white transition-colors duration-300">
             Select a Wallet
           </h3>
         </div>
@@ -71,7 +71,7 @@ export const WalletConnect = ({
                   <Button
                     key={walletAdapter.adapter.name}
                     variant="outline"
-                    className="w-full justify-between h-16 px-6 bg-transparent border-2 border-black dark:border-white text-black dark:text-white rounded-none transition-all duration-300 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black group font-space uppercase tracking-wider font-bold text-sm"
+                    className="w-full justify-between h-16 px-6 bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white rounded-none transition-all duration-300 hover:bg-neutral-800 dark:hover:bg-white hover:text-white dark:hover:text-neutral-800 group font-space uppercase tracking-wider font-bold text-sm"
                     onClick={() => onSelectWallet(walletAdapter)}
                     disabled={isProcessing}
                   >
@@ -104,7 +104,7 @@ export const WalletConnect = ({
                   <Button
                     key={walletAdapter.adapter.name}
                     variant="outline"
-                    className="w-full justify-between h-14 px-6 bg-transparent border-2 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded-none transition-all duration-300 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white group font-space uppercase tracking-wider font-bold text-xs"
+                    className="w-full justify-between h-14 px-6 bg-transparent border-2 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 rounded-none transition-all duration-300 hover:border-neutral-800 dark:hover:border-white hover:text-neutral-800 dark:hover:text-white group font-space uppercase tracking-wider font-bold text-xs"
                     onClick={() =>
                       handleWalletRedirect(walletAdapter.adapter.name)
                     }

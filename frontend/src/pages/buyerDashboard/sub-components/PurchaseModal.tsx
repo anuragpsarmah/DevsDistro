@@ -113,14 +113,14 @@ export default function PurchaseModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-neutral-800/70 backdrop-blur-sm"
         onClick={!isActive ? onClose : undefined}
       />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-lg border-2 border-black dark:border-white bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
+      <div className="relative z-10 w-full max-w-lg border-2 border-neutral-800 dark:border-white bg-white dark:bg-[#050505] shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b-2 border-black dark:border-white">
+        <div className="flex items-center justify-between p-6 border-b-2 border-neutral-800 dark:border-white">
           <div>
             <div className="flex items-center gap-3 mb-1">
               <div className="w-8 h-[2px] bg-red-500"></div>
@@ -128,14 +128,14 @@ export default function PurchaseModal({
                 Execute Purchase
               </span>
             </div>
-            <h2 className="font-syne font-black uppercase tracking-widest text-black dark:text-white text-lg leading-none truncate max-w-xs">
+            <h2 className="font-syne font-black uppercase tracking-widest text-neutral-800 dark:text-white text-lg leading-none truncate max-w-xs">
               {projectTitle}
             </h2>
           </div>
           {!isActive && (
             <button
               onClick={onClose}
-              className="w-10 h-10 border-2 border-black dark:border-white flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white text-black dark:text-white transition-colors"
+              className="w-10 h-10 border-2 border-neutral-800 dark:border-white flex items-center justify-center hover:bg-red-500 hover:border-red-500 hover:text-white text-neutral-800 dark:text-white transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -149,7 +149,7 @@ export default function PurchaseModal({
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
             <div>
-              <p className="font-syne font-black uppercase tracking-widest text-black dark:text-white text-2xl mb-2">
+              <p className="font-syne font-black uppercase tracking-widest text-neutral-800 dark:text-white text-2xl mb-2">
                 Purchase Confirmed
               </p>
               <p className="font-space text-sm text-gray-500 dark:text-gray-400 uppercase tracking-widest">
@@ -158,7 +158,7 @@ export default function PurchaseModal({
             </div>
             <button
               onClick={onClose}
-              className="w-full px-8 py-4 bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-sm border-2 border-black dark:border-white hover:bg-red-500 hover:border-red-500 transition-colors"
+              className="w-full px-8 py-4 bg-neutral-800 dark:bg-white text-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-sm border-2 border-neutral-800 dark:border-white hover:bg-red-500 hover:border-red-500 transition-colors"
             >
               Close
             </button>
@@ -168,10 +168,10 @@ export default function PurchaseModal({
         {/* Normal flow */}
         {flowState !== "SUCCESS" && (
           <div className="p-6 space-y-6">
-            <div className="border-2 border-black dark:border-white p-5">
+            <div className="border-2 border-neutral-800 dark:border-white p-5">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-black dark:text-white">
+                  <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-neutral-800 dark:text-white">
                     Settlement Currency
                   </span>
                   <p className="font-space text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -187,7 +187,7 @@ export default function PurchaseModal({
                     className={`px-4 py-2 border-2 font-space font-bold uppercase tracking-widest text-xs transition-colors ${
                       selectedPaymentCurrency === "USDC"
                         ? "border-red-500 bg-red-500 text-white"
-                        : "border-black dark:border-white text-black dark:text-white"
+                        : "border-neutral-800 dark:border-white text-neutral-800 dark:text-white"
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     USDC
@@ -200,7 +200,7 @@ export default function PurchaseModal({
                       className={`px-4 py-2 border-2 font-space font-bold uppercase tracking-widest text-xs transition-colors ${
                         selectedPaymentCurrency === "SOL"
                           ? "border-red-500 bg-red-500 text-white"
-                          : "border-black dark:border-white text-black dark:text-white"
+                          : "border-neutral-800 dark:border-white text-neutral-800 dark:text-white"
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       SOL
@@ -212,13 +212,13 @@ export default function PurchaseModal({
 
             {/* Price Summary */}
             {intent && flowState !== "INITIATING" && (
-              <div className="border-2 border-black dark:border-white p-5 bg-gray-50 dark:bg-[#0a0a0a]">
+              <div className="border-2 border-neutral-800 dark:border-white p-5 bg-gray-50 dark:bg-[#0a0a0a]">
                 <div className="flex items-end justify-between mb-3">
                   <span className="font-space font-bold text-xs text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em]">
                     Total Cost
                   </span>
                   <div className="text-right">
-                    <p className="font-syne font-black text-black dark:text-white text-3xl leading-none">
+                    <p className="font-syne font-black text-neutral-800 dark:text-white text-3xl leading-none">
                       {settlementCurrency === "USDC"
                         ? settlementValue.toFixed(2)
                         : settlementValue.toFixed(6)}{" "}
@@ -230,7 +230,7 @@ export default function PurchaseModal({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs font-space text-gray-400 dark:text-gray-600 border-t border-black/10 dark:border-white/10 pt-3 mt-3">
+                <div className="flex items-center justify-between text-xs font-space text-gray-400 dark:text-gray-600 border-t border-neutral-800/10 dark:border-white/10 pt-3 mt-3">
                   <div className="flex flex-col gap-1">
                     {settlementCurrency === "SOL" ? (
                       <>
@@ -281,7 +281,7 @@ export default function PurchaseModal({
                   </div>
                 </div>
 
-                <div className="text-xs font-space text-gray-400 dark:text-gray-600 mt-2 space-y-1 border-t border-black/10 dark:border-white/10 pt-3">
+                <div className="text-xs font-space text-gray-400 dark:text-gray-600 mt-2 space-y-1 border-t border-neutral-800/10 dark:border-white/10 pt-3">
                   <div className="flex justify-between">
                     <span className="uppercase tracking-widest">
                       Seller receives
@@ -310,19 +310,19 @@ export default function PurchaseModal({
 
             {/* Loading state — no intent yet */}
             {flowState === "INITIATING" && (
-              <div className="border-2 border-black dark:border-white p-8 flex items-center justify-center gap-3 bg-gray-50 dark:bg-[#0a0a0a]">
+              <div className="border-2 border-neutral-800 dark:border-white p-8 flex items-center justify-center gap-3 bg-gray-50 dark:bg-[#0a0a0a]">
                 <Loader2 className="w-5 h-5 animate-spin text-red-500" />
-                <span className="font-space font-bold uppercase tracking-widest text-xs text-black dark:text-white">
+                <span className="font-space font-bold uppercase tracking-widest text-xs text-neutral-800 dark:text-white">
                   Preparing payment route...
                 </span>
               </div>
             )}
 
             {/* Wallet Section */}
-            <div className="border-2 border-black dark:border-white p-5">
+            <div className="border-2 border-neutral-800 dark:border-white p-5">
               <div className="flex items-center gap-3 mb-4">
                 <Wallet className="w-4 h-4 text-red-500" />
-                <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-black dark:text-white">
+                <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-neutral-800 dark:text-white">
                   Buyer Wallet
                 </span>
               </div>
@@ -330,7 +330,7 @@ export default function PurchaseModal({
               {isWalletConnected && walletPublicKey ? (
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-green-500 flex-shrink-0"></div>
-                  <span className="font-space font-bold text-black dark:text-white text-sm uppercase tracking-widest">
+                  <span className="font-space font-bold text-neutral-800 dark:text-white text-sm uppercase tracking-widest">
                     {truncateAddress(walletPublicKey)}
                   </span>
                   <span className="font-space text-xs text-green-500 uppercase tracking-widest font-bold ml-auto">
@@ -364,7 +364,7 @@ export default function PurchaseModal({
 
             {/* Progress Steps (shown during active transaction) */}
             {isActive && (
-              <div className="border-2 border-black dark:border-white p-5 space-y-3">
+              <div className="border-2 border-neutral-800 dark:border-white p-5 space-y-3">
                 {Object.entries(STEP_LABELS).map(([state, label]) => {
                   const stateKeys = Object.keys(STEP_LABELS);
                   const currentIdx = stateKeys.indexOf(flowState);
@@ -380,7 +380,7 @@ export default function PurchaseModal({
                             ? "bg-green-500 border-green-500"
                             : isCurrentStep
                               ? "border-red-500"
-                              : "border-black/20 dark:border-white/20"
+                              : "border-neutral-800/20 dark:border-white/20"
                         }`}
                       >
                         {isDone && (
@@ -395,8 +395,8 @@ export default function PurchaseModal({
                           isDone
                             ? "text-green-500"
                             : isCurrentStep
-                              ? "text-black dark:text-white"
-                              : "text-black/30 dark:text-white/30"
+                              ? "text-neutral-800 dark:text-white"
+                              : "text-neutral-800/30 dark:text-white/30"
                         }`}
                       >
                         {label}
@@ -423,7 +423,7 @@ export default function PurchaseModal({
                 <button
                   onClick={onConfirm}
                   disabled={!canConfirm || isActive}
-                  className="w-full relative group px-8 py-5 border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-sm disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden transition-colors"
+                  className="w-full relative group px-8 py-5 border-2 border-neutral-800 dark:border-white bg-neutral-800 dark:bg-white text-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-sm disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden transition-colors"
                 >
                   {isActive ? (
                     <span className="flex items-center justify-center gap-3">
@@ -441,7 +441,7 @@ export default function PurchaseModal({
                 // Do NOT re-initiate, as that would prompt a second payment.
                 <button
                   onClick={onRetryConfirm}
-                  className="w-full px-8 py-5 border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-sm hover:bg-red-500 hover:border-red-500 transition-colors"
+                  className="w-full px-8 py-5 border-2 border-neutral-800 dark:border-white bg-neutral-800 dark:bg-white text-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-sm hover:bg-red-500 hover:border-red-500 transition-colors"
                 >
                   Retry Confirmation
                 </button>
@@ -449,7 +449,7 @@ export default function PurchaseModal({
               {flowState === "FAILED" && !failedAfterOnChain && (
                 <button
                   onClick={onRefreshQuote}
-                  className="w-full px-8 py-5 border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-space font-bold uppercase tracking-widest text-sm hover:bg-red-500 hover:border-red-500 transition-colors"
+                  className="w-full px-8 py-5 border-2 border-neutral-800 dark:border-white bg-neutral-800 dark:bg-white text-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-sm hover:bg-red-500 hover:border-red-500 transition-colors"
                 >
                   Try Again
                 </button>
@@ -458,7 +458,7 @@ export default function PurchaseModal({
               {!isActive && (
                 <button
                   onClick={onClose}
-                  className="w-full px-8 py-4 border-2 border-black/30 dark:border-white/30 text-black/50 dark:text-white/50 font-space font-bold uppercase tracking-widest text-sm hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors"
+                  className="w-full px-8 py-4 border-2 border-neutral-800/30 dark:border-white/30 text-neutral-800/50 dark:text-white/50 font-space font-bold uppercase tracking-widest text-sm hover:border-neutral-800 dark:hover:border-white hover:text-neutral-800 dark:hover:text-white transition-colors"
                 >
                   Cancel
                 </button>

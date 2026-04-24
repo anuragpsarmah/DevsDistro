@@ -47,10 +47,10 @@ export default function AccountInformation({
 
   return (
     <>
-      <div className="w-full h-[2px] bg-black/10 dark:bg-white/10 my-12" />
+      <div className="w-full h-[2px] bg-neutral-800/10 dark:bg-white/10 my-12" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
         <div className="flex flex-col h-full">
-          <div className="p-6 lg:p-10 border-2 border-black/10 dark:border-white/10 h-full flex flex-col space-y-8">
+          <div className="p-6 lg:p-10 border-2 border-neutral-800/10 dark:border-white/10 h-full flex flex-col space-y-8">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-[2px] bg-red-500"></div>
               <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
@@ -72,7 +72,7 @@ export default function AccountInformation({
                 <div>
                   <Label
                     htmlFor="github-username"
-                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
                   >
                     GitHub Username
                   </Label>
@@ -80,14 +80,14 @@ export default function AccountInformation({
                     id="github-username"
                     value={activeUserData.username}
                     readOnly
-                    className="bg-black/5 dark:bg-white/5 border-2 border-black/20 dark:border-white/20 text-black dark:text-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto cursor-not-allowed"
+                    className="bg-neutral-800/5 dark:bg-white/5 border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto cursor-not-allowed"
                   />
                 </div>
 
                 <div>
                   <Label
                     htmlFor="name"
-                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
                   >
                     Name
                   </Label>
@@ -98,14 +98,14 @@ export default function AccountInformation({
                       "Name not available. Update your GitHub profile."
                     }
                     readOnly
-                    className="bg-black/5 dark:bg-white/5 border-2 border-black/20 dark:border-white/20 text-black dark:text-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto cursor-not-allowed"
+                    className="bg-neutral-800/5 dark:bg-white/5 border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto cursor-not-allowed"
                   />
                 </div>
 
                 <div>
                   <Label
                     htmlFor="job-role"
-                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
                   >
                     Job Role
                   </Label>
@@ -113,15 +113,15 @@ export default function AccountInformation({
                     value={selectedJobRole}
                     onValueChange={setSelectedJobRole}
                   >
-                    <SelectTrigger className="w-full bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white transition-colors duration-300 focus:ring-0 focus:border-red-500 rounded-none h-auto p-4 font-space">
+                    <SelectTrigger className="w-full bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white transition-colors duration-300 focus:ring-0 focus:border-red-500 rounded-none h-auto p-4 font-space">
                       <SelectValue placeholder="Select a job role" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-[#050505] border-2 border-black dark:border-white rounded-none">
+                    <SelectContent className="bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white rounded-none">
                       {JOB_ROLES.map((role) => (
                         <SelectItem
                           key={role}
                           value={role}
-                          className="focus:bg-black/5 dark:focus:bg-white/10 cursor-pointer font-space text-sm text-black dark:text-white rounded-none"
+                          className="focus:bg-neutral-800/5 dark:focus:bg-white/10 cursor-pointer font-space text-sm text-neutral-800 dark:text-white rounded-none"
                         >
                           {role}
                         </SelectItem>
@@ -144,7 +144,7 @@ export default function AccountInformation({
                 <div>
                   <Label
                     htmlFor="website-url"
-                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
                   >
                     Website / Portfolio URL
                   </Label>
@@ -158,14 +158,14 @@ export default function AccountInformation({
                         website_url: e.target.value,
                       }))
                     }
-                    className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto"
+                    className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto"
                   />
                 </div>
 
                 <div>
                   <Label
                     htmlFor="x-username"
-                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
                   >
                     X (Twitter) Username
                   </Label>
@@ -179,14 +179,14 @@ export default function AccountInformation({
                         x_username: e.target.value,
                       }))
                     }
-                    className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto"
+                    className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-auto"
                   />
                 </div>
 
                 <div>
                   <Label
                     htmlFor="short-bio"
-                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-black/50 dark:text-white/50 mb-3 block"
+                    className="font-space font-bold uppercase tracking-[0.2em] text-[10px] md:text-xs text-neutral-800/50 dark:text-white/50 mb-3 block"
                   >
                     Short Bio
                   </Label>
@@ -202,7 +202,7 @@ export default function AccountInformation({
                         }));
                       }
                     }}
-                    className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white hover:border-black dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-32 resize-none placeholder:text-black/30 placeholder:dark:text-white/30"
+                    className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white hover:border-neutral-800 dark:hover:border-white focus:border-red-500 focus:ring-0 rounded-none transition-colors duration-300 p-4 font-space h-32 resize-none placeholder:text-neutral-800/30 placeholder:dark:text-white/30"
                   />
                   <div className="flex justify-between items-center mt-3">
                     <p className="font-space font-bold text-[10px] uppercase tracking-widest text-gray-500">
@@ -237,9 +237,9 @@ export default function AccountInformation({
             />
           )}
           <div className="mt-12 flex flex-col flex-1 space-y-8">
-            <div className="flex items-start justify-between gap-6 p-6 border-2 border-black/10 dark:border-white/10">
+            <div className="flex items-start justify-between gap-6 p-6 border-2 border-neutral-800/10 dark:border-white/10">
               <div>
-                <h3 className="font-syne text-xl uppercase tracking-widest font-bold text-black dark:text-white mb-2">
+                <h3 className="font-syne text-xl uppercase tracking-widest font-bold text-neutral-800 dark:text-white mb-2">
                   Profile Visibility
                 </h3>
                 <p className="font-space text-sm text-gray-600 dark:text-gray-400">
@@ -248,7 +248,7 @@ export default function AccountInformation({
               </div>
               {isInitialLoading ? (
                 <div className="w-12 h-6">
-                  <Skeleton className="w-full h-full rounded-none bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20" />
+                  <Skeleton className="w-full h-full rounded-none bg-neutral-800/10 dark:bg-white/10 border border-neutral-800/20 dark:border-white/20" />
                 </div>
               ) : (
                 <Switch
@@ -260,14 +260,14 @@ export default function AccountInformation({
                     }));
                   }}
                   disabled={isSaving}
-                  className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-black/20 dark:data-[state=unchecked]:bg-white/20 border-2 border-transparent hover:border-black dark:hover:border-white rounded-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-neutral-800/20 dark:data-[state=unchecked]:bg-white/20 border-2 border-transparent hover:border-neutral-800 dark:hover:border-white rounded-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               )}
             </div>
 
-            <div className="flex items-start justify-between gap-6 p-6 border-2 border-black/10 dark:border-white/10">
+            <div className="flex items-start justify-between gap-6 p-6 border-2 border-neutral-800/10 dark:border-white/10">
               <div>
-                <h3 className="font-syne text-xl uppercase tracking-widest font-bold text-black dark:text-white mb-2">
+                <h3 className="font-syne text-xl uppercase tracking-widest font-bold text-neutral-800 dark:text-white mb-2">
                   Auto-repackage on repository updates
                 </h3>
                 <p className="font-space text-sm text-gray-600 dark:text-gray-400">
@@ -277,7 +277,7 @@ export default function AccountInformation({
               </div>
               {isInitialLoading ? (
                 <div className="w-12 h-6">
-                  <Skeleton className="w-full h-full rounded-none bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20" />
+                  <Skeleton className="w-full h-full rounded-none bg-neutral-800/10 dark:bg-white/10 border border-neutral-800/20 dark:border-white/20" />
                 </div>
               ) : (
                 <Switch
@@ -289,7 +289,7 @@ export default function AccountInformation({
                     }));
                   }}
                   disabled={isSaving}
-                  className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-black/20 dark:data-[state=unchecked]:bg-white/20 border-2 border-transparent hover:border-black dark:hover:border-white rounded-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-neutral-800/20 dark:data-[state=unchecked]:bg-white/20 border-2 border-transparent hover:border-neutral-800 dark:hover:border-white rounded-none transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               )}
             </div>
@@ -313,13 +313,13 @@ export default function AccountInformation({
               <div className="pt-6 border-t-2 border-red-500/20 mt-auto">
                 {isInitialLoading ? (
                   <div className="w-48 h-12">
-                    <Skeleton className="w-full h-full rounded-none bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20" />
+                    <Skeleton className="w-full h-full rounded-none bg-neutral-800/10 dark:bg-white/10 border border-neutral-800/20 dark:border-white/20" />
                   </div>
                 ) : (
                   <Button
                     variant="destructive"
                     onClick={() => setDeleteDialogOpen(true)}
-                    className="w-full sm:w-auto self-start bg-red-500 text-white border-2 border-red-500 hover:bg-black hover:border-black dark:hover:bg-white dark:hover:border-white dark:hover:text-black transition-all duration-300 rounded-none font-space uppercase tracking-widest font-bold text-xs py-5 px-8"
+                    className="w-full sm:w-auto self-start bg-red-500 text-white border-2 border-red-500 hover:bg-neutral-800 hover:border-neutral-800 dark:hover:bg-white dark:hover:border-white dark:hover:text-neutral-800 transition-all duration-300 rounded-none font-space uppercase tracking-widest font-bold text-xs py-5 px-8"
                   >
                     Delete Account
                   </Button>

@@ -16,16 +16,16 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <Skeleton className="h-12 w-[120px] rounded-none bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10" />
+      <Skeleton className="h-12 w-[120px] rounded-none bg-neutral-800/5 dark:bg-white/5 border border-neutral-800/10 dark:border-white/10" />
     );
   }
 
   return (
     <Select value={selectedYear} onValueChange={onYearChange}>
-      <SelectTrigger className="h-12 w-[120px] rounded-none bg-transparent border-2 border-black dark:border-white text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
+      <SelectTrigger className="h-12 w-[120px] rounded-none bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors duration-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0">
         <SelectValue placeholder="YEAR" />
       </SelectTrigger>
-      <SelectContent className="rounded-none bg-white dark:bg-[#050505] border-2 border-black dark:border-white text-black dark:text-white font-space tracking-widest uppercase text-[10px]">
+      <SelectContent className="rounded-none bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space tracking-widest uppercase text-[10px]">
         {years.map((year) => (
           <SelectItem
             key={year}

@@ -162,7 +162,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
                 <img
                   src={getImageSrc(item)}
                   alt={`Project image ${index + 1}`}
-                  className="w-24 h-24 object-cover border-2 border-black/20 dark:border-white/20 transition-colors duration-300 pointer-events-none select-none"
+                  className="w-24 h-24 object-cover border-2 border-neutral-800/20 dark:border-white/20 transition-colors duration-300 pointer-events-none select-none"
                   draggable={false}
                 />
                 {index === 0 && (
@@ -186,7 +186,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
           })}
 
           {imageItems.length < MAX_IMAGES && (
-            <label className="w-24 h-24 flex items-center justify-center bg-transparent border-2 border-dashed border-black/20 dark:border-white/20 cursor-pointer hover:border-black dark:hover:border-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+            <label className="w-24 h-24 flex items-center justify-center bg-transparent border-2 border-dashed border-neutral-800/20 dark:border-white/20 cursor-pointer hover:border-neutral-800 dark:hover:border-white hover:bg-neutral-800/5 dark:hover:bg-white/5 transition-colors duration-300">
               <input
                 type="file"
                 accept="image/*"
@@ -194,7 +194,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
                 className="sr-only"
                 multiple
               />
-              <Plus className="w-6 h-6 text-black dark:text-white" />
+              <Plus className="w-6 h-6 text-neutral-800 dark:text-white" />
             </label>
           )}
         </div>
@@ -211,7 +211,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
           Add a short demo video showcasing your project in action
         </p>
         {existingVideo ? (
-          <div className="relative mt-2 border-2 border-black/20 dark:border-white/20 p-2 group bg-black/5 dark:bg-white/5 transition-colors duration-300">
+          <div className="relative mt-2 border-2 border-neutral-800/20 dark:border-white/20 p-2 group bg-neutral-800/5 dark:bg-white/5 transition-colors duration-300">
             <video src={existingVideo} className="w-full" controls />
             <button
               type="button"
@@ -223,7 +223,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
             </button>
           </div>
         ) : videoPreviewUrl ? (
-          <div className="relative mt-2 border-2 border-black/20 dark:border-white/20 p-2 group bg-black/5 dark:bg-white/5 transition-colors duration-300">
+          <div className="relative mt-2 border-2 border-neutral-800/20 dark:border-white/20 p-2 group bg-neutral-800/5 dark:bg-white/5 transition-colors duration-300">
             <video src={videoPreviewUrl} className="w-full" controls />
             <button
               type="button"
@@ -235,7 +235,7 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
             </button>
           </div>
         ) : (
-          <label className="flex items-center justify-center w-full h-40 mt-2 border-2 border-dashed border-black/20 dark:border-white/20 cursor-pointer hover:border-black dark:hover:border-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300">
+          <label className="flex items-center justify-center w-full h-40 mt-2 border-2 border-dashed border-neutral-800/20 dark:border-white/20 cursor-pointer hover:border-neutral-800 dark:hover:border-white hover:bg-neutral-800/5 dark:hover:bg-white/5 transition-colors duration-300">
             <input
               type="file"
               accept="video/*"
@@ -243,8 +243,8 @@ const ProjectMediaUploader = memo(function ProjectMediaUploader({
               className="sr-only"
             />
             <div className="flex flex-col items-center">
-              <Upload className="w-8 h-8 text-black dark:text-white mb-2 transition-colors duration-300" />
-              <span className="font-space text-xs text-black dark:text-white uppercase font-bold tracking-widest transition-colors duration-300">
+              <Upload className="w-8 h-8 text-neutral-800 dark:text-white mb-2 transition-colors duration-300" />
+              <span className="font-space text-xs text-neutral-800 dark:text-white uppercase font-bold tracking-widest transition-colors duration-300">
                 UPLOAD DEMO VIDEO (MAX 50MB)
               </span>
             </div>

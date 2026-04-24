@@ -115,7 +115,7 @@ export const BackgroundRippleEffect = ({
       if (!activeHoverCellRef.current) return;
 
       activeHoverCellRef.current.classList.remove(
-        "bg-black/5",
+        "bg-neutral-800/5",
         "dark:bg-white/5"
       );
       activeHoverCellRef.current = null;
@@ -174,13 +174,13 @@ export const BackgroundRippleEffect = ({
           // Remove hover from old cell
           if (activeHoverCellRef.current) {
             activeHoverCellRef.current.classList.remove(
-              "bg-black/5",
+              "bg-neutral-800/5",
               "dark:bg-white/5"
             );
           }
           // Add hover to new cell
           if (targetCell) {
-            targetCell.classList.add("bg-black/5", "dark:bg-white/5");
+            targetCell.classList.add("bg-neutral-800/5", "dark:bg-white/5");
           }
           activeHoverCellRef.current = targetCell;
         }
@@ -208,7 +208,7 @@ export const BackgroundRippleEffect = ({
       ref={surfaceRef}
       className={cn(
         "absolute inset-0 h-full w-full",
-        "[--cell-border-color:rgba(0,0,0,0.1)] [--cell-fill-color:rgba(239,68,68,0.2)]",
+        "[--cell-border-color:rgba(38,38,38,0.1)] [--cell-fill-color:rgba(239,68,68,0.2)]",
         "dark:[--cell-border-color:rgba(255,255,255,0.1)] dark:[--cell-fill-color:rgba(239,68,68,0.2)]"
       )}
     >
@@ -249,7 +249,7 @@ export const BackgroundRippleEffect = ({
                 />
                 <div
                   className={cn(
-                    "pointer-events-none absolute inset-0 border-[0.5px] border-black/[0.07] dark:border-white/[0.07]",
+                    "pointer-events-none absolute inset-0 border-[0.5px] border-neutral-800/[0.07] dark:border-white/[0.07]",
                     rowIdx === 0 && "border-t-0",
                     rowIdx === rows - 1 && "border-b-0",
                     colIdx === 0 && "border-l-0 [clip-path:inset(0_0_0_8px)]",

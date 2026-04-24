@@ -134,7 +134,7 @@ export default function BillingAndPaymentsTab({
             </span>
           </div>
           <div className="text-left w-full max-w-4xl pointer-events-auto">
-            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
+            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-neutral-800 dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
               Billing & Payments
             </h1>
             <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">

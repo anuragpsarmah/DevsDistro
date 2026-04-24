@@ -8,27 +8,27 @@ export default function Reviews() {
   const renderContent = () => {
     if (isLoading) {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-2 border-l-2 border-black/20 dark:border-white/20 transition-colors">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-2 border-l-2 border-neutral-800/20 dark:border-white/20 transition-colors">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 flex flex-col justify-between animate-pulse"
+              className="border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-10 flex flex-col justify-between animate-pulse"
             >
               <div className="mb-12">
-                <div className="h-8 w-8 bg-black/10 dark:bg-white/10 rounded mb-4" />
+                <div className="h-8 w-8 bg-neutral-800/10 dark:bg-white/10 rounded mb-4" />
                 <div className="space-y-2">
-                  <div className="h-4 bg-black/10 dark:bg-white/10 rounded w-full" />
-                  <div className="h-4 bg-black/10 dark:bg-white/10 rounded w-5/6" />
-                  <div className="h-4 bg-black/10 dark:bg-white/10 rounded w-4/6" />
+                  <div className="h-4 bg-neutral-800/10 dark:bg-white/10 rounded w-full" />
+                  <div className="h-4 bg-neutral-800/10 dark:bg-white/10 rounded w-5/6" />
+                  <div className="h-4 bg-neutral-800/10 dark:bg-white/10 rounded w-4/6" />
                 </div>
               </div>
-              <div className="mt-auto border-t-2 border-black/10 dark:border-white/10 pt-6">
+              <div className="mt-auto border-t-2 border-neutral-800/10 dark:border-white/10 pt-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-black/10 dark:bg-white/10" />
-                  <div className="h-4 bg-black/10 dark:bg-white/10 rounded w-24" />
+                  <div className="w-8 h-8 rounded-full bg-neutral-800/10 dark:bg-white/10" />
+                  <div className="h-4 bg-neutral-800/10 dark:bg-white/10 rounded w-24" />
                 </div>
-                <div className="h-3 bg-black/10 dark:bg-white/10 rounded w-32 mb-3" />
-                <div className="h-5 bg-black/10 dark:bg-white/10 rounded w-20" />
+                <div className="h-3 bg-neutral-800/10 dark:bg-white/10 rounded w-32 mb-3" />
+                <div className="h-5 bg-neutral-800/10 dark:bg-white/10 rounded w-20" />
               </div>
             </div>
           ))}
@@ -38,8 +38,8 @@ export default function Reviews() {
 
     if (isError || !hasReviews) {
       return (
-        <div className="border-t-2 border-l-2 border-black/20 dark:border-white/20 transition-colors">
-          <div className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-16 flex flex-col items-center justify-center text-center min-h-[240px]">
+        <div className="border-t-2 border-l-2 border-neutral-800/20 dark:border-white/20 transition-colors">
+          <div className="border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-16 flex flex-col items-center justify-center text-center min-h-[240px]">
             <div className="text-red-500 font-syne text-6xl font-black opacity-20 leading-none mb-6">
               "
             </div>
@@ -52,11 +52,11 @@ export default function Reviews() {
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-2 border-l-2 border-black/20 dark:border-white/20 transition-colors">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-2 border-l-2 border-neutral-800/20 dark:border-white/20 transition-colors">
         {reviews.map((review: any, idx: number) => (
           <div
             key={review._id ?? idx}
-            className="border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 flex flex-col justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-300 group"
+            className="border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-10 flex flex-col justify-between hover:bg-neutral-800/5 dark:hover:bg-white/5 transition-colors duration-300 group"
           >
             <div className="mb-12">
               <div className="text-red-500 font-syne text-6xl font-black opacity-30 group-hover:opacity-100 transition-opacity leading-none mb-4">
@@ -67,7 +67,7 @@ export default function Reviews() {
               </p>
             </div>
 
-            <div className="mt-auto border-t-2 border-black/10 dark:border-white/10 group-hover:border-black/30 dark:group-hover:border-white/30 pt-6 transition-colors">
+            <div className="mt-auto border-t-2 border-neutral-800/10 dark:border-white/10 group-hover:border-neutral-800/30 dark:group-hover:border-white/30 pt-6 transition-colors">
               <div className="flex items-center gap-3 mb-1">
                 {review.profile_image_url && (
                   <img
@@ -75,7 +75,7 @@ export default function Reviews() {
                     alt={`Profile picture of ${review.username}`}
                     loading="lazy"
                     decoding="async"
-                    className="w-8 h-8 rounded-full object-cover border border-black/10 dark:border-white/10"
+                    className="w-8 h-8 rounded-full object-cover border border-neutral-800/10 dark:border-white/10"
                   />
                 )}
                 <div className="font-syne text-xl font-bold uppercase">
@@ -98,13 +98,13 @@ export default function Reviews() {
 
   return (
     <section
-      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 overflow-hidden relative"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-neutral-800 dark:text-white transition-colors duration-300 overflow-hidden relative"
       id="validations"
       aria-labelledby="reviews-heading"
     >
       <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
       <div className="max-w-6xl mx-auto w-full relative z-10">
-        <div className="flex items-center justify-center md:justify-between mb-20 border-b-4 border-black/20 dark:border-white/20 pb-6 transition-colors">
+        <div className="flex items-center justify-center md:justify-between mb-20 border-b-4 border-neutral-800/20 dark:border-white/20 pb-6 transition-colors">
           <div className="flex items-center gap-3">
             <span
               id="reviews-heading"

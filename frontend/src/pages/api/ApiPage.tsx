@@ -50,10 +50,10 @@ export default function ApiPage() {
   };
 
   const codeClassName =
-    "font-mono text-sm bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded text-red-500";
+    "font-mono text-sm bg-neutral-800/5 dark:bg-white/5 px-2 py-0.5 rounded text-red-500";
 
   const blockCodeClassName =
-    "font-mono text-sm bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 overflow-x-auto text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre block w-full";
+    "font-mono text-sm bg-neutral-800/5 dark:bg-white/5 border border-neutral-800/10 dark:border-white/10 p-4 overflow-x-auto text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre block w-full";
 
   return (
     <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative">
@@ -83,7 +83,7 @@ export default function ApiPage() {
           </span>
         </div>
 
-        <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-black dark:text-white uppercase tracking-widest mb-6 break-words hyphens-auto">
+        <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-6 break-words hyphens-auto">
           World Cities API
         </h1>
 
@@ -92,9 +92,9 @@ export default function ApiPage() {
           the world. No authentication required.
         </p>
 
-        <div className="space-y-16 border-l-2 border-black/10 dark:border-white/10 pl-6 md:pl-10">
+        <div className="space-y-16 border-l-2 border-neutral-800/10 dark:border-white/10 pl-6 md:pl-10">
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               01. Base URL
             </h2>
             <pre className={blockCodeClassName}>
@@ -103,7 +103,7 @@ export default function ApiPage() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               02. Endpoint
             </h2>
             <div className="flex flex-col gap-4 mb-8">
@@ -119,19 +119,19 @@ export default function ApiPage() {
               with their ISO 3166-1 alpha-2 country codes.
             </p>
 
-            <h3 className="font-syne text-lg font-bold text-black dark:text-white mb-4 uppercase tracking-wider">
+            <h3 className="font-syne text-lg font-bold text-neutral-800 dark:text-white mb-4 uppercase tracking-wider">
               Query Parameters
             </h3>
-            <div className="border border-black/10 dark:border-white/10 overflow-hidden mb-8">
+            <div className="border border-neutral-800/10 dark:border-white/10 overflow-hidden mb-8">
               {/* Header — hidden on mobile */}
-              <div className="hidden md:grid md:grid-cols-4 bg-black/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+              <div className="hidden md:grid md:grid-cols-4 bg-neutral-800/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
                 <span>Parameter</span>
                 <span>Type</span>
                 <span>Required</span>
                 <span>Description</span>
               </div>
               {/* Row 1 */}
-              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
+              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
                 <div className="flex items-center gap-2">
                   <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
                     Param
@@ -162,7 +162,7 @@ export default function ApiPage() {
                 </div>
               </div>
               {/* Row 2 */}
-              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
+              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-4 md:items-start">
                 <div className="flex items-center gap-2">
                   <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-24 shrink-0">
                     Param
@@ -194,7 +194,7 @@ export default function ApiPage() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               03. Response Format
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg mb-6">
@@ -215,18 +215,18 @@ export default function ApiPage() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               04. Error Codes
             </h2>
-            <div className="border border-black/10 dark:border-white/10 overflow-hidden">
+            <div className="border border-neutral-800/10 dark:border-white/10 overflow-hidden">
               {/* Header — hidden on mobile */}
-              <div className="hidden md:grid md:grid-cols-3 bg-black/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
+              <div className="hidden md:grid md:grid-cols-3 bg-neutral-800/5 dark:bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-500">
                 <span>Status</span>
                 <span>Code</span>
                 <span>Reason</span>
               </div>
               {/* Row 1 */}
-              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
+              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
                 <div className="flex items-center gap-2">
                   <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
                     Status
@@ -252,7 +252,7 @@ export default function ApiPage() {
                 </div>
               </div>
               {/* Row 2 */}
-              <div className="border-t border-black/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
+              <div className="border-t border-neutral-800/10 dark:border-white/10 px-4 py-4 text-sm flex flex-col gap-2 md:grid md:grid-cols-3 md:items-start">
                 <div className="flex items-center gap-2">
                   <span className="md:hidden text-xs font-bold uppercase tracking-widest text-gray-400 w-16 shrink-0">
                     Status
@@ -278,11 +278,11 @@ export default function ApiPage() {
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               05. Examples
             </h2>
 
-            <h3 className="font-syne text-base font-bold text-black dark:text-white mb-3 uppercase tracking-wider">
+            <h3 className="font-syne text-base font-bold text-neutral-800 dark:text-white mb-3 uppercase tracking-wider">
               JavaScript (Fetch)
             </h3>
             <pre className={blockCodeClassName}>{`const res = await fetch(
@@ -291,7 +291,7 @@ export default function ApiPage() {
 const data = await res.json();
 // data.filteredResults => ["Paris, FR", "Paramaribo, SR", ...]`}</pre>
 
-            <h3 className="font-syne text-base font-bold text-black dark:text-white mb-3 mt-10 uppercase tracking-wider">
+            <h3 className="font-syne text-base font-bold text-neutral-800 dark:text-white mb-3 mt-10 uppercase tracking-wider">
               React Query
             </h3>
             <pre
@@ -313,14 +313,14 @@ const { data, isLoading } = useQuery({
           </section>
 
           <section>
-            <h2 className="font-syne text-2xl md:text-3xl font-bold text-black dark:text-white mb-6 uppercase tracking-wider">
+            <h2 className="font-syne text-2xl md:text-3xl font-bold text-neutral-800 dark:text-white mb-6 uppercase tracking-wider">
               06. Notes
             </h2>
             <ul className="space-y-6 text-gray-600 dark:text-gray-400 text-lg pb-12">
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
                 <div className="flex gap-4 md:w-48 shrink-0">
                   <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-black dark:text-white">
+                  <strong className="text-neutral-800 dark:text-white">
                     Free to use
                   </strong>
                 </div>
@@ -334,7 +334,7 @@ const { data, isLoading } = useQuery({
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
                 <div className="flex gap-4 md:w-48 shrink-0">
                   <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-black dark:text-white">
+                  <strong className="text-neutral-800 dark:text-white">
                     Rate limiting
                   </strong>
                 </div>
@@ -346,7 +346,7 @@ const { data, isLoading } = useQuery({
               <li className="flex flex-col md:flex-row gap-2 md:gap-6 items-start">
                 <div className="flex gap-4 md:w-48 shrink-0">
                   <span className="text-red-500 font-bold opacity-50">/</span>
-                  <strong className="text-black dark:text-white">
+                  <strong className="text-neutral-800 dark:text-white">
                     Open source
                   </strong>
                 </div>

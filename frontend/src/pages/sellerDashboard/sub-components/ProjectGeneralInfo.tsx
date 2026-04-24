@@ -71,7 +71,7 @@ export default function ProjectGeneralInfo({
           id="title"
           ref={title}
           defaultValue={defaultTitle || ""}
-          className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300"
+          className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300"
           placeholder="e.g., E-commerce Dashboard, AI Content Generator"
           required
         />
@@ -89,7 +89,7 @@ export default function ProjectGeneralInfo({
           placeholder="Provide a clear overview of your project. Include key features, technologies used, and what problems it solves. Be specific about your role and contributions."
           value={description}
           onChange={handleDescriptionChange}
-          className="bg-transparent text-black dark:text-white border-2 border-black/20 dark:border-white/20 rounded-none font-space focus:ring-0 focus:border-red-500 transition-colors duration-300 h-40 resize-none p-4"
+          className="bg-transparent text-neutral-800 dark:text-white border-2 border-neutral-800/20 dark:border-white/20 rounded-none font-space focus:ring-0 focus:border-red-500 transition-colors duration-300 h-40 resize-none p-4"
         />
         <div className="flex justify-end mt-2">
           <p
@@ -111,15 +111,15 @@ export default function ProjectGeneralInfo({
           value={projectType}
           onValueChange={(value: ProjectType) => setProjectType(value)}
         >
-          <SelectTrigger className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300">
+          <SelectTrigger className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300">
             <SelectValue placeholder="Choose the category that best fits your project" />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-[#050505] border-2 border-black dark:border-white text-black dark:text-white rounded-none font-space transition-colors duration-300">
+          <SelectContent className="bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white rounded-none font-space transition-colors duration-300">
             {PROJECT_TYPES.map((type) => (
               <SelectItem
                 key={type}
                 value={type}
-                className="focus:bg-black/5 dark:focus:bg-white/5 cursor-pointer text-black dark:text-white uppercase text-xs font-bold tracking-widest rounded-none"
+                className="focus:bg-neutral-800/5 dark:focus:bg-white/5 cursor-pointer text-neutral-800 dark:text-white uppercase text-xs font-bold tracking-widest rounded-none"
               >
                 {type}
               </SelectItem>
@@ -148,7 +148,7 @@ export default function ProjectGeneralInfo({
           onChange={handleTechInputChange}
           onKeyDown={handleTechInputKeyDown}
           disabled={atTechLimit}
-          className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder={
             atTechLimit
               ? "Limit reached (15/15)"
@@ -162,7 +162,7 @@ export default function ProjectGeneralInfo({
           {techStack.map((tech, index) => (
             <div
               key={index}
-              className="flex items-center bg-transparent border-2 border-black dark:border-white text-black dark:text-white px-4 py-2 font-space text-xs uppercase font-bold tracking-widest rounded-none transition-colors duration-300"
+              className="flex items-center bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white px-4 py-2 font-space text-xs uppercase font-bold tracking-widest rounded-none transition-colors duration-300"
             >
               <span>{tech}</span>
               <button
@@ -193,7 +193,7 @@ export default function ProjectGeneralInfo({
           type="url"
           value={liveLink}
           onChange={(e) => setLiveLink(e.target.value)}
-          className="bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300"
+          className="bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white rounded-none font-space py-6 focus:ring-0 focus:border-red-500 transition-colors duration-300"
           placeholder="https://project-demo.com or https://username.github.io/project"
         />
         <p className="font-space text-xs text-gray-500 mt-2 uppercase tracking-wider font-bold">

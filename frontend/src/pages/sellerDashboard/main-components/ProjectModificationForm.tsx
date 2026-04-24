@@ -155,7 +155,7 @@ export default function ProjectModificationForm({
                 type="button"
                 variant="outline"
                 disabled={isSubmitting}
-                className="flex items-center gap-3 px-6 py-4 bg-transparent border-2 border-black dark:border-white text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-3 px-6 py-4 bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-none hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleReturnToAllListings}
               >
                 <Undo2 className="w-4 h-4" />
@@ -197,7 +197,7 @@ export default function ProjectModificationForm({
             <Button
               type="button"
               disabled={isSubmitting}
-              className="w-full px-8 py-4 bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-none border-2 border-transparent hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white hover:border-black dark:hover:border-white transition-colors duration-300 mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-8 py-4 bg-neutral-800 text-white dark:bg-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-[10px] md:text-sm rounded-none border-2 border-transparent hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white hover:border-neutral-800 dark:hover:border-white transition-colors duration-300 mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={onSubmitClick}
             >
               Submit Modifications

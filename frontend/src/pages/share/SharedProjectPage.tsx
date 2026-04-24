@@ -68,14 +68,14 @@ export default function SharedProjectPage() {
 
   if (!isValid) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white dark:bg-[#050505] text-neutral-800 dark:text-white font-space flex items-center justify-center p-4">
         <SEO
           title="Invalid Project Link"
           description="This DevsDistro project share link is invalid."
           path={window.location.pathname}
           robots="noindex, nofollow"
         />
-        <div className="border-2 border-black dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
+        <div className="border-2 border-neutral-800 dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
           <div className="w-16 h-16 bg-red-500 flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-8 h-8 text-white" />
           </div>
@@ -105,16 +105,16 @@ export default function SharedProjectPage() {
 
   if (isError || !project) {
     return (
-      <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white dark:bg-[#050505] text-neutral-800 dark:text-white font-space flex items-center justify-center p-4">
         <SEO
           title="Project Not Found"
           description="This DevsDistro project is unavailable or has been removed."
           path={window.location.pathname}
           robots="noindex, nofollow"
         />
-        <div className="border-2 border-black dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
-          <div className="w-16 h-16 bg-black dark:bg-white flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-8 h-8 text-white dark:text-black" />
+        <div className="border-2 border-neutral-800 dark:border-white p-12 max-w-lg w-full text-center shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
+          <div className="w-16 h-16 bg-neutral-800 dark:bg-white flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-8 h-8 text-white dark:text-neutral-800" />
           </div>
           <h1 className="font-syne font-black uppercase tracking-widest text-2xl mb-4">
             Project Not Found
@@ -171,7 +171,7 @@ export default function SharedProjectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] text-black dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-[#050505] text-neutral-800 dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300">
       <SEO
         title={`${project.title} by ${sellerName}`}
         description={projectDescription}
@@ -192,17 +192,17 @@ export default function SharedProjectPage() {
           </div>
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border-2 border-neutral-800 dark:border-white text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors"
           >
             <Copy className="w-3 h-3" />
             Copy Link
           </button>
         </div>
 
-        <div className="border-2 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] overflow-hidden">
+        <div className="border-2 border-neutral-800 dark:border-white shadow-[8px_8px_0_0_rgba(38,38,38,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] overflow-hidden">
           {/* Cover image */}
           {coverImage && (
-            <div className="w-full aspect-video bg-gray-100 dark:bg-[#0a0a0a] overflow-hidden border-b-2 border-black dark:border-white">
+            <div className="w-full aspect-video bg-gray-100 dark:bg-[#0a0a0a] overflow-hidden border-b-2 border-neutral-800 dark:border-white">
               <img
                 src={coverImage}
                 alt={`${project.title} project cover image`}
@@ -216,7 +216,7 @@ export default function SharedProjectPage() {
           <div className="p-8 lg:p-12">
             {/* Type badge + title */}
             <div className="flex items-center gap-3 mb-6 flex-wrap">
-              <span className="inline-flex items-center px-3 py-1.5 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest bg-black dark:bg-white text-white dark:text-black flex-shrink-0">
+              <span className="inline-flex items-center px-3 py-1.5 border-2 border-neutral-800 dark:border-white text-xs font-bold uppercase tracking-widest bg-neutral-800 dark:bg-white text-white dark:text-neutral-800 flex-shrink-0">
                 {project.project_type}
               </span>
               {project.live_link && (
@@ -224,7 +224,7 @@ export default function SharedProjectPage() {
                   href={project.live_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors flex-shrink-0"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-neutral-800 dark:border-white text-xs font-bold uppercase tracking-widest text-neutral-800 dark:text-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors flex-shrink-0"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Live Demo
@@ -264,7 +264,7 @@ export default function SharedProjectPage() {
                   {project.tech_stack.map((tech) => (
                     <span
                       key={tech}
-                      className="px-3 py-1 border-2 border-black dark:border-white text-xs font-bold uppercase tracking-widest"
+                      className="px-3 py-1 border-2 border-neutral-800 dark:border-white text-xs font-bold uppercase tracking-widest"
                     >
                       {tech}
                     </span>
@@ -273,7 +273,7 @@ export default function SharedProjectPage() {
               </div>
             )}
 
-            <div className="border-t-2 border-black dark:border-white pt-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
+            <div className="border-t-2 border-neutral-800 dark:border-white pt-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
               {/* Seller info */}
               {seller && (
                 <div className="flex items-center gap-4">
@@ -283,11 +283,11 @@ export default function SharedProjectPage() {
                       alt={`Profile picture of ${sellerName}`}
                       loading="lazy"
                       decoding="async"
-                      className="w-12 h-12 flex-shrink-0 rounded-none border-2 border-black dark:border-white object-cover"
+                      className="w-12 h-12 flex-shrink-0 rounded-none border-2 border-neutral-800 dark:border-white object-cover"
                     />
                   ) : (
-                    <div className="w-12 h-12 flex-shrink-0 border-2 border-black dark:border-white flex items-center justify-center bg-gray-100 dark:bg-[#0a0a0a]">
-                      <User className="w-6 h-6 text-black dark:text-white" />
+                    <div className="w-12 h-12 flex-shrink-0 border-2 border-neutral-800 dark:border-white flex items-center justify-center bg-gray-100 dark:bg-[#0a0a0a]">
+                      <User className="w-6 h-6 text-neutral-800 dark:text-white" />
                     </div>
                   )}
                   <div className="min-w-0">
@@ -350,13 +350,13 @@ export default function SharedProjectPage() {
 
                 <div className="flex gap-3 w-full lg:w-auto">
                   {authLoading ? (
-                    <div className="flex-1 lg:w-56 px-6 py-4 border-2 border-black dark:border-white flex items-center justify-center">
+                    <div className="flex-1 lg:w-56 px-6 py-4 border-2 border-neutral-800 dark:border-white flex items-center justify-center">
                       <Loader2 className="w-4 h-4 animate-spin" />
                     </div>
                   ) : (
                     <button
                       onClick={handleCTA}
-                      className="flex-1 lg:w-56 group relative px-6 py-4 bg-black dark:bg-white text-white dark:text-black font-bold uppercase tracking-widest text-xs overflow-hidden"
+                      className="flex-1 lg:w-56 group relative px-6 py-4 bg-neutral-800 dark:bg-white text-white dark:text-neutral-800 font-bold uppercase tracking-widest text-xs overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-red-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
                       <span className="relative z-10 flex items-center justify-center gap-2 group-hover:text-white transition-colors duration-300">
@@ -369,7 +369,7 @@ export default function SharedProjectPage() {
                   )}
                   <button
                     onClick={handleCopyLink}
-                    className="px-4 py-4 border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
+                    className="px-4 py-4 border-2 border-neutral-800 dark:border-white hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors"
                     title="Copy link"
                   >
                     <LinkIcon className="w-4 h-4" />

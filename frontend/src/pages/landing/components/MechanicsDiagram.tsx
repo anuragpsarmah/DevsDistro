@@ -64,11 +64,11 @@ export default function MechanicsDiagram({
           --md-ink-muted: rgba(180, 180, 188, 0.42);
           --md-track-idle: rgba(212, 212, 216, 0.13);
           --md-surface: #0f0f10;
-          --md-shadow-idle: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.2));
-          --md-shadow-hover-bg: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.36)) drop-shadow(0 0 10px rgba(239, 68, 68, 0.14));
-          --md-shadow-hover-el: drop-shadow(0 7px 14px rgba(0, 0, 0, 0.24));
-          --md-shadow-lock: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.28));
-          --md-shadow-top: drop-shadow(0 -5px 10px rgba(0, 0, 0, 0.22));
+          --md-shadow-idle: drop-shadow(0 8px 18px rgba(38,38,38, 0.2));
+          --md-shadow-hover-bg: drop-shadow(0 14px 28px rgba(38,38,38, 0.36)) drop-shadow(0 0 10px rgba(239, 68, 68, 0.14));
+          --md-shadow-hover-el: drop-shadow(0 7px 14px rgba(38,38,38, 0.24));
+          --md-shadow-lock: drop-shadow(0 8px 16px rgba(38,38,38, 0.28));
+          --md-shadow-top: drop-shadow(0 -5px 10px rgba(38,38,38, 0.22));
           --md-accent: #ef4444;
           --md-grid-gap: 3px;
         }
@@ -467,9 +467,9 @@ export default function MechanicsDiagram({
           }
         }
         @keyframes md-commit-playback {
-          0%, 100% { transform: scale(1); fill: var(--md-surface); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+          0%, 100% { transform: scale(1); fill: var(--md-surface); filter: drop-shadow(0 0 0 rgba(38,38,38,0)); }
           15% { transform: scale(1.4); fill: var(--md-ink); filter: drop-shadow(0 3px 6px rgba(239,68,68,0.16)); }
-          30% { transform: scale(1); fill: var(--md-surface); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+          30% { transform: scale(1); fill: var(--md-surface); filter: drop-shadow(0 0 0 rgba(38,38,38,0)); }
         }
         @keyframes md-final-commit-glow {
           0% { transform: scale(1); fill: var(--md-surface); filter: drop-shadow(0 0 0 rgba(239,68,68,0)); }
@@ -534,7 +534,7 @@ export default function MechanicsDiagram({
                 cx="2"
                 cy="2"
                 r="0.75"
-                className="fill-black/10 dark:fill-white/10"
+                className="fill-neutral-950/10 dark:fill-white/10"
               />
             </pattern>
           </defs>

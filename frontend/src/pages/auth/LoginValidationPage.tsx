@@ -54,14 +54,14 @@ export default function LoginValidationPage() {
   }, [githubCode, oauthState, navigate, setActiveUser]);
 
   return (
-    <div className="min-h-screen overflow-hidden w-full bg-white dark:bg-[#050505] text-black dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex items-center justify-center p-4">
+    <div className="min-h-screen overflow-hidden w-full bg-white dark:bg-[#050505] text-neutral-800 dark:text-white font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex items-center justify-center p-4">
       <SEO
         title="Authenticating"
         description="Completing GitHub authentication for DevsDistro."
         path="/loginValidation"
         robots="noindex, nofollow"
       />
-      <div className="z-10 text-center max-w-4xl mx-auto w-full flex flex-col items-center justify-center border-2 border-black dark:border-white py-12 px-6 md:p-24 relative bg-white dark:bg-[#050505] shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-shadow duration-300">
+      <div className="z-10 text-center max-w-4xl mx-auto w-full flex flex-col items-center justify-center border-2 border-neutral-800 dark:border-white py-12 px-6 md:p-24 relative bg-white dark:bg-[#050505] shadow-[8px_8px_0px_0px_rgba(38,38,38,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-shadow duration-300">
         <div className="flex items-center gap-3 mb-8 self-start">
           <div className="w-12 h-[2px] bg-red-500"></div>
           <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
@@ -78,11 +78,11 @@ export default function LoginValidationPage() {
           </h1>
         </div>
 
-        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-space max-w-xl mx-auto border-t-2 border-black/10 dark:border-white/10 pt-6">
+        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed font-space max-w-xl mx-auto border-t-2 border-neutral-800/10 dark:border-white/10 pt-6">
           CONNECTING TO GITHUB. PLEASE STAND BY FOR CREDENTIAL VALIDATION...
         </p>
-        <div className="absolute top-0 left-8 right-8 h-[2px] bg-black dark:bg-white -translate-y-1/2"></div>
-        <div className="absolute bottom-0 left-8 right-8 h-[2px] bg-black dark:bg-white translate-y-1/2"></div>
+        <div className="absolute top-0 left-8 right-8 h-[2px] bg-neutral-800 dark:bg-white -translate-y-1/2"></div>
+        <div className="absolute bottom-0 left-8 right-8 h-[2px] bg-neutral-800 dark:bg-white translate-y-1/2"></div>
       </div>
     </div>
   );

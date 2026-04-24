@@ -218,15 +218,15 @@ export default function TheMechanics() {
   const cardClassName = (index: number, isFeature = false) => {
     const isActive = activeMechanicIndex === index;
     const baseClassName =
-      "relative border-b-2 border-r-2 border-black/20 dark:border-white/20 p-10 transition-colors duration-300";
+      "relative border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-10 transition-colors duration-300";
     const edgeClassName = index === 0 || isFeature ? " border-l-2" : "";
     const featureClassName = isFeature
-      ? " lg:col-span-3 text-black dark:text-white"
+      ? " lg:col-span-3 text-neutral-800 dark:text-white"
       : "";
     const activeClassName = isActive
       ? " bg-red-500/[0.06] dark:bg-red-500/[0.08] shadow-[inset_0_0_0_1px_rgba(239,68,68,0.28)]"
       : isFeature
-        ? " bg-black/5 dark:bg-white/5"
+        ? " bg-neutral-800/5 dark:bg-white/5"
         : "";
 
     return `${baseClassName}${edgeClassName}${featureClassName}${activeClassName}`;
@@ -236,7 +236,7 @@ export default function TheMechanics() {
     const isActive = activeMechanicIndex === index;
     const idleClassName = isMuted
       ? "text-gray-500 dark:text-gray-500"
-      : "text-black dark:text-white";
+      : "text-neutral-800 dark:text-white";
     const colorClassName = isActive
       ? "text-red-500 dark:text-red-500"
       : idleClassName;
@@ -276,14 +276,14 @@ export default function TheMechanics() {
   return (
     <section
       ref={sectionRef}
-      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-black dark:text-white transition-colors duration-300 relative"
+      className="py-32 px-6 md:px-12 bg-white dark:bg-[#050505] text-neutral-800 dark:text-white transition-colors duration-300 relative"
       id="the-mechanics"
       onPointerMove={recordPointerMove}
     >
       <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="mb-16">
-          <div className="flex items-center gap-3 mb-6 border-b-4 border-black/20 dark:border-white/20 pb-4 transition-colors w-fit mx-auto md:mx-0">
+          <div className="flex items-center gap-3 mb-6 border-b-4 border-neutral-800/20 dark:border-white/20 pb-4 transition-colors w-fit mx-auto md:mx-0">
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">
               The Mechanics
             </span>
@@ -291,12 +291,14 @@ export default function TheMechanics() {
           <h2 className="font-syne text-5xl md:text-7xl font-black uppercase leading-none text-center md:text-left">
             How The Machine
             <br />
-            <span className="text-black/40 dark:text-white/40">Operates.</span>
+            <span className="text-neutral-800/40 dark:text-white/40">
+              Operates.
+            </span>
           </h2>
         </div>
 
         <div>
-          <div className="border-t-2 border-l-2 border-r-2 border-black/20 dark:border-white/20 transition-colors">
+          <div className="border-t-2 border-l-2 border-r-2 border-neutral-800/20 dark:border-white/20 transition-colors">
             <MechanicsDiagram
               activeIndex={activeMechanicIndex}
               heldIndex={heldMechanicIndex}
@@ -308,7 +310,7 @@ export default function TheMechanics() {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-black/20 dark:border-white/20 transition-colors">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border-t-2 border-neutral-800/20 dark:border-white/20 transition-colors">
             <div
               className={cardClassName(0)}
               onPointerEnter={(event) => handleMechanicHoverStart(0, event)}

@@ -84,7 +84,7 @@ export default function SalesTab({ logout }: SalesTabProps) {
 
           <div className="flex items-start lg:items-center justify-between flex-col lg:flex-row gap-4">
             <div className="space-y-4">
-              <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
+              <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-neutral-800 dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
                 Sales Ledger
               </h1>
               <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
@@ -93,7 +93,7 @@ export default function SalesTab({ logout }: SalesTabProps) {
             </div>
 
             {!isLoadingInitial && !isInitialError && (
-              <span className="hidden md:block text-sm font-space text-black dark:text-white font-bold uppercase tracking-widest border-2 border-black dark:border-white px-4 py-2 bg-white dark:bg-[#050505] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,1)]">
+              <span className="hidden md:block text-sm font-space text-neutral-800 dark:text-white font-bold uppercase tracking-widest border-2 border-neutral-800 dark:border-white px-4 py-2 bg-white dark:bg-[#050505] shadow-[4px_4px_0_0_rgba(38,38,38,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,1)]">
                 Loaded {transactions.length} record
                 {transactions.length !== 1 ? "s" : ""}
               </span>
@@ -110,10 +110,10 @@ export default function SalesTab({ logout }: SalesTabProps) {
                 onValueChange={(v) => setDatePreset(v as DatePreset)}
                 disabled={isLoadingInitial || isLoadingMore}
               >
-                <SelectTrigger className="h-12 w-full rounded-none bg-transparent border-2 border-black dark:border-white text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                <SelectTrigger className="h-12 w-full rounded-none bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors duration-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-none bg-white dark:bg-[#050505] border-2 border-black dark:border-white text-black dark:text-white font-space tracking-widest uppercase text-[10px]">
+                <SelectContent className="rounded-none bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space tracking-widest uppercase text-[10px]">
                   {DATE_PRESET_OPTIONS.map((option) => (
                     <SelectItem
                       key={option.value}
@@ -136,10 +136,10 @@ export default function SalesTab({ logout }: SalesTabProps) {
                 onValueChange={setProjectFilter}
                 disabled={isLoadingInitial || isLoadingMore}
               >
-                <SelectTrigger className="h-12 w-full rounded-none bg-transparent border-2 border-black dark:border-white text-black dark:text-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                <SelectTrigger className="h-12 w-full rounded-none bg-transparent border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space font-bold uppercase tracking-widest text-[10px] hover:bg-neutral-800 hover:text-white dark:hover:bg-white dark:hover:text-neutral-800 transition-colors duration-300 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-none bg-white dark:bg-[#050505] border-2 border-black dark:border-white text-black dark:text-white font-space tracking-widest uppercase text-[10px]">
+                <SelectContent className="rounded-none bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white text-neutral-800 dark:text-white font-space tracking-widest uppercase text-[10px]">
                   {projectOptions.map((option) => (
                     <SelectItem
                       key={option.value}

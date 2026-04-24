@@ -216,7 +216,7 @@ export default function ManageProjectsTab({
             </span>
           </div>
           <div className="text-left w-full max-w-4xl">
-            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-black dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
+            <h1 className="font-syne uppercase tracking-widest text-4xl lg:text-5xl font-black text-neutral-800 dark:text-white leading-none break-words hyphens-auto transition-colors duration-300">
               Manage Projects
             </h1>
             <p className="font-space text-lg text-gray-600 dark:text-gray-400 mt-4 leading-relaxed transition-colors duration-300 max-w-2xl">
@@ -250,7 +250,7 @@ export default function ManageProjectsTab({
                 />
               </div>
             ) : componentIdentifier === "reviews" ? (
-              <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
+              <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
                 <div className="relative z-10 h-full overflow-y-auto custom-scrollbar p-6 lg:p-10">
                   <SellerProjectReviewsView
                     projectId={reviewsProject!.id}
@@ -260,7 +260,7 @@ export default function ManageProjectsTab({
                 </div>
               </div>
             ) : (
-              <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-black dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
+              <div className="relative h-full bg-white dark:bg-[#050505] border-2 border-neutral-800 dark:border-white overflow-hidden flex flex-col transition-colors duration-300">
                 <div className="relative z-10 h-full overflow-y-auto custom-scrollbar p-6 lg:p-10">
                   <ProjectModificationForm
                     key={formProps.github_repo_id}

@@ -60,7 +60,7 @@ export default function Chart({ chartData, isLoading = false }: ChartProps) {
           cursor={{ fill: "rgba(239, 68, 68, 0.1)" }}
           content={
             <ChartTooltipContent
-              className="w-32 rounded-none border-2 border-black dark:border-white bg-white dark:bg-[#050505] text-black dark:text-white font-space uppercase text-[10px] tracking-widest p-3"
+              className="w-32 rounded-none border-2 border-neutral-800 dark:border-white bg-white dark:bg-[#050505] text-neutral-800 dark:text-white font-space uppercase text-[10px] tracking-widest p-3"
               indicator="line"
             />
           }

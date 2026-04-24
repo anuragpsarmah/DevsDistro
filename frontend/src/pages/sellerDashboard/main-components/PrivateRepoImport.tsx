@@ -98,7 +98,7 @@ export default function PrivateRepoImport({
   return (
     <div className="h-full flex flex-col">
       <div className="rounded-xl h-full flex flex-col">
-        <h2 className="flex-shrink-0 flex flex-row justify-between items-center text-xl lg:text-3xl font-syne font-bold uppercase tracking-widest text-black dark:text-white mb-8 text-center lg:text-left md:text-left transition-colors duration-300">
+        <h2 className="flex-shrink-0 flex flex-row justify-between items-center text-xl lg:text-3xl font-syne font-bold uppercase tracking-widest text-neutral-800 dark:text-white mb-8 text-center lg:text-left md:text-left transition-colors duration-300">
           <span className="text-left md:text-left">Import Repository</span>
           <span className="w-full text-right flex flex-col justify-center md:w-auto md:text-left md:block text-gray-500 dark:text-gray-400 font-space text-sm">
             {!totalListedProjectsDataLoading &&
@@ -110,7 +110,7 @@ export default function PrivateRepoImport({
         </h2>
 
         <div className="flex-1 flex flex-col space-y-4 min-h-0 pb-1">
-          <div className="flex-shrink-0 flex items-center justify-between p-4 bg-transparent border-2 border-black/20 dark:border-white/20 rounded-none text-black dark:text-white font-space transition-colors duration-300">
+          <div className="flex-shrink-0 flex items-center justify-between p-4 bg-transparent border-2 border-neutral-800/20 dark:border-white/20 rounded-none text-neutral-800 dark:text-white font-space transition-colors duration-300">
             <div className="flex items-center space-x-3">
               <Github className="h-5 w-5" />
               <span className="font-bold">{userData.username}</span>
@@ -120,7 +120,7 @@ export default function PrivateRepoImport({
               size="icon"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="h-10 w-10 rounded-none hover:bg-black/5 dark:hover:bg-white/5 text-black dark:text-white transition-colors duration-300"
+              className="h-10 w-10 rounded-none hover:bg-neutral-800/5 dark:hover:bg-white/5 text-neutral-800 dark:text-white transition-colors duration-300"
             >
               <RefreshCw
                 className={`h-5 w-5 ${isRefreshing ? "animate-spin text-red-500" : ""}`}
@@ -142,7 +142,7 @@ export default function PrivateRepoImport({
                   totalListedProjectsData.data.projectListingLimit ||
                   totalListedProjectsData.data.totalListedProjects === -1)
               }
-              className="pl-12 py-6 bg-transparent border-2 border-black/20 dark:border-white/20 text-black dark:text-white w-full rounded-none font-space placeholder:text-gray-400 focus:border-red-500 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase"
+              className="pl-12 py-6 bg-transparent border-2 border-neutral-800/20 dark:border-white/20 text-neutral-800 dark:text-white w-full rounded-none font-space placeholder:text-gray-400 focus:border-red-500 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase"
             />
           </div>
 
@@ -150,7 +150,7 @@ export default function PrivateRepoImport({
             ref={scrollContainerRef}
             className="relative flex-1 min-h-0 mb-2 mt-4"
           >
-            <ScrollArea className="h-full border-2 border-black/20 dark:border-white/20 rounded-none bg-black/5 dark:bg-white/5 transition-colors duration-300">
+            <ScrollArea className="h-full border-2 border-neutral-800/20 dark:border-white/20 rounded-none bg-neutral-800/5 dark:bg-white/5 transition-colors duration-300">
               <div className="space-y-0 p-0 hover:border-transparent h-full">
                 {repoDataLoading || totalListedProjectsDataLoading ? (
                   Array.from({ length: 20 }).map((_, index) => (
@@ -171,15 +171,15 @@ export default function PrivateRepoImport({
                     {filteredRepos.map((repo) => (
                       <div
                         key={repo.github_repo_id}
-                        className="flex items-center justify-between p-5 bg-transparent border-b-2 border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors duration-200 last:border-b-0"
+                        className="flex items-center justify-between p-5 bg-transparent border-b-2 border-neutral-800/10 dark:border-white/10 hover:bg-neutral-800/10 dark:hover:bg-white/10 transition-colors duration-200 last:border-b-0"
                       >
                         <div className="flex items-center space-x-4 w-full">
-                          <div className="w-10 h-10 bg-black dark:bg-white flex items-center justify-center text-white dark:text-black font-space font-bold uppercase transition-colors duration-300">
+                          <div className="w-10 h-10 bg-neutral-800 dark:bg-white flex items-center justify-center text-white dark:text-neutral-800 font-space font-bold uppercase transition-colors duration-300">
                             {repo.name.charAt(0)}
                           </div>
                           <div className="truncate flex-1">
                             <div className="flex flex-col md:flex-row md:items-center space-y-1 md:space-y-0 md:space-x-4">
-                              <span className="font-space text-black dark:text-white font-bold truncate transition-colors duration-300">
+                              <span className="font-space text-neutral-800 dark:text-white font-bold truncate transition-colors duration-300">
                                 {repo.name.length > 30
                                   ? repo.name.slice(0, 27) + "..."
                                   : repo.name}
@@ -194,7 +194,7 @@ export default function PrivateRepoImport({
                           </div>
                           <Button
                             variant="default"
-                            className="bg-black text-white dark:bg-white dark:text-black font-space font-bold uppercase tracking-widest text-[10px] rounded-none hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white border-2 border-transparent hover:border-black dark:hover:border-white transition-colors duration-300 px-6 py-4"
+                            className="bg-neutral-800 text-white dark:bg-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-[10px] rounded-none hover:bg-red-500 hover:text-white dark:hover:bg-red-500 dark:hover:text-white border-2 border-transparent hover:border-neutral-800 dark:hover:border-white transition-colors duration-300 px-6 py-4"
                             onClick={() => setFormPropsAndSwitchUI(repo)}
                           >
                             Import
@@ -205,7 +205,7 @@ export default function PrivateRepoImport({
 
                     {isFetchingNextPage && (
                       <div className="flex justify-center py-4">
-                        <Loader2 className="h-5 w-5 animate-spin text-black dark:text-white" />
+                        <Loader2 className="h-5 w-5 animate-spin text-neutral-800 dark:text-white" />
                       </div>
                     )}
                   </>
@@ -222,15 +222,15 @@ export default function PrivateRepoImport({
               (totalListedProjectsData.data.totalListedProjects >=
                 totalListedProjectsData.data.projectListingLimit ||
                 totalListedProjectsData.data.totalListedProjects === -1) && (
-                <div className="absolute inset-0 bg-white/90 dark:bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div className="absolute inset-0 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                   <div className="relative w-full max-w-sm">
-                    <div className="relative bg-white dark:bg-[#050505] p-8 border-2 border-black dark:border-white overflow-hidden text-center transition-colors duration-300">
+                    <div className="relative bg-white dark:bg-[#050505] p-8 border-2 border-neutral-800 dark:border-white overflow-hidden text-center transition-colors duration-300">
                       <div className="relative z-10 flex flex-col items-center text-center">
-                        <div className="w-12 h-12 border-2 border-black dark:border-white flex items-center justify-center mb-6 transition-colors duration-300">
+                        <div className="w-12 h-12 border-2 border-neutral-800 dark:border-white flex items-center justify-center mb-6 transition-colors duration-300">
                           <AlertCircle className="w-6 h-6 text-red-500" />
                         </div>
 
-                        <h3 className="font-syne text-2xl font-bold text-black dark:text-white mb-4 uppercase tracking-wider transition-colors duration-300">
+                        <h3 className="font-syne text-2xl font-bold text-neutral-800 dark:text-white mb-4 uppercase tracking-wider transition-colors duration-300">
                           {totalListedProjectsData.data.totalListedProjects >=
                           totalListedProjectsData.data.projectListingLimit
                             ? "Limit Reached"
