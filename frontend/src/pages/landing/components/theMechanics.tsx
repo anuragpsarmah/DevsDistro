@@ -1,5 +1,4 @@
 import { type PointerEvent, useEffect, useRef, useState } from "react";
-import { Pause } from "lucide-react";
 import MechanicsDiagram from "./MechanicsDiagram";
 
 const HOVER_HOLD_DELAY_MS = 500;
@@ -245,14 +244,10 @@ export default function TheMechanics() {
     return `font-space text-4xl font-bold mb-8 ${colorClassName} transition-colors`;
   };
 
-  const paragraphClassName = (index: number, isLarge = false) => {
-    const isActive = activeMechanicIndex === index;
+  const paragraphClassName = (_index: number, isLarge = false) => {
     const sizeClassName = isLarge ? "text-lg" : "text-sm";
-    const colorClassName = isActive
-      ? "text-black dark:text-gray-300"
-      : "text-gray-600 dark:text-gray-400";
 
-    return `text-justify font-space ${sizeClassName} leading-relaxed ${colorClassName} transition-colors`;
+    return `text-justify font-space ${sizeClassName} leading-relaxed text-gray-700 dark:text-gray-300 transition-colors`;
   };
 
   const renderPauseIndicator = (index: number) => {
@@ -263,9 +258,17 @@ export default function TheMechanics() {
     return (
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-6 top-6 inline-flex text-red-500"
+        className="pointer-events-none absolute right-6 top-6 inline-flex h-4 w-3 text-red-500"
       >
-        <Pause size={15} strokeWidth={2.5} />
+        <svg
+          className="block h-full w-full"
+          viewBox="0 0 12 16"
+          fill="currentColor"
+          shapeRendering="crispEdges"
+        >
+          <rect x="2" y="1" width="2" height="14" />
+          <rect x="8" y="1" width="2" height="14" />
+        </svg>
       </div>
     );
   };

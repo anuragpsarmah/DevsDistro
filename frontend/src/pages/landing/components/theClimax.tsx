@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import noiseUrl from "@/assets/noise.svg";
+import { landingClimaxJoinButtonClassName } from "./landingButtonStyles";
 
 interface TheClimaxProps {
   handleAuthNavigate: () => void;
@@ -48,17 +49,17 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
             margin to the middleman.
           </h2>
 
-          <p className="font-space text-xl md:text-2xl text-black dark:text-black font-medium mb-10 max-w-2xl mx-auto transition-colors">
+          <p className="font-space text-xl md:text-2xl text-black/80 dark:text-black/80 font-medium mb-10 max-w-2xl mx-auto transition-colors">
             Take control of your repository economics today. Open Source is
             great, but securing your financial upside is better.
           </p>
 
           <button
             onClick={handleAuthNavigate}
-            className="group inline-flex items-center gap-4 bg-black text-white px-10 py-5 font-space font-bold text-lg uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 border-2 border-black"
+            className={`group ${landingClimaxJoinButtonClassName}`}
           >
             <span>Execute Join()</span>
-            <ChevronRight className="group-hover:translate-x-2 transition-transform" />
+            <ChevronRight className="transition-transform group-hover:translate-x-2" />
           </button>
         </motion.div>
       </div>

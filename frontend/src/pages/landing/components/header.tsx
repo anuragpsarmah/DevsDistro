@@ -3,6 +3,7 @@ import { Menu, X, Sun, Moon } from "lucide-react";
 import LogoIcon from "@/assets/icons/LogoIcon";
 import { HeaderProps } from "../utils/types";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { landingPrimaryButtonChrome } from "./landingButtonStyles";
 
 export default function Header({
   handleAuthNavigate,
@@ -64,7 +65,7 @@ export default function Header({
             {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
           <button
-            className="text-xs font-space font-bold uppercase tracking-widest text-white dark:text-black bg-black dark:bg-white hover:bg-red-500 dark:hover:bg-red-500 hover:text-white px-5 py-2.5 transition-colors duration-200 border-2 border-transparent hover:border-black dark:hover:border-white"
+            className={`${landingPrimaryButtonChrome} px-5 py-2.5 text-xs`}
             onClick={handleAuthNavigate}
           >
             Access Now

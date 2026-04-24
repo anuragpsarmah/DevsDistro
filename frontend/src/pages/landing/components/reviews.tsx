@@ -43,7 +43,7 @@ export default function Reviews() {
             <div className="text-red-500 font-syne text-6xl font-black opacity-20 leading-none mb-6">
               "
             </div>
-            <p className="font-space text-base text-gray-500 dark:text-gray-500 max-w-md">
+            <p className="font-space text-base text-gray-700 dark:text-gray-300 max-w-md">
               No reviews at the moment. Be the first to share yours.
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function Reviews() {
               <div className="text-red-500 font-syne text-6xl font-black opacity-30 group-hover:opacity-100 transition-opacity leading-none mb-4">
                 "
               </div>
-              <p className="font-space text-lg font-medium leading-relaxed text-gray-700 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white transition-colors">
+              <p className="font-space text-lg font-medium leading-relaxed text-gray-700 dark:text-gray-300 transition-colors">
                 {review.review_description}
               </p>
             </div>
@@ -82,7 +82,7 @@ export default function Reviews() {
                   {review.username}
                 </div>
               </div>
-              <div className="font-space text-sm text-gray-600 dark:text-gray-500 group-hover:text-black dark:group-hover:text-gray-400 mb-4 transition-colors">
+              <div className="font-space text-sm text-gray-700 dark:text-gray-300 mb-4 transition-colors">
                 {review.job_role}
               </div>
               <div className="text-red-500 text-sm font-bold tracking-widest">

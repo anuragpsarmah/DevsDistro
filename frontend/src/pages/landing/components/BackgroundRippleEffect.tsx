@@ -249,7 +249,7 @@ export const BackgroundRippleEffect = ({
                 />
                 <div
                   className={cn(
-                    "pointer-events-none absolute inset-0 border-[0.5px] border-black/10 dark:border-white/10",
+                    "pointer-events-none absolute inset-0 border-[0.5px] border-black/[0.07] dark:border-white/[0.07]",
                     rowIdx === 0 && "border-t-0",
                     rowIdx === rows - 1 && "border-b-0",
                     colIdx === 0 && "border-l-0 [clip-path:inset(0_0_0_8px)]",

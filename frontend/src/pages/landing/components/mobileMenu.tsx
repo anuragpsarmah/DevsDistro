@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "@/components/providers/ThemeProvider";
+import { landingPrimaryButtonChrome } from "./landingButtonStyles";
 
 interface MobileMenuProps {
   handleAuthNavigate: () => void;
@@ -65,7 +66,7 @@ export default function MobileMenu({
 
             <div className="mt-8 pt-8 border-t border-black/10 dark:border-white/20">
               <button
-                className="w-full text-center text-xl font-space font-bold uppercase tracking-widest text-white dark:text-black bg-black dark:bg-white hover:bg-red-500 dark:hover:bg-red-500 hover:text-white px-6 py-6 transition-colors duration-200"
+                className={`${landingPrimaryButtonChrome} w-full justify-center px-6 py-6 text-xl`}
                 onClick={() => {
                   setIsMenuOpen(false);
                   handleAuthNavigate();

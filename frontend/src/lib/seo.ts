@@ -3,7 +3,7 @@ export const SITE_URL = (
   import.meta.env.VITE_SITE_URL || "https://devsdistro.com"
 ).replace(/\/+$/, "");
 export const TWITTER_HANDLE = "@anuragpsarmah";
-export const DEFAULT_SEO_IMAGE = `${SITE_URL}/og-image.png`;
+export const DEFAULT_SEO_IMAGE = `${SITE_URL}/og-image.jpg`;
 export const DEFAULT_TITLE = "DevsDistro | Marketplace for GitHub Repositories";
 export const DEFAULT_DESCRIPTION =
   "Buy and sell repositories on DevsDistro. List private GitHub repositories, price them in USD, settle payments in SOL, and deliver repository archives instantly.";

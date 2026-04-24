@@ -51,7 +51,7 @@ export default function FAQ() {
               <br />
               <span className="text-black/40 dark:text-white/40">Asked.</span>
             </h2>
-            <p className="font-space text-gray-600 dark:text-gray-500 text-sm transition-colors text-center md:text-left">
+            <p className="font-space text-gray-700 dark:text-gray-300 text-sm transition-colors text-center md:text-left">
               Operational specifications and technical constraints regarding
               DevsDistro.
             </p>
@@ -106,7 +106,7 @@ export default function FAQ() {
                         initial={false}
                         animate={{ y: isOpen ? 0 : -8 }}
                         transition={panelTransition}
-                        className="text-justify pb-8 font-space text-gray-600 dark:text-gray-400 text-base md:text-lg leading-relaxed transition-colors"
+                        className="text-justify pb-8 font-space text-gray-700 dark:text-gray-300 text-base md:text-lg leading-relaxed transition-colors"
                       >
                         {faq.answer}
                       </motion.p>

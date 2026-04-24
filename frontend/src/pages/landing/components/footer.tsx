@@ -28,7 +28,7 @@ export default function Footer() {
                 <LogoIcon className="w-8 h-8" />
                 DevsDistro
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed transition-colors text-center md:text-left">
+              <p className="text-gray-700 dark:text-gray-300 mb-8 leading-relaxed transition-colors text-center md:text-left">
                 A repository marketplace powered by Solana and GitHub.
               </p>
             </div>
@@ -127,7 +127,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-gray-600 uppercase tracking-widest transition-colors">
+        <div className="pt-8 border-t border-black/10 dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest transition-colors">
           <p>© {new Date().getFullYear()} DevsDistro. All rights reserved.</p>
           <div className="flex gap-8 border border-black/10 dark:border-white/10 px-4 py-2 transition-colors">
             <span>

@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 const distDir = path.resolve(__dirname, "../dist");
 const indexHtmlPath = path.join(distDir, "index.html");
 const siteUrl = "https://devsdistro.com";
-const defaultImage = `${siteUrl}/og-image.png`;
+const defaultImage = `${siteUrl}/og-image.jpg`;
 
 const routes = [
   {
