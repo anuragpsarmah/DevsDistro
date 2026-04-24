@@ -1,7 +1,7 @@
 import { ArrowRight, Code2 } from "lucide-react";
-import githubLockupBlackUrl from "@/assets/brand/github-lockup-black.svg";
-import noiseUrl from "@/assets/noise.svg";
-import solanaLogoUrl from "@/assets/brand/solana-logo.svg";
+import githubLockupBlackUrl from "@/assets/brand/github-lockup-black.svg?url";
+import noiseUrl from "@/assets/noise.svg?url";
+import solanaLogoUrl from "@/assets/brand/solana-logo.svg?url";
 import { BackgroundRippleEffect } from "./BackgroundRippleEffect";
 import { landingPrimaryButtonClassName } from "./landingButtonStyles";
 

@@ -7,7 +7,7 @@ export default function Footer() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const footerLinkClassName =
-    "text-gray-600 dark:text-gray-400 hover:text-red-500 md:hover:ml-2 transition-all inline-block";
+    "text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-500 md:hover:ml-2 transition-all inline-block";
 
   const handleScroll = (id: string) => {
     if (isHome) {
@@ -37,7 +37,7 @@ export default function Footer() {
                 href="https://github.com/anuragpsarmah/DevsDistro"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center"
+                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 dark:hover:text-red-500 transition-all flex items-center justify-center"
                 aria-label="Open DevsDistro GitHub repository"
               >
                 <Github size={20} />
@@ -46,7 +46,7 @@ export default function Footer() {
                 href="https://x.com/anuragpsarmah"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 transition-all flex items-center justify-center"
+                className="p-3 border border-black/20 dark:border-white/20 hover:border-black dark:hover:border-white hover:text-red-500 dark:hover:text-red-500 transition-all flex items-center justify-center"
                 aria-label="Open DevsDistro creator profile on X"
               >
                 <XIcon />
