@@ -109,19 +109,14 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] border-[3px] border-neutral-300 bg-white p-[2px] shadow-[0_4px_12px_rgba(0,0,0,0.06)] dark:border-neutral-700 dark:bg-[#050505] dark:shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
                   <div className="flex h-full w-full items-center justify-center rounded-[4px] bg-neutral-200 dark:bg-neutral-700">
-                    <div
-                      className="h-[25px] w-[25.5px] bg-black dark:bg-neutral-200"
-                      style={{
-                        maskImage: `url(${githubLockupBlackUrl})`,
-                        maskSize: "auto 100%",
-                        maskPosition: "left center",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskImage: `url(${githubLockupBlackUrl})`,
-                        WebkitMaskSize: "auto 100%",
-                        WebkitMaskPosition: "left center",
-                        WebkitMaskRepeat: "no-repeat",
-                      }}
-                    />
+                    <div className="h-[25px] w-[25.5px] overflow-hidden relative">
+                      <img
+                        src={githubLockupBlackUrl}
+                        alt=""
+                        className="absolute top-0 left-0 h-[25px] w-auto max-w-none dark:invert dark:opacity-[0.85]"
+                        aria-hidden="true"
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col items-start font-space leading-tight">
