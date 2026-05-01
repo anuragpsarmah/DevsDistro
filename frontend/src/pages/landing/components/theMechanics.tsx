@@ -94,7 +94,7 @@ export default function TheMechanics() {
           </h2>
         </div>
 
-        <div className="rounded-3xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#050505] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.6)] flex flex-col">
+        <div className="rounded-3xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#050505] overflow-hidden shadow-[0_14px_32px_-28px_rgba(38,38,38,0.42)] dark:shadow-[0_14px_34px_-28px_rgba(38,38,38,0.78)] flex flex-col">
           {/* Mac Window Title Bar */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/80 dark:bg-[#0a0a0a]/80 backdrop-blur-sm relative z-20">
             <div className="group flex space-x-2 absolute left-4 items-center">
@@ -197,16 +197,15 @@ export default function TheMechanics() {
 
             {/* Main Content Area */}
             <div className="w-full md:w-2/3 p-6 md:p-12 flex flex-col items-center justify-center relative overflow-hidden">
-              {/* Graph Paper Background Overlay */}
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjYWFhIiBmaWxsLW9wYWNpdHk9IjAuNSIvPgo8L3N2Zz4=')] opacity-15 dark:opacity-25 pointer-events-none z-0 mix-blend-normal"></div>
-              <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white dark:from-[#050505] dark:via-transparent dark:to-[#050505] pointer-events-none z-0"></div>
-
               {/* SVG (MechanicsDiagram) */}
               <div className="w-[calc(100%+2rem)] md:w-[calc(100%+4rem)] -mx-4 md:-mx-8 mb-10 relative z-10 min-h-[220px] md:min-h-[300px] flex items-center justify-center [&_svg]:!min-w-0 [&_svg]:!w-full [&_svg]:max-w-[1000px] transition-transform">
-                <MechanicsDiagram
-                  activeIndex={autoMechanicIndex}
-                  isRunning={hasStartedDiagram}
-                />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(115,115,115,0.46)_1px,transparent_1px)] [background-size:8px_8px] opacity-20 dark:opacity-25 pointer-events-none z-0" />
+                <div className="relative z-10 w-full">
+                  <MechanicsDiagram
+                    activeIndex={autoMechanicIndex}
+                    isRunning={hasStartedDiagram}
+                  />
+                </div>
               </div>
 
               {/* Text changes below SVG */}

@@ -56,16 +56,9 @@ export default function TermsOfService() {
 
       <div className="landing-dotted-rule landing-dotted-x fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-30"></div>
 
-      <main className="relative z-10 w-full pt-32 pb-24 px-6 md:px-12">
+      <main className="relative z-10 w-full pt-32 pb-24 px-6 md:px-12 mt-12">
         <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-[2px] bg-red-500"></div>
-            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-              Legal Documentation
-            </span>
-          </div>
-
           <h1 className="font-syne text-4xl sm:text-5xl md:text-7xl font-black leading-none text-neutral-800 dark:text-white uppercase tracking-widest mb-16 whitespace-nowrap">
             Terms of Service
           </h1>

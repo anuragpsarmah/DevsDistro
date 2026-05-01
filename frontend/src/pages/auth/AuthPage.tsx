@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GithubIcon, Code2, ArrowRight } from "lucide-react";
+import { GithubIcon, ArrowRight } from "lucide-react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useAuthValidationQuery } from "@/hooks/apiQueries";
 import { apiClient } from "@/lib/axiosInstance";
@@ -8,6 +8,8 @@ import Header from "@/pages/landing/components/header";
 import MobileMenu from "@/pages/landing/components/mobileMenu";
 import Footer from "@/pages/landing/components/footer";
 import SEO from "@/components/seo/SEO";
+import { landingClimaxJoinButtonClassName } from "@/pages/landing/components/landingButtonStyles";
+import noiseUrl from "@/assets/noise.svg?url";
 
 export default function AuthPage() {
   const navigate = useNavigate();
@@ -56,7 +58,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex flex-col">
+    <div className="min-h-screen text-gray-900 bg-white dark:text-white dark:bg-[#050505] font-space selection:bg-red-500 selection:text-white transition-colors duration-300 relative flex flex-col overflow-hidden">
       <SEO
         title="Authentication"
         description="Sign in to DevsDistro with GitHub to buy or sell repositories."
@@ -78,101 +80,59 @@ export default function AuthPage() {
       <div className="landing-dotted-rule landing-dotted-x fixed inset-y-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-30"></div>
 
       <main className="relative z-10 flex-grow pt-[calc(6rem+70px)] pb-24 px-4 w-full flex items-center justify-center">
+        <div
+          className="absolute inset-0 opacity-[0.025] pointer-events-none mix-blend-overlay"
+          style={{ backgroundImage: `url(${noiseUrl})` }}
+        ></div>
+        <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-neutral-100/70 via-white/40 to-transparent dark:from-neutral-900/40 dark:via-[#050505]/30 pointer-events-none"></div>
         <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
 
-        <div className="mx-auto w-full max-w-5xl border-2 border-neutral-800 dark:border-white p-8 md:p-16 relative flex flex-col lg:flex-row gap-16 items-stretch">
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="flex items-center gap-4 mb-8 justify-center md:justify-start">
-              <div className="w-12 h-[2px] bg-red-500"></div>
-              <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-                Auth Protocol
-              </span>
-              <div className="w-12 h-[2px] bg-red-500"></div>
+        <div className="mx-auto w-full max-w-3xl relative overflow-hidden rounded-[8px] border border-neutral-200 bg-white/95 shadow-[0_18px_42px_-34px_rgba(38,38,38,0.46)] backdrop-blur-sm dark:border-white/10 dark:bg-[#080808]/95 dark:shadow-[0_18px_44px_-34px_rgba(38,38,38,0.86)]">
+          <div className="relative flex flex-col items-stretch gap-0">
+            <div className="flex flex-col justify-center px-8 pb-4 pt-8 text-center md:px-12 md:pb-5 md:pt-12 lg:px-14 lg:pb-6 lg:pt-14">
+              <h1 className="mb-6 font-syne text-5xl font-black uppercase leading-none tracking-widest text-neutral-900 break-words hyphens-auto dark:text-white md:text-6xl lg:text-7xl">
+                Initiate
+                <br />
+                Session
+              </h1>
+
+              <p className="mx-auto max-w-xl text-lg leading-relaxed text-gray-600 dark:text-gray-400 md:text-xl">
+                Authenticate using{" "}
+                <span className="font-bold text-red-500">GITHUB OAUTH</span>.
+              </p>
             </div>
 
-            <h1 className="font-syne font-black uppercase tracking-widest leading-none text-5xl md:text-6xl lg:text-7xl mb-6 break-words hyphens-auto">
-              Initiate
-              <br />
-              Session
-            </h1>
-
-            <p className="text-gray-600 dark:text-gray-400 text-lg md:text-xl leading-relaxed mb-10">
-              Authenticate using{" "}
-              <span className="text-neutral-800 dark:text-white font-bold">
-                GITHUB OAUTH
-              </span>
-              .
-            </p>
-
-            <ul className="flex flex-col gap-5">
-              <li className="flex gap-4 items-start">
-                <span className="text-red-500 font-bold opacity-50">/</span>
-                <span className="text-gray-600 dark:text-gray-400 font-space text-sm md:text-base">
-                  Seamless repository integration.
+            <div className="flex w-full flex-col items-center justify-center bg-neutral-50/55 px-8 pb-8 pt-2 dark:bg-neutral-900/10 md:px-10 md:pb-10 md:pt-3 lg:px-12 lg:pb-12 lg:pt-4">
+              <button
+                className={`group w-full max-w-md justify-center ${landingClimaxJoinButtonClassName}`}
+                onClick={handleLoginClick}
+              >
+                <span className="flex items-center justify-center gap-3">
+                  <GithubIcon className="w-6 h-6" />
+                  <span>Execute Auth</span>
+                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
                 </span>
-              </li>
-              <li className="flex gap-4 items-start">
-                <span className="text-red-500 font-bold opacity-50">/</span>
-                <span className="text-gray-600 dark:text-gray-400 font-space text-sm md:text-base">
-                  Instant delivery after every purchase.
-                </span>
-              </li>
-              <li className="flex gap-4 items-start">
-                <span className="text-red-500 font-bold opacity-50">/</span>
-                <span className="text-gray-600 dark:text-gray-400 font-space text-sm md:text-base">
-                  99% payment retention per transacted asset.
-                </span>
-              </li>
-            </ul>
-          </div>
+              </button>
 
-          <div className="flex-1 w-full lg:w-3/5 border-t-2 lg:border-t-0 lg:border-l-2 border-neutral-800/10 dark:border-white/10 pt-12 lg:pt-0 lg:pl-16 flex flex-col items-center justify-center">
-            <Code2
-              size={64}
-              className="text-neutral-800 dark:text-white mb-10 opacity-30"
-              strokeWidth={1}
-            />
-
-            <button
-              className="w-full px-8 py-5 bg-neutral-800 text-white dark:bg-white dark:text-neutral-800 font-space font-bold uppercase tracking-widest text-xs md:text-sm transition-colors duration-200 border-2 border-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white dark:hover:text-white hover:border-neutral-800 dark:hover:border-white flex items-center justify-center gap-4"
-              onClick={handleLoginClick}
-            >
-              <span className="flex items-center justify-center gap-3">
-                <GithubIcon className="w-6 h-6" />
-                <span>Execute Auth</span>
-                <ArrowRight className="w-5 h-5" />
-              </span>
-            </button>
-
-            <div className="mt-12 text-center w-full">
-              <p className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase tracking-[0.2em] mb-4">
-                Legal Directives
-              </p>
-              <div className="flex flex-col gap-3 items-center">
-                <Link
-                  to="/terms"
-                  className="group flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors uppercase tracking-widest"
-                >
-                  <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    /
-                  </span>
-                  <span>Terms of Service</span>
-                  <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    /
-                  </span>
-                </Link>
-                <Link
-                  to="/privacy"
-                  className="group flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 hover:text-neutral-800 dark:hover:text-white transition-colors uppercase tracking-widest"
-                >
-                  <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    /
-                  </span>
-                  <span>Privacy Policy</span>
-                  <span className="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    /
-                  </span>
-                </Link>
+              <div className="mt-6 w-full max-w-md text-center md:mt-8 lg:mt-10">
+                <div className="flex flex-col items-center gap-3">
+                  <Link
+                    to="/terms"
+                    className="group flex items-center gap-3 text-xs uppercase tracking-widest text-gray-500 transition-colors hover:text-neutral-800 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
+                    <span>Terms of Service</span>
+                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
+                  </Link>
+                  <Link
+                    to="/privacy"
+                    className="group flex items-center gap-3 text-xs uppercase tracking-widest text-gray-500 transition-colors hover:text-neutral-800 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
+                    <span>Privacy Policy</span>
+                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

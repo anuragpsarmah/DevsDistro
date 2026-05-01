@@ -1,6 +1,4 @@
 import React from "react";
-import noiseUrl from "@/assets/noise.svg";
-
 type MechanicsDiagramProps = {
   activeIndex?: number | null;
   isRunning?: boolean;
@@ -397,33 +395,10 @@ export default function MechanicsDiagram({
       `}</style>
 
       <div
-        className={`mechanics-diagram relative w-full py-8 md:py-10 px-4 md:px-12 flex justify-center bg-white dark:bg-[#050505] transition-colors overflow-hidden ${
+        className={`mechanics-diagram relative w-full py-8 md:py-10 px-4 md:px-12 flex justify-center bg-transparent transition-colors overflow-hidden ${
           isRunning ? "is-running" : ""
         } ${activeIndex !== null ? `has-active active-${activeIndex}` : ""}`}
       >
-        {/* Noise Texture */}
-        <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay z-0"
-          style={{
-            backgroundImage: `url(${noiseUrl})`,
-          }}
-        ></div>
-
-        {/* Faded Diagonal Grid */}
-        <div
-          className="absolute inset-0 pointer-events-none z-0 opacity-[0.07] dark:opacity-[0.08] text-neutral-500 dark:text-neutral-500 hidden md:block"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 1px, transparent var(--md-grid-gap)),
-              repeating-linear-gradient(-45deg, currentColor 0, currentColor 1px, transparent 1px, transparent var(--md-grid-gap))
-            `,
-            maskImage:
-              "radial-gradient(ellipse at 50% 50%, black 20%, transparent 80%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse at 50% 50%, black 20%, transparent 80%)",
-          }}
-        ></div>
-
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="20 65 600 130"
