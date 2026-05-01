@@ -54,14 +54,6 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
 
       <div className="max-w-6xl mx-auto w-full relative z-10 pointer-events-none">
         <div className="flex flex-col items-center text-center">
-          <div className="flex items-center gap-4 mb-8 justify-center pointer-events-auto">
-            <div className="w-12 h-[2px] bg-red-500"></div>
-            <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
-              DevsDistro
-            </span>
-            <div className="w-12 h-[2px] bg-red-500"></div>
-          </div>
-
           <h1 className="font-syne text-5xl md:text-7xl lg:text-8xl font-black leading-[0.9] text-neutral-800 dark:text-white tracking-[0.08em] uppercase pointer-events-auto select-text">
             <span className="block md:whitespace-nowrap">A REPOSITORY</span>
             <span className="block md:whitespace-nowrap">MARKET THAT</span>
@@ -88,7 +80,7 @@ export default function Prologue({ handleAuthNavigate }: PrologueProps) {
             </button>
             <a
               href="#the-mechanics"
-              className="inline-flex items-center gap-2 border-[3px] border-neutral-800/35 bg-neutral-200/90 px-8 py-4 font-space font-bold uppercase tracking-widest text-neutral-800 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.9),inset_0_0_22px_rgba(255,255,255,0.18),0_10px_22px_-18px_rgba(38,38,38,0.34)] transition-all duration-200 hover:border-neutral-800/50 hover:bg-neutral-300/90 hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,1),inset_0_0_26px_rgba(255,255,255,0.25),0_10px_22px_-18px_rgba(38,38,38,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-white/35 dark:bg-[#151515]/95 dark:text-white dark:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.14),inset_0_0_22px_rgba(255,255,255,0.08),0_10px_24px_-18px_rgba(38,38,38,0.72)] dark:hover:border-white/50 dark:hover:bg-[#202020]/95 dark:hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.2),inset_0_0_26px_rgba(255,255,255,0.12),0_10px_24px_-18px_rgba(38,38,38,0.72)]"
+              className="inline-flex items-center gap-2 border-[3px] border-neutral-800/35 bg-neutral-200/90 px-8 py-4 font-space font-bold uppercase tracking-widest text-neutral-800 shadow-[inset_0_0_0_2px_rgba(255,255,255,0.9),inset_0_0_22px_rgba(255,255,255,0.18),0_10px_22px_-18px_rgba(38,38,38,0.34)] transition-all duration-200 hover:bg-neutral-800 hover:text-neutral-200 hover:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.08),0_10px_22px_-18px_rgba(38,38,38,0.44)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/30 dark:border-white/35 dark:bg-[#151515]/95 dark:text-white dark:shadow-[inset_0_0_0_2px_rgba(255,255,255,0.14),inset_0_0_22px_rgba(255,255,255,0.08),0_10px_24px_-18px_rgba(38,38,38,0.72)] dark:hover:bg-white dark:hover:text-[#151515] dark:hover:shadow-[inset_0_0_0_2px_rgba(0,0,0,0.06),0_10px_24px_-18px_rgba(38,38,38,0.72)]"
             >
               View Flow <ArrowRight size={18} />
             </a>

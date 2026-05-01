@@ -3,36 +3,18 @@ import noiseUrl from "@/assets/noise.svg";
 
 type MechanicsDiagramProps = {
   activeIndex?: number | null;
-  heldIndex?: number | null;
   isRunning?: boolean;
-  releaseIndex?: number | null;
-  onNodeHoverEnd?: (index: number) => void;
-  onNodeHoverMove?: (
-    index: number,
-    event: React.PointerEvent<SVGGElement>
-  ) => void;
-  onNodeHoverStart?: (
-    index: number,
-    event: React.PointerEvent<SVGGElement>
-  ) => void;
 };
 
 export default function MechanicsDiagram({
   activeIndex = null,
-  heldIndex = null,
   isRunning = false,
-  releaseIndex = null,
-  onNodeHoverEnd,
-  onNodeHoverMove,
-  onNodeHoverStart,
 }: MechanicsDiagramProps) {
   const nodeClassName = (index: number, name: string) =>
-    `interactive-node ${name} ${activeIndex === index ? "active" : ""} ${
-      heldIndex === index ? "held" : ""
-    } ${releaseIndex === index ? "release-firing" : ""}`;
+    `interactive-node ${name} ${activeIndex === index ? "active" : ""}`;
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-hidden hide-scrollbar transition-colors">
+    <div className="w-full overflow-hidden hide-scrollbar transition-colors">
       <style>{`
         .mechanics-diagram {
           --md-bg: transparent;
@@ -43,8 +25,8 @@ export default function MechanicsDiagram({
           --md-surface: #fafafa;
           --md-stroke-w: 1.25px;
           --md-shadow-idle: drop-shadow(0 7px 16px rgba(24, 24, 27, 0.045));
-          --md-shadow-hover-bg: drop-shadow(0 10px 22px rgba(24, 24, 27, 0.07)) drop-shadow(0 0 8px rgba(239, 68, 68, 0.08));
-          --md-shadow-hover-el: drop-shadow(0 6px 14px rgba(24, 24, 27, 0.09));
+          --md-shadow-active-bg: drop-shadow(0 10px 22px rgba(24, 24, 27, 0.07)) drop-shadow(0 0 8px rgba(239, 68, 68, 0.08));
+          --md-shadow-active-el: drop-shadow(0 6px 14px rgba(24, 24, 27, 0.09));
           --md-shadow-lock: drop-shadow(0 7px 14px rgba(24, 24, 27, 0.12));
           --md-shadow-top: drop-shadow(0 -5px 10px rgba(24, 24, 27, 0.08));
           --md-accent: #ef4444; /* Add accent var */
@@ -65,8 +47,8 @@ export default function MechanicsDiagram({
           --md-track-idle: rgba(212, 212, 216, 0.13);
           --md-surface: #0f0f10;
           --md-shadow-idle: drop-shadow(0 8px 18px rgba(38,38,38, 0.2));
-          --md-shadow-hover-bg: drop-shadow(0 14px 28px rgba(38,38,38, 0.36)) drop-shadow(0 0 10px rgba(239, 68, 68, 0.14));
-          --md-shadow-hover-el: drop-shadow(0 7px 14px rgba(38,38,38, 0.24));
+          --md-shadow-active-bg: drop-shadow(0 14px 28px rgba(38,38,38, 0.36)) drop-shadow(0 0 10px rgba(239, 68, 68, 0.14));
+          --md-shadow-active-el: drop-shadow(0 7px 14px rgba(38,38,38, 0.24));
           --md-shadow-lock: drop-shadow(0 8px 16px rgba(38,38,38, 0.28));
           --md-shadow-top: drop-shadow(0 -5px 10px rgba(38,38,38, 0.22));
           --md-accent: #ef4444;
@@ -81,13 +63,14 @@ export default function MechanicsDiagram({
         }
 
         .mechanics-diagram .node-group {
-          transition: transform 0.5s var(--spring), opacity 0.6s var(--ease-out), filter 0.6s var(--ease-out);
+          transition: transform 0.5s var(--spring) 0s, opacity 0.6s var(--ease-out) 0s, filter 0.6s var(--ease-out) 0s;
           transform-origin: center;
           transform-box: fill-box;
         }
 
         .mechanics-diagram .interactive-node.active .node-group {
           transform: scale(1.04);
+          transition: transform 0.5s var(--spring) 0.35s, opacity 0.6s var(--ease-out) 0.35s, filter 0.6s var(--ease-out) 0.35s;
         }
 
         .mechanics-diagram.has-active .interactive-node:not(.active) .node-group,
@@ -128,7 +111,7 @@ export default function MechanicsDiagram({
           letter-spacing: 0.2em;
           text-anchor: middle;
           pointer-events: none;
-          transition: fill 0.3s var(--ease-out), transform 0.4s var(--spring), opacity 0.6s var(--ease-out), filter 0.6s var(--ease-out);
+          transition: fill 0.3s var(--ease-out) 0s, transform 0.4s var(--spring) 0s, opacity 0.6s var(--ease-out) 0s, filter 0.6s var(--ease-out) 0s;
         }
 
         /* Clean Beam Pipeline */
@@ -156,13 +139,15 @@ export default function MechanicsDiagram({
           filter: drop-shadow(0 0 4px var(--md-accent));
         }
         
-        .mechanics-diagram.is-running:not(.is-hover-held):not(.is-release-firing) .interactive-node.active .track-beam {
-          animation: md-shoot-beam 1.8s linear forwards;
+        .mechanics-diagram.is-running.active-1 .n1 .track-beam,
+        .mechanics-diagram.is-running.active-2 .n2 .track-beam,
+        .mechanics-diagram.is-running.active-3 .n3 .track-beam {
+          animation: md-shoot-beam-incoming 0.35s linear forwards;
         }
 
-        /* Hover & Active Interactions */
-        .mechanics-diagram .interactive-node.active .track-center { stroke: var(--md-ink-muted); }
-        .mechanics-diagram .interactive-node.active .track-outer { opacity: 0.2; stroke: var(--md-ink); }
+        /* Active Interactions */
+        .mechanics-diagram .interactive-node.active .track-center { stroke: var(--md-ink-muted); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.active .track-outer { opacity: 0.2; stroke: var(--md-ink); transition-delay: 0.35s; }
 
         .mechanics-diagram .icon-path-trace {
           stroke: var(--md-accent);
@@ -175,7 +160,7 @@ export default function MechanicsDiagram({
         }
 
         .mechanics-diagram .interactive-node.active .icon-path-trace {
-          animation: md-trace-shape 1.8s linear forwards;
+          animation: md-trace-shape 2.8s linear forwards;
         }
         
         .mechanics-diagram .beam-gather,
@@ -190,38 +175,21 @@ export default function MechanicsDiagram({
         .mechanics-diagram .beam-gather-cap {
           stroke-linecap: round;
         }
-        .mechanics-diagram.is-running:not(.is-hover-held):not(.is-release-firing) .interactive-node.active .beam-gather,
-        .mechanics-diagram.is-running:not(.is-hover-held):not(.is-release-firing) .interactive-node.active .beam-gather-cap {
-          animation: md-gather-beam 1.8s linear forwards;
-        }
-
-        .mechanics-diagram.is-running.is-hover-held .interactive-node.active.held .beam-gather,
-        .mechanics-diagram.is-running.is-hover-held .interactive-node.active.held .beam-gather-cap {
-          animation: md-gather-beam-hold 0.72s var(--ease-out) forwards, md-ready-beam-shake 0.58s ease-in-out 0.72s infinite;
-        }
-
-        .mechanics-diagram.is-running.is-hover-held .interactive-node.active.held .track-beam {
-          animation: none;
-          opacity: 0;
-        }
-
-        .mechanics-diagram.is-running.is-release-firing .interactive-node.active.release-firing .track-beam {
-          animation: md-release-shoot-beam 0.27s linear forwards;
-        }
-
-        .mechanics-diagram.is-running.is-release-firing .interactive-node.active.release-firing .beam-gather,
-        .mechanics-diagram.is-running.is-release-firing .interactive-node.active.release-firing .beam-gather-cap {
-          animation: md-release-gather-flash 0.27s linear forwards;
+        .mechanics-diagram.is-running .interactive-node.active .beam-gather,
+        .mechanics-diagram.is-running .interactive-node.active .beam-gather-cap {
+          animation: md-gather-beam 2.8s linear forwards;
         }
 
         .mechanics-diagram .interactive-node.active .icon-bg {
-          filter: var(--md-shadow-hover-bg);
+          filter: var(--md-shadow-active-bg);
+          transition-delay: 0.35s;
         }
         .mechanics-diagram .interactive-node.active .text-label { 
           fill: var(--md-accent); 
+          transition: fill 0.3s var(--ease-out) 0.35s, transform 0.4s var(--spring) 0.35s, opacity 0.6s var(--ease-out) 0.35s, filter 0.6s var(--ease-out) 0.35s;
         }
-        .mechanics-diagram .interactive-node.active .stroke-main { stroke: var(--md-ink-strong); }
-        .mechanics-diagram .interactive-node.active .fill-main { stroke: var(--md-ink-strong); }
+        .mechanics-diagram .interactive-node.active .stroke-main { stroke: var(--md-ink-strong); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.active .fill-main { stroke: var(--md-ink-strong); transition-delay: 0.35s; }
         
         /* Node 1 */
         .mechanics-diagram .git-path { transition: stroke 0.4s var(--ease-out); }
@@ -232,12 +200,12 @@ export default function MechanicsDiagram({
         }
         .mechanics-diagram .interactive-node.n1.active .git-commit {
           stroke: var(--md-ink);
-          animation: md-commit-playback 1.8s ease-in-out 1;
-          animation-delay: calc(var(--order) * 0.12s);
+          animation: md-commit-playback 2.45s ease-in-out 1;
+          animation-delay: calc(var(--order) * 0.12s + 0.35s);
         }
         .mechanics-diagram .interactive-node.n1.active .git-commit.final-commit {
           animation: md-final-commit-glow 1.1s ease-in-out 1 forwards;
-          animation-delay: calc(var(--order) * 0.12s);
+          animation-delay: calc(var(--order) * 0.12s + 0.35s);
         }
 
         /* Node 2 */
@@ -247,24 +215,24 @@ export default function MechanicsDiagram({
           transition: transform 0.6s var(--spring) 0s, filter 0.6s var(--spring) 0s; 
         }
         .mechanics-diagram .lock-shackle { transition: transform 0.3s var(--ease-out) 0.4s, stroke 0.3s var(--ease-out) 0.4s; }
-        .mechanics-diagram .interactive-node.n2.active .lock-shackle { transform: translateY(-4px); stroke: var(--md-ink); transition: transform 0.3s var(--ease-out) 0s, stroke 0.3s var(--ease-out) 0s; }
-        .mechanics-diagram .interactive-node.n2.active .oauth-lock { transform: translate(14px, -16px) scale(0.5); filter: var(--md-shadow-lock); transition: transform 0.7s var(--spring) 0.2s, filter 0.7s var(--spring) 0.2s; }
-        .mechanics-diagram .interactive-node.n2.active .app-frame { filter: var(--md-shadow-hover-el); stroke-width: 1.35px; }
-        .mechanics-diagram .interactive-node.n2.active .r1 { transition: all 0.3s var(--ease-out) 0.6s; }
-        .mechanics-diagram .interactive-node.n2.active .r2 { transition: all 0.3s var(--ease-out) 0.8s; }
-        .mechanics-diagram .interactive-node.n2.active .r3 { transition: all 0.3s var(--ease-out) 1.0s; }
+        .mechanics-diagram .interactive-node.n2.active .lock-shackle { transform: translateY(-4px); stroke: var(--md-ink); transition: transform 0.3s var(--ease-out) 0.35s, stroke 0.3s var(--ease-out) 0.35s; }
+        .mechanics-diagram .interactive-node.n2.active .oauth-lock { transform: translate(14px, -16px) scale(0.5); filter: var(--md-shadow-lock); transition: transform 0.7s var(--spring) 0.55s, filter 0.7s var(--spring) 0.55s; }
+        .mechanics-diagram .interactive-node.n2.active .app-frame { filter: var(--md-shadow-active-el); stroke-width: 1.35px; transition: filter 0.3s 0.35s, stroke-width 0.3s 0.35s; }
+        .mechanics-diagram .interactive-node.n2.active .r1 { transition: all 0.3s var(--ease-out) 0.95s; }
+        .mechanics-diagram .interactive-node.n2.active .r2 { transition: all 0.3s var(--ease-out) 1.15s; }
+        .mechanics-diagram .interactive-node.n2.active .r3 { transition: all 0.3s var(--ease-out) 1.35s; }
         .mechanics-diagram .repo-dot { opacity: 0; transform: scale(0.5); transition: all 0.3s var(--spring); transform-box: fill-box; transform-origin: center; }
         .mechanics-diagram .repo-line { stroke-dasharray: 12; stroke-dashoffset: 12; opacity: 0; transition: all 0.3s var(--ease-out); }
-        .mechanics-diagram .interactive-node.n2.active .repo-dot { opacity: 1; transform: scale(1.1); fill: var(--md-accent); }
-        .mechanics-diagram .interactive-node.n2.active .repo-line { stroke-dashoffset: 0; opacity: 0.9; stroke: var(--md-ink); }
+        .mechanics-diagram .interactive-node.n2.active .repo-dot { opacity: 1; transform: scale(1.1); fill: var(--md-accent); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.n2.active .repo-line { stroke-dashoffset: 0; opacity: 0.9; stroke: var(--md-ink); transition-delay: 0.35s; }
 
         /* Node 3 */
         .mechanics-diagram .token-check { opacity: 0; stroke-dasharray: 14; stroke-dashoffset: 14; transition: all 0.4s var(--spring) 0s; transform-origin: center; transform-box: fill-box; }
         .mechanics-diagram .settle-ring { stroke-dasharray: 105; stroke-dashoffset: 105; transform: rotate(-90deg); transform-origin: center; transform-box: fill-box; transition: stroke-dashoffset 1s var(--ease-in-out), transform 1s var(--ease-in-out), stroke 0.6s var(--ease-out); }
-        .mechanics-diagram .interactive-node.n3.active .token-base { filter: var(--md-shadow-hover-el); }
-        .mechanics-diagram .interactive-node.n3.active .sol-mark { opacity: 0; transform: scale(0) rotate(180deg); }
-        .mechanics-diagram .interactive-node.n3.active .token-check { opacity: 1; stroke-dashoffset: 0; stroke: var(--md-accent); stroke-width: 2px; transition: all 0.5s var(--spring) 0.8s; }
-        .mechanics-diagram .interactive-node.n3.active .settle-ring { stroke-dashoffset: 0; stroke: var(--md-accent); transform: rotate(90deg); }
+        .mechanics-diagram .interactive-node.n3.active .token-base { filter: var(--md-shadow-active-el); transition: filter 0.3s 0.35s; }
+        .mechanics-diagram .interactive-node.n3.active .sol-mark { opacity: 0; transform: scale(0) rotate(180deg); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.n3.active .token-check { opacity: 1; stroke-dashoffset: 0; stroke: var(--md-accent); stroke-width: 2px; transition: all 0.5s var(--spring) 1.15s; }
+        .mechanics-diagram .interactive-node.n3.active .settle-ring { stroke-dashoffset: 0; stroke: var(--md-accent); transform: rotate(90deg); transition-delay: 0.35s; }
         .mechanics-diagram .sol-mark { fill: var(--md-ink-muted); transition: all 0.5s var(--spring); transform-origin: center; transform-box: fill-box; }
 
         /* Node 4 */
@@ -286,168 +254,75 @@ export default function MechanicsDiagram({
           stroke: var(--md-ink);
           fill: var(--md-surface);
           filter: var(--md-shadow-top);
+          transition-delay: 0.35s;
         }
 
         .mechanics-diagram .interactive-node.n4.active .archive-box-side-l,
         .mechanics-diagram .interactive-node.n4.active .archive-box-side-r,
         .mechanics-diagram .interactive-node.n4.active .archive-inner-wall {
           stroke: var(--md-ink);
+          transition-delay: 0.35s;
         }
         .mechanics-diagram .interactive-node.n4.active .archive-data-core {
           opacity: 1;
           transform: translateY(-8px) scale(1.1);
           stroke: var(--md-accent);
-          filter: var(--md-shadow-hover-el);
-          animation: md-levitate-core 2.5s ease-in-out infinite 0.6s;
+          filter: var(--md-shadow-active-el);
+          transition-delay: 0.35s;
+          animation: md-levitate-core 2.5s ease-in-out infinite 0.95s;
         }
 
         @keyframes md-gather-beam {
-          0%, 12% {
+          0%, 25% {
             opacity: 0;
             transform: scaleX(0);
             stroke-width: 0px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 0px var(--md-accent));
           }
-          30% {
+          40% {
             opacity: 0.8;
             transform: scaleX(0.2);
             stroke-width: 1.5px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 2px var(--md-accent));
           }
-          60% {
+          70% {
             opacity: 1;
-            transform: scaleX(0.5);
-            stroke-width: 2.5px;
+            transform: scaleX(0.6);
+            stroke-width: 3px;
             stroke: var(--md-accent);
-            filter: drop-shadow(0 0 4px var(--md-accent));
+            filter: drop-shadow(0 0 5px var(--md-accent));
           }
-          85% {
+          95% {
             opacity: 1;
-            transform: scaleX(1);
+            transform: scaleX(1.1);
             stroke-width: 4px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 8px var(--md-accent));
           }
-          88% {
+          98%, 100% {
             opacity: 1;
             transform: scaleX(1.5);
             stroke-width: 6px;
             stroke: #ffffff;
             filter: drop-shadow(0 0 15px var(--md-accent)) drop-shadow(0 0 3px #ffffff);
           }
-          92% {
-            opacity: 0;
-            transform: scaleX(4);
-            stroke-width: 1px;
-            stroke: var(--md-accent);
-            filter: drop-shadow(0 0 0px var(--md-accent));
-          }
-          93%, 100% {
-            opacity: 0;
-          }
         }
-        @keyframes md-gather-beam-hold {
+        @keyframes md-shoot-beam-incoming {
           0% {
-            opacity: 0;
-            transform: scaleX(0);
-            stroke-width: 0px;
-            stroke: var(--md-accent);
-            filter: drop-shadow(0 0 0px var(--md-accent));
-          }
-          45% {
-            opacity: 0.85;
-            transform: scaleX(0.45);
-            stroke-width: 2.5px;
-            filter: drop-shadow(0 0 4px var(--md-accent));
-          }
-          100% {
+            stroke-dashoffset: 40;
             opacity: 1;
-            transform: scaleX(1);
-            stroke-width: 4px;
+            stroke-width: 5px;
+            stroke: #ffffff;
+            filter: drop-shadow(0 0 12px var(--md-accent)) drop-shadow(0 0 2px #ffffff);
+          }
+          15% {
+            stroke-width: 3px;
             stroke: var(--md-accent);
-            filter: drop-shadow(0 0 8px var(--md-accent));
-          }
-        }
-        @keyframes md-ready-beam-shake {
-          0%, 100% {
-            opacity: 1;
-            transform: translateX(0) scaleX(1);
-            stroke-width: 4px;
-            stroke: var(--md-accent);
-            filter: drop-shadow(0 0 8px var(--md-accent));
-          }
-          22% {
-            transform: translateX(0.7px) scaleX(1.04);
-            stroke-width: 4.6px;
-            filter: drop-shadow(0 0 10px var(--md-accent));
-          }
-          47% {
-            transform: translateX(-0.6px) scaleX(0.98);
-            stroke-width: 3.7px;
             filter: drop-shadow(0 0 6px var(--md-accent));
           }
-          73% {
-            transform: translateX(0.45px) scaleX(1.02);
-            stroke-width: 4.3px;
-            filter: drop-shadow(0 0 9px var(--md-accent));
-          }
-        }
-        @keyframes md-release-gather-flash {
-          0% {
-            opacity: 1;
-            transform: scaleX(1);
-            stroke-width: 4px;
-            stroke: var(--md-accent);
-            filter: drop-shadow(0 0 8px var(--md-accent));
-          }
-          20% {
-            opacity: 1;
-            transform: scaleX(1.5);
-            stroke-width: 6px;
-            stroke: #ffffff;
-            filter: drop-shadow(0 0 15px var(--md-accent)) drop-shadow(0 0 3px #ffffff);
-          }
-          47% {
-            opacity: 0;
-            transform: scaleX(4);
-            stroke-width: 1px;
-            stroke: var(--md-accent);
-            filter: drop-shadow(0 0 0px var(--md-accent));
-          }
-          100% {
-            opacity: 0;
-          }
-        }
-        @keyframes md-release-shoot-beam {
-          0%, 20% {
-            stroke-dashoffset: 40;
-            opacity: 0;
-          }
-          20.1% {
-            stroke-dashoffset: 40;
-            opacity: 1;
-          }
-          99.9% {
-            stroke-dashoffset: -124;
-            opacity: 1;
-          }
-          100% {
-            stroke-dashoffset: -124;
-            opacity: 0;
-          }
-        }
-        @keyframes md-shoot-beam {
-          0%, 88% {
-            stroke-dashoffset: 40;
-            opacity: 0;
-          }
-          88.1% {
-            opacity: 1;
-            stroke-dashoffset: 40;
-          }
-          99.9% {
+          99% {
             stroke-dashoffset: -124;
             opacity: 1;
           }
@@ -457,11 +332,14 @@ export default function MechanicsDiagram({
           }
         }
         @keyframes md-trace-shape {
-          0% {
+          0%, 12.5% {
             stroke-dashoffset: 1;
+            opacity: 0;
+          }
+          13% {
             opacity: 1;
           }
-          12%, 100% {
+          25%, 100% {
             stroke-dashoffset: 0;
             opacity: 1;
           }
@@ -491,9 +369,7 @@ export default function MechanicsDiagram({
       <div
         className={`mechanics-diagram relative w-full py-8 md:py-10 px-4 md:px-12 flex justify-center bg-white dark:bg-[#050505] transition-colors overflow-hidden ${
           isRunning ? "is-running" : ""
-        } ${activeIndex !== null ? "has-active" : ""} ${
-          heldIndex !== null ? "is-hover-held" : ""
-        } ${releaseIndex !== null ? "is-release-firing" : ""}`}
+        } ${activeIndex !== null ? `has-active active-${activeIndex}` : ""}`}
       >
         {/* Noise Texture */}
         <div
@@ -520,7 +396,7 @@ export default function MechanicsDiagram({
 
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 60 640 150"
+          viewBox="20 65 600 130"
           className="w-full max-w-5xl h-auto relative z-10"
         >
           <defs>
@@ -538,13 +414,7 @@ export default function MechanicsDiagram({
               />
             </pattern>
           </defs>
-          <g
-            className={nodeClassName(0, "n1")}
-            onPointerEnter={(event) => onNodeHoverStart?.(0, event)}
-            onPointerLeave={() => onNodeHoverEnd?.(0)}
-            onPointerMove={(event) => onNodeHoverMove?.(0, event)}
-            transform="translate(80, 125)"
-          >
+          <g className={nodeClassName(0, "n1")} transform="translate(80, 125)">
             <g className="tracks pointer-events-none">
               <path className="track-outer top" d="M 26 -6 L 130 -6" />
               <path className="track-center" d="M 26 0 L 130 0" />
@@ -662,13 +532,7 @@ export default function MechanicsDiagram({
             </text>
           </g>
 
-          <g
-            className={nodeClassName(1, "n2")}
-            onPointerEnter={(event) => onNodeHoverStart?.(1, event)}
-            onPointerLeave={() => onNodeHoverEnd?.(1)}
-            onPointerMove={(event) => onNodeHoverMove?.(1, event)}
-            transform="translate(240, 125)"
-          >
+          <g className={nodeClassName(1, "n2")} transform="translate(240, 125)">
             <g className="tracks pointer-events-none">
               <path className="track-outer top" d="M 30 -6 L 130 -6" />
               <path className="track-center" d="M 30 0 L 130 0" />
@@ -811,13 +675,7 @@ export default function MechanicsDiagram({
             </text>
           </g>
 
-          <g
-            className={nodeClassName(2, "n3")}
-            onPointerEnter={(event) => onNodeHoverStart?.(2, event)}
-            onPointerLeave={() => onNodeHoverEnd?.(2)}
-            onPointerMove={(event) => onNodeHoverMove?.(2, event)}
-            transform="translate(400, 125)"
-          >
+          <g className={nodeClassName(2, "n3")} transform="translate(400, 125)">
             <g className="tracks pointer-events-none">
               <path className="track-outer top" d="M 30 -6 L 128 -6" />
               <path className="track-center" d="M 30 0 L 128 0" />
@@ -894,13 +752,7 @@ export default function MechanicsDiagram({
             </text>
           </g>
 
-          <g
-            className={nodeClassName(3, "n4")}
-            onPointerEnter={(event) => onNodeHoverStart?.(3, event)}
-            onPointerLeave={() => onNodeHoverEnd?.(3)}
-            onPointerMove={(event) => onNodeHoverMove?.(3, event)}
-            transform="translate(560, 125)"
-          >
+          <g className={nodeClassName(3, "n4")} transform="translate(560, 125)">
             <g className="node-group ">
               {/* Hit Box */}
               <circle

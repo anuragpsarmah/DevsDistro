@@ -37,11 +37,10 @@ export default function FAQ() {
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/3">
             <div className="flex items-center gap-3 mb-6 justify-center md:justify-start">
-              <div className="w-12 h-[2px] bg-red-500"></div>
+              <span className="text-red-500 font-bold">//</span>
               <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500">
                 Query Log
               </span>
-              <div className="w-12 h-[2px] bg-red-500"></div>
             </div>
             <h2
               id="faq-heading"

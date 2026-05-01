@@ -111,6 +111,23 @@
   .ease-premium {
     transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  .animate-cell-ripple {
+    animation: cell-ripple var(--duration, 200ms) ease-out none 1
+      var(--delay, 0ms);
+  }
+}
+
+@keyframes cell-ripple {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
 @layer base {

@@ -36,11 +36,9 @@ export default function TheClimax({ handleAuthNavigate }: TheClimaxProps) {
           className="bg-red-500 p-8 md:p-16 border-4 border-neutral-800 dark:border-white w-full"
         >
           <div className="flex items-center gap-3 mb-6 justify-center">
-            <div className="w-8 h-[2px] bg-neutral-800 dark:bg-white transition-colors"></div>
             <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-neutral-800 dark:text-white transition-colors">
               The Climax
             </span>
-            <div className="w-8 h-[2px] bg-neutral-800 dark:bg-white transition-colors"></div>
           </div>
 
           <h2 className="font-syne text-4xl md:text-7xl font-black uppercase leading-none mb-8 text-neutral-800 dark:text-neutral-800 transition-colors">

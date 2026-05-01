@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { ArrowRight } from "lucide-react";
 
 export default function TheShift() {
   const isLarge = useMediaQuery("(min-width: 1024px)");
@@ -29,12 +30,10 @@ export default function TheShift() {
       <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
 
       <div className="max-w-6xl mx-auto w-full relative z-10">
-        <div className="flex items-center gap-3 mb-16 justify-center lg:justify-start">
-          <div className="w-12 h-[2px] bg-red-500 transition-colors"></div>
-          <span className="font-space font-bold uppercase tracking-[0.2em] text-xs text-red-500 transition-colors">
+        <div className="flex items-center gap-3 mb-16 border-b-4 border-black/20 dark:border-white/20 pb-4 inline-flex transition-colors w-fit mx-auto lg:mx-0">
+          <span className="font-space font-bold uppercase tracking-[0.2em] text-xs">
             The Revelation
           </span>
-          <div className="w-12 h-[2px] bg-red-500 transition-colors"></div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
@@ -99,9 +98,35 @@ export default function TheShift() {
                   USD
                 </div>
               </div>
-              <div className="text-red-500 font-bold text-3xl animate-pulse mx-4">
-                →
+
+              {/* Animated pipeline arrow */}
+              <div className="flex items-center gap-1 mx-4">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-[2px] bg-red-500 shrink-0"
+                    animate={{ opacity: [0.2, 1, 0.2] }}
+                    transition={{
+                      duration: 1.2,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+                <motion.div
+                  className="flex items-center justify-center text-red-500"
+                  animate={{ x: [0, 4, 0] }}
+                  transition={{
+                    duration: 1.2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <ArrowRight size={28} strokeWidth={2.5} />
+                </motion.div>
               </div>
+
               <div className="text-right">
                 <div className="font-space text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">
                   Output Settlement
