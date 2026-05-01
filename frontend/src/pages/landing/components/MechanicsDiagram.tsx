@@ -63,14 +63,13 @@ export default function MechanicsDiagram({
         }
 
         .mechanics-diagram .node-group {
-          transition: transform 0.5s var(--spring) 0s, opacity 0.6s var(--ease-out) 0s, filter 0.6s var(--ease-out) 0s;
+          transition: transform 0.5s var(--spring), opacity 0.6s var(--ease-out), filter 0.6s var(--ease-out);
           transform-origin: center;
           transform-box: fill-box;
         }
 
         .mechanics-diagram .interactive-node.active .node-group {
           transform: scale(1.04);
-          transition: transform 0.5s var(--spring) 0.35s, opacity 0.6s var(--ease-out) 0.35s, filter 0.6s var(--ease-out) 0.35s;
         }
 
         .mechanics-diagram.has-active .interactive-node:not(.active) .node-group,
@@ -111,7 +110,7 @@ export default function MechanicsDiagram({
           letter-spacing: 0.2em;
           text-anchor: middle;
           pointer-events: none;
-          transition: fill 0.3s var(--ease-out) 0s, transform 0.4s var(--spring) 0s, opacity 0.6s var(--ease-out) 0s, filter 0.6s var(--ease-out) 0s;
+          transition: fill 0.3s var(--ease-out), transform 0.4s var(--spring), opacity 0.6s var(--ease-out), filter 0.6s var(--ease-out);
         }
 
         /* Clean Beam Pipeline */
@@ -139,15 +138,13 @@ export default function MechanicsDiagram({
           filter: drop-shadow(0 0 4px var(--md-accent));
         }
         
-        .mechanics-diagram.is-running.active-1 .n1 .track-beam,
-        .mechanics-diagram.is-running.active-2 .n2 .track-beam,
-        .mechanics-diagram.is-running.active-3 .n3 .track-beam {
-          animation: md-shoot-beam-incoming 0.35s linear forwards;
+        .mechanics-diagram.is-running .interactive-node.active .track-beam {
+          animation: md-shoot-beam 2.8s linear forwards;
         }
 
         /* Active Interactions */
-        .mechanics-diagram .interactive-node.active .track-center { stroke: var(--md-ink-muted); transition-delay: 0.35s; }
-        .mechanics-diagram .interactive-node.active .track-outer { opacity: 0.2; stroke: var(--md-ink); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.active .track-center { stroke: var(--md-ink-muted); }
+        .mechanics-diagram .interactive-node.active .track-outer { opacity: 0.2; stroke: var(--md-ink); }
 
         .mechanics-diagram .icon-path-trace {
           stroke: var(--md-accent);
@@ -160,7 +157,7 @@ export default function MechanicsDiagram({
         }
 
         .mechanics-diagram .interactive-node.active .icon-path-trace {
-          animation: md-trace-shape 2.8s linear forwards;
+          animation: md-trace-shape 1.8s linear forwards;
         }
         
         .mechanics-diagram .beam-gather,
@@ -182,14 +179,12 @@ export default function MechanicsDiagram({
 
         .mechanics-diagram .interactive-node.active .icon-bg {
           filter: var(--md-shadow-active-bg);
-          transition-delay: 0.35s;
         }
         .mechanics-diagram .interactive-node.active .text-label { 
           fill: var(--md-accent); 
-          transition: fill 0.3s var(--ease-out) 0.35s, transform 0.4s var(--spring) 0.35s, opacity 0.6s var(--ease-out) 0.35s, filter 0.6s var(--ease-out) 0.35s;
         }
-        .mechanics-diagram .interactive-node.active .stroke-main { stroke: var(--md-ink-strong); transition-delay: 0.35s; }
-        .mechanics-diagram .interactive-node.active .fill-main { stroke: var(--md-ink-strong); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.active .stroke-main { stroke: var(--md-ink-strong); }
+        .mechanics-diagram .interactive-node.active .fill-main { stroke: var(--md-ink-strong); }
         
         /* Node 1 */
         .mechanics-diagram .git-path { transition: stroke 0.4s var(--ease-out); }
@@ -200,12 +195,12 @@ export default function MechanicsDiagram({
         }
         .mechanics-diagram .interactive-node.n1.active .git-commit {
           stroke: var(--md-ink);
-          animation: md-commit-playback 2.45s ease-in-out 1;
-          animation-delay: calc(var(--order) * 0.12s + 0.35s);
+          animation: md-commit-playback 1.8s ease-in-out 1;
+          animation-delay: calc(var(--order) * 0.12s);
         }
         .mechanics-diagram .interactive-node.n1.active .git-commit.final-commit {
           animation: md-final-commit-glow 1.1s ease-in-out 1 forwards;
-          animation-delay: calc(var(--order) * 0.12s + 0.35s);
+          animation-delay: calc(var(--order) * 0.12s);
         }
 
         /* Node 2 */
@@ -215,24 +210,24 @@ export default function MechanicsDiagram({
           transition: transform 0.6s var(--spring) 0s, filter 0.6s var(--spring) 0s; 
         }
         .mechanics-diagram .lock-shackle { transition: transform 0.3s var(--ease-out) 0.4s, stroke 0.3s var(--ease-out) 0.4s; }
-        .mechanics-diagram .interactive-node.n2.active .lock-shackle { transform: translateY(-4px); stroke: var(--md-ink); transition: transform 0.3s var(--ease-out) 0.35s, stroke 0.3s var(--ease-out) 0.35s; }
-        .mechanics-diagram .interactive-node.n2.active .oauth-lock { transform: translate(14px, -16px) scale(0.5); filter: var(--md-shadow-lock); transition: transform 0.7s var(--spring) 0.55s, filter 0.7s var(--spring) 0.55s; }
-        .mechanics-diagram .interactive-node.n2.active .app-frame { filter: var(--md-shadow-active-el); stroke-width: 1.35px; transition: filter 0.3s 0.35s, stroke-width 0.3s 0.35s; }
-        .mechanics-diagram .interactive-node.n2.active .r1 { transition: all 0.3s var(--ease-out) 0.95s; }
-        .mechanics-diagram .interactive-node.n2.active .r2 { transition: all 0.3s var(--ease-out) 1.15s; }
-        .mechanics-diagram .interactive-node.n2.active .r3 { transition: all 0.3s var(--ease-out) 1.35s; }
+        .mechanics-diagram .interactive-node.n2.active .lock-shackle { transform: translateY(-4px); stroke: var(--md-ink); transition: transform 0.3s var(--ease-out) 0s, stroke 0.3s var(--ease-out) 0s; }
+        .mechanics-diagram .interactive-node.n2.active .oauth-lock { transform: translate(14px, -16px) scale(0.5); filter: var(--md-shadow-lock); transition: transform 0.7s var(--spring) 0.2s, filter 0.7s var(--spring) 0.2s; }
+        .mechanics-diagram .interactive-node.n2.active .app-frame { filter: var(--md-shadow-active-el); stroke-width: 1.35px; }
+        .mechanics-diagram .interactive-node.n2.active .r1 { transition: all 0.3s var(--ease-out) 0.6s; }
+        .mechanics-diagram .interactive-node.n2.active .r2 { transition: all 0.3s var(--ease-out) 0.8s; }
+        .mechanics-diagram .interactive-node.n2.active .r3 { transition: all 0.3s var(--ease-out) 1.0s; }
         .mechanics-diagram .repo-dot { opacity: 0; transform: scale(0.5); transition: all 0.3s var(--spring); transform-box: fill-box; transform-origin: center; }
         .mechanics-diagram .repo-line { stroke-dasharray: 12; stroke-dashoffset: 12; opacity: 0; transition: all 0.3s var(--ease-out); }
-        .mechanics-diagram .interactive-node.n2.active .repo-dot { opacity: 1; transform: scale(1.1); fill: var(--md-accent); transition-delay: 0.35s; }
-        .mechanics-diagram .interactive-node.n2.active .repo-line { stroke-dashoffset: 0; opacity: 0.9; stroke: var(--md-ink); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.n2.active .repo-dot { opacity: 1; transform: scale(1.1); fill: var(--md-accent); }
+        .mechanics-diagram .interactive-node.n2.active .repo-line { stroke-dashoffset: 0; opacity: 0.9; stroke: var(--md-ink); }
 
         /* Node 3 */
         .mechanics-diagram .token-check { opacity: 0; stroke-dasharray: 14; stroke-dashoffset: 14; transition: all 0.4s var(--spring) 0s; transform-origin: center; transform-box: fill-box; }
         .mechanics-diagram .settle-ring { stroke-dasharray: 105; stroke-dashoffset: 105; transform: rotate(-90deg); transform-origin: center; transform-box: fill-box; transition: stroke-dashoffset 1s var(--ease-in-out), transform 1s var(--ease-in-out), stroke 0.6s var(--ease-out); }
-        .mechanics-diagram .interactive-node.n3.active .token-base { filter: var(--md-shadow-active-el); transition: filter 0.3s 0.35s; }
-        .mechanics-diagram .interactive-node.n3.active .sol-mark { opacity: 0; transform: scale(0) rotate(180deg); transition-delay: 0.35s; }
-        .mechanics-diagram .interactive-node.n3.active .token-check { opacity: 1; stroke-dashoffset: 0; stroke: var(--md-accent); stroke-width: 2px; transition: all 0.5s var(--spring) 1.15s; }
-        .mechanics-diagram .interactive-node.n3.active .settle-ring { stroke-dashoffset: 0; stroke: var(--md-accent); transform: rotate(90deg); transition-delay: 0.35s; }
+        .mechanics-diagram .interactive-node.n3.active .token-base { filter: var(--md-shadow-active-el); }
+        .mechanics-diagram .interactive-node.n3.active .sol-mark { opacity: 0; transform: scale(0) rotate(180deg); }
+        .mechanics-diagram .interactive-node.n3.active .token-check { opacity: 1; stroke-dashoffset: 0; stroke: var(--md-accent); stroke-width: 2px; transition: all 0.5s var(--spring) 0.8s; }
+        .mechanics-diagram .interactive-node.n3.active .settle-ring { stroke-dashoffset: 0; stroke: var(--md-accent); transform: rotate(90deg); }
         .mechanics-diagram .sol-mark { fill: var(--md-ink-muted); transition: all 0.5s var(--spring); transform-origin: center; transform-box: fill-box; }
 
         /* Node 4 */
@@ -254,75 +249,113 @@ export default function MechanicsDiagram({
           stroke: var(--md-ink);
           fill: var(--md-surface);
           filter: var(--md-shadow-top);
-          transition-delay: 0.35s;
         }
 
         .mechanics-diagram .interactive-node.n4.active .archive-box-side-l,
         .mechanics-diagram .interactive-node.n4.active .archive-box-side-r,
         .mechanics-diagram .interactive-node.n4.active .archive-inner-wall {
           stroke: var(--md-ink);
-          transition-delay: 0.35s;
         }
         .mechanics-diagram .interactive-node.n4.active .archive-data-core {
           opacity: 1;
           transform: translateY(-8px) scale(1.1);
           stroke: var(--md-accent);
           filter: var(--md-shadow-active-el);
-          transition-delay: 0.35s;
-          animation: md-levitate-core 2.5s ease-in-out infinite 0.95s;
+          animation: md-levitate-core 2.5s ease-in-out infinite 0.6s;
         }
 
         @keyframes md-gather-beam {
-          0%, 25% {
+          0%, 7.7% {
             opacity: 0;
             transform: scaleX(0);
             stroke-width: 0px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 0px var(--md-accent));
           }
-          40% {
+          19.3% {
             opacity: 0.8;
             transform: scaleX(0.2);
             stroke-width: 1.5px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 2px var(--md-accent));
           }
-          70% {
+          38.6% {
             opacity: 1;
-            transform: scaleX(0.6);
-            stroke-width: 3px;
+            transform: scaleX(0.5);
+            stroke-width: 2.5px;
             stroke: var(--md-accent);
-            filter: drop-shadow(0 0 5px var(--md-accent));
+            filter: drop-shadow(0 0 4px var(--md-accent));
           }
-          95% {
+          54.6% {
             opacity: 1;
-            transform: scaleX(1.1);
+            transform: scaleX(1);
             stroke-width: 4px;
             stroke: var(--md-accent);
             filter: drop-shadow(0 0 8px var(--md-accent));
           }
-          98%, 100% {
+          56.6% {
             opacity: 1;
             transform: scaleX(1.5);
-            stroke-width: 6px;
-            stroke: #ffffff;
-            filter: drop-shadow(0 0 15px var(--md-accent)) drop-shadow(0 0 3px #ffffff);
+            stroke-width: 4.6px;
+            stroke: color-mix(in srgb, var(--md-accent) 62%, #ffffff);
+            filter: drop-shadow(0 0 9px var(--md-accent));
+          }
+          64% {
+            opacity: 1;
+            transform: translateX(0.9px) scaleX(1.57);
+            stroke-width: 4.9px;
+            stroke: color-mix(in srgb, var(--md-accent) 58%, #ffffff);
+            filter: drop-shadow(0 0 10px var(--md-accent));
+          }
+          72% {
+            opacity: 1;
+            transform: translateX(-0.8px) scaleX(1.47);
+            stroke-width: 4.2px;
+            stroke: color-mix(in srgb, var(--md-accent) 70%, #ffffff);
+            filter: drop-shadow(0 0 7px var(--md-accent));
+          }
+          80% {
+            opacity: 1;
+            transform: translateX(0.65px) scaleX(1.54);
+            stroke-width: 4.8px;
+            stroke: color-mix(in srgb, var(--md-accent) 60%, #ffffff);
+            filter: drop-shadow(0 0 10px var(--md-accent));
+          }
+          88% {
+            opacity: 1;
+            transform: translateX(-0.55px) scaleX(1.49);
+            stroke-width: 4.4px;
+            stroke: color-mix(in srgb, var(--md-accent) 66%, #ffffff);
+            filter: drop-shadow(0 0 8px var(--md-accent));
+          }
+          92.2% {
+            opacity: 1;
+            transform: translateX(0) scaleX(1.5);
+            stroke-width: 4.6px;
+            stroke: color-mix(in srgb, var(--md-accent) 62%, #ffffff);
+            filter: drop-shadow(0 0 9px var(--md-accent));
+          }
+          96% {
+            opacity: 0;
+            transform: scaleX(4);
+            stroke-width: 1px;
+            stroke: var(--md-accent);
+            filter: drop-shadow(0 0 0px var(--md-accent));
+          }
+          97%, 100% {
+            opacity: 0;
           }
         }
-        @keyframes md-shoot-beam-incoming {
-          0% {
+        @keyframes md-shoot-beam {
+          0%, 92.2% {
             stroke-dashoffset: 40;
+            opacity: 0;
+          }
+          92.3% {
             opacity: 1;
-            stroke-width: 5px;
-            stroke: #ffffff;
-            filter: drop-shadow(0 0 12px var(--md-accent)) drop-shadow(0 0 2px #ffffff);
+            stroke-dashoffset: 40;
           }
-          15% {
-            stroke-width: 3px;
-            stroke: var(--md-accent);
-            filter: drop-shadow(0 0 6px var(--md-accent));
-          }
-          99% {
+          99.9% {
             stroke-dashoffset: -124;
             opacity: 1;
           }
@@ -332,14 +365,11 @@ export default function MechanicsDiagram({
           }
         }
         @keyframes md-trace-shape {
-          0%, 12.5% {
+          0% {
             stroke-dashoffset: 1;
-            opacity: 0;
-          }
-          13% {
             opacity: 1;
           }
-          25%, 100% {
+          12%, 100% {
             stroke-dashoffset: 0;
             opacity: 1;
           }
