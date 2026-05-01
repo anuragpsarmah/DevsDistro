@@ -44,24 +44,21 @@ export default function MobileMenu({
         >
           <div className="flex flex-col gap-8 h-full">
             <div className="flex flex-col gap-6 font-syne text-3xl font-black uppercase tracking-wider text-gray-400 dark:text-gray-500">
-              {[
-                "The Revelation",
-                "The Mechanics",
-                "Validations",
-                "Query Log",
-              ].map((item) => {
-                const id = item.toLowerCase().replace(" ", "-");
-                return (
-                  <Link
-                    key={item}
-                    to={isHome ? `#${id}` : `/#${id}`}
-                    onClick={() => handleScroll(id)}
-                    className="hover:text-neutral-800 dark:hover:text-white hover:translate-x-2 transition-all duration-300"
-                  >
-                    {item}
-                  </Link>
-                );
-              })}
+              {["The Revelation", "The Mechanics", "Validations", "FAQs"].map(
+                (item) => {
+                  const id = item.toLowerCase().replace(" ", "-");
+                  return (
+                    <Link
+                      key={item}
+                      to={isHome ? `#${id}` : `/#${id}`}
+                      onClick={() => handleScroll(id)}
+                      className="hover:text-neutral-800 dark:hover:text-white hover:translate-x-2 transition-all duration-300"
+                    >
+                      {item}
+                    </Link>
+                  );
+                }
+              )}
             </div>
 
             <div className="mt-8 pt-8 border-t border-neutral-800/10 dark:border-white/20">

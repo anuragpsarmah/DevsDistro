@@ -64,7 +64,7 @@ export default function Footer() {
                 "The Revelation",
                 "The Mechanics",
                 "Validations",
-                "Query Log",
+                "FAQs",
               ].map((item) => {
                 let id = item.toLowerCase().replace(" ", "-");
                 if (id === "devsdistro") id = "the-introduction";

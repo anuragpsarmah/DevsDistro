@@ -87,7 +87,7 @@ export default function AuthPage() {
         <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-neutral-100/70 via-white/40 to-transparent dark:from-neutral-900/40 dark:via-[#050505]/30 pointer-events-none"></div>
         <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
 
-        <div className="mx-auto w-full max-w-3xl relative overflow-hidden rounded-[8px] border border-neutral-200 bg-white/95 shadow-[0_18px_42px_-34px_rgba(38,38,38,0.46)] backdrop-blur-sm dark:border-white/10 dark:bg-[#080808]/95 dark:shadow-[0_18px_44px_-34px_rgba(38,38,38,0.86)]">
+        <div className="mx-auto w-full max-w-3xl relative overflow-hidden border border-neutral-200 bg-white/95 shadow-[0_18px_42px_-34px_rgba(38,38,38,0.46)] backdrop-blur-sm dark:border-white/10 dark:bg-[#080808]/95 dark:shadow-[0_18px_44px_-34px_rgba(38,38,38,0.86)]">
           <div className="relative flex flex-col items-stretch gap-0">
             <div className="flex flex-col justify-center px-8 pb-4 pt-8 text-center md:px-12 md:pb-5 md:pt-12 lg:px-14 lg:pb-6 lg:pt-14">
               <h1 className="mb-6 font-syne text-5xl font-black uppercase leading-none tracking-widest text-neutral-900 break-words hyphens-auto dark:text-white md:text-6xl lg:text-7xl">

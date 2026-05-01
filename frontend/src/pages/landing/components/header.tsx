@@ -38,7 +38,7 @@ export default function Header({
         </Link>
 
         <div className="hidden md:flex items-center gap-5 lg:gap-8 font-space text-[10px] md:text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-          {["The Revelation", "The Mechanics", "Validations", "Query Log"].map(
+          {["The Revelation", "The Mechanics", "Validations", "FAQS"].map(
             (item) => {
               const id = item.toLowerCase().replace(" ", "-");
               return (

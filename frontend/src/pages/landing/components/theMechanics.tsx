@@ -196,10 +196,10 @@ export default function TheMechanics() {
             </div>
 
             {/* Main Content Area */}
-            <div className="w-full md:w-2/3 p-6 md:p-12 flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="w-full md:w-2/3 p-6 md:p-12 flex flex-col items-center justify-center relative overflow-visible">
               {/* SVG (MechanicsDiagram) */}
               <div className="w-[calc(100%+2rem)] md:w-[calc(100%+4rem)] -mx-4 md:-mx-8 mb-10 relative z-10 min-h-[220px] md:min-h-[300px] flex items-center justify-center [&_svg]:!min-w-0 [&_svg]:!w-full [&_svg]:max-w-[1000px] transition-transform">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(115,115,115,0.46)_1px,transparent_1px)] [background-size:8px_8px] opacity-20 dark:opacity-25 pointer-events-none z-0" />
+                <div className="absolute inset-x-0 -top-10 -bottom-10 bg-[radial-gradient(circle_at_center,rgba(115,115,115,0.46)_1px,transparent_1px)] [background-size:8px_8px] opacity-20 dark:opacity-25 pointer-events-none z-0 blur-[0.5px] [mask-image:linear-gradient(to_bottom,transparent_0,black_2.5rem,black_calc(100%_-_2.5rem),transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0,black_2.5rem,black_calc(100%_-_2.5rem),transparent_100%)]" />
                 <div className="relative z-10 w-full">
                   <MechanicsDiagram
                     activeIndex={autoMechanicIndex}
