@@ -16,41 +16,48 @@ import ApiPage from "@/pages/api/ApiPage";
 
 export const router = createBrowserRouter([
   {
+    path: "*",
+    element: <ErrorPage />,
+  },
+  {
+    path: "/",
+    element: <LandingPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/p/:slug",
+    element: <SharedProjectPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/authentication",
+    element: <AuthPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/loginValidation",
+    element: <LoginValidationPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/terms",
+    element: <TermsOfService />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/privacy",
+    element: <PrivacyPolicy />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/api",
+    element: <ApiPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
     element: <SmoothTransitionWrapper />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        path: "*",
-        element: <ErrorPage />,
-      },
-      {
-        path: "/",
-        element: <LandingPage />,
-      },
-      {
-        path: "/p/:slug",
-        element: <SharedProjectPage />,
-      },
-      {
-        path: "/authentication",
-        element: <AuthPage />,
-      },
-      {
-        path: "/loginValidation",
-        element: <LoginValidationPage />,
-      },
-      {
-        path: "/terms",
-        element: <TermsOfService />,
-      },
-      {
-        path: "/privacy",
-        element: <PrivacyPolicy />,
-      },
-      {
-        path: "/api",
-        element: <ApiPage />,
-      },
       {
         path: "/app-install-callback",
         element: (
