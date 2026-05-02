@@ -12,18 +12,19 @@ export default function SmoothTransitionWrapper() {
   const outlet = useOutlet();
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        variants={fadeVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        transition={{ duration: 0.01 }}
-        className="min-h-screen w-full flex flex-col"
-      >
-        {outlet}
-      </motion.div>
-    </AnimatePresence>
+    // <AnimatePresence mode="wait">
+    //   <motion.div
+    //     key={location.pathname}
+    //     variants={fadeVariants}
+    //     initial="initial"
+    //     animate="animate"
+    //     exit="exit"
+    //     transition={{ duration: 0.01 }}
+    //     className="min-h-screen w-full flex flex-col"
+    //   >
+    //     {outlet}
+    //   </motion.div>
+    // </AnimatePresence>
+    <>{outlet}</>
   );
 }

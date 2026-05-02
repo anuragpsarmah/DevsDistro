@@ -44,7 +44,7 @@ export default function TheShift() {
             transition={{ duration: 0.8 }}
             className="order-1 lg:order-2"
           >
-            <h2 className="font-syne text-3xl md:text-[3.6rem] font-bold text-neutral-800 dark:text-white uppercase leading-snug mb-8 transition-colors">
+            <h2 className="font-syne text-3xl md:text-[3.55rem] font-bold text-neutral-800 dark:text-white uppercase leading-snug mb-8 transition-colors">
               A Direct Pipeline from{" "}
               <span className="text-neutral-800/40 dark:text-white/40">
                 Commit
@@ -100,7 +100,7 @@ export default function TheShift() {
               </div>
 
               {/* Animated pipeline arrow */}
-              <div className="flex items-center gap-1 mx-4">
+              <div className="flex items-center gap-1 mx-4 translate-y-3">
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}

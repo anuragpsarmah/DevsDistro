@@ -87,9 +87,18 @@ export default function AuthPage() {
         <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-neutral-100/70 via-white/40 to-transparent dark:from-neutral-900/40 dark:via-[#050505]/30 pointer-events-none"></div>
         <div className="landing-dotted-rule landing-dotted-b absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-7xl pointer-events-none z-20"></div>
 
-        <div className="mx-auto w-full max-w-3xl relative overflow-hidden border border-neutral-200 bg-white/95 shadow-[0_18px_42px_-34px_rgba(38,38,38,0.46)] backdrop-blur-sm dark:border-white/10 dark:bg-[#080808]/95 dark:shadow-[0_18px_44px_-34px_rgba(38,38,38,0.86)]">
-          <div className="relative flex flex-col items-stretch gap-0">
-            <div className="flex flex-col justify-center px-8 pb-4 pt-8 text-center md:px-12 md:pb-5 md:pt-12 lg:px-14 lg:pb-6 lg:pt-14">
+        <div className="mx-auto w-full max-w-3xl relative border-t-2 border-l-2 border-neutral-800/20 bg-white/95 backdrop-blur-sm transition-colors dark:border-white/20 dark:bg-[#080808]/95">
+          <div className="relative flex flex-col items-stretch gap-0 border-b-2 border-r-2 border-neutral-800/20 transition-colors dark:border-white/20">
+            <div className="flex items-center justify-between border-b-2 border-neutral-800/10 px-6 py-5 transition-colors dark:border-white/10 md:px-10">
+              <span className="font-space text-xs font-bold uppercase tracking-[0.2em] text-neutral-800 dark:text-white">
+                Authentication
+              </span>
+              <span className="font-space text-xs font-bold uppercase tracking-widest text-red-500">
+                OAuth
+              </span>
+            </div>
+
+            <div className="flex flex-col justify-center px-8 pb-8 pt-10 text-center md:px-12 md:pb-10 md:pt-12 lg:px-14 lg:pb-12 lg:pt-14">
               <h1 className="mb-6 font-syne text-5xl font-black uppercase leading-none tracking-widest text-neutral-900 break-words hyphens-auto dark:text-white md:text-6xl lg:text-7xl">
                 Initiate
                 <br />
@@ -102,7 +111,7 @@ export default function AuthPage() {
               </p>
             </div>
 
-            <div className="flex w-full flex-col items-center justify-center bg-neutral-50/55 px-8 pb-8 pt-2 dark:bg-neutral-900/10 md:px-10 md:pb-10 md:pt-3 lg:px-12 lg:pb-12 lg:pt-4">
+            <div className="flex w-full flex-col items-center justify-center px-8 pb-8 pt-8 md:px-10 md:pb-10 md:pt-10 lg:px-12 lg:pb-12 lg:pt-12">
               <button
                 className={`group w-full max-w-md justify-center ${landingClimaxJoinButtonClassName}`}
                 onClick={handleLoginClick}
@@ -118,19 +127,15 @@ export default function AuthPage() {
                 <div className="flex flex-col items-center gap-3">
                   <Link
                     to="/terms"
-                    className="group flex items-center gap-3 text-xs uppercase tracking-widest text-gray-500 transition-colors hover:text-neutral-800 dark:text-gray-400 dark:hover:text-white"
+                    className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400"
                   >
-                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
                     <span>Terms of Service</span>
-                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
                   </Link>
                   <Link
                     to="/privacy"
-                    className="group flex items-center gap-3 text-xs uppercase tracking-widest text-gray-500 transition-colors hover:text-neutral-800 dark:text-gray-400 dark:hover:text-white"
+                    className="text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400"
                   >
-                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
                     <span>Privacy Policy</span>
-                    <span className="h-px w-4 bg-red-500 opacity-0 transition-opacity group-hover:opacity-100"></span>
                   </Link>
                 </div>
               </div>

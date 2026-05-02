@@ -28,10 +28,13 @@ const STEPS = [
   },
 ];
 
+const STEP_COUNT = STEPS.length;
+
 export default function TheMechanics() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [hasStartedDiagram, setHasStartedDiagram] = useState(false);
   const [autoMechanicIndex, setAutoMechanicIndex] = useState<number>(0);
+  const [diagramReplayKey, setDiagramReplayKey] = useState(0);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -64,12 +67,18 @@ export default function TheMechanics() {
       return;
     }
 
-    const interval = window.setInterval(() => {
-      setAutoMechanicIndex((previousIndex) => (previousIndex + 1) % 4);
+    const timeout = window.setTimeout(() => {
+      setAutoMechanicIndex((previousIndex) => (previousIndex + 1) % STEP_COUNT);
     }, NODE_SEQUENCE_MS);
 
-    return () => window.clearInterval(interval);
-  }, [hasStartedDiagram]);
+    return () => window.clearTimeout(timeout);
+  }, [autoMechanicIndex, diagramReplayKey, hasStartedDiagram]);
+
+  const handleStepSelect = (index: number) => {
+    setHasStartedDiagram(true);
+    setAutoMechanicIndex(index);
+    setDiagramReplayKey((currentKey) => currentKey + 1);
+  };
 
   return (
     <section
@@ -134,10 +143,7 @@ export default function TheMechanics() {
                 {STEPS.map((step, idx) => {
                   const isActive = autoMechanicIndex === idx;
                   return (
-                    <li
-                      key={idx}
-                      className="relative z-10 group cursor-default"
-                    >
+                    <li key={step.title} className="relative z-10 group">
                       {isActive && (
                         <motion.div
                           layoutId="active-sidebar-tab"
@@ -149,8 +155,11 @@ export default function TheMechanics() {
                           }}
                         />
                       )}
-                      <div
-                        className={`relative px-2 py-1 transition-colors duration-300 flex flex-col gap-1 ${isActive ? "text-neutral-900 dark:text-white" : "text-neutral-400 dark:text-neutral-600"}`}
+                      <button
+                        type="button"
+                        onClick={() => handleStepSelect(idx)}
+                        aria-current={isActive ? "step" : undefined}
+                        className={`relative w-full rounded-lg px-2 py-1 text-left transition-colors duration-300 flex flex-col gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/70 focus-visible:ring-offset-4 focus-visible:ring-offset-neutral-50 dark:focus-visible:ring-offset-[#050505] ${isActive ? "text-neutral-900 dark:text-white" : "text-neutral-400 dark:text-neutral-600 hover:text-neutral-700 dark:hover:text-neutral-300"}`}
                       >
                         <div className="flex items-center gap-3">
                           <span
@@ -188,7 +197,7 @@ export default function TheMechanics() {
                             </svg>
                           </motion.div>
                         )}
-                      </div>
+                      </button>
                     </li>
                   );
                 })}
@@ -202,6 +211,7 @@ export default function TheMechanics() {
                 <div className="absolute inset-x-0 -top-10 -bottom-10 bg-[radial-gradient(circle_at_center,rgba(115,115,115,0.46)_1px,transparent_1px)] [background-size:8px_8px] opacity-20 dark:opacity-25 pointer-events-none z-0 blur-[0.5px] [mask-image:linear-gradient(to_bottom,transparent_0,black_2.5rem,black_calc(100%_-_2.5rem),transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_0,black_2.5rem,black_calc(100%_-_2.5rem),transparent_100%)]" />
                 <div className="relative z-10 w-full">
                   <MechanicsDiagram
+                    key={`${autoMechanicIndex}-${diagramReplayKey}`}
                     activeIndex={autoMechanicIndex}
                     isRunning={hasStartedDiagram}
                   />

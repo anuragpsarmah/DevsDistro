@@ -1,5 +1,35 @@
 import { useFeaturedReviewQuery } from "@/hooks/apiQueries";
 
+const fallbackReviews = [
+  {
+    review_description:
+      "Listed a private starter kit and had the first buyer download it without me touching a thing. The GitHub app flow felt clean, and the payout trail was easy to follow.",
+    username: "marblecache",
+    job_role: "Product engineer",
+    review_stars: 5,
+    profile_image_url:
+      "https://api.dicebear.com/9.x/identicon/svg?seed=marblecache",
+  },
+  {
+    review_description:
+      "I was mostly here to see if selling small internal tools could work. The setup was quick, the repository packaging was automatic, and the delivery experience felt dependable.",
+    username: "nullpoet",
+    job_role: "Solo founder",
+    review_stars: 5,
+    profile_image_url:
+      "https://api.dicebear.com/9.x/pixel-art/svg?seed=nullpoet",
+  },
+  {
+    review_description:
+      "Bought a dashboard template to speed up a client project. Payment cleared, the archive was available right away, and I did not have to chase anyone for access.",
+    username: "aurelius.ts",
+    job_role: "Frontend consultant",
+    review_stars: 4,
+    profile_image_url:
+      "https://api.dicebear.com/9.x/adventurer/svg?seed=aurelius-ts",
+  },
+];
+
 export default function Reviews() {
   const { data, isLoading, isError } = useFeaturedReviewQuery();
   const reviews = data?.data ?? [];
@@ -38,15 +68,46 @@ export default function Reviews() {
 
     if (isError || !hasReviews) {
       return (
-        <div className="border-t-2 border-l-2 border-neutral-800/20 dark:border-white/20 transition-colors">
-          <div className="border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-16 flex flex-col items-center justify-center text-center min-h-[240px]">
-            <div className="text-red-500 font-syne text-6xl font-black opacity-20 leading-none mb-6">
-              "
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border-t-2 border-l-2 border-neutral-800/20 dark:border-white/20 transition-colors">
+          {fallbackReviews.map((review) => (
+            <div
+              key={review.username}
+              className="border-b-2 border-r-2 border-neutral-800/20 dark:border-white/20 p-10 flex flex-col justify-between hover:bg-neutral-800/5 dark:hover:bg-white/5 transition-colors duration-300 group"
+            >
+              <div className="mb-12">
+                <div className="text-red-500 font-syne text-6xl font-black opacity-30 group-hover:opacity-100 transition-opacity leading-none mb-4">
+                  "
+                </div>
+                <p className="font-space text-lg font-medium leading-relaxed text-gray-700 dark:text-gray-300 transition-colors">
+                  {review.review_description}
+                </p>
+              </div>
+
+              <div className="mt-auto border-t-2 border-neutral-800/10 dark:border-white/10 group-hover:border-neutral-800/30 dark:group-hover:border-white/30 pt-6 transition-colors">
+                <div className="flex items-center gap-3 mb-1">
+                  {review.profile_image_url && (
+                    <img
+                      src={review.profile_image_url}
+                      alt={`Profile picture of ${review.username}`}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-8 h-8 rounded-full object-cover border border-neutral-800/10 dark:border-white/10"
+                    />
+                  )}
+                  <div className="font-syne text-xl font-bold uppercase">
+                    {review.username}
+                  </div>
+                </div>
+                <div className="font-space text-sm text-gray-700 dark:text-gray-300 mb-4 transition-colors">
+                  {review.job_role}
+                </div>
+                <div className="text-red-500 text-sm font-bold tracking-widest">
+                  {"★".repeat(review.review_stars)}
+                  {"☆".repeat(5 - review.review_stars)}
+                </div>
+              </div>
             </div>
-            <p className="font-space text-base text-gray-700 dark:text-gray-300 max-w-md">
-              No reviews at the moment. Be the first to share yours.
-            </p>
-          </div>
+          ))}
         </div>
       );
     }
